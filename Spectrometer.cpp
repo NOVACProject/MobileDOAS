@@ -616,7 +616,7 @@ double CSpectrometer::CountFlux(double windSpeed,double windAngle)
 	double flux;
 	double column,windFactor,distance,lat1,lat2,lon1,lon2;	
 	long   columnSize;
-	double  accColumn;	//total column when gps position is 0
+	double  accColumn = 0;	//total column when gps position is 0
 	if(posFlag==0)		// when the gps coordinate is (0,0)
 	{
 		zeroPosNum++;
