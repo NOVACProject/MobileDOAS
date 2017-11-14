@@ -1,0 +1,61 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: DMSpec - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\ORS-FL~1\LOCALS~1\Temp\RSPA8.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Release/DMSpec.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"G:\Yan\code\etna\1111m\Flux1.cpp"
+"G:\Yan\code\etna\1111m\GPS.cpp"
+"G:\Yan\code\etna\1111m\Spectrometer.cpp"
+]
+Creating command line "cl.exe @"C:\DOCUME~1\ORS-FL~1\LOCALS~1\Temp\RSPA8.tmp"" 
+Creating temporary file "C:\DOCUME~1\ORS-FL~1\LOCALS~1\Temp\RSPA9.tmp" with contents
+[
+/nologo /subsystem:windows /incremental:no /pdb:"Release/DMSpec.pdb" /machine:I386 /out:"Release/DMSpec.exe" 
+.\Release\BasicMath.obj
+.\Release\Common.obj
+.\Release\Configuration.obj
+.\Release\DMSpec.obj
+.\Release\DMSpecDoc.obj
+.\Release\DMSpecView.obj
+.\Release\Evaluation.obj
+.\Release\Flux1.obj
+.\Release\FLUXSETDLG.obj
+.\Release\GPS.obj
+.\Release\LogDlg.obj
+.\Release\MainFrm.obj
+.\Release\MessageLog.obj
+.\Release\OScopeCtrl.obj
+.\Release\RouteDlg.obj
+.\Release\Spectra.obj
+.\Release\Spectrometer.obj
+.\Release\StdAfx.obj
+.\Release\DMSpec.res
+"C:\Program Files\Microsoft Visual Studio\VC98\Lib\WINMM.LIB"
+]
+Creating command line "link.exe @"C:\DOCUME~1\ORS-FL~1\LOCALS~1\Temp\RSPA9.tmp""
+<h3>Output Window</h3>
+Compiling...
+Flux1.cpp
+G:\Yan\code\etna\1111m\Flux1.cpp(284) : warning C4244: '=' : conversion from 'double' to 'long', possible loss of data
+GPS.cpp
+G:\Yan\code\etna\1111m\GPS.cpp(267) : warning C4101: 'logtxt' : unreferenced local variable
+G:\Yan\code\etna\1111m\GPS.cpp(360) : warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+Spectrometer.cpp
+G:\Yan\code\etna\1111m\Spectrometer.cpp(353) : warning C4101: 'txt' : unreferenced local variable
+G:\Yan\code\etna\1111m\Spectrometer.cpp(1001) : warning C4129: 'c' : unrecognized character escape sequence
+Generating Code...
+Linking...
+
+
+
+<h3>Results</h3>
+DMSpec.exe - 0 error(s), 5 warning(s)
+</pre>
+</body>
+</html>

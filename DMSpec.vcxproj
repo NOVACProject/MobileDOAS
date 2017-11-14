@@ -1,0 +1,667 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug2|Win32">
+      <Configuration>Debug2</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug2|x64">
+      <Configuration>Debug2</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>MobileDOAS</ProjectName>
+    <SccProjectName />
+    <SccLocalPath />
+    <Keyword>MFCProj</Keyword>
+    <ProjectGuid>{C360C2C6-8B27-4407-8343-3BF76669EFD2}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug2|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug2|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug2|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug2|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>15.0.26430.15</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>.\Release\</OutDir>
+    <IntDir>.\Release\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>.\Debug\</OutDir>
+    <IntDir>.\Debug\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug2|Win32'">
+    <OutDir>Debug2\</OutDir>
+    <IntDir>Debug2\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug2|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>Full</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>C:\Program Files\Java\jdk1.6.0_14\include\win32;C:\Program Files\Java\jdk1.6.0_14\include;C:\Program Files\Ocean Optics\OmniDriverSPAM\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <SmallerTypeCheck>false</SmallerTypeCheck>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>.\Release/DMSpec.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
+      <ObjectFileName>.\Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat />
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>OmniDriver32.lib;common32.lib;SPAM32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>.\Release/MobileDOAS.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>C:\Program Files\Ocean Optics\OmniDriverSPAM\OOI_HOME;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <ProgramDatabaseFile>.\Release/DMSpec.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <ImportLibrary />
+    </Link>
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Release/DMSpec.tlb</TypeLibraryName>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_AFXDLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x041d</Culture>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <Optimization>Full</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>%JAVA_HOME%\include\win32;%JAVA_HOME%\include;C:\Program Files\Ocean Optics\OmniDriver\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <SmallerTypeCheck>false</SmallerTypeCheck>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>.\Release/DMSpec.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
+      <ObjectFileName>.\Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>OmniDriver64.lib;common64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>.\Release/MobileDOAS.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>C:\Program Files\Ocean Optics\OmniDriver\OOI_HOME;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <ProgramDatabaseFile>.\Release/DMSpec.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <ImportLibrary>
+      </ImportLibrary>
+    </Link>
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TypeLibraryName>.\Release/DMSpec.tlb</TypeLibraryName>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_AFXDLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x041d</Culture>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>C:\Program Files\Java\jdk1.6.0_14\include\win32;C:\Program Files\Java\jdk1.6.0_14\include;C:\Program Files\Ocean Optics\OmniDriverSPAM\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <SmallerTypeCheck>false</SmallerTypeCheck>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>.\Debug/DMSpec.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
+      <ObjectFileName>.\Debug/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>OmniDriver32.lib;common32.lib;SPAM32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>.\Debug/MobileDOAS.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>C:\Program Files\Ocean Optics\OmniDriverSPAM\OOI_HOME;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>.\Debug/DMSpec.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <ImportLibrary />
+    </Link>
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <WarningLevel>0</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Debug/DMSpec.tlb</TypeLibraryName>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_AFXDLL;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x041d</Culture>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>%JAVA_HOME%\include\win32;%JAVA_HOME%\include;C:\Program Files\Ocean Optics\OmniDriver\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <StringPooling>true</StringPooling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <SmallerTypeCheck>false</SmallerTypeCheck>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>OmniDriver64.lib;common64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>C:\Program Files\Ocean Optics\OmniDriver\OOI_HOME;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <ImportLibrary>
+      </ImportLibrary>
+    </Link>
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <WarningLevel>0</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TypeLibraryName>.\Debug/DMSpec.tlb</TypeLibraryName>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_AFXDLL;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x041d</Culture>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug2|Win32'">
+    <ClCompile>
+      <Optimization>Full</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>C:\Program Files\Java\jdk1.6.0_14\include\win32;C:\Program Files\Java\jdk1.6.0_14\include;C:\Program Files\Ocean Optics\OmniDriverSPAM\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <SmallerTypeCheck>false</SmallerTypeCheck>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>.\Debug2/DMSpec.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Debug2/</AssemblerListingLocation>
+      <ObjectFileName>.\Debug2/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug2/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>OmniDriver32.lib;common32.lib;SPAM32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>.\Debug2/MobileDOAS.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>C:\Program Files\Ocean Optics\OmniDriverSPAM\OOI_HOME;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>.\Debug2/DMSpec.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <ImportLibrary>WinMM.lib</ImportLibrary>
+    </Link>
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Debug2/DMSpec.tlb</TypeLibraryName>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_AFXDLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x041d</Culture>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug2|x64'">
+    <ClCompile>
+      <Optimization>Full</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>%JAVA_HOME%\include\win32;%JAVA_HOME%\include;C:\Program Files\Ocean Optics\OmniDriver\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <SmallerTypeCheck>false</SmallerTypeCheck>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>.\Debug2/DMSpec.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Debug2/</AssemblerListingLocation>
+      <ObjectFileName>.\Debug2/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug2/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>OmniDriver64.lib;common64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>.\Debug2/MobileDOAS.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>C:\Program Files\Ocean Optics\OmniDriver\OOI_HOME;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>.\Debug2/DMSpec.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <ImportLibrary>WinMM.lib</ImportLibrary>
+    </Link>
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TypeLibraryName>.\Debug2/DMSpec.tlb</TypeLibraryName>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_AFXDLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x041d</Culture>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="BasicMath.cpp" />
+    <ClCompile Include="CommentDlg.cpp" />
+    <ClCompile Include="Common.cpp" />
+    <ClCompile Include="Common\DateTime.cpp" />
+    <ClCompile Include="Common\KMLFileHandler.cpp" />
+    <ClCompile Include="Common\Spectrum.cpp" />
+    <ClCompile Include="Common\SpectrumIO.cpp" />
+    <ClCompile Include="Common\XMLFileReader.cpp" />
+    <ClCompile Include="Configuration\ConfigurationDialog.cpp" />
+    <ClCompile Include="Configuration\Configure_Evaluation.cpp" />
+    <ClCompile Include="Configuration\Configure_GPS.cpp" />
+    <ClCompile Include="Configuration\Configure_Spectrometer.cpp" />
+    <ClCompile Include="Configuration\MobileConfiguration.cpp" />
+    <ClCompile Include="Controls\FitWindowListBox.cpp" />
+    <ClCompile Include="Controls\Label.cpp" />
+    <ClCompile Include="Controls\ReferenceFileControl.cpp" />
+    <ClCompile Include="Dialogs\QueryStringDialog.cpp" />
+    <ClCompile Include="Dialogs\ReferencePlotDlg.cpp" />
+    <ClCompile Include="Dialogs\ReferencePropertiesDlg.cpp" />
+    <ClCompile Include="Dialogs\SelectionDialog.cpp" />
+    <ClCompile Include="Dialogs\SimplePropertySheet.cpp" />
+    <ClCompile Include="Dialogs\SpectrumCalibrationDlg.cpp" />
+    <ClCompile Include="Dialogs\SpectrumInspectionDlg.cpp" />
+    <ClCompile Include="Dialogs\SpectrumScaleDlg.cpp" />
+    <ClCompile Include="Dialogs\SpectrumSettingsDlg.cpp" />
+    <ClCompile Include="DMSpec.cpp" />
+    <ClCompile Include="DMSpecDoc.cpp" />
+    <ClCompile Include="DMSpecView.cpp" />
+    <ClCompile Include="DualBeam\DualBeamCalculator.cpp" />
+    <ClCompile Include="DualBeam\DualBeamMeasSettings.cpp" />
+    <ClCompile Include="DualBeam\PlumeHeightCalculator.cpp" />
+    <ClCompile Include="DualBeam\PostPlumeHeightDlg.cpp" />
+    <ClCompile Include="DualBeam\PostWindDlg.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug2|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug2|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="DualBeam\WindSpeedCalculator.cpp" />
+    <ClCompile Include="EvaluationLogFileHandler.cpp" />
+    <ClCompile Include="Evaluation\Evaluation.cpp" />
+    <ClCompile Include="Evaluation\EvaluationResult.cpp" />
+    <ClCompile Include="Evaluation\FitWindow.cpp" />
+    <ClCompile Include="Evaluation\ReferenceFile.cpp" />
+    <ClCompile Include="Evaluation\ReferenceFitResult.cpp" />
+    <ClCompile Include="Evaluation\TraverseResult.cpp" />
+    <ClCompile Include="ExportEvLogDlg.cpp" />
+    <ClCompile Include="Fit\MessageLog.cpp" />
+    <ClCompile Include="Flux1.cpp" />
+    <ClCompile Include="FluxPathListBox.cpp" />
+    <ClCompile Include="Flux\Traverse.cpp" />
+    <ClCompile Include="Flux\WindField.cpp" />
+    <ClCompile Include="GPS.cpp" />
+    <ClCompile Include="Graphs\ColumnGraph.cpp" />
+    <ClCompile Include="Graphs\GraphCtrl.cpp" />
+    <ClCompile Include="Graphs\SpectrumGraph.cpp" />
+    <ClCompile Include="GridCtrl\GridCell.cpp" />
+    <ClCompile Include="GridCtrl\GridCellBase.cpp" />
+    <ClCompile Include="GridCtrl\GridCtrl.cpp" />
+    <ClCompile Include="GridCtrl\GridDropTarget.cpp" />
+    <ClCompile Include="GridCtrl\InPlaceEdit.cpp" />
+    <ClCompile Include="GridCtrl\TitleTip.cpp" />
+    <ClCompile Include="InformationDialog.cpp" />
+    <ClCompile Include="MainFrm.cpp" />
+    <ClCompile Include="MeasGrid.cpp" />
+    <ClCompile Include="MeasurementModes\Measurement_Calibrate.cpp" />
+    <ClCompile Include="MeasurementModes\Measurement_Traverse.cpp" />
+    <ClCompile Include="MeasurementModes\Measurement_View.cpp" />
+    <ClCompile Include="MeasurementModes\Measurement_Wind.cpp" />
+    <ClCompile Include="PostFluxDlg.cpp" />
+    <ClCompile Include="RealTimeRoute.cpp" />
+    <ClCompile Include="ReEvaluation\ReEvalScriptFileHandler.cpp" />
+    <ClCompile Include="ReEvaluation\ReEvalSettingsFileHandler.cpp" />
+    <ClCompile Include="ReEvaluation\ReEvaluationDlg.cpp" />
+    <ClCompile Include="ReEvaluation\ReEvaluationSettings.cpp" />
+    <ClCompile Include="ReEvaluation\ReEvaluation_Script.cpp" />
+    <ClCompile Include="ReEvaluation\ReEvaluator.cpp" />
+    <ClCompile Include="ReEvaluation\ReEval_DarkDlg.cpp" />
+    <ClCompile Include="ReEvaluation\ReEval_DoEvaluationDlg.cpp" />
+    <ClCompile Include="ReEvaluation\ReEval_EvalLogDlg.cpp" />
+    <ClCompile Include="ReEvaluation\ReEval_FitWindows.cpp" />
+    <ClCompile Include="ReEvaluation\ReEval_ScriptDlg.cpp" />
+    <ClCompile Include="ReEvaluation\ReEval_SkyDlg.cpp" />
+    <ClCompile Include="RouteDlg.cpp" />
+    <ClCompile Include="RouteGraph.cpp" />
+    <ClCompile Include="SerialConnection.cpp" />
+    <ClCompile Include="ShowFitDlg.cpp" />
+    <ClCompile Include="SourceSelectionDlg.cpp" />
+    <ClCompile Include="Spectrometer.cpp" />
+    <ClCompile Include="StdAfx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug2|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug2|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Version.cpp" />
+    <ClCompile Include="WavelengthCalibration.cpp" />
+    <ClCompile Include="WindFieldDlg.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="DMSpec.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BasicMath.h" />
+    <ClInclude Include="CommentDlg.h" />
+    <ClInclude Include="Common.h" />
+    <ClInclude Include="Common\DateTime.h" />
+    <ClInclude Include="Common\KMLFileHandler.h" />
+    <ClInclude Include="Common\Spectrum.h" />
+    <ClInclude Include="Common\SpectrumIO.h" />
+    <ClInclude Include="Common\XMLFileReader.h" />
+    <ClInclude Include="Configuration\ConfigurationDialog.h" />
+    <ClInclude Include="Configuration\Configure_Evaluation.h" />
+    <ClInclude Include="Configuration\Configure_GPS.h" />
+    <ClInclude Include="Configuration\Configure_Spectrometer.h" />
+    <ClInclude Include="Configuration\MobileConfiguration.h" />
+    <ClInclude Include="Controls\FitWindowListBox.h" />
+    <ClInclude Include="Controls\Label.h" />
+    <ClInclude Include="Controls\ReferenceFileControl.h" />
+    <ClInclude Include="Dialogs\QueryStringDialog.h" />
+    <ClInclude Include="Dialogs\ReferencePlotDlg.h" />
+    <ClInclude Include="Dialogs\ReferencePropertiesDlg.h" />
+    <ClInclude Include="Dialogs\SelectionDialog.h" />
+    <ClInclude Include="Dialogs\SimplePropertySheet.h" />
+    <ClInclude Include="Dialogs\SpectrumCalibrationDlg.h" />
+    <ClInclude Include="Dialogs\SpectrumInspectionDlg.h" />
+    <ClInclude Include="Dialogs\SpectrumScaleDlg.h" />
+    <ClInclude Include="Dialogs\SpectrumSettingsDlg.h" />
+    <ClInclude Include="DMSpec.h" />
+    <ClInclude Include="DMSpecDoc.h" />
+    <ClInclude Include="DMSpecView.h" />
+    <ClInclude Include="DualBeam\DualBeamCalculator.h" />
+    <ClInclude Include="DualBeam\DualBeamMeasSettings.h" />
+    <ClInclude Include="DualBeam\PlumeHeightCalculator.h" />
+    <ClInclude Include="DualBeam\PostPlumeHeightDlg.h" />
+    <ClInclude Include="DualBeam\PostWindDlg.h" />
+    <ClInclude Include="DualBeam\WindSpeedCalculator.h" />
+    <ClInclude Include="EvaluationLogFileHandler.h" />
+    <ClInclude Include="Evaluation\Evaluation.h" />
+    <ClInclude Include="Evaluation\EvaluationResult.h" />
+    <ClInclude Include="Evaluation\FitWindow.h" />
+    <ClInclude Include="Evaluation\ReferenceFile.h" />
+    <ClInclude Include="Evaluation\ReferenceFitResult.h" />
+    <ClInclude Include="Evaluation\TraverseResult.h" />
+    <ClInclude Include="ExportEvLogDlg.h" />
+    <ClInclude Include="Fit\ApertureFunction.h" />
+    <ClInclude Include="Fit\BandedMatrix.h" />
+    <ClInclude Include="Fit\BSplineF.h" />
+    <ClInclude Include="Fit\BSplineImpl.h" />
+    <ClInclude Include="Fit\ConstFunction.h" />
+    <ClInclude Include="Fit\ConvoluteFunction.h" />
+    <ClInclude Include="Fit\ConvolutionCoreFunction.h" />
+    <ClInclude Include="Fit\CubicBSplineFunction.h" />
+    <ClInclude Include="Fit\CubicSplineFunction.h" />
+    <ClInclude Include="Fit\DataSet.h" />
+    <ClInclude Include="Fit\DiscreteFunction.h" />
+    <ClInclude Include="Fit\DivFunction.h" />
+    <ClInclude Include="Fit\DOASVector.h" />
+    <ClInclude Include="Fit\ExpFunction.h" />
+    <ClInclude Include="Fit\Fit.h" />
+    <ClInclude Include="Fit\FitBasic.h" />
+    <ClInclude Include="Fit\FitException.h" />
+    <ClInclude Include="Fit\Function.h" />
+    <ClInclude Include="Fit\GaussFunction.h" />
+    <ClInclude Include="Fit\LeastSquareFit.h" />
+    <ClInclude Include="Fit\LevenbergMarquardtFit.h" />
+    <ClInclude Include="Fit\LinearInterpolateFunction.h" />
+    <ClInclude Include="Fit\LnFunction.h" />
+    <ClInclude Include="Fit\Matrix.h" />
+    <ClInclude Include="Fit\MessageLog.h" />
+    <ClInclude Include="Fit\Minimizer.h" />
+    <ClInclude Include="Fit\MulFunction.h" />
+    <ClInclude Include="Fit\NegateFunction.h" />
+    <ClInclude Include="Fit\NonlinearParameterFunction.h" />
+    <ClInclude Include="Fit\ParameterLinkItem.h" />
+    <ClInclude Include="Fit\ParameterVector.h" />
+    <ClInclude Include="Fit\ParamFunction.h" />
+    <ClInclude Include="Fit\PolynomialFunction.h" />
+    <ClInclude Include="Fit\ReferenceSpectrumFunction.h" />
+    <ClInclude Include="Fit\SimpleDOASFunction.h" />
+    <ClInclude Include="Fit\StandardFit.h" />
+    <ClInclude Include="Fit\StandardMetricFunction.h" />
+    <ClInclude Include="Fit\StatisticVector.h" />
+    <ClInclude Include="Fit\SumFunction.h" />
+    <ClInclude Include="Fit\Vector.h" />
+    <ClInclude Include="Flux1.h" />
+    <ClInclude Include="FluxPathListBox.h" />
+    <ClInclude Include="Flux\Traverse.h" />
+    <ClInclude Include="Flux\WindField.h" />
+    <ClInclude Include="GPS.h" />
+    <ClInclude Include="Graphs\ColumnGraph.h" />
+    <ClInclude Include="Graphs\GraphCtrl.h" />
+    <ClInclude Include="Graphs\SpectrumGraph.h" />
+    <ClInclude Include="GridCtrl\GridCell.h" />
+    <ClInclude Include="GridCtrl\GridCellBase.h" />
+    <ClInclude Include="GridCtrl\GridCtrl.h" />
+    <ClInclude Include="GridCtrl\GridDropTarget.h" />
+    <ClInclude Include="GridCtrl\InPlaceEdit.h" />
+    <ClInclude Include="GridCtrl\MemDC.h" />
+    <ClInclude Include="GridCtrl\TitleTip.h" />
+    <ClInclude Include="InformationDialog.h" />
+    <ClInclude Include="LogDlg.h" />
+    <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="MeasGrid.h" />
+    <ClInclude Include="MeasurementModes\Measurement_Calibrate.h" />
+    <ClInclude Include="MeasurementModes\Measurement_Traverse.h" />
+    <ClInclude Include="MeasurementModes\Measurement_View.h" />
+    <ClInclude Include="MeasurementModes\Measurement_Wind.h" />
+    <ClInclude Include="PostFluxDlg.h" />
+    <ClInclude Include="RealTimeRoute.h" />
+    <ClInclude Include="ReEvaluation\ReEvalScriptFileHandler.h" />
+    <ClInclude Include="ReEvaluation\ReEvalSettingsFileHandler.h" />
+    <ClInclude Include="ReEvaluation\ReEvaluationDlg.h" />
+    <ClInclude Include="ReEvaluation\ReEvaluationSettings.h" />
+    <ClInclude Include="ReEvaluation\ReEvaluation_Script.h" />
+    <ClInclude Include="ReEvaluation\ReEvaluator.h" />
+    <ClInclude Include="ReEvaluation\ReEval_DarkDlg.h" />
+    <ClInclude Include="ReEvaluation\ReEval_DoEvaluationDlg.h" />
+    <ClInclude Include="ReEvaluation\ReEval_EvalLogDlg.h" />
+    <ClInclude Include="ReEvaluation\ReEval_FitWindows.h" />
+    <ClInclude Include="ReEvaluation\ReEval_ScriptDlg.h" />
+    <ClInclude Include="ReEvaluation\ReEval_SkyDlg.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="RouteDlg.h" />
+    <ClInclude Include="RouteGraph.h" />
+    <ClInclude Include="SerialConnection.h" />
+    <ClInclude Include="SourceSelectionDlg.h" />
+    <ClInclude Include="Spectra.h" />
+    <ClInclude Include="Spectrometer.h" />
+    <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="Version.h" />
+    <ClInclude Include="WavelengthCalibration.h" />
+    <ClInclude Include="WindFieldDlg.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\bitmap1.bmp" />
+    <Image Include="res\bitmap2.bmp" />
+    <Image Include="res\bmp00001.bmp" />
+    <Image Include="res\bmp00002.bmp" />
+    <Image Include="res\CHALMERSAvancez30.bmp" />
+    <Image Include="res\DMSpec.ico" />
+    <Image Include="res\DMSpecDoc.ico" />
+    <Image Include="res\green.bmp" />
+    <Image Include="res\green1.bmp" />
+    <Image Include="res\idr_main.ico" />
+    <Image Include="res\Logo.ico" />
+    <Image Include="res\Toolbar.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\DMSpec.rc2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

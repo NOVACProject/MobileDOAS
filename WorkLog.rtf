@@ -1,0 +1,549 @@
+{\rtf1\ansi\ansicpg1252\deff0\deflang1033\deflangfe2052{\fonttbl{\f0\fswiss\fprq2\fcharset0 Arial;}{\f1\fnil\fprq1\fcharset0 Courier New;}{\f2\fnil\fcharset0 Arial;}{\f3\fnil\fcharset2 Symbol;}}
+{\colortbl ;\red0\green0\blue255;}
+{\*\generator Msftedit 5.41.15.1515;}\viewkind4\uc1\pard\lang2057\f0\fs20 20/9 2005\par
+\pard\li720 Found one bug in the flux calculation \endash  variable \rdblquote accColumn\rdblquote  was never set to zero again. Could affect flux from traverses where the GPS-data was lost during\par
+Traverse, especially if GPS was while in the plume.\par
+\pard\par
+\pard\li720 Renamed some variables in \ldblquote GetTotalFlux\rdblquote . Changed \ldblquote zeroPos\rdblquote  to \ldblquote\lang1033 nPointsWithoutGPS\rdblquote  and added \ldblquote massColumn\rdblquote  to separate it from \ldblquote column\rdblquote\par
+\pard\par
+\pard\li720 Changed if-clause in \ldblquote GetTotalFlux\rdblquote  to a continue statement if lat2 and long2 == 0.\par
+\par
+Moved macros so that DEGREETORAD, RADTODEGREE, HALF_PI, M_PI and TWO_PI only are defined in \ldblquote Common.h\rdblquote  and added more decimals to the definition. \lang2057\par
+\pard\par
+7/11 2005\par
+\tab Added saving of residual, and fit result when calling \lquote Evaluate\rquote\par
+\par
+\pard\li720 Added calculation of average residual in \lquote ReEvaluator.cpp\rquote  and saving of the calculated residual. \par
+\par
+Added graph in \lquote ReEval_DoEvaluationDlg.cpp\rquote  to show either residual or fit result.\par
+\par
+Changed optimization settings in \lquote release\rquote  mode, to remove memory crash when closing program.\par
+\par
+Updated the \lquote ReadSky\rquote  function to also read sky as sum of all spectra and to read sky as sum of all spectra under constraints on intensity and original column value.\par
+\par
+\pard 24/11 2005\par
+\pard\li720 Added popup menu to log file list in postflux calculation window\par
+\par
+Added menu to post flux calculation window\par
+\par
+Added possibility to reload the selected log file in post-flux window\par
+\par
+Added possibility to close all opened log files in post-flux window\par
+\par
+Removed labels for information on lat,long,index,column for \lquote max-center\rquote  och \lquote average-center\rquote  in post-flux window\par
+\par
+Added \lquote Traverse properties\rquote  group in post-flux window with labels showing properties on the selected traverse. Also added the possibility to read these properties in the \lquote CFlux1\rquote  class.\par
+\par
+Added menu item with possibility to go directly to reevaluation window from the post-flux window, and added that the currently selected log file will be selected for reevaluation automagically.\par
+\par
+Added option to calculate flux in either kg/s or ton/day, selection made through a new combo box.\par
+Added possibility to open several log files at ones in post-flux calculation window. Created \lquote CFLUXSETDLG\rquote ->OpenLogfile to handle the opening of a single evaluation log, and changed \lquote CFLUXSETDLG\rquote ->OnBtnchoosefile to loop through all the files we want to open.\par
+\par
+\pard 14/12 2005\par
+\pard\li720 Fixed one bug in the reevaluation part. When using two reference files with shift and squeeze linked to each other the shift could sometimes go crazy. \b Remaining bug\b0 : \b the squeeze can still not be chosen to anything else than 1.\b0\par
+\par
+Fixed one bug when in the post-flux window selecting the menuitem \lquote reevaluate this traverse\rquote . The filename was not copied correctly. \par
+\par
+Changed the settings of the auto-scale on the plot showing the fit or the residual. The scale not change with every new fit, instead the scale will only grow if the new plot requires a larger scale than the previous one, and it will only shrink if the plot\rquote s height is less than 25% of the shown interval. \par
+\par
+\b Remaining bug: when terminating the program after the reevaluation has been run, the program will crash. However this only appears in the release version, not in the debug-version.\b0\par
+\par
+Added the build day in the \lquote About\rquote  dialog\par
+\par
+Fixed several bugs concerning the filename in the \lquote flux\rquote  class, which caused problems when reloading logfiles or selecting them for re-evaluation.\par
+\par
+Fixed reading of gasfactor, fitregion, number of spectra and exposure time for reevaluation logs. \par
+\par
+Created the GASFACTOR_SO2, GASFACTOR_O3, and GASFACTOR_NO2 constants in \lquote Common.h\rquote . These contain the gasfactor for these three species.\par
+\par
+The flux-class will now choose the correct gasfactor for each read specie in a re-evaluation log, from the name of the specie. \par
+\par
+\pard 6/3 2006:\par
+\pard\li720 Changed how the offset works in the evaluation. There is now an option in the configuration dialog wheather the spectrum is an UV spectrum or a visible spectrum. If it is a UV spectrum then channel 50 \endash  200 will be used to determine the offset (which will be subtracted at evaluation time). If it is a visible spectrum then channel 2 \endash  20 will be used. \par
+\par
+\pard 23/3 2006:\par
+\pard\li720 Updated the algorithm for finding a the exposuretime. The program now performes a simple search and stoppes when the intensity of the spectra is close enough to the desired intensity level.\par
+\par
+\pard 24/3 2006:\par
+\pard\li720 Improved the search for exposure time so that the algorithm halts faster. \par
+Changed how the dark spectrum is subtracted. The dark is now subtracted from the sky as soon as the sky spectrum is measured, and the resulting spectrum is saved and used as sky. As soon as a spectrum which is considered as a dark spectrum is measured, it is used as darkspectrum for the nextcoming spectra. \par
+\par
+Updated the creation of the wavelength column in CEvaluation::\lang1033  Evaluate(\cf1 int\cf0  sumChn,\cf1 int\cf0  numSpec,\cf1 int\cf0  fFix,\cf1 double\cf0 * darkArray,\cf1 double\cf0 * skyArray,\cf1 double\cf0 * specMem, \cf1 long\cf0  numSteps)\par
+According to the update in the Novacprogram. This gives a faster evaluation.\par
+\par
+Added the possibility for the user to change the exposuretime through a simple menuitem. The next darkspectrum that is measured will be used as a new dark measurement. \lang2057\par
+\par
+\pard 19/4 2006\par
+\pard\li720\par
+Added a windfield dialog which allows the user to select a file in which a wind field is defined and to import it into the program for later use. The file must be separated into chunks of tab separated data, each using the following format:\par
+\par
+\pard\li1620\b Lat=XX\tab Long=YY\par
+Altitude  Hour wd ws whatever Hour wd ws whatever\'85\par
+\pard\li720\b0\par
+With at most \lquote\lang1033 CWindField::\lang2057 MAX_HOURS\rquote  repetitions on the \lquote Hour wd ws\rquote  sequence.\par
+\par
+Introduced the \lquote Flux::CTraverse\rquote  class to hold all the information from one single traverse. CFlux now holds an array of CTraverses to store all traverse information. This array should be reformed into a list somday, to save memory.\par
+\par
+Added function to interpolate the read windfield to suit the lat and long positions of the measured spectra.\par
+\lang1033\par
+\par
+\pard\lang2057 20/4 2006\par
+\pard\li720\par
+The program can now use the read windfield to calculate flux. \par
+\par
+\pard 28/4 2006\par
+\pard\li720\par
+Fixed one severe bug in the evaluation, the program did not subtract the darkspectrum from the skyspectrum (\b Severe bug!\b0 ).\par
+\par
+Changed so that the lowpassfiltering is no longer done by default.\par
+\par
+Updated the display in the do-reevaluation dialog. There\rquote s now an output of the fitted column values and the delta of the fit. \par
+\par
+There\rquote s now possible to evaluate one spectrum at a time in the reevaluation. \par
+\par
+\pard 9/8 2006\par
+\pard\li720\par
+Fixed one bug in the Flux1.cpp, in the reading of the settings. If there are species given by name, a memory error would occur.\par
+\par
+Changed the way the GetDark in the reevaluation works. It will now get the correct dark spectrum if there are several dark spectra in the traverse, or if there are spectra with various exposuretimes. If it fails to find a dark with the correct exp-time it will take the default dark spectrum (the first one)\par
+\par
+In the reevaluation, the dark spectrum is now subtracted from the sky in the beginning, just after the spectra have been read. To avoid inefficiencies and subtraction of the wrong spectrum\par
+\par
+Enabled the 'There are several dark spectra...' radiobutton in the Reevaluation-Dark page. Also removed the option 'Interpolate dark spectra' since this will be done by default.\par
+\par
+The 'Evaluation log' page in the reevaluation dialog can now read the evaluation log file even if its not inputed usign the Browse button. \par
+\par
+Minor bug-fix in the view. Pressing the 'Change exposuretime' when the program was not running would crash\par
+\par
+2006-09-12\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1440 Updated the CGraphCtrl-class so that it's now exactly same as in the Novac-program. \par
+{\pntext\f3\'B7\tab}Moved the template-array-functions Max,Min,Average... out from the CCommon class and put them into the global namespace\par
+\pard\li720\par
+2006-09-13\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1440 Removed the import wind-field button and put the command in the menu instead\par
+{\pntext\f3\'B7\tab}Created a Post-Wind dialog for performing correlation calculations on data generated with the dual-beam technique\par
+{\pntext\f3\'B7\tab}Implementd the post-wind dialog and copied the classes CWindSpeedCalculator and CWindSpeedSettings into the progam from the NovacProgram\par
+{\pntext\f3\'B7\tab}Changed name on CWindSpeedSettings to CDualBeamSettings\par
+{\pntext\f3\'B7\tab}Changed the namespace WindSpeedMEasurement to DualBeamMeasurements\par
+{\pntext\f3\'B7\tab}Created and implemented a Plume-height measurement dialog, calculations based on the displacement between the centre of mass between the two time-series\par
+{\pntext\f3\'B7\tab}Implemented a simple offset-removal algorithm for the plume-height dialog, a first order polynomial is fitted to the 30 first and the 30 last datapoints and subtracted from all the datapoints\par
+{\pntext\f3\'B7\tab}It is now possible to include more than one referencefile into the real-time fit. This is done by simply having more than one REFFILE= - line. However only the result from the first reference-file will be shown\par
+{\pntext\f3\'B7\tab}The settings of the first reference-file is now copied to all the other reference-files. All references will therefore have the same shift and squeeze\par
+{\pntext\f3\'B7\tab}Extended the checking of the reference files in the CheckSettings function in the CSPectrometer. All reference-files included in the fit will be checked\par
+{\pntext\f3\'B7\tab}Cleared up the header file of the CDMSpecView to make it more readable. Added comments to the functions and the variables and removed variables which were never used.\par
+{\pntext\f3\'B7\tab}Renamed FLUXSETDLG to CPostFluxDlg to make it easier to understand what it is\par
+{\pntext\f3\'B7\tab}Moved both CCommentDlg and CInformationDlg to the namespace Dialogs\par
+{\pntext\f3\'B7\tab}\par
+\pard\li720\par
+2006-09-14\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1440 If there are more than one reference-file defined, then the first one should be the SO2-reference since the main-window only shows the evaluation result from the first reference-file. The function CSpectrometer::CheckSettings now re-orders the reference-files if necessary so that the SO2 reference-fiel is the first one.\par
+{\pntext\f3\'B7\tab}The CSPectrometer now makes a guess for the specie-name when seeing the REFFILE= - line in the cfg.txt\par
+\pard\li720\par
+2006-09-28\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1440 Updated showing of the gps-data: if the gps-connection is lost the program will show the values in red on the screen.\par
+{\pntext\f3\'B7\tab}If the gps-collection stopps for some reason - the program now checks every 15 seconds that th egps-data has actually changed. If not then it will give a warning message and it will try to restart the gps-collection thread.\par
+{\pntext\f3\'B7\tab}Added one checking to decrease the number of crashes when closing the program - The program now checks fRun just before the spectrometer is told to collect a scan. Should reduce the risk of the program crashing there\par
+\pard\li720\par
+2006-09-29\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1440 Fixed the bug that the NCHANNELS was never written to the cfg-file. \par
+{\pntext\f3\'B7\tab}Removed the CLogDlg class since it's no longer needed\par
+{\pntext\f3\'B7\tab}Removed the function CEvaluation::ReadRef() since it's not used anywhere for anything\par
+{\pntext\f3\'B7\tab}Included the classes CEvaluationResult and CReferenceFitResult from the NovacProgram into the mobile-program. Started to move the CEvaluation class towards using the CEvaluationResult-class to save the result of the evaluation\par
+\pard\li720\par
+2006-09-30\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1440 Included a second fit-window into the CSpectrometer class - to enable the fitting in two regions simultaneously\par
+{\pntext\f3\'B7\tab}Removed the function FileExists from the CSpectrometer class and made a new function: \tab IsExistingFile in the Common\par
+{\pntext\f3\'B7\tab}Added the two functions: GetFileName and GetDirectory to the Common class, copy from the novac-program\par
+{\pntext\f3\'B7\tab}Removed the function WriteStdFile from the CSpectrometer-class and moved it tot he CSpectrumIO-class\par
+{\pntext\f3\'B7\tab}Created a simple data-structure int he CSpectrometer-class called SpectrometerSettings which collects the integration-time, the number of spectra to sum in the computer and the number to sum in the spectrometer and the name of the spectrometer into one structure. \tab Made a member-variable in the CSpectrometer-class called 'm_specSettings' which replaces the variables for the integration-time, the internal and external sum variables and the spectrometerName-string\par
+{\pntext\f3\'B7\tab}Moved the Swp - function from the CSpectrometer-class to the Common - class\par
+{\pntext\f3\'B7\tab}REmoved the StatusDlg - class and dialog since it's not used\par
+{\pntext\f3\'B7\tab}Retired the COScopeCtrl - class since it's no longer being used anywhere\par
+{\pntext\f3\'B7\tab}Removed the function GetZeroNumber from the DMSpecView - class since it's not use and I don't know what it does\par
+{\pntext\f3\'B7\tab}Increased the line widht of the spectrum in the main-window to 2 to make it easier to see the spectrum\par
+{\pntext\f3\'B7\tab}Removed the function GetEvResult from the CSpectrometer-class since it's not being used\par
+{\pntext\f3\'B7\tab}Added a set of evaluators, there's now one evaluator for each spectrometer channel and one for each fit-window defined\par
+{\pntext\f3\'B7\tab}Copied the CSimplePropertySheet - class from the novacprogram\par
+{\pntext\f3\'B7\tab}Made a new configuration dialog using several pages and with the possibility to define two evaluation-regions one for so2 and one for no2\par
+{\pntext\f3\'B7\tab}Removed the CSpectrometer::ReadSettings - the funciton of this function is now moved tot he CMobileConfiguration class\par
+{\pntext\f3\'B7\tab}Added the ApplySettings-fucntin to the CSpectrometer-class. This funciton's purpose is to act as a mediator between the CMobileConfiguration-class and the variables in th eCSpectrometer-class. This function should go away as the settings in the CSpectrometer class should be replaced with one CMobileConfiguration-object\par
+\pard\li720\par
+2006-10-01\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1440 Update the Configuration_Evaluation - dialog with a check-box wheather the spectra should be evaluated for that window or not\par
+{\pntext\f3\'B7\tab}Changed the CEvaluation::Evaluate to take 'const'-spectra as arguments. The spectra are copied to local arrays so that the originals are not touched\par
+{\pntext\f3\'B7\tab}Added the function CEvaluation::GetEvaluationResult which returns the complete result of the last evaluation\par
+{\pntext\f3\'B7\tab}Removed the member-variables offsetFrom and offsetTo in the Cevaluation-class\par
+{\pntext\f3\'B7\tab}Replaced the CSpectrometer-variables 'sumInOneScan' and 'roundNum' with '\f1 m_sumInComputer' and 'm_sumInSpectrometer'\f0\par
+{\pntext\f3\'B7\tab}replaced the CSpectrometer-variable specCenter with \f1 m_conf->m_specCenter\f0\par
+{\pntext\f3\'B7\tab}Added a FitRegion structure to the CSpectrometer-class. This data-structure holds the evaluation settings for a spectral-region and is also capable of holding the result of the fit.\par
+{\pntext\f3\'B7\tab}Removed the member-variable m_Evaluator from the CSpectrometer-class and moved it to the m_fitRegion[0] - object\par
+{\pntext\f3\'B7\tab}Removed the m_window member-variable from the CSpectrometer-class and moved it to the m_fitRegion[0] - object\par
+{\pntext\f3\'B7\tab}Remove the member-variables 'polyNum', m_nowFlux' and 'vFlux' from the CSpectrometer-class since they are no longer used\par
+\pard\li720\par
+2006-10-02\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1440 Removed the 'vResult' - vector from the CEvaluation-class since it's not used anymore\par
+{\pntext\f3\'B7\tab}Renamed 'GetColumn' in the CSpectrometer-class to 'GetLastColumn'\par
+{\pntext\f3\'B7\tab}Added one member-variable '\f1 m_filteredSpectrum'\f0  to CEvaluation - this contains the high-pass filtered spectrum of the last fit.\par
+{\pntext\f3\'B7\tab}Fixed one bug in the evaluation - the sky spectrum would have it's dark subtracted twice\par
+{\pntext\f3\'B7\tab}Fixed one bug in the CSpectrometer::WriteEvFile - there was no tab between the intensity and the SO2-column\par
+\pard\li720\par
+2006-10-11\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1440 Included the newer version of the OceanOptics files: OOIDrv32.h, OOIDrv32.dll and OOIDrv32.lib into the program\par
+{\pntext\f3\'B7\tab}Changed the function CSpectrometer::TestUSBConnection to be able to test for the USB2000, USB4000, S2000, QE65000 and HR4000 spectrometers\par
+\pard\li720\par
+2006-10-12\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1440 Made versions of the functions 'GetTimeText', 'GetDateText', and 'GetDateTimeText' which accepts a reference to a CString (in Common)\par
+{\pntext\f3\'B7\tab}Made the functions 'GetTimeText', 'GetDateText', and 'GetDateTimeText'  in the Common-class static\par
+{\pntext\f3\'B7\tab}Added a function in the class CPostWindDlg that writes the result of the wind-speed calcualtions to a log-file\par
+{\pntext\f3\'B7\tab}Created one function: \f1 GetDateTimeTextPlainFormat\f0  in the Common-class which pretty prints todays date and the current time into a string without commas or semicolons\par
+{\pntext\f3\'B7\tab}Introduced error codes to the CWindSpeedCalculator-class. If the CalculateDelay-function fails the member-variable m_lastError will be set to one of the error codes specified in the class.\par
+{\pntext\f3\'B7\tab}Added a checking of the error-code in the CWindSpeedCalculator object inside the OnCalculateWindSpeed-fucntion in the CPostWindDlg. This function would previously crash if there was any error in the correlation\par
+{\pntext\f3\'B7\tab}Fixed one bug in the CPostWindDlg: if the delay was calculated as zero at some point, the dialog would freeze while trying to set the scale when showing the calculated wind-speed\par
+\pard\li720\par
+2006-10-27\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1440 Changed the ScanUSB - function from using OOI_DoScan to using OOI_FullScan, since this function can handle spectra longer than 2048.\par
+{\pntext\f3\'B7\tab}Replaced the member variable 'm_sumChn' in CSpectrometer with the new parameter \f1 m_detectorSize\f0\par
+{\pntext\f3\'B7\tab}The ScanUSB - function now counts the number of pixels in the spectra and stores the result in m_detectorSize\par
+{\pntext\f3\'B7\tab}Changed MAX_SPECTRUM_LENGTH to 3648\par
+{\pntext\f3\'B7\tab}The CSpectrometer::ReadReferenceFiles now compares the length of the read reference-files with the parameter ' m_detectorSize'. \b It is therefore important that the USB-connection is tested before the reference-files are read!!\b0\par
+{\pntext\f3\'B7\tab}Changed the DMSpecView::DrawSpectrum function so that only the first 'm_Spectrometer->m_detectorSize' - data-points in the data arrays are drawn.\par
+{\pntext\f3\'B7\tab}Resolved several bugs which appeared in the CEvaluation::Evaluate when the MAX_SPECTRUM_LENGTH was changed\par
+{\pntext\f3\'B7\tab}Fixed one bug in the drawing of the spectra in the CDMSpecView - class \par
+\pard\li720\par
+2006-10-30\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1440 Continued implementation of the usage of usb4000 - spectrometers. \par
+{\pntext\f3\'B7\tab}Added the member-variable 'm_spectrometerDynamicRange' in the CSpectrometer-class. This will be set to 4095 if an S2000/USB2000 spectrometer is used and to 16384 if an USB4000/HR4000 - spectrometer is used. \par
+{\pntext\f3\'B7\tab}The DMSpecView now uses the m_Spectrometer->m_spectrometerDynamicRange to set the scale for the intensity slider (which is now inherently scaled to percentual saturation ratios)\par
+{\pntext\f3\'B7\tab}The DMSpecView now transforms the spectrum into a satuation-ratio before it's plotted\par
+{\pntext\f3\'B7\tab}The CSpectrometer-class now writes information about the spectrometer used into the header of the evaluation-log. New fields are: \b SERIAL, DETECTORSIZE, DYNAMICRANGE and MODEL\b0\par
+\b{\pntext\f3\'B7\tab}Moved the determination of the detector size from the ScanUSB to the TestUSBConnetion-function, to improve performance\b0\par
+{\pntext\f3\'B7\tab}Fixed one bug in the CSpectrometer::ApplySettings - it was not possible to use serial-communciation\par
+{\pntext\f3\'B7\tab}Fixed one bug in the writing of STD-files, the spectra were always MAX_SPECTRUM_LENGTH long\par
+{\pntext\f3\'B7\tab}Adjusted the plot in the main-window to draw the intensities as saturation-ratios, in percent\par
+{\pntext\f3\'B7\tab}Adjusted the plot in the post-flux dialog to draw the intensities as saturation-ratios, in percent\par
+{\pntext\f3\'B7\tab}Added support for QE65000-spectrometers\par
+{\pntext\f3\'B7\tab}The ReEvaluator can now read, store and write spectrometer:information to and from the (re)evaluation-log\par
+{\pntext\f3\'B7\tab}The ReEval_EvalLogDlg now plots the intensities as saturation-ratios\par
+\pard\li720\par
+2006-11-01\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1440 Included the two files 'NatUSB' and 'JoeDriver.jar' into the build-directory, this made the USB4000 spectrometr work in the MobileDOAS program\par
+{\pntext\f3\'B7\tab}Fixed one bug in the configuration-dialog, the baudrate was not always written when using the serial-port\par
+{\pntext\f3\'B7\tab}The function \f1 GetSpectrumInfo\f0  now retrieves the spectrometer's board temperature if the connected spectrometer is a USB4000. The temperature is written to the additional log-file\par
+\pard\li720\par
+2006-11-02\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1440 Changed the limits for the fitFrom, fitTo and specCenter parameters in the configuration-dialog, the new limits are between 1 and 3647\par
+{\pntext\f3\'B7\tab}Fixed one bug in the CSpectrometer::AdjustIntegrationTime - function, the intensity was always set to m_percent * MAX_INTENSITY where MAX_INTENSITY = 16384, changed to m_spectrometerDynamicRange\par
+{\pntext\f3\'B7\tab}Fixed one bug in GetIntTime - an intensity of 4096.0 was always used, changed to m_spectrometerDynamicRange\par
+{\pntext\f3\'B7\tab}Changed the judging of the offset, this is now calulcated using pixels 6 - 18 (which are black also for the USB4000)\par
+{\pntext\f3\'B7\tab}Changed the CSpectrometer::GetSpectrumInfo - spectra from the USB4000 are judged using a different algorithm\par
+{\pntext\f3\'B7\tab}REsolved one bug in CSpectrometer::ApplySettings - the GPS-port was handled as a number, not a string\par
+{\pntext\f3\'B7\tab}The checking of the falling-offset level is updated with a special version for the USB4000-spectrometer, the offset must now drop more than 80 counts for the USB4000\par
+{\pntext\f3\'B7\tab}There's now a static variable inside the CSpectrometer::GetSpectrumInfo which is true if we're using a USB4000 - spectroemter. This leads to fewer CString-comparisons\par
+\pard\li720\par
+2006-11-13\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1440 Added one test to the CSpectrometer::TestUSBConnection function. The starting wavelength of the spectrometer is read from the spectrometer and if it is less than or equal to 290 nm, then the fit-window is set to be UV, otherwise it is set to be visible.\par
+{\pntext\f3\'B7\tab}Changed the configuration dialog so that if the spectrometer is set to use the USB-port, then the wavelength-radio buttons are disabled.\par
+{\pntext\f3\'B7\tab}\par
+\pard\li720\par
+2006-11-26\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1440 Added credits to the about-dialog\par
+{\pntext\f3\'B7\tab}Fixed one bug in the re-evaluation. The size of the fit-window was always MAX_SPECTRUM_LENGTH and not read from the spectra themselves\par
+{\pntext\f3\'B7\tab}Copied the CGraphCtrl from the NovacProgram\par
+{\pntext\f3\'B7\tab}Added the static function Common::BrowseForFile_SaveAs, copy from NovacProgram\par
+{\pntext\f3\'B7\tab}Added the possibility to save the column-graph as an image in the post-flux dialog\par
+{\pntext\f3\'B7\tab}Added the possibility to save the route-graph as an image\par
+{\pntext\f3\'B7\tab}Changed the list-box in the post-flux dialog showing all the open evaluation-logs so that one can scroll it and see the entire file-name\par
+\pard\li720\par
+2006-11-27\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1440 Fixed so that the re-evaluation can run for both S2000 and USB4000 spectrometers\par
+{\pntext\f3\'B7\tab}Fixed the graph in the last page of the re-evaluation dialog, the graph now shows the filtered spectrum together with the scaled reference-file\par
+{\pntext\f3\'B7\tab}Changed the behaviour when opening the route-dialog. The currently shown traverse (in the post-flux dialog) will be the initially selected traverse.\par
+\pard\li720\par
+2007-01-03\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1440 Fixed one bug in the re-evaluation, when reading in dual-beam measurement with varying exposure-times, the dark-spectra were not the correct ones.\par
+{\pntext\f3\'B7\tab}Fixed another bug in the re-evaluation. The read-in data from the evaluation-log was not reset when a new evaluation-log is read in. Fixed this\par
+\pard\li720\par
+2007-01-26\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1440 Discovered and fixed one bug in the reading of .STD-files. In older versions of the mobile-program the exposure-time was written as a double ("125.0") instead of as an int. This was not read-in correctly. Bug fixed\par
+{\pntext\f3\'B7\tab}Fixed one bug in the evaluation regarding the size of the reference-file. Copied solution from the novac-program\par
+{\pntext\f3\'B7\tab}Added the function CSpectrum::Clear which erases all information in the spectrum.\par
+{\pntext\f3\'B7\tab}Added an initalization of spectra. When a CSpectrum-object is created, all it's values are cleared\par
+{\pntext\f3\'B7\tab}The last page in the re-evaluation now shows the chi\lang1033\f2\fs26\'b2\f0\fs20  of the fit instead of the delta\lang2057\par
+\pard\tab\tab\par
+\pard\li710 2007-02-02\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Increased the number of digits used when storing the column values and column-errors in the re-evaluation-log files to six digits from two\par
+{\pntext\f3\'B7\tab}Corrected one message in the CReEvaluator::ReadReferences, if the reading fails the messagebox had a strange messsage\par
+{\pntext\f3\'B7\tab}Added Mnemonics to the final page in the re-evaluation dialog\par
+{\pntext\f3\'B7\tab}Introduced a 'mode' to the CReEvaluator - class. The mode tells the world what the reevaluator is currently doing, such as 'nothing', 'sleeping', 'reevaluating' or 'reading offsets'. To make the interface more informative\par
+{\pntext\f3\'B7\tab}Added more status-messages when the offsets needs to be read in the re-evaluation because not all spectra have the same exptime\par
+{\pntext\f3\'B7\tab}Fixed one bug in the first page of the re-evaluation dialog. changes in the wavelength range were not always properly saved.\par
+{\pntext\f3\'B7\tab}Fixed one severe bug in the ReEvaluator. The wavelength-range was never set to Visible. There was one variable 'm_wavelengthRange' which communicated with the EvaluationLog-part of the re-evaluation dialog, but this variable was never used. Fixed this, the variable is now checked in the beginning of DoEvaluation and is used to set 'm_window.UV' to true or false depending on the value.\par
+{\pntext\f3\'B7\tab}Changed the way the FindOptimumShiftAndSqueeze in CReEvaluation works, the squeeze is now also set to free and searched for...\par
+{\pntext\f3\'B7\tab}\par
+\pard\li710\par
+2007-02-05\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Made one change in the CReEvaluator::FindOptimalSh..., the spectrum with the highest absorption is now first searched for and then the shift and squeeze of the references are set to free instead of the other way around as was done before. \par
+{\pntext\f3\'B7\tab}Made one more change to FindOptimalShi..., the chi2 of the evaluation result is now checked. If the chi2 is larger than 0.9 then the squeeze of all parameters is fixed to 1 and the evaluation is done again\par
+{\pntext\f3\'B7\tab}Added one function 'DrawSpec' to CReEval_DoEvaluationDlg, this is called when a spectrum has been evaluated or when one of the radiobuttons 'fit' or 'residual' is pressed\par
+\pard\li710\par
+2007-02-11\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 The point-size shown in the opening of the route-dialog is now same as the point-size actually used\par
+{\pntext\f3\'B7\tab}Corrected one bug in how the colors were drawn in the route-dialog. Negative column values were not handled correctly.\par
+{\pntext\f3\'B7\tab}Converted the CGraphCtrl-class from handling the axis:es as floats to handle them as doubles, this since the floats cannot handle the O4 - columns otherwise\par
+\pard\li710\par
+2007-02-21\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 The default background and grid colors are now [0, 0, 64] and [255, 255, 255] respectively.\par
+{\pntext\f3\'B7\tab}Removed the setting of the default background color in the opening of the route-dialog, thereby the plot can remember the set colors\par
+{\pntext\f3\'B7\tab}Copied the function 'CalculateDestination' from the NovacProgram to Common.cpp\par
+{\pntext\f3\'B7\tab}Added the function 'DrawTextBox' to CGraphCtrl, this lets the user write text into the plot\par
+{\pntext\f3\'B7\tab}The CRouteDlg can now draw the scale of the route-graph in the lower left corner of the plot. The drawing of the scale can be turned off using the menu\par
+{\pntext\f3\'B7\tab}Added the message WM_END_EDIT which is defined as 'WM_USER + 35'\par
+{\pntext\f3\'B7\tab}Added the sending of a message 'WM_END_EDIT' in CMeasGrid::OnEndEditCell, this sends a message ot the parent (if defined) that the user has edited the window\par
+{\pntext\f3\'B7\tab}There is now a 'landmarks' - list in the route-dialog. The user can here type in lat & long of interesting points and they will be shown in the route-dialog.\par
+\pard\li710\par
+2007-03-28\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Removed the unnecessary functions CSpectrometer::GetTimeText and CSpectrometer::GetDateText. The one call of GetDateText that existed was replaced with Common::GetDateText\par
+{\pntext\f3\'B7\tab}Added support for reading in data from HR2000-spectrometers in CSpectrometer::TestUSBConnection\par
+{\pntext\f3\'B7\tab}Moved the reading of the GPS and the setting of the time-difference between computer time and GPS-time to a new function; CSpectrometer::ReadGPS . This to increase readability of Run\par
+{\pntext\f3\'B7\tab}Made tons/day the default unit in the post-flux dialog\par
+{\pntext\f3\'B7\tab}Fixed one bug in CSpectrometer::TestUSBConnection, the whole array 'result' was not nulled in the beginning of the function.\par
+{\pntext\f3\'B7\tab}Created the class CExportEvLogDlg which makes it possible for the user to export data from an opened evaluation log file to a given file in a configurable file-format\par
+{\pntext\f3\'B7\tab}Included a 'columnError' in CTraverse. The reader can now read in the column-error from the logfile\par
+{\pntext\f3\'B7\tab}Added the possibility to draw x- and y- errorbars on the points in CGraphCtrl::XYPlot\par
+{\pntext\f3\'B7\tab}Copied the template functions 'FindNLowest' and 'FindNHighest' from the NovacProgram to Common\par
+{\pntext\f3\'B7\tab}Made a rough implementation on a function CTraverse::IsGoodPoint(int) which returns true if the specified measurement point in the traverse is good. Judgement is currently only based on column error and intensity\par
+{\pntext\f3\'B7\tab}Copied the function CalculateOffset from the NovacProgram and put it under CTraverse::CalculateOffset\par
+\pard\li710\par
+2007-03-29\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Added functionality to the CRouteGraph. When the user presses down the left mouse button and drags, a dotted rectangle will be drawn from the point where the button was pressed down to the current position. This can be used to make the graph zoomable in the future.\par
+\pard\li710\par
+2007-04-12\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Copied the buttons to open the source-selection dialog in the post-flux dialog to the route-dialog, when a new source is selected the 'show Source' check button is checked\par
+{\pntext\f3\'B7\tab}Fixed one bug in the drawing of the grid in the CGraphCtrl, the grid lines did not always have the right values\par
+{\pntext\f3\'B7\tab}Completed the zooming - it is now possible to zoom in the route-graph!!!!\par
+{\pntext\f3\'B7\tab}If the user changes the positon of the source in the route-dialog then the change will be transferred to the post-flux dialog when the route-dialog is closed\par
+{\pntext\f3\'B7\tab}Created a new class 'CColumnGraph' which is to be used in the post-flux dialog to show the traverse. This graph inherits the CGraphCtrl and only overloads the showing of a context menu.\par
+{\pntext\f3\'B7\tab}There's now a context menu in the post-flux dialogs graph which is identical to the menu under 'View'\par
+{\pntext\f3\'B7\tab}Created a new function in CGraphCtrl; 'ShadeFilledSquare' which takes a square and darkens all points inside this square with a certain percentage.\par
+{\pntext\f3\'B7\tab}The not-selected range in the column-plot in the post-flux dialog is now shaded slightly\par
+\pard\li710\par
+2007-07-26\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Added the function CDMSpecView::OnControlStartWindMeasurement with corresponding working thread function CollectSpectra_Wind.\par
+{\pntext\f3\'B7\tab}The CDMSpecView keeps track of the mode the spectrometer is running in with the member-variable m_spectrometerMode which is set by OnControlStart or OnControlStartWindMeasurement\par
+{\pntext\f3\'B7\tab}\tab Added one more member-variable 'vColumn2' to CSpectrometer, this has the function to save the results from the slave channel\par
+{\pntext\f3\'B7\tab}Added a third parameter to CSpectrometer::GetColumns, the channel number for which the columns should be retrieved. It is thus possible to extract the results from the slave-channel\par
+{\pntext\f3\'B7\tab}Added the menu-item 'Change Plot Color (Slave)' to the configuration-menu\par
+{\pntext\f3\'B7\tab}Added the menu-item 'Start WindMeasurement' to the control-menu, to make it possible to run wind-measurements\par
+{\pntext\f3\'B7\tab}Added the member-variable 'm_spectrometerMode' to CSpectrometer, this tells us if we're running in wind-measurement or traverse mode\par
+{\pntext\f3\'B7\tab}The CSpectrometer::ApplySettings now checks the number of channels if the spectrometer is running in wind-measurement mode. If too few channels are configured, the number of channels will be set to two and the program will run anyway.\par
+\pard\li710\par
+2007-10-26\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Added the settings 'offsetFrom' and 'offsetTo' to CFitWindow\par
+{\pntext\f3\'B7\tab}The function CEvaluation::RemoveOffset now takes the ranges where to remove the offset as input-parameter instead of a boolean 'UV'\par
+{\pntext\f3\'B7\tab}Added the class 'CXMLFileReader'\par
+{\pntext\f3\'B7\tab}Changed the format of the configuration file from .txt to .xml\par
+{\pntext\f3\'B7\tab}Rebuilt the CMobileConfiguration to inherit CXMLFileReader and to be able to read in the configuration from a .xml-file\par
+{\pntext\f3\'B7\tab}Removed the 'm_so2Window' and 'm_no2Window' in CMobileConfiguration and replaced them with an array of CFitWindows\par
+{\pntext\f3\'B7\tab}Added the member-variable 'm_gasFactor' to Evaluation::CReferenceFile\par
+{\pntext\f3\'B7\tab}Copied the class CReferenceFileControl from the NovacProgram\par
+{\pntext\f3\'B7\tab}Moved the CGridCtrl class from the namespace CGridCtrl to DlgControls\par
+{\pntext\f3\'B7\tab}Changed the Configure_Eval to be more similar to the ReEval_FitWindow page\par
+{\pntext\f3\'B7\tab}Removed the 'NO2-page' from the new configuration dialog\par
+{\pntext\f3\'B7\tab}Copied the class CQueryStringDlg from the NovacProgram\par
+{\pntext\f3\'B7\tab}Copied and made major changes to the CFitWindowListBox class from the NovacProgram\par
+{\pntext\f3\'B7\tab}Added a Clear() functioni to CFitWindow\par
+{\pntext\f3\'B7\tab}The CConfigure_Spectrometer can now write the configuration to an xml-file when the configuration dialog is closed\par
+{\pntext\f3\'B7\tab}The conifguration-dialog now first reads the cfg.xml file if available, if not then it will revert to reading cfg.txt\par
+{\pntext\f3\'B7\tab}The program now also first tries to read cfg.xml, if this does not exist it reverts to cfg.txt\par
+{\pntext\f3\'B7\tab}The program now creates one evaluation-log file for each fit-window that has been evaluated for\par
+{\pntext\f3\'B7\tab}Removed the parameter 'use' from CSpectrometer::FitRegion\par
+{\pntext\f3\'B7\tab}Fixed one bug, the CSpectrometer could not read-in the reference-files for the second or third evaluation-windows\par
+\pard\li710\par
+2007-10-29\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Created a new function in CGraphCtrl which makes it possible to draw a graph consisting of two data-series drawing the highest values first and then the lower. Thus high bars does now cover lower bars. Used the new function to draw the evaluated columns if two fit-regions are used\par
+{\pntext\f3\'B7\tab}Added two legends to the main interface explaining the meaning of the colors used in the main-plot\par
+\pard\li710\par
+2007-10-30\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Fixed one bug in the writing of the configuration-file, all references were grouped together in one <Reference> section\par
+{\pntext\f3\'B7\tab}Made it possible for the CShowFitDialog to show the fit of the two fit-regions at the same time\par
+{\pntext\f3\'B7\tab}Added the possibility to set the offset-from and offset-to parameters in the configuration dialog\par
+{\pntext\f3\'B7\tab}\tab Fixed one bug, the read-in offset-from and offset-to were never used\par
+{\pntext\f3\'B7\tab}Fixed one bug in the parsing of the configuration-file, the offset-to was never read in\par
+{\pntext\f3\'B7\tab}Fixed one bug in the parsing of the configuration-file the linked to values were never read in\par
+{\pntext\f3\'B7\tab}Made it possible to extract the column-error from the CSpectrometer class\par
+{\pntext\f3\'B7\tab}Added the additional parameter of an error bar to the CGraphCtrl::BarChart and BarChart2 functions\par
+{\pntext\f3\'B7\tab}Added one menu-item in teh main-window to make it possible for the user to toggle the showing of the error bars on the column-values\par
+{\pntext\f3\'B7\tab}Fixed one bug in the usage of 'evaluatedResult' in CSpectrometer, this was a pointer which was changed when the evaluation-result was written to file, something which was not intended.\par
+\pard\li710\par
+2007-10-31\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Increased the number of possible layers in the reading in of wind-fields from file\par
+{\pntext\f3\'B7\tab}Changed the behaviour of interpolating the wind-field, if only one time-stamp is found (e.g. at a short time before the measurement) then that value is used\par
+\pard\li710\par
+2007-11-06\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Added a legend for the spectrum in the main window\par
+{\pntext\f3\'B7\tab}fixed one bug, the program would crash if the real-time route dlg was opened before the spectrometer was started\par
+{\pntext\f3\'B7\tab}Added comments to the menu-items in the main window-dialog\par
+{\pntext\f3\'B7\tab}Added one more mode in which the CSpectrometer-class can run; MODE_VIEW in which nothing is saved or evaluate, only the spectra are shown on the screen. This can be useful when adjusting fibres for example\par
+\pard\li710\par
+2007-11-08\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Made it possible to make circle-plots with different size of the circles depending on the value, i.e instead of using different colors use different sizes of the circles\par
+{\pntext\f3\'B7\tab}Added a menu-item to the route-dialog so that the user can change whether the column-values should be indicated by colors or by size\par
+{\pntext\f3\'B7\tab}Added the bug-fix for the Microsoft-bug that the menus are not updated until they are hided again\par
+{\pntext\f3\'B7\tab}Added functions to retrieve the plot, background and grid colors from CGraphCtrl\par
+{\pntext\f3\'B7\tab}The route-dialog now shows the scale in the same colors as the grid\par
+{\pntext\f3\'B7\tab}Made it possible to change the circles-color in the route-graph. This will only have effect if the columns are shown as sizes of the circles. The color of the circles is now stored as a member-variable in CRouteDlg in the same way as the color of the wind-field\par
+{\pntext\f3\'B7\tab}Added a menu-item to the rotue-dialog to make it possible to change the color-scheme of the dialog. I.e to set several of the colors at the same time\par
+{\pntext\f3\'B7\tab}The ReEvaluator now takes the version from CVersion when writing a re-evaluation log file\par
+{\pntext\f3\'B7\tab}Changed the version of the software to 4.4\par
+{\pntext\f3\'B7\tab}Added some tool-tips to the spectrometer page in the configuration dialog\par
+\pard\li710\par
+2008-02-26\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Changed CSpectrumIO::WriteStdFile so that the output-file format is now the extended .std format... (code copied from the NovacProgram)\par
+{\pntext\f3\'B7\tab}\par
+\pard\li710\par
+2008-03-19\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Fixed one bug in CGraphCtrl::BarChart, the function-overload without error-parameter would call itself recursively infinitely causing the program to crash...\par
+{\pntext\f3\'B7\tab}Fixed one bug in CGPS::Parse, the lat and long in the $GPRMC-string were not converted to degrees from the native DDMM.MMM format\par
+{\pntext\f3\'B7\tab}Fixed one bug in the creation of the cfg.xml file, the squeeze of new references was automatically set to 0 which creates insane results!!\par
+\pard\li710\par
+2008-04-07\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Fixed one bug in CSpectrumIO::WriteSTDFile, the exposure-time which was written in the extended STD.file was not the exposure-time but the number of exposures. Bug fixed.\par
+\pard\li710\par
+2008-05-15\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Implemented a more clever routine to set the exposure-time of the measurement. The exp-time is now calculated in the same way as is done in kongo.exe in the Novac-instrument by making a test exposure at 10 ms and one at 50 ms and then calculating the exp-time. If this function fails it will call the old routine to set the exposure-time so nothing should be made worse.... This function will fail e.g. if the desired exposure-time is very low. \par
+\pard\li710\par
+2008-06-27\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Added the option of having an adaptive exposure-time in the measurement\par
+{\pntext\f3\'B7\tab}Implemented a new function CSpectrometer::Run_Adaptive which takes care of running the measurements with adaptive exposure-time\par
+\pard\li710\par
+2008-07-09\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Updated the CFlux - class so that it can also handle evaluation-log files of version >4.2\par
+{\pntext\f3\'B7\tab}Fixed a bug in the function CSpectrometer::Sing, the volume was always set to full...\par
+\pard\li710\par
+2008-07-11\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Added the writing of the number of channels to use to configuration.xml\par
+{\pntext\f3\'B7\tab}Added the ability of CFlux1 to handle measurements with two channels also with the newer format of the eval-logs\par
+\pard\li710\par
+2008-07-12\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Fixed the function CSpectrometer::Sing so that the file to play is searched for in the actual windows\\\\Media directory and not in 'C:\\\\WINNT\\\\Media\\\\" which might or might not be existing...\par
+\pard\li710\par
+2008-12-11\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Implemented updating of the menu in the main window if the program is collecting spectra, \par
+{\pntext\f3\'B7\tab}Changed the MessageBoxes from CSpectrometer from using NULL as window to using pView, this makes them attached to the main window and they cannot be clicked away that easily. Change undone for the first message-box saying 'Start' since this would put the configuration-dialog of the spectrometer in the background.\par
+{\pntext\f3\'B7\tab}Removed the code IDC_CONTROL_START and replaced it with IDC_BTNSTART, this since IDC_CONTROL_START and IDC_CONTROL_STOP were the same...\par
+\pard\li710\par
+2008-12-16\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Restored the Sing() function, it seems like the call to the function (in DoEvaluation) had been removed...\par
+{\pntext\f3\'B7\tab}Removed one source of crashes when closing the program. The serial-connection was closed, even if it hadn't been opened (as it's not when using the usb)\par
+{\pntext\f3\'B7\tab}Fixed one bug, when using the USB connection one bracket had disappeared in CSpectrometer::Run resulting in that the program would always stop...\par
+\pard\li710\par
+2009-02-25\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Removed the class CSpectra since it was quite un-necessary. Added the function CSpectrometer::SetUserParameters which replaced the old CSpectrometer::SetParam.\par
+\pard\li710\par
+2009-03-06\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Removed the class ConfigurationDlg and the old configuration dialog from the resources since they are not used anymore\par
+{\pntext\f3\'B7\tab}Implemented a menu in the ReEvaluation dialog\par
+\pard\li710\par
+2009-03-09\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Implemented the writing and reading of '.rxml' files in the re-evaluation dialog. This makes it possible to store all the settings in the dialog for use in a later test\par
+\pard\li710\par
+2009-03-10\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Implemented the class CReEvaluationSettings which stores all the possible settings for the re-evaluation of traverses. The reading and writing of the .rxml files is now done to and from an instance of CReEvaluationSettings and the CReEvaluator holds a member variable of CReEvaluationSettings.\par
+{\pntext\f3\'B7\tab}Made some updates to the interface of the re-evaluation dialog, such as enabling and disabling controls as they are useful or not.\par
+\pard\li710\par
+2009-03-16\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Discovered that the parameters 'fittype' and 'channel' were not written to the ReEvalSettings - files (.rxml). Added these...\par
+{\pntext\f3\'B7\tab}Discovered that the .rxml files did not manage the writing of 'find optimal' option for shift & squeeze...\par
+{\pntext\f3\'B7\tab}Discovered that the fit-type was never written correctly to the .rxml files since it was not updated properly from the interface....\par
+\pard\li710\par
+2009-03-17\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Updated so that when a new reference file is inserted into the fit-windows page on the re-evaluation dialog, then the gas-factor is guessed from the specie name\par
+{\pntext\f3\'B7\tab}Inserted the gas-factor for HCHO into Common.h\par
+{\pntext\f3\'B7\tab}Inserted a small check of the number of references when pressing the 'InsertReference' button in the ReEval_FitWindow page\par
+{\pntext\f3\'B7\tab}Removed CProgressDlg since it's no longer used\par
+{\pntext\f3\'B7\tab}Imported the dialog IDD_REFERENCE_PROPERTIES_DIALOG from the novac program\par
+{\pntext\f3\'B7\tab}Added the class CReferencePlotDlg which is used to plot the reference files in the fit-window used\par
+{\pntext\f3\'B7\tab}Updated the class CGraphCtrl to be same as in the NovacProgram\par
+\pard\li710\par
+2009-03-18\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Changed the code in \f1 CEvaluation::PrepareSpectra_Poly\f0   to the same as in the NovacProgram, this fixes the problem with having negative signs for the columns in the evaluation when using a polynomial\par
+{\pntext\f3\'B7\tab}Removed the structure 'Reference' from CReEvaluator since it was not used for anything anyway...\par
+{\pntext\f3\'B7\tab}Changed all stored variables in CEvaluation, CSpectrometer and CReEvaluation that are of type float to type double, this since they cannot otherwise store the result of the O4 evaluation...\par
+{\pntext\f3\'B7\tab}Changed the type of column and columnError in CReferenceFitResult from float to double, this to manage the O4 evaluations...\par
+{\pntext\f3\'B7\tab}Fixed one bug in CReEvaluator, when the sky-spectrum was included in the fit then the dark spectrum would be subtracted before calling the function '\f1 IncludeSkySpecInFit\f0 ' and then once again inside the function. Removed the subtraction of the dark inside '\f1 IncludeSkySpecInFit\f0 '\par
+{\pntext\f3\'B7\tab}Copied the code in '\f1 IncludeSkySpecInFit\f0 ' from the NovacProgram, when the fit type is FIT_POLY then the column for the sky-spectrum is fixed to -1, not to +1...\par
+{\pntext\f3\'B7\tab}Fixed one bug in the re-evaluation, the results would first be displayed on screen, then retrieved from the evaluator.  Thus the columns showed on the screen would always be the result of the previous spectrum, not the current one...\par
+{\pntext\f3\'B7\tab}Fixed the plot in the CReEval_DoEvaluation dialog to show the correct pixels when displaying the fit\par
+{\pntext\f3\'B7\tab}Added the shift of the sky-spectrum to the CReEval_DoEvaluation page when using poly or sub fit-type\par
+{\pntext\f3\'B7\tab}Implemented a more clever search for species (in CFlux::ReadSettingFile) in the header-line of the (re)evaluation log files. This makes it possible to, in an easy way, search for a list of known specie names and makes the program more versatile in finding gases...\par
+{\pntext\f3\'B7\tab}Changed the type of m_traverse in CFlux from being an static sized array to an CArray, with variable size... This makes it possible to read in an (theoretically) unlimited amount of evaluation logs...\par
+{\pntext\f3\'B7\tab}Made a fix so that if there are more than MAX_FLUX_LOGFILES opened in the post-flux dialog, then opening the route-dialog will not cause a program crash. However only the first MAX_FLUX_LOGFILES measurements will be shown in the dialog\par
+{\pntext\f3\'B7\tab}\par
+\pard\li710\par
+2009-04-07\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Resolved one bug in CGraphCtrl::BarChart2, the colors would sometimes be switched between the two data-series\par
+{\pntext\f3\'B7\tab}Fixed one bug, the result of the evaluation of two different time-series would not be presented properly in the interfact. Changed the type of '\f1 evaluateResult\f0 ' from a two-dimensional array to a 3-d, one dimension for the fit-window, one for the channel and one for column-shift-squeeze...\par
+{\pntext\f3\'B7\tab}Fixed one bug in the Routedlg, the results were not shown the first time the dialog was opened. only on the second attempt was anything shown...\par
+{\pntext\f3\'B7\tab}Made the ShowFitDlg show fit against the correct pixel-numbers\par
+{\pntext\f3\'B7\tab}Fixed one bug in the GPS, when restarting the program the GPS would not work. Added code in CGPS so that the serial-port is closed when the program is paused.\par
+\pard\li710\par
+2009-04-15\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Restructured PostFluxDlg.h a little bit, to improve readability...\par
+{\pntext\f3\'B7\tab}Renamed some functions in CPostFluxDlg, to improve readability\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi558\li1430\tab OnCalc -> OnCalculateFlux\par
+{\pntext\f3\'B7\tab}OnBtnchoosefile -> \f1 OnBtnOpenLogFile\f0\par
+{\pntext\f3\'B7\tab}OnBtnDel -> \f1 OnBtnDeleteSelected\f0\par
+{\pntext\f3\'B7\tab}OnBtnroute -> \f1 OnBtnShowRoute\f0\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Added a lot of functions for updating the interface in the post-flux dlg. This means that as long as there is no log file opened then all menu-items that manupulates a traverse will be disabled.\par
+{\pntext\f3\'B7\tab}Implemented a private function CalculateOffset(double* columns, long nDataPoints) in CTraverse which can calculate the offset from a given data set of good column data points. this is now used to calculate the offset for a CTraverse\par
+{\pntext\f3\'B7\tab}Made CTraverse::CalculateFlux a private function, since this only calculates a partial flux and can easily be confused with GetTotalFlux which calculates the flux for the entire traverse\par
+\pard\li710\par
+\par
+2009-04-17\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Made it possible to plot the traverse in the post-flux dialog versus time or versus distance travelled instead of always against spectrum number. Also set default to be against time\par
+{\pntext\f3\'B7\tab}Implemented a simple error estimation of the calculated flux. This is now shown in the post-flux dialog when calculating the flux\par
+{\pntext\f3\'B7\tab}Made some changes to the layout of the post-flux dialog. This to make space for all the buttons and the extra information which is needed with the new error estimation...\par
+\pard\li710\par
+2009-09-16\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Replaced the old OceanOptics driver with the new OmniDriver\par
+{\pntext\f3\'B7\tab}Fixed the graph in the main-window so that it resizes to the width of the screen that the user is using\par
+{\pntext\f3\'B7\tab}Updated the version from 4.4 to 5.0\par
+{\pntext\f3\'B7\tab}Re-ordered the code in the interface to stop the annoying crash when closing the program\par
+\pard\li710\par
+2009-09-17\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 updated the graphs so that they show the scale better, as in the NovacProgram\par
+{\pntext\f3\'B7\tab}Added a call to OnSize in CReferencePlotDlg so that it's possible to change the size of the graphs\par
+{\pntext\f3\'B7\tab}Made the drawing of the graph in CReferencePlotDlg a bit more smart - the array with numbers does not have to be updated each time the window is resized\par
+{\pntext\f3\'B7\tab}Solved one GDI-leak in CGraphCtrl - this was caused by not releasing the old bitmaps in CGraphCtrl::OnSize\par
+{\pntext\f3\'B7\tab}Solved one problem in CGraphCtrl - the edges of the graph would not take the full scale into account, leading to small shifts in the plot\par
+\pard\li710\par
+2009-10-05\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Implemented the classes '\f1 CMeasurement_View\f0 ', '\f1 CMeasurement_Wind\f0 ' and '\f1 CMeasurement_Traverse\f0 ' and divided the work previously performed in '\f1 CSpectrometer\f0 ' among these. This allows for more specialized code in the different measurement modes and more features without making the code super-messy. The class '\f1 CSpectrometer\f0 ' is now abstract and cannot be instansiated directly!\par
+{\pntext\f3\'B7\tab}Implemented the dialog '\f1 CSpectrumSettingsDlg\f0 ' which makes it possible to change the settings for the spectra when just viewing spectra from the spectrometer, and also to save spectra directly.\par
+\pard\li710\par
+2009-10-08\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Implemented the dialog '\f1 CSpectrumScaleDlg\f0 ' which makes it possible to change the scaling of the spectrum which is drawn in the main window (this is only used when only viewing spectra however);\par
+{\pntext\f3\'B7\tab}Chagned the background color in the graphs from almost black to entirely black.\par
+{\pntext\f3\'B7\tab}Updated the icons in the toolbar\par
+{\pntext\f3\'B7\tab}Updated the main icon for the program\par
+{\pntext\f3\'B7\tab}Made it possible to have relative path's when specifying the references\par
+{\pntext\f3\'B7\tab}Added the ReferencePlot also to the main configuration window\par
+{\pntext\f3\'B7\tab}Added the feature that when the user wants to insert a new reference in the dialog '\f1 CConfigure_Evaluation\f0 ' and no fit-window has previously been inserted then a new fit-window is created before the user can select a reference to insert\par
+{\pntext\f3\'B7\tab}\par
+\pard\li710\par
+2009-10-09\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Added spectrometer name to the list of parameters in CSpectrum\par
+{\pntext\f3\'B7\tab}The spectrometer name is now read in when reading an .std - file\par
+{\pntext\f3\'B7\tab}Implemented the '\f1 CSpectrumInspectionDlg\f0 ' dialog which makes it possible for the user to see the collected spectra in a traverse\par
+{\pntext\f3\'B7\tab}Added a lot more output messages to the '\f1 TestUSBConnection\f0 ' and '\f1 ChangeSpectrometer\f0 ' functions to be able to see where things do go wrong...\par
+{\pntext\f3\'B7\tab}Discovered one bug in the implementation witht he new driver, '\f1 m_wrapper.openAllSpectrometers\f0 ' must only be called once by the application. Laid the function call in '\f1 TestUSBConnection\f0 ' and the result is stored in the variable  '\f1 m_numberOfSpectrometersAttached\f0 ' in CSpectrometer\par
+{\pntext\f3\'B7\tab}Found one bug in '\f1 CMeasurement_View::Run\f0 ' one call was made to the GPS even though it is not supposed to be running\par
+\pard\li710\par
+2009-10-12\par
+\pard{\pntext\f3\'B7\tab}{\*\pn\pnlvlblt\pnf3\pnindent0{\pntxtb\'B7}}\fi-720\li1430 Removed the member-variable 'runFlag' from CSpectrometer. It's use is now replaced by fRun\par
+{\pntext\f3\'B7\tab}Declared the global variable g_exePath, which is to replace all the instances of m_exePath in all the program\par
+{\pntext\f3\'B7\tab}Added more clear comments to Spectrometer.h\par
+{\pntext\f3\'B7\tab}Removed the member-variable 'tmpSpectrum' from CSpectrometer since this was never used\par
+{\pntext\f3\'B7\tab}\par
+}
+ 

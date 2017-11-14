@@ -1,0 +1,783 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{1c843dcc-3932-4864-8916-1b457169e7e7}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Source Files\ReEvaluation">
+      <UniqueIdentifier>{0e8ec17f-03f2-47b0-9713-cb8df73c1aa8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GridCtrl">
+      <UniqueIdentifier>{8990a1c0-2bab-4507-a329-d08bbade7f58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Fit">
+      <UniqueIdentifier>{c279be11-c91b-414b-9f98-fa3363932a9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Dialogs">
+      <UniqueIdentifier>{45d4d4b6-2db5-4ac7-8181-239727962155}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Flux">
+      <UniqueIdentifier>{8a56f27c-02e7-4d6f-a956-12ab1ba91361}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Evaluation">
+      <UniqueIdentifier>{31dec120-6a27-4713-bbd5-5a0bf3620c94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DualBeam">
+      <UniqueIdentifier>{40c73fbe-cdcc-42f1-a9b9-7a94f2253bc5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Controls">
+      <UniqueIdentifier>{081dfb2e-eb09-464e-b693-0a330ad27e03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphs">
+      <UniqueIdentifier>{84250557-930d-4762-a12a-94add603bfa8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{deb3ef20-8446-458f-80b7-66e56c9e6f2e}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Header Files\ReEvaluation">
+      <UniqueIdentifier>{4d42896a-c675-4249-b237-ff3ecbd94dbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GridCtrl">
+      <UniqueIdentifier>{6487d11f-10b8-4386-a869-a8f4d633c5a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Fit">
+      <UniqueIdentifier>{5444da62-bee0-4d85-ac8b-5ed343443feb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Dialogs">
+      <UniqueIdentifier>{4f22f1d8-7fd2-4a86-b621-ce41f415a41d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Flux">
+      <UniqueIdentifier>{25dd6c9c-aacb-40ad-a66d-2419845fb305}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Evaluation">
+      <UniqueIdentifier>{67d797af-80e9-4f60-bf8f-e21faca8cdff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\DualBeam">
+      <UniqueIdentifier>{b536726b-d3e9-4712-985b-49311d19310d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\FileHandling">
+      <UniqueIdentifier>{f57d66b1-c986-466f-af77-8c9aedbd2f1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Controls">
+      <UniqueIdentifier>{8900d27d-b3cd-4869-80b6-00766ab983ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Graphs">
+      <UniqueIdentifier>{d25e5430-39fe-4574-8242-d15698e3e751}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{5bac7d2f-4a40-499f-9edd-d25c584d8f43}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Graphs\ColumnGraph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Common.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Configuration\ConfigurationDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Configuration\Configure_Evaluation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Configuration\Configure_GPS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Configuration\Configure_Spectrometer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DMSpec.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DMSpecDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DMSpecView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\DateTime.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EvaluationLogFileHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExportEvLogDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Flux1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FluxPathListBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GPS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphs\GraphCtrl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\KMLFileHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Controls\Label.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MainFrm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MeasGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MeasurementModes\Measurement_Calibrate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MeasurementModes\Measurement_Traverse.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MeasurementModes\Measurement_View.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MeasurementModes\Measurement_Wind.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Configuration\MobileConfiguration.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Controls\ReferenceFileControl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RouteGraph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SerialConnection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Spectrometer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\Spectrum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\SpectrumCalibrationDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\SpectrumIO.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\SpectrumInspectionDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\SpectrumScaleDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\SpectrumSettingsDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StdAfx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Evaluation\TraverseResult.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Version.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WavelengthCalibration.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\XMLFileReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ReEvaluation\ReEvalScriptFileHandler.cpp">
+      <Filter>Source Files\ReEvaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="ReEvaluation\ReEvalSettingsFileHandler.cpp">
+      <Filter>Source Files\ReEvaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="ReEvaluation\ReEval_DarkDlg.cpp">
+      <Filter>Source Files\ReEvaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="ReEvaluation\ReEval_DoEvaluationDlg.cpp">
+      <Filter>Source Files\ReEvaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="ReEvaluation\ReEval_EvalLogDlg.cpp">
+      <Filter>Source Files\ReEvaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="ReEvaluation\ReEval_FitWindows.cpp">
+      <Filter>Source Files\ReEvaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="ReEvaluation\ReEval_ScriptDlg.cpp">
+      <Filter>Source Files\ReEvaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="ReEvaluation\ReEval_SkyDlg.cpp">
+      <Filter>Source Files\ReEvaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="ReEvaluation\ReEvaluationDlg.cpp">
+      <Filter>Source Files\ReEvaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="ReEvaluation\ReEvaluationSettings.cpp">
+      <Filter>Source Files\ReEvaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="ReEvaluation\ReEvaluation_Script.cpp">
+      <Filter>Source Files\ReEvaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="ReEvaluation\ReEvaluator.cpp">
+      <Filter>Source Files\ReEvaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="GridCtrl\GridCell.cpp">
+      <Filter>Source Files\GridCtrl</Filter>
+    </ClCompile>
+    <ClCompile Include="GridCtrl\GridCellBase.cpp">
+      <Filter>Source Files\GridCtrl</Filter>
+    </ClCompile>
+    <ClCompile Include="GridCtrl\GridCtrl.cpp">
+      <Filter>Source Files\GridCtrl</Filter>
+    </ClCompile>
+    <ClCompile Include="GridCtrl\GridDropTarget.cpp">
+      <Filter>Source Files\GridCtrl</Filter>
+    </ClCompile>
+    <ClCompile Include="GridCtrl\InPlaceEdit.cpp">
+      <Filter>Source Files\GridCtrl</Filter>
+    </ClCompile>
+    <ClCompile Include="GridCtrl\TitleTip.cpp">
+      <Filter>Source Files\GridCtrl</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicMath.cpp">
+      <Filter>Source Files\Fit</Filter>
+    </ClCompile>
+    <ClCompile Include="Fit\MessageLog.cpp">
+      <Filter>Source Files\Fit</Filter>
+    </ClCompile>
+    <ClCompile Include="CommentDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="InformationDialog.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="PostFluxDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\QueryStringDialog.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="RealTimeRoute.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\ReferencePlotDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\ReferencePropertiesDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="RouteDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\SelectionDialog.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="ShowFitDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\SimplePropertySheet.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceSelectionDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="WindFieldDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Flux\Traverse.cpp">
+      <Filter>Source Files\Flux</Filter>
+    </ClCompile>
+    <ClCompile Include="Flux\WindField.cpp">
+      <Filter>Source Files\Flux</Filter>
+    </ClCompile>
+    <ClCompile Include="Evaluation\Evaluation.cpp">
+      <Filter>Source Files\Evaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="Evaluation\EvaluationResult.cpp">
+      <Filter>Source Files\Evaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="Evaluation\FitWindow.cpp">
+      <Filter>Source Files\Evaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="Evaluation\ReferenceFile.cpp">
+      <Filter>Source Files\Evaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="Evaluation\ReferenceFitResult.cpp">
+      <Filter>Source Files\Evaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="DualBeam\DualBeamCalculator.cpp">
+      <Filter>Source Files\DualBeam</Filter>
+    </ClCompile>
+    <ClCompile Include="DualBeam\DualBeamMeasSettings.cpp">
+      <Filter>Source Files\DualBeam</Filter>
+    </ClCompile>
+    <ClCompile Include="DualBeam\PlumeHeightCalculator.cpp">
+      <Filter>Source Files\DualBeam</Filter>
+    </ClCompile>
+    <ClCompile Include="DualBeam\PostPlumeHeightDlg.cpp">
+      <Filter>Source Files\DualBeam</Filter>
+    </ClCompile>
+    <ClCompile Include="DualBeam\PostWindDlg.cpp">
+      <Filter>Source Files\DualBeam</Filter>
+    </ClCompile>
+    <ClCompile Include="DualBeam\WindSpeedCalculator.cpp">
+      <Filter>Source Files\DualBeam</Filter>
+    </ClCompile>
+    <ClCompile Include="Controls\FitWindowListBox.cpp">
+      <Filter>Source Files\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphs\SpectrumGraph.cpp">
+      <Filter>Source Files\Graphs</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="DMSpec.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Graphs\ColumnGraph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CommentDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Configuration\ConfigurationDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Configuration\Configure_Evaluation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Configuration\Configure_GPS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Configuration\Configure_Spectrometer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DMSpec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DMSpecDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DMSpecView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\DateTime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EvaluationLogFileHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ExportEvLogDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Flux1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FluxPathListBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GPS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphs\GraphCtrl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\KMLFileHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Controls\Label.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MainFrm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MeasGrid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MeasurementModes\Measurement_Calibrate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MeasurementModes\Measurement_Traverse.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MeasurementModes\Measurement_View.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MeasurementModes\Measurement_Wind.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Configuration\MobileConfiguration.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Controls\ReferenceFileControl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\ReferencePlotDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RouteGraph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SerialConnection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Spectra.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Spectrometer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Spectrum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\SpectrumCalibrationDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\SpectrumIO.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\SpectrumInspectionDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\SpectrumScaleDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\SpectrumSettingsDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Evaluation\TraverseResult.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WavelengthCalibration.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\XMLFileReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ReEvaluation\ReEvalScriptFileHandler.h">
+      <Filter>Header Files\ReEvaluation</Filter>
+    </ClInclude>
+    <ClInclude Include="ReEvaluation\ReEvalSettingsFileHandler.h">
+      <Filter>Header Files\ReEvaluation</Filter>
+    </ClInclude>
+    <ClInclude Include="ReEvaluation\ReEval_DarkDlg.h">
+      <Filter>Header Files\ReEvaluation</Filter>
+    </ClInclude>
+    <ClInclude Include="ReEvaluation\ReEval_DoEvaluationDlg.h">
+      <Filter>Header Files\ReEvaluation</Filter>
+    </ClInclude>
+    <ClInclude Include="ReEvaluation\ReEval_EvalLogDlg.h">
+      <Filter>Header Files\ReEvaluation</Filter>
+    </ClInclude>
+    <ClInclude Include="ReEvaluation\ReEval_FitWindows.h">
+      <Filter>Header Files\ReEvaluation</Filter>
+    </ClInclude>
+    <ClInclude Include="ReEvaluation\ReEval_ScriptDlg.h">
+      <Filter>Header Files\ReEvaluation</Filter>
+    </ClInclude>
+    <ClInclude Include="ReEvaluation\ReEval_SkyDlg.h">
+      <Filter>Header Files\ReEvaluation</Filter>
+    </ClInclude>
+    <ClInclude Include="ReEvaluation\ReEvaluationDlg.h">
+      <Filter>Header Files\ReEvaluation</Filter>
+    </ClInclude>
+    <ClInclude Include="ReEvaluation\ReEvaluationSettings.h">
+      <Filter>Header Files\ReEvaluation</Filter>
+    </ClInclude>
+    <ClInclude Include="ReEvaluation\ReEvaluation_Script.h">
+      <Filter>Header Files\ReEvaluation</Filter>
+    </ClInclude>
+    <ClInclude Include="ReEvaluation\ReEvaluator.h">
+      <Filter>Header Files\ReEvaluation</Filter>
+    </ClInclude>
+    <ClInclude Include="GridCtrl\GridCell.h">
+      <Filter>Header Files\GridCtrl</Filter>
+    </ClInclude>
+    <ClInclude Include="GridCtrl\GridCellBase.h">
+      <Filter>Header Files\GridCtrl</Filter>
+    </ClInclude>
+    <ClInclude Include="GridCtrl\GridCtrl.h">
+      <Filter>Header Files\GridCtrl</Filter>
+    </ClInclude>
+    <ClInclude Include="GridCtrl\GridDropTarget.h">
+      <Filter>Header Files\GridCtrl</Filter>
+    </ClInclude>
+    <ClInclude Include="GridCtrl\InPlaceEdit.h">
+      <Filter>Header Files\GridCtrl</Filter>
+    </ClInclude>
+    <ClInclude Include="GridCtrl\TitleTip.h">
+      <Filter>Header Files\GridCtrl</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\ApertureFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\BSplineF.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\BSplineImpl.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\BandedMatrix.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicMath.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\ConstFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\ConvoluteFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\ConvolutionCoreFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\CubicBSplineFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\CubicSplineFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\DOASVector.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\DataSet.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\DiscreteFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\DivFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\ExpFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\Fit.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\FitBasic.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\FitException.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\Function.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\GaussFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\LeastSquareFit.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\LevenbergMarquardtFit.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\LinearInterpolateFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\LnFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\Matrix.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\MessageLog.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\Minimizer.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\MulFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\NegateFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\NonlinearParameterFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\ParamFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\ParameterLinkItem.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\ParameterVector.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\PolynomialFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\ReferenceSpectrumFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\SimpleDOASFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\StandardFit.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\StandardMetricFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\StatisticVector.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\SumFunction.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="Fit\Vector.h">
+      <Filter>Header Files\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="InformationDialog.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="LogDlg.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="PostFluxDlg.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\QueryStringDialog.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="RealTimeRoute.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\ReferencePropertiesDlg.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="RouteDlg.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\SelectionDialog.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\SimplePropertySheet.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceSelectionDlg.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="WindFieldDlg.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Flux\Traverse.h">
+      <Filter>Header Files\Flux</Filter>
+    </ClInclude>
+    <ClInclude Include="Flux\WindField.h">
+      <Filter>Header Files\Flux</Filter>
+    </ClInclude>
+    <ClInclude Include="Evaluation\Evaluation.h">
+      <Filter>Header Files\Evaluation</Filter>
+    </ClInclude>
+    <ClInclude Include="Evaluation\EvaluationResult.h">
+      <Filter>Header Files\Evaluation</Filter>
+    </ClInclude>
+    <ClInclude Include="Evaluation\FitWindow.h">
+      <Filter>Header Files\Evaluation</Filter>
+    </ClInclude>
+    <ClInclude Include="Evaluation\ReferenceFile.h">
+      <Filter>Header Files\Evaluation</Filter>
+    </ClInclude>
+    <ClInclude Include="Evaluation\ReferenceFitResult.h">
+      <Filter>Header Files\Evaluation</Filter>
+    </ClInclude>
+    <ClInclude Include="DualBeam\DualBeamCalculator.h">
+      <Filter>Header Files\DualBeam</Filter>
+    </ClInclude>
+    <ClInclude Include="DualBeam\DualBeamMeasSettings.h">
+      <Filter>Header Files\DualBeam</Filter>
+    </ClInclude>
+    <ClInclude Include="DualBeam\PlumeHeightCalculator.h">
+      <Filter>Header Files\DualBeam</Filter>
+    </ClInclude>
+    <ClInclude Include="DualBeam\PostPlumeHeightDlg.h">
+      <Filter>Header Files\DualBeam</Filter>
+    </ClInclude>
+    <ClInclude Include="DualBeam\PostWindDlg.h">
+      <Filter>Header Files\DualBeam</Filter>
+    </ClInclude>
+    <ClInclude Include="DualBeam\WindSpeedCalculator.h">
+      <Filter>Header Files\DualBeam</Filter>
+    </ClInclude>
+    <ClInclude Include="Controls\FitWindowListBox.h">
+      <Filter>Header Files\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphs\SpectrumGraph.h">
+      <Filter>Header Files\Graphs</Filter>
+    </ClInclude>
+    <ClInclude Include="GridCtrl\MemDC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\CHALMERSAvancez30.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\DMSpec.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\DMSpecDoc.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Logo.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Toolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\bitmap1.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\bitmap2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\bmp00001.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\bmp00002.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\green.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\green1.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\idr_main.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\DMSpec.rc2">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+</Project>
