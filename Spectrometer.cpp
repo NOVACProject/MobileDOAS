@@ -2,13 +2,6 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-/* The following two definitions are necesarry since
-	VC6 (and VC7) does not handle the long long data-type 
-	used by the OceanOptics OmniDriver
-*/
-#define HIGHRESTIMESTAMP_H
-#define SPECTROMETERCHANNEL_H
-
 #undef min
 #undef max
 
@@ -1368,63 +1361,31 @@ int CSpectrometer::ChangeSpectrometer(int selectedspec, int channel){
 
 	// Get the spectrometer model
 	m_spectrometerModel.Format(m_wrapper.getName(m_spectrometerIndex).getASCII());
-	if(Equals(m_spectrometerModel, "S2000")){
-		m_spectrometerDynRange = 4096;
 
-		m_statusMsg.Format("Will use spectrometer #%d (S2000).", m_spectrometerIndex); pView->PostMessage(WM_STATUSMSG);
-	}else if(Equals(m_spectrometerModel, "USB2000")){
-		m_statusMsg.Format("Will use spectrometer #%d (USB2000).", m_spectrometerIndex); pView->PostMessage(WM_STATUSMSG);
+	WrapperExtensions ext = m_wrapper.getWrapperExtensions();
+	m_spectrometerDynRange = ext.getSaturationIntensity(m_spectrometerIndex);
+	const int nofChannelsAvailable = ext.getNumberOfEnabledChannels(m_spectrometerIndex);
 
-		m_spectrometerDynRange = 4096;
-		if(m_NChannels > 1){
-			MessageBox(pView->m_hWnd,  "Cfg.txt specifies 2 channels to be used but spectrometer can only handle one. Changing configuration to handle only one channel", "Error", MB_OK);
-			m_NChannels = 1;
+
+	if (m_NChannels > nofChannelsAvailable) {
+		CString msg;
+		msg.Format("Cfg.txt specifies %d channels to be used but spectrometer can only handle %d. Changing configuration to handle only %d channel(s)", m_NChannels, nofChannelsAvailable, nofChannelsAvailable);
+		MessageBox(pView->m_hWnd, msg, "Error", MB_OK);
+		m_NChannels = nofChannelsAvailable;
+	}
+
+	if (m_spectrometerDynRange < 0) {
+		if (Equals(m_spectrometerModel, "USB4000") || Equals(m_spectrometerModel, "HR4000") || 
+			Equals(m_spectrometerModel, "USB2000+") || Equals(m_spectrometerModel, "QE65000")) {
+				m_spectrometerDynRange = 65536;
 		}
-	}else if(Equals(m_spectrometerModel, "HR2000")){
-		m_statusMsg.Format("Will use spectrometer #%d (HR2000).", m_spectrometerIndex); pView->PostMessage(WM_STATUSMSG);
-
-		m_spectrometerDynRange = 4095;
-		if(m_NChannels > 1){
-			MessageBox(pView->m_hWnd,  "Cfg.txt specifies 2 channels to be used but spectrometer can only handle one. Changing configuration to handle only one channel", "Error", MB_OK);
-			m_NChannels = 1;
+		else {
+			m_spectrometerDynRange = 4096;
 		}
-	}else if(Equals(m_spectrometerModel, "USB4000")){
-		m_statusMsg.Format("Will use spectrometer #%d (USB2000).", m_spectrometerIndex); pView->PostMessage(WM_STATUSMSG);
+	}
 
-		m_spectrometerDynRange = 65536;
-		if(m_NChannels > 1){
-			MessageBox(pView->m_hWnd,  "Cfg.txt specifies 2 channels to be used but spectrometer can only handle one. Changing configuration to handle only one channel", "Error", MB_OK);
-			m_NChannels = 1;
-		}
-	}else if(Equals(m_spectrometerModel, "HR4000")){
-		m_statusMsg.Format("Will use spectrometer #%d (HR4000).", m_spectrometerIndex); pView->PostMessage(WM_STATUSMSG);
+	m_statusMsg.Format("Will use spectrometer #%d (%s).", m_spectrometerIndex, m_spectrometerModel); pView->PostMessage(WM_STATUSMSG);
 
-		m_spectrometerDynRange = 65536;
-		if(m_NChannels > 1){
-			MessageBox(pView->m_hWnd,  "Cfg.txt specifies 2 channels to be used but spectrometer can only handle one. Changing configuration to handle only one channel", "Error", MB_OK);
-			m_NChannels = 1;
-		}
-	}else if(Equals(m_spectrometerModel, "USB2000+")){
-		m_statusMsg.Format("Will use spectrometer #%d (USB2000+).", m_spectrometerIndex); pView->PostMessage(WM_STATUSMSG);
-
-		m_spectrometerDynRange = 65536;
-		if(m_NChannels > 1){
-			MessageBox(pView->m_hWnd,  "Cfg.txt specifies 2 channels to be used but spectrometer can only handle one. Changing configuration to handle only one channel", "Error", MB_OK);
-			m_NChannels = 1;
-		}
-	}else if(Equals(m_spectrometerModel, "S2000+")){
-		m_statusMsg.Format("Will use spectrometer #%d (S2000+).", m_spectrometerIndex); pView->PostMessage(WM_STATUSMSG);
-
-		m_spectrometerDynRange = 4096;
-	}else if(Equals(m_spectrometerModel, "QE65000")){
-		m_statusMsg.Format("Will use spectrometer #%d (QE65000).", m_spectrometerIndex); pView->PostMessage(WM_STATUSMSG);
-
-		m_spectrometerDynRange = 65536;
-		if(m_NChannels > 1){
-			MessageBox(pView->m_hWnd,  "Cfg.txt specifies 2 channels to be used but spectrometer can only handle one. Changing configuration to handle only one channel", "Error", MB_OK);
-			m_NChannels = 1;
-		}
-	}	
 	
 	// Get a spectrum
 	m_statusMsg.Format("Attempting to retrieve a spectrum from %s", spectrometerName); pView->PostMessage(WM_STATUSMSG);
