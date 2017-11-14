@@ -343,25 +343,7 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Graphs\ColumnGraph.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CommentDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Common.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Configuration\ConfigurationDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Configuration\Configure_Evaluation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Configuration\Configure_GPS.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Configuration\Configure_Spectrometer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DMSpec.h">
@@ -379,19 +361,10 @@
     <ClInclude Include="EvaluationLogFileHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ExportEvLogDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Flux1.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FluxPathListBox.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GPS.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Graphs\GraphCtrl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Common\KMLFileHandler.h">
@@ -424,13 +397,7 @@
     <ClInclude Include="Controls\ReferenceFileControl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Dialogs\ReferencePlotDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RouteGraph.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SerialConnection.h">
@@ -445,19 +412,7 @@
     <ClInclude Include="Common\Spectrum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Dialogs\SpectrumCalibrationDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Common\SpectrumIO.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Dialogs\SpectrumInspectionDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Dialogs\SpectrumScaleDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Dialogs\SpectrumSettingsDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="StdAfx.h">
@@ -732,6 +687,51 @@
     </ClInclude>
     <ClInclude Include="GridCtrl\MemDC.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Configuration\ConfigurationDialog.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Configuration\Configure_Evaluation.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Configuration\Configure_GPS.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Configuration\Configure_Spectrometer.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="CommentDlg.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="ExportEvLogDlg.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\ReferencePlotDlg.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\SpectrumCalibrationDlg.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\SpectrumInspectionDlg.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\SpectrumScaleDlg.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\SpectrumSettingsDlg.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphs\ColumnGraph.h">
+      <Filter>Header Files\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="FluxPathListBox.h">
+      <Filter>Header Files\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphs\GraphCtrl.h">
+      <Filter>Header Files\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="RouteGraph.h">
+      <Filter>Header Files\Controls</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
