@@ -3,7 +3,7 @@
 [Setup]
 AppName=MobileDOAS
 AppVersion=6.0
-DefaultDirName={pf}\MobileDOAS
+DefaultDirName={sd}\MobileDOAS
 DefaultGroupName=MobileDOAS
 Compression=lzma2
 SolidCompression=yes   
