@@ -72,22 +72,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Graphs\ColumnGraph.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Common.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Configuration\ConfigurationDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Configuration\Configure_Evaluation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Configuration\Configure_GPS.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Configuration\Configure_Spectrometer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DMSpec.cpp">
@@ -105,19 +90,10 @@
     <ClCompile Include="EvaluationLogFileHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ExportEvLogDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Flux1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FluxPathListBox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GPS.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Graphs\GraphCtrl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Common\KMLFileHandler.cpp">
@@ -127,9 +103,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MainFrm.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MeasGrid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MeasurementModes\Measurement_Calibrate.cpp">
@@ -150,9 +123,6 @@
     <ClCompile Include="Controls\ReferenceFileControl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RouteGraph.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SerialConnection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -162,19 +132,7 @@
     <ClCompile Include="Common\Spectrum.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Dialogs\SpectrumCalibrationDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Common\SpectrumIO.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Dialogs\SpectrumInspectionDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Dialogs\SpectrumScaleDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Dialogs\SpectrumSettingsDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="StdAfx.cpp">
@@ -336,6 +294,48 @@
     <ClCompile Include="Graphs\SpectrumGraph.cpp">
       <Filter>Source Files\Graphs</Filter>
     </ClCompile>
+    <ClCompile Include="Graphs\ColumnGraph.cpp">
+      <Filter>Source Files\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="FluxPathListBox.cpp">
+      <Filter>Source Files\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphs\GraphCtrl.cpp">
+      <Filter>Source Files\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="MeasGrid.cpp">
+      <Filter>Source Files\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="RouteGraph.cpp">
+      <Filter>Source Files\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Configuration\ConfigurationDialog.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Configuration\Configure_Evaluation.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Configuration\Configure_GPS.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Configuration\Configure_Spectrometer.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="ExportEvLogDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\SpectrumCalibrationDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\SpectrumInspectionDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\SpectrumScaleDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\SpectrumSettingsDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DMSpec.rc">
@@ -343,25 +343,7 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Graphs\ColumnGraph.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CommentDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Common.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Configuration\ConfigurationDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Configuration\Configure_Evaluation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Configuration\Configure_GPS.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Configuration\Configure_Spectrometer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DMSpec.h">
@@ -379,19 +361,10 @@
     <ClInclude Include="EvaluationLogFileHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ExportEvLogDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Flux1.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FluxPathListBox.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GPS.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Graphs\GraphCtrl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Common\KMLFileHandler.h">
@@ -424,13 +397,7 @@
     <ClInclude Include="Controls\ReferenceFileControl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Dialogs\ReferencePlotDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RouteGraph.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SerialConnection.h">
@@ -445,19 +412,7 @@
     <ClInclude Include="Common\Spectrum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Dialogs\SpectrumCalibrationDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Common\SpectrumIO.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Dialogs\SpectrumInspectionDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Dialogs\SpectrumScaleDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Dialogs\SpectrumSettingsDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="StdAfx.h">
@@ -733,6 +688,51 @@
     <ClInclude Include="GridCtrl\MemDC.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Configuration\ConfigurationDialog.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Configuration\Configure_Evaluation.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Configuration\Configure_GPS.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Configuration\Configure_Spectrometer.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="CommentDlg.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="ExportEvLogDlg.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\ReferencePlotDlg.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\SpectrumCalibrationDlg.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\SpectrumInspectionDlg.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\SpectrumScaleDlg.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\SpectrumSettingsDlg.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphs\ColumnGraph.h">
+      <Filter>Header Files\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="FluxPathListBox.h">
+      <Filter>Header Files\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphs\GraphCtrl.h">
+      <Filter>Header Files\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="RouteGraph.h">
+      <Filter>Header Files\Controls</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\CHALMERSAvancez30.bmp">
@@ -776,8 +776,5 @@
     <None Include="res\DMSpec.rc2">
       <Filter>Resource Files</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="ReadMe.txt" />
   </ItemGroup>
 </Project>
