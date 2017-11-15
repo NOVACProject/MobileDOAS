@@ -15,10 +15,15 @@ ArchitecturesAllowed=x64
 ; done in "64-bit mode" on x64, meaning it should use the native
 ; 64-bit Program Files directory and the 64-bit view of the registry.
 ArchitecturesInstallIn64BitMode=x64
+DisableDirPage=no
 
 [Files]
 Source: "..\x64\Release\MobileDOAS.exe"; DestDir: "{app}" 
 Source: "..\doc\MobileDOAS_5_UserManual.pdf"; DestDir: "{app}"
+;Source: ".\OmniDriver-2.46-win64-installer.exe"; DestDir: "{app}"
 
 [Icons]
 Name: "{group}\MobileDOAS"; Filename: "{app}\MobileDOAS.exe"
+
+[Run]
+;Filename: "{app}\OmniDriver-2.46-win64-installer.exe"; Description: "OmniDriver from OceanOptics"; Flags: 64bit 
