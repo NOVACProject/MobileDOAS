@@ -174,9 +174,9 @@ CAPTION "About Mobile DOAS"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
-    LTEXT           "Mobile DOAS Version 5.0",IDC_STATIC_VERSION,40,10,171,8,
+    LTEXT           "Mobile DOAS Version 6.0",IDC_STATIC_VERSION,40,10,171,8,
                     SS_NOPREFIX
-    LTEXT           "Copyright (C) 2004 - 2009   Optical Remote Sensing Group",
+    LTEXT           "Copyright (C) 2004 - 2017   Optical Remote Sensing Group",
                     IDC_STATIC,40,31,207,8
     DEFPUSHBUTTON   "OK",IDOK,231,7,50,14,WS_GROUP
     LTEXT           "Chalmers University of Technology, Sweden",IDC_STATIC,
@@ -515,12 +515,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Chalmers University of Technology"
             VALUE "FileDescription", "MobileDOAS"
-            VALUE "FileVersion", "5, 0, 0, 0"
+            VALUE "FileVersion", "6, 0, 0, 0"
             VALUE "InternalName", "MobileDOAS"
-            VALUE "LegalCopyright", "Copyright (C) 2003-2009"
+            VALUE "LegalCopyright", "Copyright (C) 2003-2017"
             VALUE "OriginalFilename", "MobileDOAS.EXE"
             VALUE "ProductName", "MobileDOAS"
-            VALUE "ProductVersion", "5, 0, 0, 0"
+            VALUE "ProductVersion", "6, 0, 0, 0"
         END
     END
     BLOCK "VarFileInfo"
