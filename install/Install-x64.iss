@@ -17,7 +17,7 @@ ArchitecturesAllowed=x64
 ArchitecturesInstallIn64BitMode=x64
 
 [Files]
-Source: "..\64\Release\MobileDOAS.exe"; DestDir: "{app}" 
+Source: "..\x64\Release\MobileDOAS.exe"; DestDir: "{app}" 
 Source: "..\doc\MobileDOAS_5_UserManual.pdf"; DestDir: "{app}"
 
 [Icons]
