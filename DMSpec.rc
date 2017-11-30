@@ -312,27 +312,29 @@ BEGIN
                     "Button",BS_AUTORADIOBUTTON | WS_GROUP,33,25,129,10
     CONTROL         "Use average of all spectra as sky reference",
                     IDC_ALL_SKY,"Button",BS_AUTORADIOBUTTON,33,39,155,10
-    CONTROL         "Use all spectra witch fulfill:",IDC_CONDITIONAL_SKY,
-                    "Button",BS_AUTORADIOBUTTON,33,52,101,10
-    CONTROL         "Use The Following Spectrum:",IDC_USER_SKY,"Button",
-                    BS_AUTORADIOBUTTON,35,101,108,10
-    EDITTEXT        IDC_LOW_INTENSITY,123,66,30,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_HIGH_INTENSITY,177,66,30,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_INTENSITY_CHANNEL,252,66,30,12,ES_AUTOHSCROLL | 
-                    ES_NUMBER
-    LTEXT           "and",IDC_STATIC,158,68,13,8
-    LTEXT           "at channel",IDC_STATIC,214,68,34,8
-    EDITTEXT        IDC_COLUMN_LOW,123,82,52,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_COLUMN_HIGH,195,82,52,12,ES_AUTOHSCROLL
-    LTEXT           "and",IDC_STATIC,180,84,13,8
-    LTEXT           "Intensity between:",IDC_STATIC,55,68,62,8
-    LTEXT           "Ev. Log column:",IDC_STATIC,55,84,52,8
-    EDITTEXT        IDC_EDIT_SKYSPEC,55,113,257,13,ES_AUTOHSCROLL
-    PUSHBUTTON      "Browse...",IDC_BUTTON_BROWSE_SKY,318,110,41,16
-    LTEXT           "(With the following dark:",IDC_STATIC,53,132,80,8
-    EDITTEXT        IDC_EDIT_SKYSPECDARK,136,130,177,13,ES_AUTOHSCROLL
-    PUSHBUTTON      "Browse...",IDC_BUTTON_BROWSE_DARK,317,129,41,16
-    LTEXT           ")",IDC_STATIC,359,132,8,8
+    //CONTROL         "Use all spectra witch fulfill:",IDC_CONDITIONAL_SKY,
+    //                "Button",BS_AUTORADIOBUTTON,33,52,101,10
+    //CONTROL         "Use The Following Spectrum:",IDC_USER_SKY,"Button",
+    //                BS_AUTORADIOBUTTON,35,101,108,10
+	CONTROL         "Use The Following Spectrum:", IDC_USER_SKY, "Button",
+					BS_AUTORADIOBUTTON,33,52,108,10
+    //EDITTEXT        IDC_LOW_INTENSITY,123,66,30,12,ES_AUTOHSCROLL
+    //EDITTEXT        IDC_HIGH_INTENSITY,177,66,30,12,ES_AUTOHSCROLL
+    //EDITTEXT        IDC_INTENSITY_CHANNEL,252,66,30,12,ES_AUTOHSCROLL | 
+    //                ES_NUMBER
+    //LTEXT           "and",IDC_STATIC,158,68,13,8
+    //LTEXT           "at channel",IDC_STATIC,214,68,34,8
+    //EDITTEXT        IDC_COLUMN_LOW,123,82,52,12,ES_AUTOHSCROLL
+    //EDITTEXT        IDC_COLUMN_HIGH,195,82,52,12,ES_AUTOHSCROLL
+    //LTEXT           "and",IDC_STATIC,180,84,13,8
+    //LTEXT           "Intensity between:",IDC_STATIC,55,68,62,8
+    //LTEXT           "Ev. Log column:",IDC_STATIC,55,84,52,8
+    EDITTEXT        IDC_EDIT_SKYSPEC,55,66,257,13,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse...",IDC_BUTTON_BROWSE_SKY,318,63,41,16
+    LTEXT           "(With the following dark:",IDC_STATIC,53,87,80,8
+    EDITTEXT        IDC_EDIT_SKYSPECDARK,136,85,177,13,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse...",IDC_BUTTON_BROWSE_DARK,317,84,41,16
+    LTEXT           ")",IDC_STATIC,359,87,8,8
 END
 
 IDD_REEVAL_EVALUATE DIALOGEX 0, 0, 423, 265

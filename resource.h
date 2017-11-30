@@ -130,7 +130,7 @@
 #define IDC_SRC_LAT_EDIT                1000
 #define IDC_COMMENT_EDIT                1000
 #define IDC_EDIT_EVLOG                  1000
-#define IDC_LOW_INTENSITY               1000
+//#define IDC_LOW_INTENSITY               1000
 #define IDC_EDIT_SO2                    1000
 #define IDC_PATH_WINDFIELDFILE          1000
 #define IDC_REEVAL_WINDOW_FITFROM       1000
@@ -146,7 +146,7 @@
 #define IDC_TIMERES                     1001
 #define IDC_SRC_LON_EDIT                1001
 #define IDC_NMERGE_EDIT                 1001
-#define IDC_HIGH_INTENSITY              1001
+//#define IDC_HIGH_INTENSITY              1001
 #define IDC_EDIT_NO2                    1001
 #define IDC_REEVAL_WINDOW_FITTO         1001
 #define IDC_EDIT_TIMESHIFT              1001
@@ -154,17 +154,17 @@
 #define IDC_EDIT_FITFROM                1001
 #define IDC_EDIT_PERCENT                1001
 #define IDC_EDIT_SPECSCALE_MIN          1001
-#define IDC_INTENSITY_CHANNEL           1002
+//#define IDC_INTENSITY_CHANNEL           1002
 #define IDC_EDIT_O3                     1002
 #define IDC_REEVAL_WINDOW_POLYNOM       1002
 #define IDC_EDIT_MAXSHIFTTIME           1002
 #define IDC_EDIT_FITTO                  1002
 #define IDC_EDIT_SPECSCALE_MAX          1002
 #define IDC_SETBUTTON                   1003
-#define IDC_COLUMN_LOW                  1003
+//#define IDC_COLUMN_LOW                  1003
 #define IDC_EDIT_RING                   1003
 #define IDC_BASEEDIT                    1004
-#define IDC_COLUMN_HIGH                 1004
+//#define IDC_COLUMN_HIGH                 1004
 #define IDC_EDIT_SKY                    1004
 #define IDC_EDIT_TESTLENGTH             1004
 #define IDC_REEVAL_WINDOW_POLYNOM2      1004
@@ -308,7 +308,7 @@
 #define IDC_PROGRESS1                   1138
 #define IDC_SINGLE_SKY                  1139
 #define IDC_ALL_SKY                     1140
-#define IDC_CONDITIONAL_SKY             1141
+//#define IDC_CONDITIONAL_SKY             1141
 #define IDC_USER_SKY                    1142
 #define IDC_CHECK_USESO2                1148
 #define IDC_CHECK_USEO3                 1149

@@ -26,22 +26,22 @@ void CReEval_SkyDlg::DoDataExchange(CDataExchange* pDX)
 
 	DDX_Radio(pDX, IDC_SINGLE_SKY,       (int &)m_reeval->m_settings.m_skySelection);
 
-	DDX_Text(pDX, IDC_COLUMN_HIGH,       m_reeval->m_settings.m_skyColumnHigh);
-	DDX_Text(pDX, IDC_COLUMN_LOW,        m_reeval->m_settings.m_skyColumnLow);
-	DDX_Text(pDX, IDC_INTENSITY_CHANNEL, m_reeval->m_settings.m_skyIntensityChannel);
-	DDX_Text(pDX, IDC_HIGH_INTENSITY,    m_reeval->m_settings.m_skyIntensityHigh);
-	DDX_Text(pDX, IDC_LOW_INTENSITY,     m_reeval->m_settings.m_skyIntensityLow);
+	//DDX_Text(pDX, IDC_COLUMN_HIGH,       m_reeval->m_settings.m_skyColumnHigh);
+	//DDX_Text(pDX, IDC_COLUMN_LOW,        m_reeval->m_settings.m_skyColumnLow);
+	//DDX_Text(pDX, IDC_INTENSITY_CHANNEL, m_reeval->m_settings.m_skyIntensityChannel);
+	//DDX_Text(pDX, IDC_HIGH_INTENSITY,    m_reeval->m_settings.m_skyIntensityHigh);
+	//DDX_Text(pDX, IDC_LOW_INTENSITY,     m_reeval->m_settings.m_skyIntensityLow);
 
 	// The user supplied sky spectrum and the corresponding dark
 	DDX_Text(pDX, IDC_EDIT_SKYSPEC,      m_reeval->m_settings.m_skySpectrumFile);
 	DDX_Text(pDX, IDC_EDIT_SKYSPECDARK,  m_reeval->m_settings.m_skySpectrumDark);
 	
 	// The controls in the window
-	DDX_Control(pDX, IDC_LOW_INTENSITY,      m_intensityLow);
-	DDX_Control(pDX, IDC_HIGH_INTENSITY,     m_intensityHigh);
-	DDX_Control(pDX, IDC_INTENSITY_CHANNEL,  m_intensityChannel);
-	DDX_Control(pDX, IDC_COLUMN_LOW,         m_columnLow);
-	DDX_Control(pDX, IDC_COLUMN_HIGH,        m_columnHigh);
+	//DDX_Control(pDX, IDC_LOW_INTENSITY,      m_intensityLow);
+	//DDX_Control(pDX, IDC_HIGH_INTENSITY,     m_intensityHigh);
+	//DDX_Control(pDX, IDC_INTENSITY_CHANNEL,  m_intensityChannel);
+	//DDX_Control(pDX, IDC_COLUMN_LOW,         m_columnLow);
+	//DDX_Control(pDX, IDC_COLUMN_HIGH,        m_columnHigh);
 	DDX_Control(pDX, IDC_EDIT_SKYSPEC,       m_editSkySpec);
 	DDX_Control(pDX, IDC_EDIT_SKYSPECDARK,   m_editSkySpecDark);
 	DDX_Control(pDX, IDC_BUTTON_BROWSE_SKY,  m_btnBrowseSky);
@@ -50,15 +50,15 @@ void CReEval_SkyDlg::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CReEval_SkyDlg, CPropertyPage)
-	ON_EN_CHANGE(IDC_COLUMN_HIGH,       SaveData)
-	ON_EN_CHANGE(IDC_COLUMN_LOW,        SaveData)
-	ON_EN_CHANGE(IDC_INTENSITY_CHANNEL, SaveData)
-	ON_EN_CHANGE(IDC_HIGH_INTENSITY,    SaveData)
-	ON_EN_CHANGE(IDC_LOW_INTENSITY,     SaveData)
+	//ON_EN_CHANGE(IDC_COLUMN_HIGH,       SaveData)
+	//ON_EN_CHANGE(IDC_COLUMN_LOW,        SaveData)
+	//ON_EN_CHANGE(IDC_INTENSITY_CHANNEL, SaveData)
+	//ON_EN_CHANGE(IDC_HIGH_INTENSITY,    SaveData)
+	//ON_EN_CHANGE(IDC_LOW_INTENSITY,     SaveData)
 
 	ON_BN_CLICKED(IDC_SINGLE_SKY,       OnChangeSkyOption)
 	ON_BN_CLICKED(IDC_ALL_SKY,          OnChangeSkyOption)
-	ON_BN_CLICKED(IDC_CONDITIONAL_SKY,  OnChangeSkyOption)
+	//ON_BN_CLICKED(IDC_CONDITIONAL_SKY,  OnChangeSkyOption)
 	ON_BN_CLICKED(IDC_USER_SKY,         OnChangeSkyOption)
 	
 
