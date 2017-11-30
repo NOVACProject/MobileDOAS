@@ -1,13 +1,6 @@
 // Common.cpp: implementation of the Common class.
 //
 //////////////////////////////////////////////////////////////////////
-/* The following two definitions are necesarry since
-	VC6 (and VC7) does not handle the long long data-type 
-	used by the OceanOptics OmniDriver
-*/
-#define HIGHRESTIMESTAMP_H
-//#define SPECTROMETERCHANNEL_H
-
 #include "stdafx.h"
 #include "DMSpec.h"
 #include "Common.h"
