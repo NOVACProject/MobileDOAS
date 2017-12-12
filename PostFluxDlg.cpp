@@ -141,8 +141,10 @@ BEGIN_MESSAGE_MAP(CPostFluxDlg, CDialog)
 	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDERINTENSITY,	OnNMReleasedcaptureSliderintensity)
 
 	// Changing the source latitude/longitude
-	ON_EN_CHANGE(IDC_FLUXDLON,		OnChangeSource)
-	ON_EN_CHANGE(IDC_FLUXDLAT,		OnChangeSource)
+	//ON_EN_CHANGE(IDC_FLUXDLON,		OnChangeSource)
+	//ON_EN_CHANGE(IDC_FLUXDLAT,		OnChangeSource)
+	ON_EN_KILLFOCUS(IDC_FLUXDLON, OnChangeSource)
+	ON_EN_KILLFOCUS(IDC_FLUXDLAT, OnChangeSource)
 
 	// Tool-tips
 	ON_NOTIFY_EX(TTN_NEEDTEXT, 0, OnToolTipNotify)
