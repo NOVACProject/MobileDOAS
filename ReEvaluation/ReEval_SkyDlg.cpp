@@ -79,41 +79,41 @@ void CReEval_SkyDlg::OnChangeSkyOption(){
 void CReEval_SkyDlg::UpdateControls(){
 
 	if(m_reeval->m_settings.m_skySelection == USE_SKY_FIRST){
-		m_columnHigh.EnableWindow(FALSE);
-		m_columnLow.EnableWindow(FALSE);
-		m_intensityLow.EnableWindow(FALSE);
-		m_intensityHigh.EnableWindow(FALSE);
-		m_intensityChannel.EnableWindow(FALSE);
+		//m_columnHigh.EnableWindow(FALSE);
+		//m_columnLow.EnableWindow(FALSE);
+		//m_intensityLow.EnableWindow(FALSE);
+		//m_intensityHigh.EnableWindow(FALSE);
+		//m_intensityChannel.EnableWindow(FALSE);
 		m_editSkySpec.EnableWindow(FALSE);
 		m_editSkySpecDark.EnableWindow(FALSE);
 		m_btnBrowseSky.EnableWindow(FALSE);
 		m_btnBrowseDark.EnableWindow(FALSE);
 	}else if(m_reeval->m_settings.m_skySelection == USE_SKY_ALL){
-		m_columnHigh.EnableWindow(FALSE);
-		m_columnLow.EnableWindow(FALSE);
-		m_intensityLow.EnableWindow(FALSE);
-		m_intensityHigh.EnableWindow(FALSE);
-		m_intensityChannel.EnableWindow(FALSE);
+		//m_columnHigh.EnableWindow(FALSE);
+		//m_columnLow.EnableWindow(FALSE);
+		//m_intensityLow.EnableWindow(FALSE);
+		//m_intensityHigh.EnableWindow(FALSE);
+		//m_intensityChannel.EnableWindow(FALSE);
 		m_editSkySpec.EnableWindow(FALSE);
 		m_editSkySpecDark.EnableWindow(FALSE);
 		m_btnBrowseSky.EnableWindow(FALSE);
 		m_btnBrowseDark.EnableWindow(FALSE);
 	}else if(m_reeval->m_settings.m_skySelection == USE_SKY_CUSTOM){
-		m_columnHigh.EnableWindow(TRUE);
-		m_columnLow.EnableWindow(TRUE);
-		m_intensityLow.EnableWindow(TRUE);
-		m_intensityHigh.EnableWindow(TRUE);
-		m_intensityChannel.EnableWindow(TRUE);
+		//m_columnHigh.EnableWindow(TRUE);
+		//m_columnLow.EnableWindow(TRUE);
+		//m_intensityLow.EnableWindow(TRUE);
+		//m_intensityHigh.EnableWindow(TRUE);
+		//m_intensityChannel.EnableWindow(TRUE);
 		m_editSkySpec.EnableWindow(FALSE);
 		m_editSkySpecDark.EnableWindow(FALSE);
 		m_btnBrowseSky.EnableWindow(FALSE);
 		m_btnBrowseDark.EnableWindow(FALSE);
 	}else if(m_reeval->m_settings.m_skySelection == USE_SKY_USER){
-		m_columnHigh.EnableWindow(FALSE);
-		m_columnLow.EnableWindow(FALSE);
-		m_intensityLow.EnableWindow(FALSE);
-		m_intensityHigh.EnableWindow(FALSE);
-		m_intensityChannel.EnableWindow(FALSE);
+		//m_columnHigh.EnableWindow(FALSE);
+		//m_columnLow.EnableWindow(FALSE);
+		//m_intensityLow.EnableWindow(FALSE);
+		//m_intensityHigh.EnableWindow(FALSE);
+		//m_intensityChannel.EnableWindow(FALSE);
 		m_editSkySpec.EnableWindow(TRUE);
 		m_editSkySpecDark.EnableWindow(TRUE);
 		m_btnBrowseSky.EnableWindow(TRUE);
