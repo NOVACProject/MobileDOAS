@@ -164,7 +164,7 @@ void CDMSpecView::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_WINDSPEED, m_WindSpeed);
 	DDV_MinMaxDouble(pDX, m_WindSpeed, 0., 1000000.);
 
-	DDX_Control(pDX, IDC_SIGNALLIMIT_SLIDER, m_intensitySlider);
+	DDX_Control(pDX, IDC_SIGNALLIMIT_SLIDER, m_intensitySliderLow);
 
 	// The GPS-Labels
 	DDX_Control(pDX,	IDC_LAT,		m_gpsLatLabel);
@@ -208,7 +208,7 @@ void CDMSpecView::OnInitialUpdate()
 	int left	= 50;
 	int top		= 14;
 	int right	= 970;
-	int bottom	= 520;
+	int bottom = 520;
 
 	// Get the resolution of the screen
 	int cx	= GetSystemMetrics(SM_CXSCREEN);
@@ -217,11 +217,11 @@ void CDMSpecView::OnInitialUpdate()
 	right	= cx * right / 1024;
 	
 	// Also move the slider to the right of the window
-	m_intensitySlider.GetWindowRect(rect);
+	m_intensitySliderLow.GetWindowRect(rect);
 	rect.left  = rect.left * cx / 1024;
 	rect.right = rect.right * cx / 1024;
 	this->ScreenToClient(rect);
-	m_intensitySlider.MoveWindow(rect);
+	m_intensitySliderLow.MoveWindow(rect);
 
 	rect = CRect(LEFT,TOP,right,BOTTOM);
 	m_ColumnPlot.Create(WS_VISIBLE | WS_CHILD, rect, this) ; 
@@ -245,9 +245,9 @@ void CDMSpecView::OnInitialUpdate()
 	ReadMobileLog();
 
 	/* the intensity slider */
-	m_intensitySlider.SetRange(0, 100); /** The scale of the intensity slider is in percent */
-	m_intensitySlider.SetPos(100 - 25); /* The slider is upside down - i.e. the real value is "100 - m_intensitySlider.GetPos()"*/
-	m_intensitySlider.SetTicFreq(25);
+	m_intensitySliderLow.SetRange(0, 100); /** The scale of the intensity slider is in percent */
+	m_intensitySliderLow.SetPos(100 - 25); /* The slider is upside down - i.e. the real value is "100 - m_intensitySlider.GetPos()"*/
+	m_intensitySliderLow.SetTicFreq(25);
 
 	/* The colors for the spectrum plots */
 	m_Spectrum0Color    = RGB(0, 255, 0);
@@ -305,7 +305,7 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam){
 	}
 	
 	dynRange = m_Spectrometer->m_spectrometerDynRange;
-	int intensityLimit = (100 - m_intensitySlider.GetPos());
+	int intensityLimit = (100 - m_intensitySliderLow.GetPos());
 
 	// Reset, is this really necessary??
 	memset((void*)column,		0, sizeof(double)*10000);
@@ -408,7 +408,7 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam){
 
 
 	if(m_realTimeRouteGraph.fVisible){
-		m_realTimeRouteGraph.m_intensityLimit = dynRange * (100 - m_intensitySlider.GetPos());
+		m_realTimeRouteGraph.m_intensityLimit = dynRange * (100 - m_intensitySliderLow.GetPos());
 		m_realTimeRouteGraph.DrawRouteGraph();
 	}
 	if(m_showFitDlg.fVisible){
@@ -1119,7 +1119,7 @@ void CDMSpecView::OnViewRealtimeroute(){
 
 		if(fRunSpec){
 		m_realTimeRouteGraph.m_spectrometer		= this->m_Spectrometer;
-			m_realTimeRouteGraph.m_intensityLimit = m_Spectrometer->m_spectrometerDynRange * (100 - m_intensitySlider.GetPos());
+			m_realTimeRouteGraph.m_intensityLimit = m_Spectrometer->m_spectrometerDynRange * (100 - m_intensitySliderLow.GetPos());
 		}else{
 		m_realTimeRouteGraph.m_spectrometer		= NULL;
 			m_realTimeRouteGraph.m_intensityLimit = 0.25 * 4095;

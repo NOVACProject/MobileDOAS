@@ -25,9 +25,9 @@ using namespace Graph;
 extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
 
 
-#define DLGLEFT 40
+#define DLGLEFT 93
 #define DLGTOP 14
-#define DLGRIGHT 620
+#define DLGRIGHT 673
 #define DLGBOTTOM 556
 
 #define ORANGE RGB(255,128,0)
@@ -103,7 +103,8 @@ void CPostFluxDlg::DoDataExchange(CDataExchange* pDX)
 	DDV_MinMaxDouble(pDX, m_WindSpeed, 0., 1000000.);
 
 	// Selecting points based on intensity
-	DDX_Control(pDX, IDC_SLIDERINTENSITY,	m_intensitySlider);
+	DDX_Control(pDX, IDC_SLIDERINTENSITY_LOW,	m_intensitySliderLow);
+	DDX_Control(pDX, IDC_SLIDERINTENSITY_HIGH, m_intensitySliderHigh);
 	DDX_Control(pDX, IDC_PATH_LIST,			m_pathList);
 	DDX_Control(pDX, IDC_UNIT_COMBO,		m_unitSelection);
 	//}}AFX_DATA_MAP
@@ -127,7 +128,7 @@ BEGIN_MESSAGE_MAP(CPostFluxDlg, CDialog)
 	ON_BN_CLICKED(IDC_BTNROUTE,				OnBtnShowRoute)
 
 	// Deleting points
-	ON_BN_CLICKED(IDC_BTN_DEL_LOW_INTENSITY, OnBnClickedBtnDelLowIntensity)
+	ON_BN_CLICKED(IDC_BTN_DEL_INTENSITY, OnBnClickedBtnDelIntensity)
 	ON_BN_CLICKED(IDC_BTNDEL,				OnBtnDeleteSelected)
 
 	// Showing the sources-list
@@ -138,11 +139,10 @@ BEGIN_MESSAGE_MAP(CPostFluxDlg, CDialog)
 	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDERFROM,		OnReleasedcaptureSliderfrom)
 	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDERTO,			OnReleasedcaptureSliderto)
 	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDEROFFSET,		OnReleasedcaptureSlideroffset)
-	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDERINTENSITY,	OnNMReleasedcaptureSliderintensity)
+	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDERINTENSITY_LOW,	OnNMReleasedcaptureSliderintensityLow)
+	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDERINTENSITY_HIGH, OnNMReleasedcaptureSliderintensityHigh)
 
 	// Changing the source latitude/longitude
-	//ON_EN_CHANGE(IDC_FLUXDLON,		OnChangeSource)
-	//ON_EN_CHANGE(IDC_FLUXDLAT,		OnChangeSource)
 	ON_EN_KILLFOCUS(IDC_FLUXDLON, OnChangeSource)
 	ON_EN_KILLFOCUS(IDC_FLUXDLAT, OnChangeSource)
 
@@ -200,7 +200,6 @@ BEGIN_MESSAGE_MAP(CPostFluxDlg, CDialog)
 	//	http://support.microsoft.com/kb/242577
 	ON_WM_INITMENUPOPUP()
 
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -439,11 +438,16 @@ BOOL CPostFluxDlg::OnInitDialog()
 	m_sliderTo.SetPos(499);
 	m_sliderOffset.SetPos(100);
 
-	m_intensitySlider.SetRange(0, 100);// the intensity slider is in percent
-	m_intensitySlider.SetPos(100 - 10);/* The intensity slider is upside down */
-	m_intensitySlider.SetTicFreq(25);
+	m_intensitySliderLow.SetRange(0, 100);// the intensity slider is in percent
+	m_intensitySliderLow.SetPos(95);/* The intensity slider is upside down */
+	m_intensitySliderLow.SetTicFreq(25);
 
-	this->SetDlgItemText(IDC_INTENSITY_EDIT, TEXT("400"));
+	m_intensitySliderHigh.SetRange(0, 100);// the intensity slider is in percent
+	m_intensitySliderHigh.SetPos(5);/* The intensity slider is upside down */
+	m_intensitySliderHigh.SetTicFreq(25);
+
+	this->SetDlgItemText(IDC_INTENSITY_EDIT_LOW, TEXT("400"));
+	this->SetDlgItemText(IDC_INTENSITY_EDIT_HIGH, TEXT("-400"));
 
 	this->SetDlgItemText(IDC_STATISTICS, TEXT(""));
 
@@ -575,9 +579,13 @@ void CPostFluxDlg::ShowColumn()
 
 	/* draw the intensity */
 	if(m_showIntensity){
-		/* the intensity limit */
-		int selectedIntensity = 100 - m_intensitySlider.GetPos();
-		m_ColumnPlot.DrawLine(HORIZONTAL, selectedIntensity, YELLOW, STYLE_DASHED, CGraphCtrl::PLOT_SECOND_AXIS);
+		/* the intensity low limit */
+		int selectedIntensityLow = 100 - m_intensitySliderLow.GetPos();
+		m_ColumnPlot.DrawLine(HORIZONTAL, selectedIntensityLow, YELLOW, STYLE_DASHED, CGraphCtrl::PLOT_SECOND_AXIS);
+
+		/* the intensity high limit */
+		int selectedIntensityHigh = 100 - m_intensitySliderHigh.GetPos();
+		m_ColumnPlot.DrawLine(HORIZONTAL, selectedIntensityHigh, YELLOW, STYLE_DASHED, CGraphCtrl::PLOT_SECOND_AXIS);
 
 		/* the circles showing the intensity */
 		m_ColumnPlot.DrawCircles(xBuffer, intensityBuffer, (int)(m_right-m_left+1), CGraphCtrl::PLOT_SECOND_AXIS);
@@ -744,15 +752,18 @@ void CPostFluxDlg::OnBtnDeleteSelected()
 	}
 }
 
-void CPostFluxDlg::OnBnClickedBtnDelLowIntensity()
+void CPostFluxDlg::OnBnClickedBtnDelIntensity()
 {
 	long nDeleted;
 	if(UpdateData(TRUE)){
 		// delete the points
 		long	dynRange	= m_flux->GetDynamicRange();
-		long	intensityLimit	= (long) (dynRange * (100.0 - m_intensitySlider.GetPos()) / 100.0);
-		nDeleted = m_flux->m_traverse[m_flux->m_curTraverse]->DeleteLowIntensityPoints(intensityLimit);
 
+		long	intensityLimitLow = (long)(dynRange * (100.0 - m_intensitySliderLow.GetPos()) / 100.0);
+		nDeleted = m_flux->m_traverse[m_flux->m_curTraverse]->DeleteLowIntensityPoints(intensityLimitLow);
+
+		long	intensityLimitHigh = (long)(dynRange * (100.0 - m_intensitySliderHigh.GetPos()) / 100.0);
+		nDeleted += m_flux->m_traverse[m_flux->m_curTraverse]->DeleteHighIntensityPoints(intensityLimitHigh);
 		m_recordNumber = m_flux->GetColumn(columnBuffer);
 		m_flux->GetColumnError(colErrBuffer);
 		m_flux->GetIntensity(intensityBuffer);
@@ -829,14 +840,26 @@ void CPostFluxDlg::OnMenuViewShowColumnError()
 	ShowColumn();
 }
 
-void CPostFluxDlg::OnNMReleasedcaptureSliderintensity(NMHDR *pNMHDR, LRESULT *pResult)
+void CPostFluxDlg::OnNMReleasedcaptureSliderintensityLow(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	// TODO: Add your control notification handler code here
 	*pResult = 0;
 	  
 	CString tmpStr;
-	tmpStr.Format("%ld", 100 - m_intensitySlider.GetPos());
-	this->SetDlgItemText(IDC_INTENSITY_EDIT, tmpStr);
+	tmpStr.Format("%ld", 100 - m_intensitySliderLow.GetPos());
+	this->SetDlgItemText(IDC_INTENSITY_EDIT_LOW, tmpStr);
+
+	ShowColumn();
+}
+
+void CPostFluxDlg::OnNMReleasedcaptureSliderintensityHigh(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	// TODO: Add your control notification handler code here
+	*pResult = 0;
+
+	CString tmpStr;
+	tmpStr.Format("%ld", 100 - m_intensitySliderHigh.GetPos());
+	this->SetDlgItemText(IDC_INTENSITY_EDIT_HIGH, tmpStr);
 
 	ShowColumn();
 }
@@ -950,11 +973,17 @@ BOOL CPostFluxDlg::OnToolTipNotify( UINT id, NMHDR * pNMHDR, LRESULT * pResult )
 	if(nID == IDC_CALC){
 		ok = sprintf(string, "Calculates the flux using the spectrum in the selected range and the values of wind speed and wind direction given above");
 	}
-	if(nID == IDC_SLIDERINTENSITY){
-		ok = sprintf(string, "Intensity slider: exact value of this slider is shown below. ");
+	if(nID == IDC_SLIDERINTENSITY_LOW){
+		ok = sprintf(string, "Intensity slider low: exact value of this slider is shown below. ");
 	}
-	if(nID == IDC_INTENSITY_EDIT){
-		ok = sprintf(string, "Value of the Intensity slider.");
+	if (nID == IDC_SLIDERINTENSITY_HIGH) {
+		ok = sprintf(string, "Intensity slider high: exact value of this slider is shown below. ");
+	}
+	if(nID == IDC_INTENSITY_EDIT_LOW){
+		ok = sprintf(string, "Value of the Intensity (low) slider.");
+	}
+	if (nID == IDC_INTENSITY_EDIT_HIGH) {
+		ok = sprintf(string, "Value of the Intensity (high) slider.");
 	}
 	if(nID == IDC_SLIDEROFFSET){
 		ok = sprintf(string, "Offset Slider. Should be set so that the column values outside of the plume varies around zero. Exact value shown below.");
@@ -1557,4 +1586,6 @@ void CPostFluxDlg::OnViewShowVsNumber(){
 	// Redraw the column graph
 	ShowColumn();
 }
+
+
 

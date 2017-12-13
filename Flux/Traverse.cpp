@@ -76,6 +76,21 @@ long CTraverse::DeleteLowIntensityPoints(double intensityLimit){
 	return nDeleted;
 }
 
+/* Delete all data points with an intensity higher than @intensityLimit */
+long CTraverse::DeleteHighIntensityPoints(double intensityLimit) {
+	long nDeleted = 0;
+
+	for (long i = 0; i < m_recordNum; ++i) {
+		if (intensArray[i] > intensityLimit) {
+			DeletePoints(i, i + 1);
+			--i;
+			++nDeleted;
+		}
+	}
+
+	return nDeleted;
+}
+
 /** Calculates the flux using the wind field defined by the vectors 'm_windspeed'
     and 'm_windDirection'. */
 double  CTraverse::GetTotalFlux(){
