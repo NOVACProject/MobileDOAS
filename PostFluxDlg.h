@@ -37,7 +37,7 @@ public:
 	CPostFluxDlg(CWnd* pParent = NULL);   // standard constructor
 	~CPostFluxDlg();
 
-	enum { IDD = IDD_DIALOG2 };
+	enum { IDD = IDD_POST_FLUX_DIALOG };
 
 
 protected:

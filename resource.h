@@ -7,7 +7,7 @@
 #define IDD_REEVAL_EVALUATIONLOG        106
 #define IDR_MAINFRAME                   128
 #define IDR_DMSPECTYPE                  129
-#define IDD_DIALOG2                     131
+#define IDD_POST_FLUX_DIALOG                     131
 #define IDD_FLUXDIALOG                  131
 #define IDB_GREEN                       133
 #define IDB_YELLOW                      134
