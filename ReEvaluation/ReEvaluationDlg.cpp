@@ -123,8 +123,8 @@ INT_PTR ReEvaluation::CReEvaluationDlg::DoModal()
 	m_page1.m_reeval = m_reeval;
 
 	// the dark spectrum page
-	m_page2.Construct(IDD_REEVAL_DARK);
-	m_page2.m_reeval = m_reeval;
+	//m_page2.Construct(IDD_REEVAL_DARK);
+	//m_page2.m_reeval = m_reeval;
 
 	// the sky spectrum page
 	m_page3.Construct(IDD_REEVAL_SKY);
@@ -140,7 +140,7 @@ INT_PTR ReEvaluation::CReEvaluationDlg::DoModal()
 
 	// add the pages to the window
 	AddPage(&m_page1);
-	AddPage(&m_page2);
+	//AddPage(&m_page2);
 	AddPage(&m_page3);
 	AddPage(&m_page4);
 	AddPage(&m_page5);
@@ -189,8 +189,8 @@ void ReEvaluation::CReEvaluationDlg::OnMenuLoadSettingsFromFile(){
 		if(0 == reader.ParseFile(m_reeval->m_settings, fileName)){
 			// Update the interface
 			m_page1.UpdateData(FALSE);
-			if(m_page2.m_hWnd != NULL)
-				m_page2.UpdateData(FALSE);
+			//if(m_page2.m_hWnd != NULL)
+			//	m_page2.UpdateData(FALSE);
 			if(m_page3.m_hWnd != NULL){
 				m_page3.UpdateData(FALSE);
 				m_page3.UpdateControls();

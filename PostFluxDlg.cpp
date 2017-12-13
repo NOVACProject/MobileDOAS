@@ -1278,9 +1278,9 @@ void CPostFluxDlg::OnReEvaluateThisTraverse()
 	m_page1.m_reeval = reeval;
 
 	// the dark spectrum page
-	CReEval_DarkDlg m_page2;
-	m_page2.Construct(IDD_REEVAL_DARK);
-	m_page2.m_reeval = reeval;
+	//CReEval_DarkDlg m_page2;
+	//m_page2.Construct(IDD_REEVAL_DARK);
+	//m_page2.m_reeval = reeval;
 
 	// the sky spectrum page
 	CReEval_SkyDlg m_page3;
@@ -1299,7 +1299,7 @@ void CPostFluxDlg::OnReEvaluateThisTraverse()
 
 	// add the pages to the window
 	reEvalDlg.AddPage(&m_page1);
-	reEvalDlg.AddPage(&m_page2);
+	//reEvalDlg.AddPage(&m_page2);
 	reEvalDlg.AddPage(&m_page3);
 	reEvalDlg.AddPage(&m_page4);
 	reEvalDlg.AddPage(&m_page5);
@@ -1326,12 +1326,12 @@ void CPostFluxDlg::OnReEvaluateThisTraverse()
 		if(m_page5.pReEvalThread != NULL){
 		hThread = m_page5.pReEvalThread->m_hThread;
 		messageToUser.Format("ReEvaluation has been stopped");
-		}else{
+		}/*else{
 		if(m_page2.pReEvalThread != NULL){
 			hThread = m_page2.pReEvalThread->m_hThread;
 			messageToUser.Format("Offset Checking has been stopped");
 		}
-		}
+		}*/
 
 		if(hThread != NULL && GetExitCodeThread(hThread, &dwExitCode) && dwExitCode ==STILL_ACTIVE){
 			AfxGetApp()->BeginWaitCursor();

@@ -38,7 +38,7 @@ namespace Configuration{
 
 		/** Enables the controls that should be enabled, and disables
 				the ones which should be disabled */
-		afx_msg void	EnableControls();
+		afx_msg void EnableControls();
 
 		/** Saves the data in the dialog */
 		afx_msg void SaveData();

@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -30,22 +28,27 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // remains consistent on all systems.
 IDR_DMSPECTYPE          ICON                    "res\\DMSpecDoc.ico"
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Bitmap
 //
 
 IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
+
 IDB_GREEN               BITMAP                  "res\\green.bmp"
+
 IDB_YELLOW              BITMAP                  "res\\bitmap2.bmp"
+
 IDB_RED                 BITMAP                  "res\\green1.bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Toolbar
 //
 
-IDR_MAINFRAME TOOLBAR  16, 15
+IDR_MAINFRAME TOOLBAR 16, 15
 BEGIN
     BUTTON      IDC_BTNSTART
     BUTTON      ID_CONTROL_STOP
@@ -68,7 +71,7 @@ END
 // Menu
 //
 
-IDR_MAINFRAME MENU 
+IDR_MAINFRAME MENU
 BEGIN
     POPUP "&Control"
     BEGIN
@@ -76,10 +79,8 @@ BEGIN
         MENUITEM "Stop",                        ID_CONTROL_STOP
         MENUITEM SEPARATOR
         MENUITEM "View Spectrometer Output",    ID_CONTROL_VIEWSPECTRAFROMSPECTROMETER
-
         MENUITEM "Calibrate Spectrometer",      258
         MENUITEM "Start WindMeasurement",       ID_CONTROL_STARTWINDMEASUREMENT
-
         MENUITEM SEPARATOR
         MENUITEM "Test the &GPS",               ID_CONTROL_TESTTHEGPS
         MENUITEM SEPARATOR
@@ -96,14 +97,11 @@ BEGIN
         POPUP "Plot Setting"
         BEGIN
             MENUITEM "Set Background Color",        ID_CONFIGURATION_PLOT_CHANGEBACKGROUND
-
             MENUITEM "Set Plot Color",              ID_CONFIGURATION_PLOT_CHANGEPLOTCOLOR
-
             MENUITEM "Set Plot Color (Slave)",      32784
         END
         MENUITEM SEPARATOR
         MENUITEM "Change Exposure time",        ID_CONFIGURATION_CHANGEEXPOSURETIME
-
     END
     POPUP "&Analysis"
     BEGIN
@@ -112,12 +110,9 @@ BEGIN
         MENUITEM "Calculate &Flux From File",   ID_ANALYSIS_POSTFLUX
         MENUITEM SEPARATOR
         MENUITEM "&WindSpeed Measurement",      ID_ANALYSIS_WINDSPEEDMEASUREMENT
-
         MENUITEM "&PlumeHeight Measurement",    ID_ANALYSIS_PLUMEHEIGHTMEASUREMENT
-
         MENUITEM SEPARATOR
         MENUITEM "&View Measured Spectra",      ID_ANALYSIS_VIEWMEASUREDSPECTRA
-
     END
     POPUP "&View"
     BEGIN
@@ -141,7 +136,7 @@ END
 // Accelerator
 //
 
-IDR_MAINFRAME ACCELERATORS 
+IDR_MAINFRAME ACCELERATORS
 BEGIN
     "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
     VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
@@ -156,10 +151,8 @@ BEGIN
     "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
     VK_F6,          ID_NEXT_PANE,           VIRTKEY, NOINVERT
     VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT, NOINVERT
-    VK_OEM_PLUS,    ID_COLUMNGRAPH_INCREASELINEWIDTH, VIRTKEY, CONTROL, 
-                                                    NOINVERT
-    VK_INSERT,      ID_COLUMNGRAPH_DECREASELINEWIDTH, VIRTKEY, CONTROL, 
-                                                    NOINVERT
+    VK_OEM_PLUS,    ID_COLUMNGRAPH_INCREASELINEWIDTH, VIRTKEY, CONTROL, NOINVERT
+    VK_INSERT,      ID_COLUMNGRAPH_DECREASELINEWIDTH, VIRTKEY, CONTROL, NOINVERT
 END
 
 
@@ -174,13 +167,10 @@ CAPTION "About Mobile DOAS"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
-    LTEXT           "Mobile DOAS Version 6.0",IDC_STATIC_VERSION,40,10,171,8,
-                    SS_NOPREFIX
-    LTEXT           "Copyright (C) 2004 - 2017   Optical Remote Sensing Group",
-                    IDC_STATIC,40,31,207,8
+    LTEXT           "Mobile DOAS Version 6.0",IDC_STATIC_VERSION,40,10,171,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2004 - 2017   Optical Remote Sensing Group",IDC_STATIC,40,31,207,8
     DEFPUSHBUTTON   "OK",IDOK,231,7,50,14,WS_GROUP
-    LTEXT           "Chalmers University of Technology, Sweden",IDC_STATIC,
-                    126,49,140,8
+    LTEXT           "Chalmers University of Technology, Sweden",IDC_STATIC,126,49,140,8
     LTEXT           "Yan Zhang, Mattias Johansson",IDC_STATIC,126,68,99,8
 END
 
@@ -211,8 +201,7 @@ BEGIN
     LTEXT           "",IDC_INTTIME,310,348,45,8
     GROUPBOX        "GPS Information",IDC_STATIC,463,334,178,56
     GROUPBOX        "Initial Setting",IDC_STATIC,35,334,205,56
-    CONTROL         "GPS time",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | 
-                    WS_GROUP,469,347,30,8
+    CONTROL         "GPS time",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,469,347,30,8
     LTEXT           "",IDC_GPSTIME,509,347,46,8
     LTEXT           "Spec No.",IDC_STATIC,379,348,31,8
     LTEXT           "",IDC_SCANNO,410,348,39,8
@@ -221,9 +210,7 @@ BEGIN
     LTEXT           "",IDC_NGPSSAT,608,348,27,8
     LTEXT           "No Spec",IDC_STATIC,380,361,29,8
     LTEXT           "",IDC_SPECNO,410,362,39,8
-    CONTROL         "",IDC_SIGNALLIMIT_SLIDER,"msctls_trackbar32",
-                    TBS_AUTOTICKS | TBS_VERT | TBS_TOP | WS_TABSTOP,647,7,20,
-                    314
+    CONTROL         "",IDC_SIGNALLIMIT_SLIDER,"msctls_trackbar32",TBS_AUTOTICKS | TBS_VERT | TBS_TOP | WS_TABSTOP,647,7,20,314
     LTEXT           "",IDC_LABEL_COLOR_SERIES1,193,322,8,7,WS_BORDER
     LTEXT           "",IDC_LABEL_COLOR_SERIES2,267,322,8,7,WS_BORDER
     LTEXT           "Static",IDC_LABEL_SERIES1,203,320,61,10
@@ -243,46 +230,33 @@ BEGIN
     PUSHBUTTON      "Browse...",IDC_BUTTON_BROWSE_EVLOG,341,15,76,19
     CONTROL         "Ignore completely dark spectra",IDC_RADIO_IGNORE_DARK,
                     "Button",BS_AUTORADIOBUTTON | WS_GROUP,269,83,115,10
-    CONTROL         "Ignore Spectra with Intensity Below:",
-                    IDC_RADIO_IGNORE_LIMIT,"Button",BS_AUTORADIOBUTTON,269,
-                    97,133,10
-    EDITTEXT        IDC_EDIT_IGNORE_INTENSITY,287,107,34,13,ES_AUTOHSCROLL | 
-                    ES_NUMBER
-    EDITTEXT        IDC_EDIT_IGNORE_CHANNEL,373,107,40,13,ES_AUTOHSCROLL | 
-                    ES_NUMBER
+    CONTROL         "Ignore Spectra with Intensity Below:",IDC_RADIO_IGNORE_LIMIT,
+                    "Button",BS_AUTORADIOBUTTON,269,97,133,10
+    EDITTEXT        IDC_EDIT_IGNORE_INTENSITY,287,107,34,13,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_EDIT_IGNORE_CHANNEL,373,107,40,13,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Ignore the Following Spectra:",IDC_RADIO_IGNORE_LIST,
                     "Button",BS_AUTORADIOBUTTON,269,122,111,10
     EDITTEXT        IDC_EDIT_IGNORE_SPECTRA,287,132,123,13,ES_AUTOHSCROLL
-    CONTROL         "Ignore Spectra with Intensity Above:",
-                    IDC_CHECK_IGNORE_SELECTION_UPPER,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,271,167,135,10
-    EDITTEXT        IDC_EDIT_IGNORE_INTENSITY_UPPER,283,178,34,13,
-                    ES_AUTOHSCROLL | ES_NUMBER
-    EDITTEXT        IDC_EDIT_IGNORE_CHANNEL_UPPER,369,178,40,13,
-                    ES_AUTOHSCROLL | ES_NUMBER
-    CONTROL         "&UV",IDC_RADIO_UV,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP,271,218,25,10
-    CONTROL         "&Visible",IDC_RADIO_VISIBLE,"Button",BS_AUTORADIOBUTTON,
-                    329,218,35,10
+    CONTROL         "Ignore Spectra with Intensity Above:",IDC_CHECK_IGNORE_SELECTION_UPPER,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,271,167,135,10
+    EDITTEXT        IDC_EDIT_IGNORE_INTENSITY_UPPER,283,178,34,13,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_EDIT_IGNORE_CHANNEL_UPPER,369,178,40,13,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "&UV",IDC_RADIO_UV,"Button",BS_AUTORADIOBUTTON | WS_GROUP,271,218,25,10
+    CONTROL         "&Visible",IDC_RADIO_VISIBLE,"Button",BS_AUTORADIOBUTTON,329,218,35,10
     GROUPBOX        "",IDC_GRAPH_BOUNDARY,7,91,240,185
     GROUPBOX        "Average",IDC_STATIC,259,41,167,30
-    LTEXT           "No. of spectra to merge together:",IDC_STATIC,270,54,
-                    110,8
-    EDITTEXT        IDC_NMERGE_EDIT,386,51,24,12,ES_AUTOHSCROLL | ES_NUMBER | 
-                    WS_DISABLED
+    LTEXT           "No. of spectra to merge together:",IDC_STATIC,270,54,110,8
+    EDITTEXT        IDC_NMERGE_EDIT,386,51,24,12,ES_AUTOHSCROLL | ES_NUMBER | WS_DISABLED
     GROUPBOX        "Dark Spectra",IDC_STATIC,259,74,167,79
     LTEXT           "at channel",IDC_STATIC,329,108,36,10
     GROUPBOX        "Evaluation Log",IDC_STATIC,7,7,419,32
     GROUPBOX        "Information",IDC_STATIC,259,238,167,38
-    LTEXT           "Averaged Spectra:",IDC_INFORMATION_AVERAGED_SPECTRA,271,
-                    248,140,11
-    LTEXT           "Exposure Time:",IDC_INFORMATION_EXPOSURE_TIME,271,259,
-                    145,12,SS_CENTERIMAGE
+    LTEXT           "Averaged Spectra:",IDC_INFORMATION_AVERAGED_SPECTRA,271,248,140,11
+    LTEXT           "Exposure Time:",IDC_INFORMATION_EXPOSURE_TIME,271,259,145,12,SS_CENTERIMAGE
     GROUPBOX        "Wavelength Range",IDC_STATIC,259,208,167,24
     GROUPBOX        "Saturated Spectra:",IDC_STATIC,259,155,167,45
     LTEXT           "at channel",IDC_STATIC,325,179,36,10
-    PUSHBUTTON      "View Spectra",IDC_BUTTON_VIEWSPECTRA,187,47,60,17,
-                    WS_DISABLED
+    PUSHBUTTON      "View Spectra",IDC_BUTTON_VIEWSPECTRA,187,47,60,17,WS_DISABLED
 END
 
 IDD_REEVAL_DARK DIALOGEX 0, 0, 401, 231
@@ -290,17 +264,13 @@ STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Dark"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    CONTROL         "There is only one dark spectrum in this measurement",
-                    IDC_SINGLE_DARKSPECTRUM,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP,41,20,184,10
-    CONTROL         "There are several dark spectra in this measurement",
-                    IDC_SEVERAL_DARKSPECTRA,"Button",BS_AUTORADIOBUTTON,41,
-                    35,184,10
-    PUSHBUTTON      "Check Spectrum Offsets NOW",IDC_CHECK_OFFSETS,244,171,
-                    56,30,BS_MULTILINE
+    CONTROL         "There is only one dark spectrum in this measurement",IDC_SINGLE_DARKSPECTRUM,
+                    "Button",BS_AUTORADIOBUTTON | WS_GROUP,41,20,184,10
+    CONTROL         "There are several dark spectra in this measurement",IDC_SEVERAL_DARKSPECTRA,
+                    "Button",BS_AUTORADIOBUTTON,41,35,184,10
+    PUSHBUTTON      "Check Spectrum Offsets NOW",IDC_CHECK_OFFSETS,244,171,56,30,BS_MULTILINE
     GROUPBOX        "",IDC_BOUNDARY,7,78,229,146
-    CONTROL         "",IDC_PROGRESS1,"msctls_progress32",WS_BORDER | 0x1,248,
-                    212,146,12
+    CONTROL         "",IDC_PROGRESS1,"msctls_progress32",PBS_SMOOTH | WS_BORDER,248,212,146,12
 END
 
 IDD_REEVAL_SKY DIALOGEX 0, 0, 382, 177
@@ -310,29 +280,15 @@ FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     CONTROL         "Use first spectrum as sky reference",IDC_SINGLE_SKY,
                     "Button",BS_AUTORADIOBUTTON | WS_GROUP,33,25,129,10
-    CONTROL         "Use average of all spectra as sky reference",
-                    IDC_ALL_SKY,"Button",BS_AUTORADIOBUTTON,33,39,155,10
-    CONTROL         "Use all spectra witch fulfill:",IDC_CONDITIONAL_SKY,
-                    "Button",BS_AUTORADIOBUTTON,33,52,101,10
-    CONTROL         "Use The Following Spectrum:",IDC_USER_SKY,"Button",
-                    BS_AUTORADIOBUTTON,35,101,108,10
-    EDITTEXT        IDC_LOW_INTENSITY,123,66,30,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_HIGH_INTENSITY,177,66,30,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_INTENSITY_CHANNEL,252,66,30,12,ES_AUTOHSCROLL | 
-                    ES_NUMBER
-    LTEXT           "and",IDC_STATIC,158,68,13,8
-    LTEXT           "at channel",IDC_STATIC,214,68,34,8
-    EDITTEXT        IDC_COLUMN_LOW,123,82,52,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_COLUMN_HIGH,195,82,52,12,ES_AUTOHSCROLL
-    LTEXT           "and",IDC_STATIC,180,84,13,8
-    LTEXT           "Intensity between:",IDC_STATIC,55,68,62,8
-    LTEXT           "Ev. Log column:",IDC_STATIC,55,84,52,8
-    EDITTEXT        IDC_EDIT_SKYSPEC,55,113,257,13,ES_AUTOHSCROLL
-    PUSHBUTTON      "Browse...",IDC_BUTTON_BROWSE_SKY,318,110,41,16
-    LTEXT           "(With the following dark:",IDC_STATIC,53,132,80,8
-    EDITTEXT        IDC_EDIT_SKYSPECDARK,136,130,177,13,ES_AUTOHSCROLL
-    PUSHBUTTON      "Browse...",IDC_BUTTON_BROWSE_DARK,317,129,41,16
-    LTEXT           ")",IDC_STATIC,359,132,8,8
+    CONTROL         "Use average of all spectra as sky reference",IDC_ALL_SKY,
+                    "Button",BS_AUTORADIOBUTTON,33,39,155,10
+    CONTROL         "Use The Following Spectrum:",IDC_USER_SKY,"Button",BS_AUTORADIOBUTTON,33,52,108,10
+    EDITTEXT        IDC_EDIT_SKYSPEC,55,66,257,13,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse...",IDC_BUTTON_BROWSE_SKY,318,63,41,16
+    LTEXT           "(With the following dark:",IDC_STATIC,53,87,80,8
+    EDITTEXT        IDC_EDIT_SKYSPECDARK,136,85,177,13,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse...",IDC_BUTTON_BROWSE_DARK,317,84,41,16
+    LTEXT           ")",IDC_STATIC,359,87,8,8
 END
 
 IDD_REEVAL_EVALUATE DIALOGEX 0, 0, 423, 265
@@ -341,30 +297,24 @@ CAPTION "Do Evaluation"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     PUSHBUTTON      "Evaluate NOW",IDC_DOEVALUATION,277,241,76,17
-    CONTROL         "",IDC_PROGRESS1,"msctls_progress32",WS_BORDER | 0x1,7,
-                    242,145,16
+    CONTROL         "",IDC_PROGRESS1,"msctls_progress32",PBS_SMOOTH | WS_BORDER,7,242,145,16
     LTEXT           "...",IDC_STATUSBAR,157,243,103,15
     PUSHBUTTON      "Cancel",IDC_CANCEL,359,241,57,17,WS_DISABLED
-    LISTBOX         IDC_OUTPUT_LIST,18,17,200,102,LBS_NOINTEGRALHEIGHT | 
-                    WS_VSCROLL | WS_TABSTOP
+    LISTBOX         IDC_OUTPUT_LIST,18,17,200,102,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Output:",IDC_STATIC,7,7,26,8
     GROUPBOX        "Fit",IDC_FIT_WINDOW,221,7,195,113
     GROUPBOX        "Show",IDC_STATIC,222,124,72,47
-    CONTROL         "&Fit",IDC_RADIO_FIT,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP,235,135,24,10
-    CONTROL         "&Residual",IDC_RADIO_RESIDUAL,"Button",
-                    BS_AUTORADIOBUTTON,235,150,43,10
+    CONTROL         "&Fit",IDC_RADIO_FIT,"Button",BS_AUTORADIOBUTTON | WS_GROUP,235,135,24,10
+    CONTROL         "&Residual",IDC_RADIO_RESIDUAL,"Button",BS_AUTORADIOBUTTON,235,150,43,10
     GROUPBOX        "Fit Result",IDC_STATIC,18,122,199,108
     LTEXT           "Chi²:",IDC_REEVAL_FITRESULT_CHI2,27,145,58,11
     LTEXT           "SO2:",IDC_REEVAL_FITRESULT_REFERENCE1,27,159,152,11
     LTEXT           "NO2:",IDC_REEVAL_FITRESULT_REFERENCE3,27,185,149,11
     LTEXT           "O3:",IDC_REEVAL_FITRESULT_REFERENCE2,27,172,156,11
     LTEXT           "Ring:",IDC_REEVAL_FITRESULT_REFERENCE4,27,198,152,11
-    CONTROL         "&Pause",IDC_REEVAL_PAUSE,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,303,133,35,10
+    CONTROL         "&Pause",IDC_REEVAL_PAUSE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,303,133,35,10
     LTEXT           "Spectrum:",IDC_REEVAL_FITRESULT_SPECTRUMNO,27,132,58,11
-    LTEXT           "Sky shift:",IDC_REEVAL_FITRESULT_REFERENCE5,27,211,152,
-                    11
+    LTEXT           "Sky shift:",IDC_REEVAL_FITRESULT_REFERENCE5,27,211,152,11
 END
 
 IDD_REEVAL_FITWINDOW DIALOGEX 0, 0, 423, 241
@@ -384,16 +334,12 @@ BEGIN
     LTEXT           "[pixel]",IDC_STATIC,203,32,22,8
     GROUPBOX        "Fit Type",IDC_STATIC,238,7,178,55
     GROUPBOX        "References",IDC_REEVAL_WINDOWS_GRIDFRAME,7,71,409,144
-    CONTROL         "High pass filtering, divide by sky",
-                    IDC_REEVAL_FITTYPE_DIVIDE,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP,248,17,119,10
-    CONTROL         "High pass filtering, subtract sky",
-                    IDC_REEVAL_FITTYPE_SUBTRACT,"Button",BS_AUTORADIOBUTTON,
-                    248,30,119,10
-    CONTROL         "Polynomial",IDC_REEVAL_FITTYPE_POLYNOMIAL,"Button",
-                    BS_AUTORADIOBUTTON,248,43,49,10
-    LISTBOX         IDC_REEVAL_FITWINDOWLIST,15,17,72,38,LBS_SORT | 
-                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "High pass filtering, divide by sky",IDC_REEVAL_FITTYPE_DIVIDE,
+                    "Button",BS_AUTORADIOBUTTON | WS_GROUP,248,17,119,10
+    CONTROL         "High pass filtering, subtract sky",IDC_REEVAL_FITTYPE_SUBTRACT,
+                    "Button",BS_AUTORADIOBUTTON,248,30,119,10
+    CONTROL         "Polynomial",IDC_REEVAL_FITTYPE_POLYNOMIAL,"Button",BS_AUTORADIOBUTTON,248,43,49,10
+    LISTBOX         IDC_REEVAL_FITWINDOWLIST,15,17,72,38,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "Insert Reference",IDC_INSERT_REFERENCE,117,220,82,14
     PUSHBUTTON      "Remove Reference",IDC_REMOVE_REFERENCE,207,220,82,14
     PUSHBUTTON      "Properties",IDC_REFERENCE_PROPERTIES,299,220,59,14
@@ -413,8 +359,7 @@ BEGIN
     LTEXT           "[pixels]",IDC_STATIC,194,19,24,8
     LTEXT           "[pixels]",IDC_STATIC,194,32,24,8
     GROUPBOX        "Fit Window",IDC_STATIC,7,7,87,55
-    LISTBOX         IDC_REEVAL_FITWINDOWLIST,15,17,72,38,
-                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LISTBOX         IDC_REEVAL_FITWINDOWLIST,15,17,72,38,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
     GROUPBOX        "Fit Parameters",IDC_STATIC,102,7,134,55
     EDITTEXT        IDC_REEVAL_WINDOW_POLYNOM2,152,43,53,13,ES_AUTOHSCROLL
     LTEXT           "Polynom:",IDC_STATIC,109,46,30,8
@@ -422,8 +367,7 @@ BEGIN
     PUSHBUTTON      "Remove Reference",IDC_REMOVE_REFERENCE,245,193,82,14
     GROUPBOX        "Misc.",IDC_STATIC,246,7,134,55
     LTEXT           "Spectrometer channel:",IDC_STATIC,253,17,74,8
-    COMBOBOX        IDC_COMBO_CHANNEL,332,15,44,139,CBS_DROPDOWNLIST | 
-                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_CHANNEL,332,15,44,139,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "View",IDC_REFERENCE_VIEW,334,193,51,14
 END
 
@@ -432,23 +376,15 @@ STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Spectrometer"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    CONTROL         "USB-Connection",IDC_RADIO_CONNECTION_USB,"Button",
-                    BS_AUTORADIOBUTTON | WS_GROUP,15,17,67,10
-    CONTROL         "Serial-Connection",IDC_RADIO_CONNECTION_SERIAL,"Button",
-                    BS_AUTORADIOBUTTON,16,28,72,10
-    COMBOBOX        IDC_COMBO_PORT,63,42,68,222,CBS_DROPDOWNLIST | 
-                    WS_VSCROLL | WS_TABSTOP
-    COMBOBOX        IDC_COMBO_BAUDRATE,63,57,68,190,CBS_DROPDOWNLIST | 
-                    WS_VSCROLL | WS_TABSTOP
-    COMBOBOX        IDC_COMBO_NCHANNELS,63,73,37,188,CBS_DROPDOWNLIST | 
-                    WS_VSCROLL | WS_TABSTOP
-    CONTROL         "Automatic",IDC_RADIO_EXPTIME_AUTOMATIC,"Button",
-                    BS_AUTORADIOBUTTON | WS_GROUP,155,17,48,10
-    CONTROL         "Fixed to:",IDC_RADIO_EXPTIME_FIXED,"Button",
-                    BS_AUTORADIOBUTTON,155,58,45,10
-    CONTROL         "Adaptive [N.B: Requires stable temperature]",
-                    IDC_RADIO_EXPTIME_ADAPTIVE,"Button",BS_AUTORADIOBUTTON,
-                    156,72,159,10
+    CONTROL         "USB-Connection",IDC_RADIO_CONNECTION_USB,"Button",BS_AUTORADIOBUTTON | WS_GROUP,15,17,67,10
+    CONTROL         "Serial-Connection",IDC_RADIO_CONNECTION_SERIAL,"Button",BS_AUTORADIOBUTTON,16,28,72,10
+    COMBOBOX        IDC_COMBO_PORT,63,42,68,222,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_BAUDRATE,63,57,68,190,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_NCHANNELS,63,73,37,188,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Automatic",IDC_RADIO_EXPTIME_AUTOMATIC,"Button",BS_AUTORADIOBUTTON | WS_GROUP,155,17,48,10
+    CONTROL         "Fixed to:",IDC_RADIO_EXPTIME_FIXED,"Button",BS_AUTORADIOBUTTON,155,58,45,10
+    CONTROL         "Adaptive [N.B: Requires stable temperature]",IDC_RADIO_EXPTIME_ADAPTIVE,
+                    "Button",BS_AUTORADIOBUTTON,156,72,159,10
     EDITTEXT        IDC_EDIT_SPECCENTER,237,26,50,12,ES_AUTOHSCROLL
     EDITTEXT        IDC_EDIT_PERCENT,205,41,50,12,ES_AUTOHSCROLL
     EDITTEXT        IDC_EDIT_FIXEXPTIME,206,56,50,12,ES_AUTOHSCROLL
@@ -480,14 +416,11 @@ STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "GPS"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    CONTROL         "Use GPS-Reciever",IDC_CHECK_USEGPS,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,9,9,73,10
+    CONTROL         "Use GPS-Reciever",IDC_CHECK_USEGPS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,9,9,73,10
     LTEXT           "Serial port:",IDC_STATIC,16,25,36,8
     LTEXT           "Baudrate:",IDC_STATIC,14,44,33,8
-    COMBOBOX        IDC_COMBO_GPS_PORT,57,23,51,168,CBS_DROPDOWNLIST | 
-                    WS_VSCROLL | WS_TABSTOP
-    COMBOBOX        IDC_COMBO_GPS_BAUDRATE,57,41,51,167,CBS_DROPDOWN | 
-                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_GPS_PORT,57,23,51,168,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_GPS_BAUDRATE,57,41,51,167,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
 END
 
 
@@ -536,7 +469,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
@@ -641,18 +574,18 @@ END
 // String Table
 //
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDR_MAINFRAME           "DMSpec\n\nDMSpec\n\n\nDMSpec.Document\nDMSpec Document"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     AFX_IDS_APP_TITLE       "DMSpec"
     AFX_IDS_IDLEMESSAGE     "Ready"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_INDICATOR_EXT        "EXT"
     ID_INDICATOR_CAPS       "CAP"
@@ -662,7 +595,7 @@ BEGIN
     ID_INDICATOR_REC        "REC"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_FILE_NEW             "Create a new document\nNew"
     ID_FILE_OPEN            "Open an existing document\nOpen"
@@ -671,13 +604,13 @@ BEGIN
     ID_FILE_SAVE_AS         "Save the active document with a new name\nSave As"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_APP_ABOUT            "Display program information, version number and copyright\nAbout"
     ID_APP_EXIT             "Quit the application\nExit"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_FILE_MRU_FILE1       "Open this document"
     ID_FILE_MRU_FILE2       "Open this document"
@@ -697,18 +630,18 @@ BEGIN
     ID_FILE_MRU_FILE16      "Open this document"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_NEXT_PANE            "Switch to the next window pane\nNext Pane"
     ID_PREV_PANE            "Switch back to the previous window pane\nPrevious Pane"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_WINDOW_SPLIT         "Split the active window into panes\nSplit"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_EDIT_CLEAR           "Erase the selection\nErase"
     ID_EDIT_CLEAR_ALL       "Erase everything\nErase All"
@@ -723,13 +656,13 @@ BEGIN
     ID_EDIT_REDO            "Redo the previously undone action\nRedo"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_VIEW_TOOLBAR         "Show or hide the toolbar\nToggle ToolBar"
     ID_VIEW_STATUS_BAR      "Show or hide the status bar\nToggle StatusBar"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     AFX_IDS_SCSIZE          "Change the window size"
     AFX_IDS_SCMOVE          "Change the window position"
@@ -740,13 +673,13 @@ BEGIN
     AFX_IDS_SCCLOSE         "Close the active window and prompts to save the documents"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     AFX_IDS_SCRESTORE       "Restore the window to normal size"
     AFX_IDS_SCTASKLIST      "Activate Task List"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_ANALYSIS_POSTFLUX    "Calculate total flux from evaluation log file\nCalculate Flux"
     ID_CONTROL_STOP         "Stop the data collection\nStop collecting spectra"
@@ -756,38 +689,38 @@ BEGIN
     ID_CONFIGURATION_PLOT_CHANGEPLOTCOLOR "Set color used for columns"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDC_BTNSTART            "Start traverse\nStart traverse"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     32784                   "Set color used for columns from Slave-channel"
     ID_CONFIGURATION_OPERATION 
                             "Configure operation settings\nConfigure MobileDOAS"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     AFX_IDS_UNTITLED        "Untitled"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_VIEW_REALTIMEROUTE   "Show the traverse route in real time"
     ID_CONTROL_ADDCOMMENT   "Writes a comment with the current location and time to a ""Comments.txt"" in output directory."
     ID_CONTROL_REEVALUATE   "Opens the ReEvaluation dialog. Enables post processing of spectra\nReEvaluate spectra"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_CONFIGURATION_CHANGEEXPOSURETIME 
                             "Changes the exposure time of the spectra on the fly"
     ID_VIEW_SPECTRUMFIT     "Show the spectral fit in real-time"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_CONTROL_STARTWINDMEASUREMENT 
                             "Measure wind speed using the Dual-beam technique\nDual-Beam Wind measurement"
@@ -796,7 +729,7 @@ BEGIN
                             "View spectra from the spectrometer without evaluation or saving\nView Spectra"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_ANALYSIS_WINDSPEEDMEASUREMENT 
                             "Analyse a dual-beam wind-speed measurement"
@@ -805,36 +738,36 @@ BEGIN
     ID_CONTROL_TESTTHEGPS   "Test which COM-port the GPS is connected to"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDC_COMBO_PORT          "Which port is used to communicate with the spectrometer"
     IDC_COMBO_BAUDRATE      "What baudrate is used to communicate with the spectrometer"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDC_COMBO_NCHANNELS     "How many channels shall be used on the spectrometer"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDC_EDIT_SPECCENTER     "The channel (pixel) at which the intensity should be measured"
     IDC_EDIT_PERCENT        "The desired saturation ratio at the given channel (0 -> 100%)"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDC_EDIT_FIXEXPTIME     "A manually set exposure-time, in ms. Will disable the automatic judgement of exposuretime"
     IDC_EDIT_TIMERESOLUTION "How often shall a spectrum be saved? In ms"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDC_EDIT_OFFSETFROM     "The average value between channels 'offsetFrom' and 'offsetTo' will be removed from each spectrum"
     IDC_EDIT_OFFSETTO       "The average value between channels 'offsetFrom' and 'offsetTo' will be removed from each spectrum"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_CONTROL_CALIBRATESPECTROMETER 
                             "Collect single spectra with the attached spectrometer."
@@ -842,23 +775,21 @@ BEGIN
                             "Browse through the spectra from a measurement"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_HELP_ABOUTMOBILEDOAS "Shows information about MobileDOAS\nAbout"
 END
 
-#endif    // English (U.S.) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// Swedish resources
+// Swedish (Sweden) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_SVE)
-#ifdef _WIN32
-LANGUAGE LANG_SWEDISH, SUBLANG_DEFAULT
+LANGUAGE LANG_SWEDISH, SUBLANG_SWEDISH
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -869,20 +800,23 @@ LANGUAGE LANG_SWEDISH, SUBLANG_DEFAULT
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\Logo.ico"
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Bitmap
 //
 
 IDB_BLUE                BITMAP                  "res\\bmp00002.bmp"
+
 IDB_CHALMERS            BITMAP                  "res\\CHALMERSAvancez30.bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Menu
 //
 
-IDR_FLUX_MENU MENU 
+IDR_FLUX_MENU MENU
 BEGIN
     POPUP "&File"
     BEGIN
@@ -891,13 +825,10 @@ BEGIN
         MENUITEM "Re&Evaluate This Log File",   155
         MENUITEM SEPARATOR
         MENUITEM "Create Additional Log File",  ID_FILE_CREATEADDITIONALLOGFILE
-
         MENUITEM SEPARATOR
         MENUITEM "E&xport This Log File",       ID_FILE_EXPORTTHISLOGFILE
         MENUITEM "&Save Column Graph",          ID_FILE_SAVECOLUMNGRAPH
-        MENUITEM "Export traverse to &Google Earth", 
-                                                ID_FILE_EXPORT_TRAVERSE_TO_KML
-
+        MENUITEM "Export traverse to &Google Earth", ID_FILE_EXPORT_TRAVERSE_TO_KML
         MENUITEM SEPARATOR
         MENUITEM "Close &All Log Files",        ID_FILE_CLOSEALLLOGFILES
     END
@@ -918,17 +849,13 @@ BEGIN
         BEGIN
             MENUITEM "Show vs Time",                ID_VIEW_SHOWVSTIME
             MENUITEM "Show vs Distance Travelled",  ID_VIEW_SHOWVSDISTANCETRAVELLED
-
             MENUITEM "Show vs Measurement Number",  ID_VIEW_SHOWVSMEASUREMENTNUMBER
-
         END
         MENUITEM SEPARATOR
         POPUP "Column Graph"
         BEGIN
             MENUITEM "Increase Line Width",         ID_COLUMNGRAPH_INCREASELINEWIDTH
-
             MENUITEM "Decrease Line Width",         ID_COLUMNGRAPH_DECREASELINEWIDTH
-
         END
     END
     POPUP "&Help"
@@ -937,7 +864,7 @@ BEGIN
     END
 END
 
-IDR_FLUX_PATH_MENU MENU 
+IDR_FLUX_PATH_MENU MENU
 BEGIN
     POPUP ""
     BEGIN
@@ -947,7 +874,7 @@ BEGIN
     END
 END
 
-IDR_REEVAL_CONTEXTMENU MENU 
+IDR_REEVAL_CONTEXTMENU MENU
 BEGIN
     POPUP ""
     BEGIN
@@ -956,7 +883,7 @@ BEGIN
     END
 END
 
-IDR_ROUTEDLG_MENU MENU 
+IDR_ROUTEDLG_MENU MENU
 BEGIN
     POPUP "&File"
     BEGIN
@@ -970,12 +897,9 @@ BEGIN
             MENUITEM "&Grid",                       ID_CHANGECOLORS_GRID
             MENUITEM "Circles",                     ID_CHANGECOLORS_CIRCLES
             MENUITEM "&WindField",                  ID_CHANGECOLORS_WINDFIELD
-
             MENUITEM SEPARATOR
             MENUITEM "ColorScheme - B && W",        ID_CHANGECOLORS_COLORSCALEBW
-
             MENUITEM "ColorScheme - Default",       ID_CHANGECOLORS_COLORSCALEDEFAULT
-
         END
         POPUP "Grid"
         BEGIN
@@ -988,14 +912,12 @@ BEGIN
         POPUP "Indicate Column Value By"
         BEGIN
             MENUITEM "Color",                       ID_INDICATECOLUMNVALUEBY_COLOR
-
             MENUITEM "Size of Circle",              ID_INDICATECOLUMNVALUEBY_SIZEOFCIRCLE
-
         END
     END
 END
 
-IDR_FLUX_VIEW_MENU MENU 
+IDR_FLUX_VIEW_MENU MENU
 BEGIN
     POPUP ""
     BEGIN
@@ -1016,7 +938,7 @@ BEGIN
     END
 END
 
-IDR_FITWINDOWLIST_MENU MENU 
+IDR_FITWINDOWLIST_MENU MENU
 BEGIN
     POPUP ""
     BEGIN
@@ -1027,12 +949,11 @@ BEGIN
     END
 END
 
-IDR_REEVAL_DLG_MENU MENU 
+IDR_REEVAL_DLG_MENU MENU
 BEGIN
     POPUP "&File"
     BEGIN
         MENUITEM "&Browse for EvaluationLog",   ID_FILE_BROWSEFOREVALUATIONLOG
-
         MENUITEM "&Close",                      ID_FILE_CLOSE239
     END
     POPUP "&Settings"
@@ -1047,7 +968,7 @@ BEGIN
     END
 END
 
-IDR_MENU_REEVAL_SCRIPT MENU 
+IDR_MENU_REEVAL_SCRIPT MENU
 BEGIN
     POPUP "&File"
     BEGIN
@@ -1063,8 +984,7 @@ END
 //
 
 IDD_DIALOG2 DIALOGEX 0, 0, 605, 419
-STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTERMOUSE | WS_POPUP | WS_CAPTION | 
-    WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTERMOUSE | WS_POPUP | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_LEFTSCROLLBAR | WS_EX_APPWINDOW
 CAPTION "Post Flux Calculation "
 MENU IDR_FLUX_MENU
@@ -1076,8 +996,7 @@ BEGIN
     EDITTEXT        IDC_FLUXDLAT,524,121,66,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_FLUXDOFFSET,415,342,27,14,ES_AUTOHSCROLL
     LTEXT           "Wind Speed [m/s]",IDC_STATIC,455,92,58,8,SS_CENTERIMAGE
-    LTEXT           "Wind Direction [deg]",IDC_STATIC,455,108,66,8,
-                    SS_CENTERIMAGE
+    LTEXT           "Wind Direction [deg]",IDC_STATIC,455,108,66,8,SS_CENTERIMAGE
     CTEXT           "Offset",IDC_STATIC,415,7,23,10,SS_CENTERIMAGE
     PUSHBUTTON      "&Open Log File(s)",IDC_BTNCHOOSEFILE,482,18,69,14
     PUSHBUTTON      ">>",IDC_BTNFOR,346,344,57,12
@@ -1085,42 +1004,28 @@ BEGIN
     LTEXT           "Max Center",IDC_MAXWD,487,173,101,8,SS_NOTIFY
     LTEXT           "Average Center",IDC_AVWD,487,186,101,8,SS_NOTIFY
     GROUPBOX        "Calculated wind direction",IDC_STATIC,451,162,147,40
-    CONTROL         134,IDC_STATIC,"Static",SS_BITMAP | SS_SUNKEN,463,186,17,
-                    5
-    CONTROL         133,IDC_STATIC,"Static",SS_BITMAP | SS_SUNKEN,463,175,17,
-                    5
+    CONTROL         IDB_YELLOW,IDC_STATIC,"Static",SS_BITMAP | SS_SUNKEN,463,186,17,5
+    CONTROL         IDB_GREEN,IDC_STATIC,"Static",SS_BITMAP | SS_SUNKEN,463,175,17,5
     GROUPBOX        "Settings",IDC_STATIC,451,7,147,151
     LTEXT           "From",IDC_STATIC,22,361,16,8
-    EDITTEXT        IDC_FLUXDFROM,408,362,27,14,ES_AUTOHSCROLL | ES_READONLY | 
-                    NOT WS_BORDER
+    EDITTEXT        IDC_FLUXDFROM,408,362,27,14,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
     LTEXT           "To",IDC_STATIC,22,378,10,8
-    EDITTEXT        IDC_FLUXDTO,408,379,27,12,ES_AUTOHSCROLL | ES_READONLY | 
-                    NOT WS_BORDER
-    CONTROL         "Slider1",IDC_SLIDERFROM,"msctls_trackbar32",
-                    TBS_AUTOTICKS | WS_TABSTOP,43,358,365,15
-    CONTROL         "Slider2",IDC_SLIDERTO,"msctls_trackbar32",TBS_AUTOTICKS | 
-                    TBS_TOP | TBS_NOTICKS | WS_TABSTOP,43,374,365,15
+    EDITTEXT        IDC_FLUXDTO,408,379,27,12,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
+    CONTROL         "Slider1",IDC_SLIDERFROM,"msctls_trackbar32",TBS_AUTOTICKS | WS_TABSTOP,43,358,365,15
+    CONTROL         "Slider2",IDC_SLIDERTO,"msctls_trackbar32",TBS_AUTOTICKS | TBS_TOP | TBS_NOTICKS | WS_TABSTOP,43,374,365,15
     PUSHBUTTON      "Delete Selected",IDC_BTNDEL,49,394,57,14
-    CONTROL         "Slider3",IDC_SLIDEROFFSET,"msctls_trackbar32",TBS_VERT | 
-                    TBS_TOP | WS_TABSTOP,416,18,23,316
-    CONTROL         "",IDC_SLIDERINTENSITY,"msctls_trackbar32",TBS_AUTOTICKS | 
-                    TBS_VERT | WS_TABSTOP,1,18,19,316
+    CONTROL         "Slider3",IDC_SLIDEROFFSET,"msctls_trackbar32",TBS_VERT | TBS_TOP | WS_TABSTOP,416,18,23,316
+    CONTROL         "",IDC_SLIDERINTENSITY,"msctls_trackbar32",TBS_AUTOTICKS | TBS_VERT | WS_TABSTOP,1,18,19,316
     LTEXT           "Int.",IDC_STATIC,3,10,11,8
-    PUSHBUTTON      "Delete Low Intensity Points",IDC_BTN_DEL_LOW_INTENSITY,
-                    110,394,90,14
+    PUSHBUTTON      "Delete Low Intensity Points",IDC_BTN_DEL_LOW_INTENSITY,110,394,90,14
     EDITTEXT        IDC_FLUX_EDIT,523,332,51,13,ES_AUTOHSCROLL
     EDITTEXT        IDC_INTENSITY_EDIT,0,343,22,14,ES_AUTOHSCROLL
     LTEXT           "Static",IDC_STATISTICS,459,268,131,22
     EDITTEXT        IDC_FLUXDLON,524,138,66,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "Source Latitude",IDC_BTN_SOURCE_LAT,455,121,64,14,
-                    BS_FLAT
-    PUSHBUTTON      "Source Longitude",IDC_BTN_SOURCE_LONG,455,138,64,14,
-                    BS_FLAT
-    LISTBOX         IDC_PATH_LIST,455,34,136,51,LBS_USETABSTOPS | 
-                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | 
-                    WS_TABSTOP,WS_EX_CLIENTEDGE | WS_EX_LEFTSCROLLBAR
-    COMBOBOX        IDC_UNIT_COMBO,523,318,50,55,CBS_DROPDOWNLIST | CBS_SORT | 
-                    WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Source Latitude",IDC_BTN_SOURCE_LAT,455,121,64,14,BS_FLAT
+    PUSHBUTTON      "Source Longitude",IDC_BTN_SOURCE_LONG,455,138,64,14,BS_FLAT
+    LISTBOX         IDC_PATH_LIST,455,34,136,51,LBS_USETABSTOPS | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP,WS_EX_CLIENTEDGE | WS_EX_LEFTSCROLLBAR
+    COMBOBOX        IDC_UNIT_COMBO,523,318,50,55,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     GROUPBOX        "Traverse Properties",IDC_STATIC,451,205,147,94
     LTEXT           "Averaged Spectra",IDC_STATIC_AVERAGE,460,218,123,10
     LTEXT           "Exposure Time",IDC_STATIC_EXPTIME,460,231,123,10
@@ -1130,8 +1035,7 @@ BEGIN
     GROUPBOX        "Flux:",IDC_STATIC,451,304,147,108
     LTEXT           "Unit of the flux:",IDC_STATIC,458,320,48,8
     LTEXT           "Calculated Flux:",IDC_STATIC,458,333,51,8
-    LTEXT           "Error range, estimated from column errors:",IDC_STATIC,
-                    458,346,131,8
+    LTEXT           "Error range, estimated from column errors:",IDC_STATIC,458,346,131,8
 END
 
 IDD_ROUTEDLG DIALOGEX 0, 0, 622, 451
@@ -1143,49 +1047,38 @@ FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     LTEXT           "...",IDC_STATIC_LATITUDE,469,6,67,15
     LTEXT           "...",IDC_STATIC_LONGITUDE,469,21,67,15
-    CONTROL         "Show Source",IDC_CHECK_SHOW_SOURCE,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,469,36,59,10
+    CONTROL         "Show Source",IDC_CHECK_SHOW_SOURCE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,469,36,59,10
     EDITTEXT        IDC_SRC_LAT_EDIT,532,48,61,12,ES_AUTOHSCROLL
     EDITTEXT        IDC_SRC_LON_EDIT,532,61,61,12,ES_AUTOHSCROLL
     GROUPBOX        "Symbols",IDC_STATIC,469,142,146,35
-    CONTROL         133,IDC_STATIC,"Static",SS_BITMAP,477,154,16,4
+    CONTROL         IDB_GREEN,IDC_STATIC,"Static",SS_BITMAP,477,154,16,4
     LTEXT           "Traverse start",IDC_STATIC,497,151,44,8
-    CONTROL         135,IDC_STATIC,"Static",SS_BITMAP,477,164,16,4
+    CONTROL         IDD_ROUTEDLG,IDC_STATIC,"Static",SS_BITMAP,477,164,16,4
     LTEXT           "Source",IDC_STATIC,497,162,24,8
     CONTROL         "Calc. Bearing and Distance",IDC_CHECK_CALC_DISTANCE,
-                    "Button",BS_AUTOCHECKBOX | BS_PUSHLIKE | BS_MULTILINE | 
-                    WS_TABSTOP,469,378,56,23
+                    "Button",BS_AUTOCHECKBOX | BS_PUSHLIKE | BS_MULTILINE | WS_TABSTOP,469,378,56,23
     LTEXT           "Static",IDC_BEARING_LABEL,540,394,75,9
     LTEXT           "Static",IDC_DISTANCE_LABEL,540,378,75,9
     GROUPBOX        "Display",IDC_STATIC,469,183,146,162
-    CONTROL         "Column",IDC_SHOW_COLUMN,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP,479,194,39,10
-    CONTROL         "Altitude",IDC_SHOW_ALTITUDE,"Button",BS_AUTORADIOBUTTON,
-                    479,206,39,10
-    CONTROL         "Intensity",IDC_SHOW_INTENSITY,"Button",
-                    BS_AUTORADIOBUTTON,479,218,42,10
-    LISTBOX         IDC_EVALLOG_LIST,479,231,127,60,LBS_MULTIPLESEL | 
-                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | 
-                    WS_TABSTOP
-    CONTROL         "Interpolated Windfield",
-                    IDC_CHECK_SHOW_INTERPOLATED_WINDFIELD,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,473,296,84,9
+    CONTROL         "Column",IDC_SHOW_COLUMN,"Button",BS_AUTORADIOBUTTON | WS_GROUP,479,194,39,10
+    CONTROL         "Altitude",IDC_SHOW_ALTITUDE,"Button",BS_AUTORADIOBUTTON,479,206,39,10
+    CONTROL         "Intensity",IDC_SHOW_INTENSITY,"Button",BS_AUTORADIOBUTTON,479,218,42,10
+    LISTBOX         IDC_EVALLOG_LIST,479,231,127,60,LBS_MULTIPLESEL | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
+    CONTROL         "Interpolated Windfield",IDC_CHECK_SHOW_INTERPOLATED_WINDFIELD,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,473,296,84,9
     LTEXT           "Point Size",IDC_STATIC,476,315,32,8
     EDITTEXT        IDC_ROUTDLG_POINTSIZEEDIT,483,325,28,13,ES_AUTOHSCROLL
-    CONTROL         "",IDC_ROUTEDLG_POINTSIZESPIN,"msctls_updown32",
-                    UDS_ARROWKEYS,511,324,12,13
-    PUSHBUTTON      "&Import wind field",IDC_BTN_IMPORT_WINDFIELD,469,356,59,
-                    13
+    CONTROL         "",IDC_ROUTEDLG_POINTSIZESPIN,"msctls_updown32",UDS_ARROWKEYS,511,324,12,13
+    PUSHBUTTON      "&Import wind field",IDC_BTN_IMPORT_WINDFIELD,469,356,59,13
     GROUPBOX        "Landmarks",IDC_FRAME_LANDMARKS,469,78,146,60
-    CONTROL         208,IDC_STATIC,"Static",SS_BITMAP,553,154,16,4
+    CONTROL         IDB_BLUE,IDC_STATIC,"Static",SS_BITMAP,553,154,16,4
     LTEXT           "Landmarks",IDC_STATIC,573,151,36,8
     PUSHBUTTON      "Latitude:",IDC_BTN_SOURCE_LAT,479,48,50,12,BS_FLAT
     PUSHBUTTON      "Longitude:",IDC_BTN_SOURCE_LON,479,61,50,12,BS_FLAT
 END
 
 IDD_INFORMATIONDIALOG DIALOGEX 0, 0, 392, 73
-STYLE DS_SYSMODAL | DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | 
-    DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+STYLE DS_SYSMODAL | DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "Information"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
@@ -1195,8 +1088,7 @@ BEGIN
 END
 
 IDD_REALTIME_ROUTE_DLG DIALOGEX 400, 0, 304, 200
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | 
-    WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 EXSTYLE WS_EX_TOOLWINDOW
 CAPTION "RealTime Route"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
@@ -1204,8 +1096,7 @@ BEGIN
 END
 
 IDD_COMMENT_DLG DIALOGEX 0, 0, 249, 139
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
-    WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Add Comment"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
@@ -1213,13 +1104,11 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,193,118,50,14
     LTEXT           "Comment to add:",IDC_STATIC,7,28,56,8
     LTEXT           "Static",IDC_GPS_LABEL,7,7,235,13
-    EDITTEXT        IDC_COMMENT_EDIT,23,41,219,68,ES_MULTILINE | 
-                    ES_AUTOHSCROLL
+    EDITTEXT        IDC_COMMENT_EDIT,23,41,219,68,ES_MULTILINE | ES_AUTOHSCROLL
 END
 
 IDD_VIEW_FIT_DLG DIALOGEX 400, 0, 304, 200
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | 
-    WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 EXSTYLE WS_EX_TOOLWINDOW
 CAPTION "Fit"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
@@ -1227,8 +1116,7 @@ BEGIN
 END
 
 IDD_FLUX_WINDFIELD_DLG DIALOGEX 0, 0, 506, 329
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
-    WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_TOOLWINDOW
 CAPTION "Include Wind Field"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
@@ -1239,27 +1127,20 @@ BEGIN
     PUSHBUTTON      "Browse...",IDC_BTN_BROWSE_WINDFIELDFILE,450,17,41,14
     GROUPBOX        "",IDC_WIND_GRAPH_FRAME,115,44,384,254
     GROUPBOX        "Field Information",IDC_STATIC,7,44,101,82
-    COMBOBOX        IDC_ALTITUDE_COMBO,16,68,86,143,CBS_DROPDOWNLIST | 
-                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_ALTITUDE_COMBO,16,68,86,143,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Altitude:",IDC_STATIC,12,57,28,8
     LTEXT           "Hour:",IDC_STATIC,13,86,19,8
-    COMBOBOX        IDC_HOUR_COMBO2,16,96,86,143,CBS_DROPDOWNLIST | 
-                    WS_VSCROLL | WS_TABSTOP
-    COMBOBOX        IDC_PATH_WINDFIELDFILE,15,18,426,55,CBS_DROPDOWN | 
-                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_HOUR_COMBO2,16,96,86,143,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_PATH_WINDFIELDFILE,15,18,426,55,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Use wind field at time of measurement",IDC_RADIO_TIME1,
-                    "Button",BS_AUTORADIOBUTTON | BS_MULTILINE | WS_GROUP,7,
-                    135,102,20
-    CONTROL         "Use the windfield",IDC_RADIO_TIME2,"Button",
-                    BS_AUTORADIOBUTTON,7,157,71,10
-    EDITTEXT        IDC_EDIT_TIMESHIFT,78,156,32,13,ES_AUTOHSCROLL | 
-                    ES_NUMBER
+                    "Button",BS_AUTORADIOBUTTON | BS_MULTILINE | WS_GROUP,7,135,102,20
+    CONTROL         "Use the windfield",IDC_RADIO_TIME2,"Button",BS_AUTORADIOBUTTON,7,157,71,10
+    EDITTEXT        IDC_EDIT_TIMESHIFT,78,156,32,13,ES_AUTOHSCROLL | ES_NUMBER
     LTEXT           "hours before the measurement",IDC_STATIC,20,167,55,21
 END
 
 IDD_POST_WINDDLG DIALOGEX 0, 0, 478, 436
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
-    WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Post Wind Calculation"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
@@ -1267,8 +1148,7 @@ BEGIN
     EDITTEXT        IDC_EDIT_MAXSHIFTTIME,102,369,55,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_EDIT_TESTLENGTH,102,382,55,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_EDIT_PLUMEHEIGHT,102,395,55,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "Calculate",IDC_BUTTON_CALCULATE_CORRELATION,408,410,54,
-                    19
+    PUSHBUTTON      "Calculate",IDC_BUTTON_CALCULATE_CORRELATION,408,410,54,19
     EDITTEXT        IDC_EDIT_EVALLOG,15,17,392,13,ES_AUTOHSCROLL
     PUSHBUTTON      "&Browse...",IDC_BTN_BROWSE_EVALLOG,415,16,45,14
     GROUPBOX        "Evaluation Log:",IDC_STATIC,7,7,464,31
@@ -1283,23 +1163,18 @@ BEGIN
     LTEXT           "[s]",IDC_STATIC,160,385,10,8
     LTEXT           "[m]",IDC_STATIC,160,398,10,8
     GROUPBOX        "Show",IDC_STATIC,188,348,137,81
-    CONTROL         "Correlation",IDC_RADIO_SHOW_CORR,"Button",
-                    BS_AUTORADIOBUTTON | WS_GROUP,198,361,111,13
-    CONTROL         "Delay [s]",IDC_RADIO_SHOW_DELAY,"Button",
-                    BS_AUTORADIOBUTTON,198,375,111,13
-    CONTROL         "WindSpeed [m/s]",IDC_RADIO_SHOW_WS,"Button",
-                    BS_AUTORADIOBUTTON,198,389,111,13
+    CONTROL         "Correlation",IDC_RADIO_SHOW_CORR,"Button",BS_AUTORADIOBUTTON | WS_GROUP,198,361,111,13
+    CONTROL         "Delay [s]",IDC_RADIO_SHOW_DELAY,"Button",BS_AUTORADIOBUTTON,198,375,111,13
+    CONTROL         "WindSpeed [m/s]",IDC_RADIO_SHOW_WS,"Button",BS_AUTORADIOBUTTON,198,389,111,13
 END
 
 IDD_POST_PLUMEHEIGHTDLG DIALOGEX 0, 0, 478, 284
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
-    WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Plume Height Calculation using Dual Beam Technique"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     EDITTEXT        IDC_EDIT_ANGLESEPARATION,102,215,55,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "&Calculate",IDC_BUTTON_CALCULATE_CORRELATION,417,258,54,
-                    19
+    PUSHBUTTON      "&Calculate",IDC_BUTTON_CALCULATE_CORRELATION,417,258,54,19
     EDITTEXT        IDC_EDIT_EVALLOG,15,17,392,13,ES_AUTOHSCROLL
     PUSHBUTTON      "&Browse...",IDC_BTN_BROWSE_EVALLOG,415,16,45,14
     GROUPBOX        "Evaluation Log:",IDC_STATIC,7,7,464,31
@@ -1318,15 +1193,12 @@ BEGIN
     LTEXT           "Plume Height",IDC_STATIC,193,257,42,8
     EDITTEXT        IDC_EDIT_WINDDIRECTION,251,239,72,14,ES_AUTOHSCROLL
     LTEXT           "[m/s]",IDC_STATIC,335,242,18,8
-    PUSHBUTTON      "Source Latitude",IDC_BUTTON_SOURCE_LAT,14,235,65,14,
-                    BS_FLAT
-    PUSHBUTTON      "Source Latitude",IDC_BUTTON_SOURCE_LON,14,251,65,14,
-                    BS_FLAT
+    PUSHBUTTON      "Source Latitude",IDC_BUTTON_SOURCE_LAT,14,235,65,14,BS_FLAT
+    PUSHBUTTON      "Source Latitude",IDC_BUTTON_SOURCE_LON,14,251,65,14,BS_FLAT
 END
 
 IDD_EXPORT_EVLOG_DIALOG DIALOGEX 0, 0, 449, 217
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
-    WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Export Evaluation Log"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
@@ -1336,14 +1208,12 @@ BEGIN
     EDITTEXT        IDC_EDIT_EXPORTFILE,15,18,372,15,ES_AUTOHSCROLL
     PUSHBUTTON      "&Browse..",IDC_BROWSE_BUTTON,393,18,42,14
     GROUPBOX        "Columns",IDC_COLUMNS_FRAME,7,47,435,134
-    COMBOBOX        IDC_COMBO1,15,64,76,188,CBS_DROPDOWN | CBS_SORT | NOT 
-                    WS_VISIBLE | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO1,15,64,76,188,CBS_DROPDOWN | CBS_SORT | NOT WS_VISIBLE | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Column 1",IDC_STATIC_1,38,55,30,8,NOT WS_VISIBLE
 END
 
 IDD_QUERY_STRING_DIALOG DIALOGEX 0, 0, 217, 46
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
-    WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Dialog"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
@@ -1353,8 +1223,7 @@ BEGIN
 END
 
 IDD_REEVAL_SCRIPT_DLG DIALOGEX 0, 0, 421, 266
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
-    WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "ReEvaluation Script"
 MENU IDR_MENU_REEVAL_SCRIPT
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
@@ -1363,55 +1232,37 @@ BEGIN
     PUSHBUTTON      "Close",IDCANCEL,364,245,50,14
     GROUPBOX        "Settings",IDC_STATIC,7,7,407,36
     GROUPBOX        "Evaluation Logs",IDC_STATIC,7,54,407,111
-    EDITTEXT        IDC_EDIT_SETTINGSFILE,20,20,339,13,ES_AUTOHSCROLL | 
-                    WS_DISABLED
+    EDITTEXT        IDC_EDIT_SETTINGSFILE,20,20,339,13,ES_AUTOHSCROLL | WS_DISABLED
     PUSHBUTTON      "Browse...",IDC_BROWSE_SETTINGSFILE,363,17,44,17
-    LISTBOX         IDC_LIST_EVALUATIONLOGS,20,65,295,90,
-                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | 
-                    WS_TABSTOP,WS_EX_ACCEPTFILES | WS_EX_LEFTSCROLLBAR
-    PUSHBUTTON      "Insert Evaluation Log",IDC_BUTTON_INSERTEVALLOG,326,64,
-                    79,16
-    PUSHBUTTON      "Remove Evaluation Log",IDC_BUTTON_REMOVEEVALLOG,326,83,
-                    79,16
-    PUSHBUTTON      "Scan for log files",IDC_BUTTON_SCANFORLOGFILES,326,140,
-                    80,16
+    LISTBOX         IDC_LIST_EVALUATIONLOGS,20,65,295,90,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP,WS_EX_ACCEPTFILES | WS_EX_LEFTSCROLLBAR
+    PUSHBUTTON      "Insert Evaluation Log",IDC_BUTTON_INSERTEVALLOG,326,64,79,16
+    PUSHBUTTON      "Remove Evaluation Log",IDC_BUTTON_REMOVEEVALLOG,326,83,79,16
+    PUSHBUTTON      "Scan for log files",IDC_BUTTON_SCANFORLOGFILES,326,140,80,16
     GROUPBOX        "Misc.",IDC_STATIC,7,170,407,70
     LTEXT           "Max. Number of threads:",IDC_STATIC,21,182,82,8
-    COMBOBOX        IDC_COMBO_MAX_N_THREADS,111,180,54,118,CBS_DROPDOWNLIST | 
-                    WS_DISABLED | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_MAX_N_THREADS,111,180,54,118,CBS_DROPDOWNLIST | WS_DISABLED | WS_VSCROLL | WS_TABSTOP
 END
 
 IDD_REFERENCE_PROPERTIES_DLG DIALOGEX 0, 0, 368, 161
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
-    WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Reference Properties"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     EDITTEXT        IDC_EDIT_SPECIE,33,7,87,13,ES_AUTOHSCROLL
     EDITTEXT        IDC_EDIT_PATH,33,22,258,14,ES_AUTOHSCROLL
     PUSHBUTTON      "Browse...",IDC_BUTTON_BROWSE_REFERENCE,293,22,67,16
-    CONTROL         "Free",IDC_RADIO_SHIFT_FREE,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP,11,56,31,10
-    CONTROL         "Fixed to:",IDC_RADIO_SHIFT_FIX,"Button",
-                    BS_AUTORADIOBUTTON,11,70,45,10
-    CONTROL         "Linked to:",IDC_RADIO_SHIFT_LINK,"Button",
-                    BS_AUTORADIOBUTTON,11,84,45,10
-    CONTROL         "Find Optimal",IDC_RADIO_SHIFT_FINDOPTIMAL,"Button",
-                    BS_AUTORADIOBUTTON,11,98,55,10
+    CONTROL         "Free",IDC_RADIO_SHIFT_FREE,"Button",BS_AUTORADIOBUTTON | WS_GROUP,11,56,31,10
+    CONTROL         "Fixed to:",IDC_RADIO_SHIFT_FIX,"Button",BS_AUTORADIOBUTTON,11,70,45,10
+    CONTROL         "Linked to:",IDC_RADIO_SHIFT_LINK,"Button",BS_AUTORADIOBUTTON,11,84,45,10
+    CONTROL         "Find Optimal",IDC_RADIO_SHIFT_FINDOPTIMAL,"Button",BS_AUTORADIOBUTTON,11,98,55,10
     EDITTEXT        IDC_EDIT_SHIFT_FIX,58,68,37,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_EDIT_SHIFT_LINK,58,82,37,14,ES_AUTOHSCROLL | 
-                    ES_NUMBER
-    CONTROL         "Free",IDC_RADIO_SQUEEZE_FREE,"Button",
-                    BS_AUTORADIOBUTTON | WS_GROUP,192,56,31,10
-    CONTROL         "Fixed to:",IDC_RADIO_SQUEEZE_FIX,"Button",
-                    BS_AUTORADIOBUTTON,192,70,45,10
-    CONTROL         "Linked to:",IDC_RADIO_SQUEEZE_LINK,"Button",
-                    BS_AUTORADIOBUTTON,192,84,45,10
-    CONTROL         "Find Optimal",IDC_RADIO_SQUEEZE_FINDOPTIMAL,"Button",
-                    BS_AUTORADIOBUTTON,192,98,71,10
+    EDITTEXT        IDC_EDIT_SHIFT_LINK,58,82,37,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Free",IDC_RADIO_SQUEEZE_FREE,"Button",BS_AUTORADIOBUTTON | WS_GROUP,192,56,31,10
+    CONTROL         "Fixed to:",IDC_RADIO_SQUEEZE_FIX,"Button",BS_AUTORADIOBUTTON,192,70,45,10
+    CONTROL         "Linked to:",IDC_RADIO_SQUEEZE_LINK,"Button",BS_AUTORADIOBUTTON,192,84,45,10
+    CONTROL         "Find Optimal",IDC_RADIO_SQUEEZE_FINDOPTIMAL,"Button",BS_AUTORADIOBUTTON,192,98,71,10
     EDITTEXT        IDC_EDIT_SQUEEZE_FIX,238,68,37,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_EDIT_SQUEEZE_LINK,238,82,37,14,ES_AUTOHSCROLL | 
-                    ES_NUMBER
+    EDITTEXT        IDC_EDIT_SQUEEZE_LINK,238,82,37,14,ES_AUTOHSCROLL | ES_NUMBER
     DEFPUSHBUTTON   "OK",IDOK,249,140,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,311,140,50,14
     LTEXT           "Specie:",IDC_LABEL_SPECIE,7,10,24,8
@@ -1425,8 +1276,7 @@ BEGIN
 END
 
 IDD_REFERENCE_PLOT_DLG DIALOGEX 0, 0, 370, 201
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU | 
-    WS_THICKFRAME
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 EXSTYLE WS_EX_TOOLWINDOW
 CAPTION "Reference Files"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
@@ -1434,49 +1284,39 @@ BEGIN
 END
 
 IDD_QUERY_SELECTION_DIALOG DIALOGEX 0, 0, 192, 59
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
-    WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Dialog"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,81,38,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,135,38,50,14
-    COMBOBOX        IDC_SELECTION_COMBO,17,14,108,155,CBS_DROPDOWNLIST | 
-                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_SELECTION_COMBO,17,14,108,155,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
 END
 
 IDD_SPECTRUM_SETTINGS_DLG DIALOGEX 0, 0, 176, 131
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
-    WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_TOOLWINDOW
 CAPTION "Spectrum collection settings"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     LTEXT           "Exposure time:",IDC_STATIC,13,19,49,8
-    EDITTEXT        IDC_EDIT_EXPOSURETIME,86,17,50,12,ES_AUTOHSCROLL | 
-                    ES_NUMBER
-    CONTROL         "",IDC_SPIN_EXPTIME,"msctls_updown32",UDS_ARROWKEYS,135,
-                    17,7,12
+    EDITTEXT        IDC_EDIT_EXPOSURETIME,86,17,50,12,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "",IDC_SPIN_EXPTIME,"msctls_updown32",UDS_ARROWKEYS,135,17,7,12
     LTEXT           "[ms]",IDC_STATIC,151,19,15,8
     LTEXT           "#Spectra to average:",IDC_STATIC,14,35,71,8
     EDITTEXT        IDC_EDIT_NAVERAGE,86,33,50,12,ES_AUTOHSCROLL | ES_NUMBER
-    CONTROL         "",IDC_SPIN_NAVERAGE,"msctls_updown32",UDS_ARROWKEYS,135,
-                    33,6,12
+    CONTROL         "",IDC_SPIN_NAVERAGE,"msctls_updown32",UDS_ARROWKEYS,135,33,6,12
     PUSHBUTTON      "Save Spectrum",IDC_BUTTON_SAVESPEC,116,111,53,13
     GROUPBOX        "",IDC_STATIC,7,7,162,48
     GROUPBOX        "",IDC_STATIC,7,58,162,48
     LTEXT           "Collecting from;",IDC_STATIC,15,70,51,8
-    COMBOBOX        IDC_COMBO_SPECTROMETERS,83,68,75,112,CBS_DROPDOWNLIST | 
-                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "Master",IDC_RADIO_CHANNEL0,"Button",BS_AUTORADIOBUTTON | 
-                    BS_PUSHLIKE | WS_GROUP,63,86,48,12
-    CONTROL         "Slave",IDC_RADIO_CHANNEL1,"Button",BS_AUTORADIOBUTTON | 
-                    BS_PUSHLIKE,112,86,48,12
+    COMBOBOX        IDC_COMBO_SPECTROMETERS,83,68,75,112,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Master",IDC_RADIO_CHANNEL0,"Button",BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_GROUP,63,86,48,12
+    CONTROL         "Slave",IDC_RADIO_CHANNEL1,"Button",BS_AUTORADIOBUTTON | BS_PUSHLIKE,112,86,48,12
 END
 
 IDD_SPECTRUM_SCALE_DLG DIALOGEX 0, 0, 95, 49
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
-    WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_TOOLWINDOW
 CAPTION "Spectrum Scale"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
@@ -1485,42 +1325,34 @@ BEGIN
     LTEXT           "Min:",IDC_STATIC,7,9,14,8
     EDITTEXT        IDC_EDIT_SPECSCALE_MIN,24,7,34,12,ES_AUTOHSCROLL
     EDITTEXT        IDC_EDIT_SPECSCALE_MAX,24,22,34,12,ES_AUTOHSCROLL
-    CONTROL         "",IDC_SPIN_MINVALUE,"msctls_updown32",UDS_ARROWKEYS,57,
-                    7,11,13
-    CONTROL         "",IDC_SPIN_MAXVALUE,"msctls_updown32",UDS_ARROWKEYS,57,
-                    22,11,13
+    CONTROL         "",IDC_SPIN_MINVALUE,"msctls_updown32",UDS_ARROWKEYS,57,7,11,13
+    CONTROL         "",IDC_SPIN_MAXVALUE,"msctls_updown32",UDS_ARROWKEYS,57,22,11,13
     LTEXT           "[%]",IDC_STATIC,74,9,14,8
     LTEXT           "[%]",IDC_STATIC,74,24,14,8
 END
 
 IDD_INSPECT_SPECTRA_DLG DIALOGEX 0, 0, 670, 374
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
-    WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "View Collected Spectra"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     GROUPBOX        "Evaluation log file",IDC_STATIC,7,7,654,37
-    LTEXT           "No file opened ...",IDC_LABEL_EVALUATIONLOG,14,19,576,
-                    15
+    LTEXT           "No file opened ...",IDC_LABEL_EVALUATIONLOG,14,19,576,15
     PUSHBUTTON      "Browse",IDC_BROWSE_EVALLOG,600,18,49,15
     GROUPBOX        "",IDC_SPECTRUM_GRAPH_FRAME,146,69,515,298
-    LTEXT           "Showing spectrum: ...",IDC_LABEL_SPECTRUMNUMBER,327,50,
-                    309,10
-    GROUPBOX        "Spectrum Properties",IDC_SPECTRUMPROPERITES_FRAME,7,69,
-                    131,298
+    LTEXT           "Showing spectrum: ...",IDC_LABEL_SPECTRUMNUMBER,327,50,309,10
+    GROUPBOX        "Spectrum Properties",IDC_SPECTRUMPROPERITES_FRAME,7,69,131,298
     SCROLLBAR       IDC_SPECTRUM_SCROLLBAR,170,49,149,11
 END
 
 IDD_SPECTRUM_CALIBRATION DIALOGEX 0, 0, 251, 270
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
-    WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_TOOLWINDOW
 CAPTION "Spectrum Calibration"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     GROUPBOX        "",IDC_FIT_GRAPH_FRAME,7,143,237,120
-    PUSHBUTTON      "Use current spectrum",IDC_BUTTON_USE_CURRENT_SPECTRUM,
-                    165,14,79,19
+    PUSHBUTTON      "Use current spectrum",IDC_BUTTON_USE_CURRENT_SPECTRUM,165,14,79,19
     GROUPBOX        "Hg Peaks:",IDC_PEAKLIST_FRAME,7,7,143,131
     PUSHBUTTON      "Fit polynomial",IDC_BUTTON_FIT_POLYNOMIAL,166,39,78,18
     LTEXT           ".",IDC_LABEL_POLYNOMIAL,164,73,80,67
@@ -1533,7 +1365,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_DIALOG2, DIALOG
     BEGIN
@@ -1759,17 +1591,17 @@ END
 // String Table
 //
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_VIEW_SHOWINTENSITY   "Show the intensity in the column graph"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_FILE_EXPORT_TRAVERSE_TO_KML "Stores this measurement as a KML file"
 END
 
-#endif    // Swedish resources
+#endif    // Swedish (Sweden) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -1777,10 +1609,8 @@ END
 // Neutral (Sys. Default) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEUSD)
-#ifdef _WIN32
 LANGUAGE LANG_NEUTRAL, SUBLANG_SYS_DEFAULT
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1788,8 +1618,7 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_SYS_DEFAULT
 //
 
 IDD_SOURCE_SELECTION_DLG DIALOGEX 0, 0, 304, 185
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
-    WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Select Source"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
@@ -1805,7 +1634,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_SOURCE_SELECTION_DLG, DIALOG
     BEGIN

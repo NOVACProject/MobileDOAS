@@ -106,14 +106,11 @@ void CConfigure_Evaluation::InitReferenceFileControl(){
 	m_referenceGrid.InsertColumn("Squeeze");
 	m_referenceGrid.SetColumnWidth(3, (int)(rect.right / 6));
 
-	// Make sure that there are two empty rows
-	m_referenceGrid.SetRowCount(3);
-
 	// Makes sure that the user cannot edit the titles of the grid
 	m_referenceGrid.SetFixedRowCount(1);
 
 	// make sure the user can edit items in the grid
-	m_referenceGrid.SetEditable(TRUE); 
+	//m_referenceGrid.SetEditable(TRUE); 
 
 	// Disable the small title tips
 	m_referenceGrid.EnableTitleTips(FALSE);
@@ -125,6 +122,8 @@ void CConfigure_Evaluation::PopulateReferenceFileControl(){
 		m_windowList.SetCurSel(0);
 		curSel = 0;
 	}
+
+	m_referenceGrid.DeleteNonFixedRows();
 
 	Evaluation::CFitWindow &window	= m_conf->m_fitWindow[curSel];
 	m_referenceGrid.m_window				= &m_conf->m_fitWindow[curSel];
@@ -142,7 +141,7 @@ void CConfigure_Evaluation::PopulateReferenceFileControl(){
 	//	m_btnRemoveRef.EnableWindow(TRUE);
 	//}
 	int i;
-	for(i = 0; i < window.nRef; ++i){
+	for(i = 0; i < window.nRef; i++){
 
 		CReferenceFile &ref = window.ref[i];
 
@@ -294,7 +293,7 @@ void CConfigure_Evaluation::OnInsertReference(){
 		window.name.Format("%s", specie);
 		PopulateWindowList();
 	}
-
+	//m_windowList.SetCurSel(curSel);
 	// Update the grid
 	PopulateReferenceFileControl();
 
@@ -307,7 +306,7 @@ void CConfigure_Evaluation::PopulateWindowList(){
 		m_windowList.AddString(m_conf->m_fitWindow[i].name);
 	}
 
-	m_windowList.SetCurSel(0);
+	//m_windowList.SetCurSel(0);
 }
 
 void CConfigure_Evaluation::SaveData(){

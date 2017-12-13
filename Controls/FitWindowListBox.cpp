@@ -23,11 +23,11 @@ CFitWindowListBox::~CFitWindowListBox()
 
 BEGIN_MESSAGE_MAP(CFitWindowListBox, CListBox)
 	ON_WM_CONTEXTMENU()
-	ON_COMMAND(ID__INSERTFITWINDOW,			OnInsertFitWindow)
-	ON_COMMAND(ID__REMOVEWINDOW,				OnRemoveFitWindow)
-//	ON_COMMAND(ID__LOADWINDOWFROMFILE,	OnLoadFitWindows)
-//	ON_COMMAND(ID__SAVEWINDOWTOFILE,		OnSaveFitWindows)
-	ON_COMMAND(ID__RENAMEWINDOW,				OnRenameWindow)
+	ON_COMMAND(ID__INSERTFITWINDOW, OnInsertFitWindow)
+	ON_COMMAND(ID__REMOVEWINDOW, OnRemoveFitWindow)
+	//	ON_COMMAND(ID__LOADWINDOWFROMFILE,	OnLoadFitWindows)
+	//	ON_COMMAND(ID__SAVEWINDOWTOFILE,		OnSaveFitWindows)
+	ON_COMMAND(ID__RENAMEWINDOW, OnRenameWindow)
 END_MESSAGE_MAP()
 
 
@@ -39,11 +39,11 @@ void CFitWindowListBox::PopulateList(){
 	if(m_conf == NULL)
 		return;
 
-  this->ResetContent(); // clear the list
+	this->ResetContent(); // clear the list
 
 	for(int i = 0; i < m_conf->m_nFitWindows; ++i){
 		this->AddString(m_conf->m_fitWindow[i].name);
-  }
+	}
 }
 
 /** Called when the user presses down the left mouse button */
@@ -61,7 +61,7 @@ void CFitWindowListBox::OnContextMenu(CWnd *pWnd, CPoint pos){
   ASSERT(pPopup != NULL);
 
 	// There has to be at least one fit window defined at all times
-	//	if there are to few, don't allow the user to remove any
+	//	if there are too few, don't allow the user to remove any
 	if(m_conf->m_nFitWindows <= 1){
     pPopup->EnableMenuItem(ID__REMOVEWINDOW, MF_DISABLED | MF_GRAYED);
 	}
