@@ -65,7 +65,7 @@ public:
 	COLORREF					m_Spectrum1FitColor;
 
 	/* Measurement points with intensity below 'intensityLimit' does not affect the column scale */
-	CSliderCtrl m_intensitySlider;
+	CSliderCtrl m_intensitySliderLow;
 
 	/** The actual graph, shows the columns, the spectra, the intensities, etc...*/
 	Graph::CGraphCtrl m_ColumnPlot;
