@@ -964,8 +964,8 @@ BOOL CPostFluxDlg::OnToolTipNotify( UINT id, NMHDR * pNMHDR, LRESULT * pResult )
 
 	int ok = 0;
 
-	if(nID == IDC_BTN_DEL_LOW_INTENSITY){
-		ok = sprintf(string, "Deletes all spectra with intensity below the value indicated by the Intensity slider to the far left.");
+	if(nID == IDC_BTN_DEL_INTENSITY){
+		ok = sprintf(string, "Deletes all spectra with intensity below or above the values indicated by the Intensity sliders above.");
 	}
 	if(nID == IDC_BTNDEL){
 		ok = sprintf(string, "Deletes all spectra in the range indicated by the 'From' and 'To' sliders above.");
