@@ -218,9 +218,8 @@ void CDMSpecView::OnInitialUpdate()
 	
 	// Also move the slider to the right of the window
 	m_intensitySliderLow.GetWindowRect(rect);
-	rect.left  = rect.left * cx / 1024;
-	rect.right = rect.right * cx / 1024;
-	this->ScreenToClient(rect);
+	int diff = rect.right - rect.left;
+	rect = CRect(right, TOP, right + diff + 1, BOTTOM);
 	m_intensitySliderLow.MoveWindow(rect);
 
 	rect = CRect(LEFT,TOP,right,BOTTOM);
