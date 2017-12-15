@@ -200,6 +200,7 @@ BEGIN_MESSAGE_MAP(CPostFluxDlg, CDialog)
 	//	http://support.microsoft.com/kb/242577
 	ON_WM_INITMENUPOPUP()
 
+	ON_CBN_SELCHANGE(IDC_UNIT_COMBO, &CPostFluxDlg::ChangeFluxUnit)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1589,3 +1590,9 @@ void CPostFluxDlg::OnViewShowVsNumber(){
 
 
 
+
+
+void CPostFluxDlg::ChangeFluxUnit()
+{
+	OnCalculateFlux();
+}

@@ -333,6 +333,8 @@ private:
 	int   OnChangeSelectedFile();
 
 	void  UpdatePropertiesWindow();
+public:
+	afx_msg void ChangeFluxUnit();
 };
 
 //{{AFX_INSERT_LOCATION}}
