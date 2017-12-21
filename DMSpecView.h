@@ -203,7 +203,7 @@ public:
 	afx_msg void OnMenuAnalysisPlumeheightmeasurement();
 
 	afx_msg void OnMenuControlTestTheGPS();
-	afx_msg void OnUpdate_TestTheGPS(CCmdUI *pCmdUI);
+	//afx_msg void OnUpdate_TestTheGPS(CCmdUI *pCmdUI);
 
 	// Updating the interface
 	afx_msg void OnUpdate_EnableOnRun(CCmdUI *pCmdUI);
