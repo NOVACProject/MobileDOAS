@@ -372,27 +372,34 @@ void CPostFluxDlg::OnCalculateFlux()
 	double fluxError_High = (m_flux->m_totalFlux_High - m_flux->m_totalFlux) / m_flux->m_totalFlux;
 
 	// Convert the unit...
+	CString dispFmt, dispUnit;
+	double dispFlux, dispLow, dispHigh, dispErrorLow, dispErrorHigh;
 	if(m_unitSelection.GetCurSel() == UNIT_KGS){
-		fluxMessage.Format(_T("%f"), totalFlux);
-		fluxRangeMessage.Format("(%.2f - %.2f) [kg/s] <-> \n (%.1lf - %.1lf) [%%]", 
-			m_flux->m_totalFlux_Low, m_flux->m_totalFlux_High, 
-			100 * fluxError_Low, 100 * fluxError_High);
-		this->SetDlgItemText(IDC_FLUX_EDIT, fluxMessage);
-		this->SetDlgItemText(IDC_LABEL_FLUXRANGE, fluxRangeMessage);
-		fluxMessage.AppendFormat(" [kg/s]\n");
+		dispFmt = "(%.2f - %.2f) [kg/s] <-> \n (%.1lf - %.1lf) [%%]";
+		dispUnit = " [kg/s]\n";
+		dispFlux = abs(totalFlux);
+		dispLow = abs(m_flux->m_totalFlux_Low);
+		dispHigh = abs(m_flux->m_totalFlux_High);
+		dispErrorLow = 100 * fluxError_Low;
+		dispErrorHigh = 100 * fluxError_High;
 	}else{
-		fluxMessage.Format(_T("%f"), totalFlux * 3.6 * 24);
-		fluxRangeMessage.Format("(%.2f - %.2f) [ton/day] <-> \n (%.1lf - %.1lf) [%%]", 
-			m_flux->m_totalFlux_Low * 3.6 * 24, m_flux->m_totalFlux_High * 3.6 * 24,
-			100 * fluxError_Low, 100 * fluxError_High);
-		this->SetDlgItemText(IDC_FLUX_EDIT, fluxMessage);
-		this->SetDlgItemText(IDC_LABEL_FLUXRANGE, fluxRangeMessage);
-		fluxMessage.AppendFormat(" [ton/day]\n");
+		dispFmt = "(%.2f - %.2f) [ton/day] <-> \n (%.1lf - %.1lf) [%%]";
+		dispUnit = " [ton/day]\n";
+		dispFlux = abs(totalFlux) * 3.6 * 24;
+		dispLow = abs(m_flux->m_totalFlux_Low) * 3.6 * 24;
+		dispHigh = abs(m_flux->m_totalFlux_High) * 3.6 * 24;
+		dispErrorLow = 100 * fluxError_Low;
+		dispErrorHigh = 100 * fluxError_High;
 	}
+	fluxMessage.Format(_T("%f"), dispFlux);
+	fluxRangeMessage.Format(dispFmt, dispLow, dispHigh, dispErrorLow, dispErrorHigh);
+	this->SetDlgItemText(IDC_FLUX_EDIT, fluxMessage);
+	this->SetDlgItemText(IDC_LABEL_FLUXRANGE, fluxRangeMessage);
+	fluxMessage.AppendFormat(dispUnit);
 
 	// Output the results to the user
 	strMessage.Format("PlumeWidth=%ld [m]\r\nTraverseLength=%ld [m]", 
-				(long)m_flux->plumeWidth, (long)m_flux->traverseLength);
+				(long)abs(m_flux->plumeWidth), (long)m_flux->traverseLength);
 	this->SetDlgItemText(IDC_STATISTICS, strMessage);
 
 	// Output the results to file
