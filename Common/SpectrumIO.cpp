@@ -185,7 +185,7 @@ int CSpectrumIO::readTextFile(CString filename, CSpectrum *curSpec){
 
 }
 
-bool CSpectrumIO::WriteStdFile(const CString &fileName, const double *spectrum, long specLength, char* startdate, long starttime, long stoptime, double lat, double lon, long integrationTime, const CString &spectrometer, const CString &measName, long exposureNum){
+bool CSpectrumIO::WriteStdFile(const CString &fileName, const double *spectrum, long specLength, char* startdate, long starttime, long stoptime, double lat, double lon, double alt, long integrationTime, const CString &spectrometer, const CString &measName, long exposureNum){
 	int extendedFormat = 1;
 	long i;
 	FILE *f;
@@ -226,14 +226,10 @@ bool CSpectrumIO::WriteStdFile(const CString &fileName, const double *spectrum, 
 
 	fprintf(f,"%s\n", name);                /* The name of the spectrum */
 	fprintf(f,"%s\n", spectrometer);  /* The name of the spectrometer */
-	fprintf(f,"%s\n", spectrometer);
+	fprintf(f,"%s\n", spectrometer); // why is there a second output of spectrometer name?
 	
 	fprintf(f,"%s\n",datetxt);
-//	GetTimeText(txt);
-
 	fprintf(f,"%02d:%02d:%02d\n",hr,min,sec);
-//	fprintf(f,"%s\n",txt);
-	
 	fprintf(f,"%02d:%02d:%02d\n",hr2,min2,sec2);
 	fprintf(f,"0.0\n");
 	fprintf(f,"0.0\n");
@@ -244,6 +240,7 @@ bool CSpectrumIO::WriteStdFile(const CString &fileName, const double *spectrum, 
 	fprintf(f,"LATITUDE %f\n",	lat);
 
 	if(extendedFormat){
+		fprintf(f, "Altitude = %.1lf\n", alt);
 		fprintf(f, "Author = \"\"\n");
 		fprintf(f, "Average = 0\n");
 		fprintf(f, "AzimuthAngle = 0\n");

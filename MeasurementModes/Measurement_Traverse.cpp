@@ -218,10 +218,10 @@ void CMeasurement_Traverse::Run(){
 		/* ----------------- Save the spectrum(-a) -------------------- */
 		if(m_skipgps == 0){
 			for(i = 0; i  < m_NChannels; ++i)
-				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, specTime[counter], specTime[counter]+elapsedSecond, pos[counter].latitude, pos[counter].longitude, integrationTime, spectrometerName, strBaseName, totalSpecNum);
+				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, specTime[counter], specTime[counter]+elapsedSecond, pos[counter].latitude, pos[counter].longitude, pos[counter].altitude, integrationTime, spectrometerName, strBaseName, totalSpecNum);
 		}else{
 			for(i = 0; i < m_NChannels; ++i)
-				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, startTime, startTime+elapsedSecond, 0, 0, integrationTime, spectrometerName, strBaseName, totalSpecNum);
+				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, startTime, startTime+elapsedSecond, 0, 0, 0, integrationTime, spectrometerName, strBaseName, totalSpecNum);
 		}
 
 		#ifdef _DEBUG
@@ -411,10 +411,10 @@ void CMeasurement_Traverse::Run_Adaptive(){
 		/* ----------------- Save the spectrum(-a) -------------------- */
 		if(m_skipgps == 0){
 			for(i = 0; i  < m_NChannels; ++i)
-				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, specTime[counter], specTime[counter]+elapsedSecond, pos[counter].latitude, pos[counter].longitude, integrationTime, spectrometerName, strBaseName, totalSpecNum);
+				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, specTime[counter], specTime[counter]+elapsedSecond, pos[counter].latitude, pos[counter].longitude, pos[counter].altitude, integrationTime, spectrometerName, strBaseName, totalSpecNum);
 		}else{
 			for(i = 0; i < m_NChannels; ++i)
-				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, startTime, startTime+elapsedSecond, 0, 0, integrationTime, spectrometerName, strBaseName, totalSpecNum);
+				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, startTime, startTime+elapsedSecond, 0, 0, 0, integrationTime, spectrometerName, strBaseName, totalSpecNum);
 		}
 
 		if(scanNum == OFFSET_SPECTRUM){

@@ -232,10 +232,10 @@ void CMeasurement_Wind::Run(){
 		if(m_spectrometerMode != MODE_VIEW){
 			if(m_skipgps == 0){
 				for(i = 0; i  < m_NChannels; ++i)
-					CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, specTime[counter], specTime[counter]+elapsedSecond, pos[counter].latitude, pos[counter].longitude, integrationTime, spectrometerName, strBaseName, totalSpecNum);
+					CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, specTime[counter], specTime[counter]+elapsedSecond, pos[counter].latitude, pos[counter].longitude, pos[counter].altitude, integrationTime, spectrometerName, strBaseName, totalSpecNum);
 			}else{
 				for(i = 0; i < m_NChannels; ++i)
-					CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, startTime, startTime+elapsedSecond, 0, 0, integrationTime, spectrometerName, strBaseName, totalSpecNum);
+					CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, startTime, startTime+elapsedSecond, 0, 0, 0, integrationTime, spectrometerName, strBaseName, totalSpecNum);
 			}
 		}
 
