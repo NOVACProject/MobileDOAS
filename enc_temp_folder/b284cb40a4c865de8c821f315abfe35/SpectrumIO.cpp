@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "SpectrumIO.h"
+#include <iostream>
 
 CSpectrumIO::CSpectrumIO(void)
 {

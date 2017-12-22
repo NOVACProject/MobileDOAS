@@ -17,6 +17,7 @@ void CMeasurement_Traverse::Run(){
 	double tmpSpec[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
 	int i, fitRgn;
 
+	char* startDate;
 	long startTime,elapsedSecond;
 	clock_t cStart, cFinish;
 
@@ -158,8 +159,9 @@ void CMeasurement_Traverse::Run(){
 
 		SetFileName();
 
-		/* ------------ Get the time and position --------------- */
-		startTime = ReadGPS();
+		/* ------------ Get the date, time and position --------------- */
+		startDate = ReadGpsDate();
+		startTime = ReadGpsStartTime();
 
 		/** ---------------- if the user wants to change the exposure time, 
 									calculate a new exposure time. --------------------- */
@@ -216,10 +218,10 @@ void CMeasurement_Traverse::Run(){
 		/* ----------------- Save the spectrum(-a) -------------------- */
 		if(m_skipgps == 0){
 			for(i = 0; i  < m_NChannels; ++i)
-				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, specTime[counter], specTime[counter]+elapsedSecond, pos[counter].latitude, pos[counter].longitude, integrationTime, spectrometerName, strBaseName, totalSpecNum);
+				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, specTime[counter], specTime[counter]+elapsedSecond, pos[counter].latitude, pos[counter].longitude, integrationTime, spectrometerName, strBaseName, totalSpecNum);
 		}else{
 			for(i = 0; i < m_NChannels; ++i)
-				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startTime, startTime+elapsedSecond, 0, 0, integrationTime, spectrometerName, strBaseName, totalSpecNum);
+				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, startTime, startTime+elapsedSecond, 0, 0, integrationTime, spectrometerName, strBaseName, totalSpecNum);
 		}
 
 		#ifdef _DEBUG
@@ -337,6 +339,7 @@ void CMeasurement_Traverse::Run_Adaptive(){
 	int roundResult[MAX_N_CHANNELS];
 	long serialDelay,gpsDelay;
 
+	char* startDate;
 	long startTime,elapsedSecond;
 	clock_t cStart, cFinish;
 
@@ -374,8 +377,9 @@ void CMeasurement_Traverse::Run_Adaptive(){
 
 		SetFileName();
 
-		/* ------------ Get the time and position --------------- */
-		startTime = ReadGPS();
+		/* ------------ Get the date, time and position --------------- */
+		startDate = ReadGpsDate();
+		startTime = ReadGpsStartTime();
 	
 		// Initialize the spectrometer, if using the serial-port
 		if(!fUseUSB){
@@ -407,10 +411,10 @@ void CMeasurement_Traverse::Run_Adaptive(){
 		/* ----------------- Save the spectrum(-a) -------------------- */
 		if(m_skipgps == 0){
 			for(i = 0; i  < m_NChannels; ++i)
-				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, specTime[counter], specTime[counter]+elapsedSecond, pos[counter].latitude, pos[counter].longitude, integrationTime, spectrometerName, strBaseName, totalSpecNum);
+				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, specTime[counter], specTime[counter]+elapsedSecond, pos[counter].latitude, pos[counter].longitude, integrationTime, spectrometerName, strBaseName, totalSpecNum);
 		}else{
 			for(i = 0; i < m_NChannels; ++i)
-				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startTime, startTime+elapsedSecond, 0, 0, integrationTime, spectrometerName, strBaseName, totalSpecNum);
+				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, startTime, startTime+elapsedSecond, 0, 0, integrationTime, spectrometerName, strBaseName, totalSpecNum);
 		}
 
 		if(scanNum == OFFSET_SPECTRUM){

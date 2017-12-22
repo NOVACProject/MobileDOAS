@@ -407,7 +407,9 @@ public:
 	
 	/** Reads the GPS... 
 		What's the difference between this and GetGPS ? */
-	long    ReadGPS();
+	long    ReadGpsStartTime();
+
+	char*   ReadGpsDate();
 	
 	/** Pointer to the gps reading thread */
 	CGPS*   m_gps;
@@ -574,6 +576,10 @@ public:
 	/** pos[i] holds the position that we had when collecting 
 		spectrum number 'i' */
 	struct position pos[65536];
+
+	/** specDate[i] holds the date at which spectrum number 'i'
+	was collected */
+	char*    specDate[65536];
 
 	/** specTime[i] holds the time at which spectrum number 'i' 
 		was collected */

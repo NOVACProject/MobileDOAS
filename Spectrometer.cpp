@@ -1118,6 +1118,7 @@ long CSpectrometer::AverageIntens(double *pSpectrum,long ptotalNum){
 int CSpectrometer::GetGPS(){
 	int validValue = 1;
 
+	specDate[counter]	   = m_gps->GetDate();
 	specTime[counter]      = m_gps->GetTime();
 	pos[counter].latitude  = m_gps->GetLatitude();
 	pos[counter].longitude = m_gps->GetLongitude();
@@ -1741,7 +1742,29 @@ short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxEx
 	}
 }
 
-long CSpectrometer::ReadGPS(){
+char* CSpectrometer::ReadGpsDate() {
+
+	int validGPS = 0;
+	char* startDate = "";
+
+	if (!m_skipgps)
+		validGPS = GetGPS(); /* GetGPS returns 0 if no satellite connection */
+
+	if (!validGPS) {
+		// date
+		struct tm *tim;
+		time_t t;
+		time(&t);
+		tim = localtime(&t);
+		sprintf(startDate, "%02d%02d%02d", tim->tm_mon, tim->tm_mday, (tim->tm_year - 1900));
+	}else {
+		startDate = m_gps->GetDate();
+	}
+
+	return startDate;
+}
+
+long CSpectrometer::ReadGpsStartTime(){
 	int validGPS = 0;
 	long startTime = 0;
 
@@ -1763,8 +1786,7 @@ long CSpectrometer::ReadGPS(){
 		long hr = (long)gpstime/10000;
 		long mi = ((long)gpstime - hr*10000)/100;
 		long se = ((long)gpstime)%100;
-
-
+		
 		/* get the difference between the local time and the GPS-time */
 		timeDiff = 3600*(hr - localTime->tm_hour) + 60*(mi - localTime->tm_min) + (se - localTime->tm_sec);
 	}
