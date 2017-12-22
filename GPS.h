@@ -28,6 +28,7 @@ public:
 	double  GetAltitude();
 	double  GetLatitude();
 	double  GetLongitude();
+	char*   GetDate();
 	void    GetDirection(int* flags);
 
 	/* convert the raw GPS data into the format DD.DDDDDDD
@@ -60,7 +61,8 @@ public:
 	struct gpsInformation{
 		struct		gpsPosition gpsPos;
 		long		  gpsTime;
-	long      nSatellites;
+		long      nSatellites;
+		char      gpsDate[6];
 	};
 
 	/* The actual information */

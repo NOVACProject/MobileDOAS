@@ -466,12 +466,12 @@ void GetHrMinSec(int time, int &hr, int &min, int &sec){
 	min = (time - hr*10000)/100;
 	sec = time % 100;
 
-	// make sure that there's no numbers larger than 60 (or 24) !!!
-	if(sec > 60){
+	// make sure that there's no numbers greather than or equal to 60 (or 24) !!!
+	if(sec >= 60){
 		sec -= 60;
 		min +=1;
 	}
-	if(min > 60){
+	if(min >= 60){
 		min -= 60;
 		hr += 1;
 	}
