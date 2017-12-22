@@ -846,7 +846,7 @@ BEGIN
     POPUP "&Edit"
     BEGIN
         MENUITEM "Delete &Selected",            1053
-        MENUITEM "Delete &Low Intensity Points", 1106
+        MENUITEM "Delete &Low/High Intensity Points", 1106
         MENUITEM SEPARATOR
         MENUITEM "Import &WindField",           1057
     END

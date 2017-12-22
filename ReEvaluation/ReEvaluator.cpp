@@ -200,7 +200,7 @@ int CReEvaluator::ReadSettings(){
 
 	fil = fopen(m_evalLogFileName, "r");
 	if(fil < (FILE *)1){
-		sprintf(msg,"Could not open file %s",m_evalLogFileName);
+		sprintf(msg,"Could not open file %s", (LPCTSTR)m_evalLogFileName);
 		MessageBox(NULL,msg,TEXT("Error"),MB_OK);
 		return 1;
 	}
@@ -816,7 +816,7 @@ bool CReEvaluator::WriteEvaluationLogHeader(int channel){
 		return false;
 
 	fprintf(f, "***Desktop Mobile Program***\nVERSION=%1d.%1d\nFILETYPE=ReEvaluationlog\n", CVersion::majorNumber, CVersion::minorNumber);
-	fprintf(f, "Original EvaluationLog=%s\n", m_evalLogFileName);
+	fprintf(f, "Original EvaluationLog=%s\n", (LPCTSTR)m_evalLogFileName);
 	fprintf(f, "***Settings Used in the Evaluation***\n");
 	fprintf(f, "FitFrom=%d\nFitTo=%d\nPolynom=%d\n", m_settings.m_window.fitLow, m_settings.m_window.fitHigh, m_settings.m_window.polyOrder);
 	fprintf(f, "Number of averaged spectra=%d\n", m_settings.m_nAverageSpectra);
@@ -840,12 +840,12 @@ bool CReEvaluator::WriteEvaluationLogHeader(int channel){
 	for(i = 0; i < m_settings.m_window.nRef; ++i){
 		Evaluation::CReferenceFile &ref = m_settings.m_window.ref[i];
 
-		fprintf(f, "%s\t", ref.m_specieName); 
+		fprintf(f, "%s\t", (LPCTSTR)ref.m_specieName);
 		switch(ref.m_shiftOption){
 			case SHIFT_FIX:
 				fprintf(f, "%0.3lf\t", ref.m_shiftValue); break;
 			case SHIFT_LINK:
-				fprintf(f, "linked to %s\t", m_settings.m_window.ref[(int)ref.m_shiftValue].m_specieName); break;
+				fprintf(f, "linked to %s\t", (LPCTSTR)m_settings.m_window.ref[(int)ref.m_shiftValue].m_specieName); break;
 			default:
 				fprintf(f, "free\t"); break;
 		}
@@ -853,28 +853,28 @@ bool CReEvaluator::WriteEvaluationLogHeader(int channel){
 			case SHIFT_FIX:
 				fprintf(f, "%0.3lf\t", ref.m_squeezeValue); break;
 			case SHIFT_LINK:
-				fprintf(f, "linked to %s\t", m_settings.m_window.ref[(int)ref.m_squeezeValue].m_specieName); break;
+				fprintf(f, "linked to %s\t", (LPCTSTR)m_settings.m_window.ref[(int)ref.m_squeezeValue].m_specieName); break;
 			default:
 				fprintf(f, "free\t"); break;
 		}
-		fprintf(f, "%s\n", ref.m_path);
+		fprintf(f, "%s\n", (LPCTSTR)ref.m_path);
 	}
 	fprintf(f, "\n");
 	fprintf(f, "#Time\tLat\tLong\tAlt\tNSpec\tExpTime\tIntens\t");
 	for(i = 0; i < m_settings.m_window.nRef; ++i){
 		CString name = m_settings.m_window.ref[i].m_specieName;
 		fprintf(f, "%s(column)\t%s(columnError)\t%s(shift)\t%s(shiftError)\t%s(squeeze)\t%s(squeezeError)\t",
-		name, name, name, name, name, name);
+			(LPCTSTR)name, (LPCTSTR)name, (LPCTSTR)name, (LPCTSTR)name, (LPCTSTR)name, (LPCTSTR)name);
 	}
 
 	fprintf(f, "Delta\tChi²\n");
 
 	// Write the information about the spectrometer
 	fprintf(f, "***Spectrometer Information***\n");
-	fprintf(f, "SERIAL=%s\n",				m_spectrometerName);
+	fprintf(f, "SERIAL=%s\n", (LPCTSTR)m_spectrometerName);
 	fprintf(f, "DETECTORSIZE=%d\n",	m_detectorSize);
 	fprintf(f, "DYNAMICRANGE=%d\n",	m_spectrometerDynRange);
-	fprintf(f, "MODEL=%s\n",				m_spectrometerModel);
+	fprintf(f, "MODEL=%s\n", (LPCTSTR)m_spectrometerModel);
 
 	fclose(f);
 	return true;

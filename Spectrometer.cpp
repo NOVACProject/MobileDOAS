@@ -409,7 +409,7 @@ void CSpectrometer::ApplySettings(){
 
 	// The GPS-settings
 	GPSBaud	=	m_conf->m_gpsBaudrate;
-	sprintf(GPSPort,	"%s",		m_conf->m_gpsPort);
+	sprintf(GPSPort,	"%s", (LPCTSTR)m_conf->m_gpsPort);
 	if(m_conf->m_useGPS)
 		m_skipgps = 0;
 	else
@@ -553,7 +553,7 @@ void CSpectrometer::WriteEvFile(CString filename, FitRegion *fitRegion){
 	}
 
 	// 6. The std-file
-	fprintf(f, "%s\n", m_stdfileName[0]);
+	fprintf(f, "%s\n", (LPCTSTR)m_stdfileName[0]);
 
 	fclose(f);
 }
@@ -1564,7 +1564,7 @@ void CSpectrometer::UpdateMobileLog(){
 		}
 		fclose(f);
 		f = fopen(g_exePath + "MobileLog.txt", "w");
-		fprintf(f, "%s", tmpStr);
+		fprintf(f, "%s", (LPCTSTR)tmpStr);
 		fprintf(f, "BASENAME=%s\n", m_Base);
 		fprintf(f, "WINDSPEED=%.2lf\n", windSpeed);
 		fprintf(f, "WINDDIRECTION=%.2lf\n", windAngle);

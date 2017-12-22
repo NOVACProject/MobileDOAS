@@ -99,7 +99,7 @@ void CSpectrumCalibrationDlg::SortLines(){
 	double eps = 1e-5;
 	double newPixels[256]; // local copy of m_pixels
 	double newWavelengths[256]; // local copy of m_wavelengths
-	double newIntensities[256]; // local copy of intensities
+	//double newIntensities[256]; // local copy of intensities
 	int newPointNum = 0;
 	int indices[256];
 	

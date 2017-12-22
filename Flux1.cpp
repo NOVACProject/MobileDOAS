@@ -201,11 +201,11 @@ long CFlux::ReadLogFile(CString filePath, CString fileName, long fileIndex, int 
 			m_traverse[fileIndex + k]->m_fileName.Format("%s", fileName);
 		}else{
 			m_traverse[fileIndex + k]->m_fileName.Format("%s * %s", m_specieName[k], fileName);
-			if(0 == strnicmp(m_specieName[k], "SO2", 3*sizeof(char)))
+			if(0 == _strnicmp(m_specieName[k], "SO2", 3*sizeof(char)))
 				m_traverse[fileIndex + k]->m_gasFactor = GASFACTOR_SO2;
-			if(0 == strnicmp(m_specieName[k], "O3", 2*sizeof(char)))
+			if(0 == _strnicmp(m_specieName[k], "O3", 2*sizeof(char)))
 				m_traverse[fileIndex + k]->m_gasFactor = GASFACTOR_O3;
-			if(0 == strnicmp(m_specieName[k], "NO2", 3*sizeof(char)))
+			if(0 == _strnicmp(m_specieName[k], "NO2", 3*sizeof(char)))
 				m_traverse[fileIndex + k]->m_gasFactor = GASFACTOR_NO2;
 		}
 		m_traverse[fileIndex + k]->m_filePath.Format("%s", filePath);
@@ -328,7 +328,7 @@ int CFlux::ReadSettingFile(CString filename, long fileIndex, int &nChannels, dou
 	fil = fopen(filename, "r");
 	if(fil<(FILE *)1)
 	{
-		sprintf(msg,"Could not open file %s",filename);
+		sprintf(msg,"Could not open file %s",(LPCTSTR)filename);
 		MessageBox(NULL,msg,TEXT("Error"),MB_OK);
 		return 0;
 	}
@@ -617,7 +617,7 @@ bool CFlux::AssignValueToColumn_ReEvaluationLog(long fileIndex, int column, int 
 
 long CFlux::GetCurrentFileName(CString &str){
 	char buffer[4096];
-	sprintf(buffer, "%s", m_traverse[m_curTraverse]->m_fileName);
+	sprintf(buffer, "%s", (LPCTSTR)m_traverse[m_curTraverse]->m_fileName);
 	char *pt = strchr(buffer, '*');
 	if(pt != 0)
 		pt += 2;

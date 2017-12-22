@@ -216,7 +216,7 @@ void CConfigure_Spectrometer::OnOK(){
 
 	// ------------ Spectrometer Settings ------------------
 	if(m_conf->m_spectrometerConnection == CMobileConfiguration::CONNECTION_RS232){
-		fprintf(f, "\t<serialPort>%s</serialPort>\n", m_conf->m_serialPort);
+		fprintf(f, "\t<serialPort>%s</serialPort>\n", (LPCTSTR)m_conf->m_serialPort);
 		fprintf(f, "\t<serialBaudrate>%d</serialBaudrate>\n",	m_conf->m_baudrate);
 	}else{
 		fprintf(f, "\t<serialPort>USB</serialPort>\n");
@@ -252,7 +252,7 @@ void CConfigure_Spectrometer::OnOK(){
 		fprintf(f, "\t\t<use>0</use>\n");
 
 	fprintf(f, "\t\t<baudrate>%d</baudrate>\n",	m_conf->m_gpsBaudrate);
-	fprintf(f, "\t\t<port>%s</port>\n",	m_conf->m_gpsPort);
+	fprintf(f, "\t\t<port>%s</port>\n", (LPCTSTR)m_conf->m_gpsPort);
 	fprintf(f, "\t</GPS>\n");
 
 	// ------------------- Offset-settings --------------------
@@ -264,7 +264,7 @@ void CConfigure_Spectrometer::OnOK(){
 	// ----------- Evaluation ----------------
 	for(int k = 0; k < m_conf->m_nFitWindows; ++k){
 		fprintf(f, "\t<FitWindow>\n");
-		fprintf(f, "\t\t<name>%s</name>\n",						m_conf->m_fitWindow[k].name);
+		fprintf(f, "\t\t<name>%s</name>\n", (LPCTSTR)m_conf->m_fitWindow[k].name);
 		fprintf(f, "\t\t<fitLow>%d</fitLow>\n",					m_conf->m_fitWindow[k].fitLow);
 		fprintf(f, "\t\t<fitHigh>%d</fitHigh>\n",				m_conf->m_fitWindow[k].fitHigh);
 		fprintf(f, "\t\t<spec_channel>%d</spec_channel>\n",		m_conf->m_fitWindow[k].channel);
@@ -272,8 +272,8 @@ void CConfigure_Spectrometer::OnOK(){
 
 		for(int j = 0; j < m_conf->m_fitWindow[k].nRef; ++j){
 			fprintf(f, "\t\t<Reference>\n");
-			fprintf(f, "\t\t\t<name>%s</name>\n",				m_conf->m_fitWindow[k].ref[j].m_specieName);
-			fprintf(f, "\t\t\t<path>%s</path>\n",				m_conf->m_fitWindow[k].ref[j].m_path);
+			fprintf(f, "\t\t\t<name>%s</name>\n", (LPCTSTR)m_conf->m_fitWindow[k].ref[j].m_specieName);
+			fprintf(f, "\t\t\t<path>%s</path>\n", (LPCTSTR)m_conf->m_fitWindow[k].ref[j].m_path);
 			fprintf(f, "\t\t\t<gasFactor>%.2lf</gasFactor>\n",	m_conf->m_fitWindow[k].ref[j].m_gasFactor);
 
 			// Shift

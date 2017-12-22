@@ -1038,7 +1038,7 @@ void CDMSpecView::ReadMobileLog(){
 	char baseNameTxt[256];
 	char txt[256];
 	char *pt = 0;
-	int i, L, d;
+	size_t i, L, d;
 	char m_Base[256];
 	bool fFoundBaseName = false;
 
@@ -1071,23 +1071,24 @@ void CDMSpecView::ReadMobileLog(){
 
 	if(fFoundBaseName){
 		i = L = strlen(baseNameTxt);
-		while(baseNameTxt[i-1] >= '0' && baseNameTxt[i-1] <= '9')
-		--i;
+		while (baseNameTxt[i - 1] >= '0' && baseNameTxt[i - 1] <= '9') {
+			--i;
+		}
 
 		if(i == L){
-		sprintf(m_Base, "%s%02d", baseNameTxt, 1);
+			sprintf(m_Base, "%s%02d", baseNameTxt, 1);
 		}else{
-		sscanf(baseNameTxt + i, "%d", &d);
-		baseNameTxt[i] = 0;
-		switch(L - i){
-			case 1: sprintf(m_Base, "%s%01d", baseNameTxt, ++d); break;
-			case 2: sprintf(m_Base, "%s%02d", baseNameTxt, ++d); break;
-			case 3: sprintf(m_Base, "%s%03d", baseNameTxt, ++d); break;
-			case 4: sprintf(m_Base, "%s%04d", baseNameTxt, ++d); break;
-			case 5: sprintf(m_Base, "%s%05d", baseNameTxt, ++d); break;
-			case 6: sprintf(m_Base, "%s%06d", baseNameTxt, ++d); break;
-			case 7: sprintf(m_Base, "%s%07d", baseNameTxt, ++d); break;
-		}
+			sscanf(baseNameTxt + i, "%d", &d);
+			baseNameTxt[i] = 0;
+			switch(L - i){
+				case 1: sprintf(m_Base, "%s%01d", baseNameTxt, ++d); break;
+				case 2: sprintf(m_Base, "%s%02d", baseNameTxt, ++d); break;
+				case 3: sprintf(m_Base, "%s%03d", baseNameTxt, ++d); break;
+				case 4: sprintf(m_Base, "%s%04d", baseNameTxt, ++d); break;
+				case 5: sprintf(m_Base, "%s%05d", baseNameTxt, ++d); break;
+				case 6: sprintf(m_Base, "%s%06d", baseNameTxt, ++d); break;
+				case 7: sprintf(m_Base, "%s%07d", baseNameTxt, ++d); break;
+			}
 		}
 		m_BaseEdit.SetWindowText(m_Base);
 		UpdateData(FALSE);

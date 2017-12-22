@@ -95,7 +95,7 @@ void CReferenceFileControl::ParseShiftOption(Evaluation::SHIFT_TYPE &option, dou
 	char tmpStr[512];
 	char txt[512];
 	str.MakeLower();
-	sprintf(txt, "%s", str);
+	sprintf(txt, "%s", (LPCTSTR)str);
 	char *pt = 0;
 
 	// 1. Shift Fixed 

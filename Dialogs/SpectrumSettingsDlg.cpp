@@ -240,7 +240,7 @@ void CSpectrumSettingsDlg::UpdateListOfSpectrometers(){
 
 	m_Spectrometer->GetConnectedSpecs(spectrometers);
 	
-	int nFoundSpecs = spectrometers.GetCount();
+	INT_PTR nFoundSpecs = spectrometers.GetCount();
 	if(nFoundSpecs == 0 || (m_Spectrometer->m_spectrometerIndex < 0 || m_Spectrometer->m_spectrometerIndex >= nFoundSpecs)){
 		return;
 	}else{
@@ -270,7 +270,7 @@ LRESULT CSpectrumSettingsDlg::OnChangeSpectrometer(WPARAM wParam, LPARAM lParam)
 
 	m_Spectrometer->GetConnectedSpecs(spectrometers);
 	
-	int nFoundSpecs = spectrometers.GetCount();
+	//INT_PTR nFoundSpecs = spectrometers.GetCount();
 	// build the list 
 	m_comboSpecs.ResetContent();
 	POSITION p = spectrometers.GetHeadPosition();

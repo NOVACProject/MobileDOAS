@@ -224,9 +224,9 @@ bool CSpectrumIO::WriteStdFile(const CString &fileName, const double *spectrum, 
 	name.Format(fileName);
 	Common::GetFileName(name);
 
-	fprintf(f,"%s\n", name);                /* The name of the spectrum */
-	fprintf(f,"%s\n", spectrometer);  /* The name of the spectrometer */
-	fprintf(f,"%s\n", spectrometer); // why is there a second output of spectrometer name?
+	fprintf(f,"%s\n", (LPCTSTR)name);                /* The name of the spectrum */
+	fprintf(f,"%s\n", (LPCTSTR)spectrometer);  /* The name of the spectrometer */
+	fprintf(f,"%s\n", (LPCTSTR)spectrometer); // why is there a second output of spectrometer name?
 	
 	fprintf(f,"%s\n",datetxt);
 	fprintf(f,"%02d:%02d:%02d\n",hr,min,sec);
@@ -235,7 +235,7 @@ bool CSpectrumIO::WriteStdFile(const CString &fileName, const double *spectrum, 
 	fprintf(f,"0.0\n");
 	fprintf(f,"SCANS %ld\n",		exposureNum);
 	fprintf(f,"INT_TIME %d\n",	integrationTime);
-	fprintf(f,"SITE %s\n",			measName);
+	fprintf(f,"SITE %s\n",	(LPCTSTR)measName);
 	fprintf(f,"LONGITUDE %f\n",	lon);
 	fprintf(f,"LATITUDE %f\n",	lat);
 
@@ -250,7 +250,7 @@ bool CSpectrumIO::WriteStdFile(const CString &fileName, const double *spectrum, 
 		fprintf(f, "Device = \"\"\n");
 		fprintf(f, "ElevationAngle = 90\n");
 		fprintf(f, "ExposureTime = %d\n",				integrationTime);
-		fprintf(f, "FileName = %s\n",						fileName);
+		fprintf(f, "FileName = %s\n", (LPCTSTR)fileName);
 		fprintf(f, "FitHigh = 0\n");
 		fprintf(f, "FitLow = 0\n");
 		fprintf(f, "Gain = 0\n");
@@ -266,7 +266,7 @@ bool CSpectrumIO::WriteStdFile(const CString &fileName, const double *spectrum, 
 		fprintf(f, "Min = 0\n");
 		fprintf(f, "MinChannel = 0\n");
 		fprintf(f, "MultiChannelCounter = 0\n");
-		fprintf(f, "Name = \"%s\"\n",						measName);
+		fprintf(f, "Name = \"%s\"\n", (LPCTSTR)measName);
 		fprintf(f, "NumScans = %d\n",						exposureNum);
 		fprintf(f, "OpticalDensity = 0\n");
 		fprintf(f, "OpticalDensityCenter = %d\n",	specLength / 2);

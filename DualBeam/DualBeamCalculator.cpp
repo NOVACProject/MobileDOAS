@@ -141,7 +141,7 @@ bool CDualBeamCalculator::LowPassFilter(const CMeasurementSeries *series, CMeasu
 	memset(tmpTime, 0, newLength * sizeof(double));
 
 	// 7. Do the filtering...
-	for(int k = 1; k < nIterations + 1; ++k){
+	for(unsigned int k = 1; k < nIterations + 1; ++k){
 		// 7a. The coefficient in the binomial - expansion
 		double coefficient = factorial[nIterations - 1] / (factorial[nIterations - k] * factorial[k - 1]);
 		coeffSum	+= coefficient;	

@@ -967,7 +967,7 @@ BOOL CPostFluxDlg::OnToolTipNotify( UINT id, NMHDR * pNMHDR, LRESULT * pResult )
 	static char string[512];
 
 	TOOLTIPTEXT *pTTT = (TOOLTIPTEXT *)pNMHDR;
-	UINT nID = pNMHDR->idFrom;
+	UINT_PTR nID = pNMHDR->idFrom;
 	nID = ::GetDlgCtrlID((HWND)nID);
 
 	int ok = 0;
@@ -1050,7 +1050,7 @@ BOOL CPostFluxDlg::PreTranslateMessage(MSG* pMsg){
 
 void CPostFluxDlg::OnBnClickedBtnSourceLat(){
 	Dialogs::CSourceSelectionDlg sourceDlg;
-	int modal = sourceDlg.DoModal();
+	INT_PTR modal = sourceDlg.DoModal();
 	if(IDOK == modal){
 		m_srcLat = sourceDlg.m_selectedLat;
 		m_srcLon = sourceDlg.m_selectedLon;
@@ -1064,7 +1064,7 @@ void CPostFluxDlg::OnBnClickedBtnSourceLat(){
 
 void CPostFluxDlg::OnBnClickedBtnSourceLong(){
 	Dialogs::CSourceSelectionDlg sourceDlg;
-	int modal = sourceDlg.DoModal();
+	INT_PTR modal = sourceDlg.DoModal();
 	if(IDOK == modal){
 		if(sourceDlg.m_selectedLat > -1){
 		this->m_srcLat = sourceDlg.m_selectedLat;

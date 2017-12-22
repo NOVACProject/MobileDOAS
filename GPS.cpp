@@ -284,7 +284,7 @@ int CGPS::Parse(char *string){
 }
 
 /* Write log file  */
-void CGPS::WriteGPSLog(char *pFile,double *pPos,double* pTime){
+void CGPS::WriteGPSLog(char *pFile,double *pPos,double pTime){
 
 	FILE *f;
 	f = fopen(pFile,"a+");
