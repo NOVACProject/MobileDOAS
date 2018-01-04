@@ -24,7 +24,6 @@ CGPS::CGPS(){
 	gpsInfo.gpsPos.latitude = 0;
 	gpsInfo.gpsPos.longitude = 0;
 	gpsInfo.gpsTime = 0;
-	//gpsInfo.gpsDate = _T("000000");
 
 	gotContact = false;
 	m_logFile.Format("gps.log"); // for testing only
@@ -348,7 +347,7 @@ bool CGPS::IsRunning(){
 
 int CGPS::ReadGPS(){
 	long cnt;
-	char gpstxt[1024];
+	char gpstxt[141];
 
 	gpstxt[0] = 0;
 
@@ -356,11 +355,10 @@ int CGPS::ReadGPS(){
 		cnt = 0;
 		serial.FlushSerialPort(10);
 		if(serial.Check(550)){
-			while(serial.Check(100) && cnt<256){
+			while(serial.Check(100) && cnt<141){ // Read GPRMC and GPGGA
 				serial.Read(gpstxt+cnt,1);
 				cnt++;
 			}
-			gpstxt[cnt]=0;
 		}else{
 			printf("timeout in getting gps\n");
 			serial.FlushSerialPort(1);
