@@ -11,7 +11,7 @@ public:
 	double  I[MAX_SPECTRUM_LENGTH];
 	int     length;
 	long    scans;
-	long    intTime;	// The exposure-time in mili-seconds
+	long    exposureTime;	// The exposure-time in milliseconds
 	double  lat;
 	double  lon;
 	int     date[3];
@@ -36,6 +36,7 @@ public:
 	bool    Add(double value);
 	bool    Div(double value);
 	bool    Sub(double value);
+	bool    Mult(double value);
 
 	// copying a spectrum
 	bool    Copy(const CSpectrum &spec2);

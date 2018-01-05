@@ -52,7 +52,7 @@ int CKMLFileHandler::StoreTraverseAsKML(Flux::CTraverse &traverse, const CString
 	fprintf(f, "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");
 	fprintf(f, "<Document>\n");
 
-	fprintf(f, "\t<name>%s</name>\n", traverse.m_fileName);
+	fprintf(f, "\t<name>%s</name>\n", (LPCTSTR)traverse.m_fileName);
 
 	// write the list of available styles
 	WriteStyles(nLevels, f);
@@ -127,11 +127,11 @@ void CKMLFileHandler::WriteStyles(int numberOfStyles, FILE *f){
 		// Write the style to file
 		fprintf(f, "	<Style id=\"style%d\">\n", level);
 		fprintf(f, "		<LineStyle>\n");
-        fprintf(f, "			<color>7f%s</color>\n", colorStr);
+        fprintf(f, "			<color>7f%s</color>\n", (LPCTSTR)colorStr);
         fprintf(f, "			<width>4</width>\n");
 		fprintf(f, "		</LineStyle>\n");
 		fprintf(f, "		<PolyStyle>\n");
-        fprintf(f, "			<color>7f%s</color>\n", colorStr);
+        fprintf(f, "			<color>7f%s</color>\n", (LPCTSTR)colorStr);
 		fprintf(f, "		</PolyStyle>\n");
 		fprintf(f, "	</Style>\n");
 	}

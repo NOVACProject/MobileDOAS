@@ -36,7 +36,7 @@ public:
 	double  DoubleToAngle(double degreesAndMinutes);
 
 	/* WriteGPSLog and WriteLog are currently not used */
-	void    WriteGPSLog(char *pFile,double *pPos,double* pTime);
+	void    WriteGPSLog(char *pFile,double *pPos,double pTime);
 	void    WriteLog(char *pFile,char* txt);
 
 	/* Running the GPS collection */

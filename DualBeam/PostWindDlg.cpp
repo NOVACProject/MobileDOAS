@@ -453,13 +453,14 @@ void CPostWindDlg::SaveResult(){
 	double distance = m_settings.plumeHeight * tan(DEGREETORAD * m_settings.angleSeparation);
 	fprintf(f, "\nCorrelation\tDelay[s]\tWindSpeed[m/s]\n");
 	for(int k = 0; k < m_calc.m_length; ++k){
-		if(m_calc.used[k]){
-			fprintf(f, "%lf\t",			m_calc.corr[k]);
-			fprintf(f, "%lf\t",			m_calc.delays[k]);
-			if(fabs(m_calc.delays[k]) < 1e-5)
+		if (m_calc.used[k]) {
+			fprintf(f, "%lf\t", m_calc.corr[k]);
+			fprintf(f, "%lf\t", m_calc.delays[k]);
+			if (fabs(m_calc.delays[k]) < 1e-5) {
 				fprintf(f, "%0.0\n");
-			else
-				fprintf(f, "%lf\n",			distance / m_calc.delays[k]);
+			}
+		}else{
+			fprintf(f, "%lf\n",			distance / m_calc.delays[k]);
 		}
 	}
 

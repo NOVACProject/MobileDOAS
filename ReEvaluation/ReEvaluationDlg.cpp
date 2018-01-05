@@ -11,6 +11,40 @@ UINT RunScript(LPVOID pParam);
 
 CReEvaluationDlg::CReEvaluationDlg(void)
 {
+
+	// Create the tabs
+	// Initiate the reevaluator object that we need to
+	//	do the actual reevaluation
+	m_reeval = new CReEvaluator();
+
+	// -------------- Adding the tabs ------------------
+
+	// the evaluation log page
+	m_page1.Construct(IDD_REEVAL_EVALUATIONLOG);
+	m_page1.m_reeval = m_reeval;
+
+	// the dark spectrum page
+	//m_page2.Construct(IDD_REEVAL_DARK);
+	//m_page2.m_reeval = m_reeval;
+
+	// the sky spectrum page
+	m_page3.Construct(IDD_REEVAL_SKY);
+	m_page3.m_reeval = m_reeval;
+
+	// the fit windows page
+	m_page4.Construct(IDD_REEVAL_FITWINDOW);
+	m_page4.m_reeval = m_reeval;
+
+	// the do evaluation page
+	m_page5.Construct(IDD_REEVAL_EVALUATE);
+	m_page5.m_reeval = m_reeval;
+
+	// add the pages to the window
+	AddPage(&m_page1);
+	//AddPage(&m_page2);
+	AddPage(&m_page3);
+	AddPage(&m_page4);
+	AddPage(&m_page5);
 }
 
 CReEvaluationDlg::~CReEvaluationDlg(void)
@@ -69,6 +103,7 @@ BOOL ReEvaluation::CReEvaluationDlg::OnInitDialog()
 		pOk->SetWindowText("Close");
 		pOk->MoveWindow(rectAppl);
 	}
+	
 	return bResult;
 }
 
@@ -110,41 +145,7 @@ void ReEvaluation::CReEvaluationDlg::OnClose()
 }
 
 INT_PTR ReEvaluation::CReEvaluationDlg::DoModal()
-{
-
-	// Initiate the reevaluator object that we need to
-	//	do the actual reevaluation
-	m_reeval = new CReEvaluator();
-
-	// -------------- Adding the tabs ------------------
-
-	// the evaluation log page
-	m_page1.Construct(IDD_REEVAL_EVALUATIONLOG);
-	m_page1.m_reeval = m_reeval;
-
-	// the dark spectrum page
-	//m_page2.Construct(IDD_REEVAL_DARK);
-	//m_page2.m_reeval = m_reeval;
-
-	// the sky spectrum page
-	m_page3.Construct(IDD_REEVAL_SKY);
-	m_page3.m_reeval = m_reeval;
-
-	// the fit windows page
-	m_page4.Construct(IDD_REEVAL_FITWINDOW);
-	m_page4.m_reeval = m_reeval;
-
-	// the do evaluation page
-	m_page5.Construct(IDD_REEVAL_EVALUATE);
-	m_page5.m_reeval = m_reeval;
-
-	// add the pages to the window
-	AddPage(&m_page1);
-	//AddPage(&m_page2);
-	AddPage(&m_page3);
-	AddPage(&m_page4);
-	AddPage(&m_page5);
-	
+{	
 	return CPropertySheet::DoModal();
 }
 

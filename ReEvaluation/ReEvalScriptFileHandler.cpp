@@ -35,8 +35,8 @@ int CReEvalScriptFileHandler::WriteToFile(const CString &fileName, const ReEvalu
 		const ReEvaluation::CReEvaluation_Script::Job &j = script.m_jobs.GetNext(pos);
 		
 		fprintf(f, "\t<Job>\n");
-		fprintf(f, "\t\t<EvalLog>%s</EvalLog>\n",			j.evaluationLog);
-		fprintf(f, "\t\t<SettingsFile>%s</SettingsFile>\n", j.settingsFile);
+		fprintf(f, "\t\t<EvalLog>%s</EvalLog>\n", (LPCTSTR)j.evaluationLog);
+		fprintf(f, "\t\t<SettingsFile>%s</SettingsFile>\n", (LPCTSTR)j.settingsFile);
 		fprintf(f, "\t</Job>\n");
 	}
 	

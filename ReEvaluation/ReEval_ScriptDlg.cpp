@@ -287,7 +287,7 @@ void ScanDirectoryForEvalLogs(const CString &folderName, CList <CString, CString
 	// 1.  Search for all directories
 	// --------------------------------------
 
-	sprintf(fileToFind, "%s\\*", folderName);
+	sprintf(fileToFind, "%s\\*", (LPCTSTR)folderName);
 	HANDLE hFile = FindFirstFile(fileToFind, &FindFileData);
 
 	if(hFile == INVALID_HANDLE_VALUE)
@@ -311,7 +311,7 @@ void ScanDirectoryForEvalLogs(const CString &folderName, CList <CString, CString
 	// 2. Search for all evaluation log files 
 	// --------------------------------------
 
-	sprintf(fileToFind, "%s\\*EvaluationLog*.txt", folderName);
+	sprintf(fileToFind, "%s\\*EvaluationLog*.txt", (LPCTSTR)folderName);
 	hFile = FindFirstFile(fileToFind, &FindFileData);
 
 	if(hFile == INVALID_HANDLE_VALUE)

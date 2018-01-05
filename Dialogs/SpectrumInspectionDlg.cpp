@@ -379,7 +379,7 @@ void CSpectrumInspectionDlg::FillInSpectrumPropertiesList(const CSpectrum *spec)
 		str.Format("%.2lf", spec->GetAverage(2, 20));
 		m_propertyList.SetItemText(index++, 1,		str);
 
-		str.Format("%d", spec->intTime);
+		str.Format("%d", spec->exposureTime);
 		m_propertyList.SetItemText(index++, 1,		str);
 
 		str.Format("%d", spec->scans);

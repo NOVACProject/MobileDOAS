@@ -343,7 +343,7 @@ void CPostPlumeHeightDlg::CorrectTimeSeries(){
 void CPostPlumeHeightDlg::OnBnClickedButtonSourceLat()
 {
   Dialogs::CSourceSelectionDlg sourceDlg;
-  int modal = sourceDlg.DoModal();
+  INT_PTR modal = sourceDlg.DoModal();
   if(IDOK == modal){
     m_sourceLat = sourceDlg.m_selectedLat;
     m_sourceLon = sourceDlg.m_selectedLon;

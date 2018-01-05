@@ -813,7 +813,7 @@ LRESULT CRouteDlg::OnEndEditLandMarkPosition(WPARAM wParam, LPARAM lParam){
 void CRouteDlg::OnBnClickedSourceLat()
 {
 	Dialogs::CSourceSelectionDlg sourceDlg;
-	int modal = sourceDlg.DoModal();
+	INT_PTR modal = sourceDlg.DoModal();
 	if(IDOK == modal){
 		m_srcLat = sourceDlg.m_selectedLat;
 		m_srcLon = sourceDlg.m_selectedLon;

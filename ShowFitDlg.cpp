@@ -176,7 +176,7 @@ void CShowFitDlg::DrawFit1(){
   m_fitPlot.XYPlot(pixel + fitLow, spectrum + fitLow, (int)fitWidth, Graph::CGraphCtrl::PLOT_CONNECTED); 
 
   // draw the fitted result
-  m_fitPlot.SetPlotColor(RGB(0,0,255));
+  m_fitPlot.SetPlotColor(RGB(0, 255, 255));
   m_fitPlot.XYPlot(pixel + fitLow, fitResult + fitLow, (int)fitWidth, Graph::CGraphCtrl::PLOT_CONNECTED | Graph::CGraphCtrl::PLOT_FIXED_AXIS); 
 }
 
@@ -233,6 +233,7 @@ void CShowFitDlg::DrawFit2(){
   m_fitPlot2.XYPlot(pixel + fitLow, spectrum + fitLow, (int)fitWidth, Graph::CGraphCtrl::PLOT_CONNECTED); 
 
   // draw the fitted result
-  m_fitPlot2.SetPlotColor(RGB(0,0,255));
+  //m_fitPlot2.SetPlotColor(RGB(0,0,255));
+  m_fitPlot2.SetPlotColor(RGB(0, 255, 0));
   m_fitPlot2.XYPlot(pixel + fitLow, fitResult + fitLow, (int)fitWidth, Graph::CGraphCtrl::PLOT_CONNECTED | Graph::CGraphCtrl::PLOT_FIXED_AXIS); 
 }

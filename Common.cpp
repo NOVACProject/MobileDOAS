@@ -376,7 +376,7 @@ bool Common::BrowseForFile(char *filter, CString &fileName){
 // open a browser window and let the user search for a file
 bool Common::BrowseForFile_SaveAs(TCHAR *filter, CString &fileName){
 	static TCHAR szFile[4096];
-	sprintf(szFile, "%s", fileName);
+	sprintf(szFile, "%s", (LPCTSTR)fileName);
 
 	OPENFILENAME ofn;       // common dialog box structure
 	// Initialize OPENFILENAME

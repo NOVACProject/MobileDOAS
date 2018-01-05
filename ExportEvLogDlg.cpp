@@ -7,7 +7,7 @@
 
 using namespace Dialogs;
 
-static const enum COLUMNS {
+const enum COLUMNS {
 	COL_NOTHING, 
 	COL_TIME, 
 	COL_LAT, 

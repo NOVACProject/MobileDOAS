@@ -267,7 +267,7 @@ void CWindFieldDlg::UpdateMobileLog(){
       /* File cannot be opened */
       return;
     }else{
-      fprintf(f, "WINDFIELDFILE=%s", m_windfile);
+      fprintf(f, "WINDFIELDFILE=%s", (LPCTSTR)m_windfile);
       fclose(f);
       return;
     }
@@ -281,11 +281,11 @@ void CWindFieldDlg::UpdateMobileLog(){
     }
     fclose(f);
     f = fopen(g_exePath + "MobileLog.txt", "w");
-    fprintf(f, "%s", tmpStr);
-		for(int i = 0; i < min(4, m_windFileCombo.GetCount()); ++i){
-			m_windFileCombo.GetLBText(i, tmpStr);
-      fprintf(f, "WINDFIELDFILE=%s\n", tmpStr);
-		}
+    fprintf(f, "%s", (LPCTSTR)tmpStr);
+	for(int i = 0; i < min(4, m_windFileCombo.GetCount()); ++i){
+		m_windFileCombo.GetLBText(i, tmpStr);
+		fprintf(f, "WINDFIELDFILE=%s\n", (LPCTSTR)tmpStr);
+	}
 
     fclose(f);
 	}

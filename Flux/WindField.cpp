@@ -428,7 +428,7 @@ int CWindField::SortList(CList<Wind*, Wind*> &wind){
   // This function uses mergesort to sort the list
 
   CList<Wind*, Wind*> list1, list2;
-  int listLength = wind.GetSize();
+  INT_PTR listLength = wind.GetSize();
 
   // 1. A list of only one item is sorted.
   if(listLength <= 1)
