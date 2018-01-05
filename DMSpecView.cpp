@@ -1249,7 +1249,7 @@ void CDMSpecView::OnMenuControlTestTheGPS()
 			for(int i = 0; i < 10; ++i){
 				if(1 == gps->ReadGPS()){
 					CString msg;
-					msg.Format("Found GPS on serialPort: %s using baudrate %d", serial.serialPort, serial.baudrate);
+					msg.Format("Found GPS on serialPort: %s using baud rate %d", serial.serialPort, serial.baudrate);
 					MessageBox(msg, "Found GPS reciever");
 
 					delete gps;

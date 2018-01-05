@@ -66,7 +66,7 @@ void CMeasurement_Wind::Run(){
 	/* Error Check */
 	if(serialDelay >= this->m_timeResolution){
 		CString tmpStr;
-		tmpStr.Format("Error In cfg.txt: The time resolution is smaller than the serial delay. Please Change and restart. Set Time Resolution = %d [s]. Set Serial Delay = %d [s]", this->m_timeResolution, serialDelay);
+		tmpStr.Format("Error In cfg.xml: The time resolution is smaller than the serial delay. Please Change and restart. Set Time Resolution = %d [s]. Set Serial Delay = %d [s]", this->m_timeResolution, serialDelay);
 		MessageBox(pView->m_hWnd, tmpStr, "Error", MB_OK);
 
 		// we have to call this before exiting the application otherwise we'll have trouble next time we start...
