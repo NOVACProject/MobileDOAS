@@ -147,8 +147,8 @@ namespace ReEvaluation
 		/** Rads the references needed */
 		bool ReadReferences(Evaluation::CEvaluation *evaluator);
 
-		/** Reads the dark spectrum */
-		bool ReadDarkSpectrum(CSpectrum &spec, int channel);
+		/** Reads spectrum from file */
+		bool ReadSpectrumFromFile(CSpectrum &spec, CString filename, int channel);
 
 		/** Reads the sky spectrum */
 		bool ReadSkySpectrum(CSpectrum &spec, int channel);
@@ -183,8 +183,8 @@ namespace ReEvaluation
 		/** Writes a file with the average of all residuals */
 		bool WriteAverageResidualToFile();
 
-		/** Saves the sky and dark spectra to file */
-		bool SaveSkyAndDarkSpectra(CSpectrum &sky, CSpectrum &dark, int channel);
+		/** Saves the spectra to file */
+		bool SaveSpectra(CSpectrum &sky, CString filename, int channel);
 
 		/** Extracts the result from the given evaluator */
 		bool GetResult(const Evaluation::CEvaluation &evaluator);

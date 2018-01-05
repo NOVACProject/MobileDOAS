@@ -338,6 +338,9 @@ bool CReEvaluator::DoEvaluation(){
 	static double sky[MAX_SPECTRUM_LENGTH];
 	Evaluation::CEvaluation evaluator;
 
+	// adaptive mode flag
+	bool adaptiveMode = false;
+
 	// go into re-evaluation 'mode'
 	m_mode = MODE_REEVALUATION;
 
@@ -394,6 +397,7 @@ bool CReEvaluator::DoEvaluation(){
 		CString message;
 		CSpectrum curSpectrum;
 		CSpectrum darkSpectrum, skySpectrum;
+		CSpectrum darkcurSpectrum, offsetSpectrum;
 
 		m_progress = 0;
 
@@ -406,10 +410,23 @@ bool CReEvaluator::DoEvaluation(){
 			}
 
 			// start by reading dark and sky
-			if(!ReadSkySpectrum(skySpectrum, chn))
+			if (!ReadSkySpectrum(skySpectrum, chn)) {
+				MessageBox(NULL, "Cannot read sky spectrum. Evaluation stopped.", "Error", MB_OK);
 				return false;
-			if(!ReadDarkSpectrum(darkSpectrum, chn))
-				return false;
+			}
+			if (!ReadSpectrumFromFile(darkSpectrum, "dark", chn)) {
+				// no dark file found. read darkcur and offset file
+				if (!ReadSpectrumFromFile(darkcurSpectrum, "darkcur", chn)) {
+					MessageBox(NULL, "Cannot read dark spectrum. Evaluation stopped.", "Error", MB_OK);
+					return false;
+				}
+				if (!ReadSpectrumFromFile(offsetSpectrum, "offset", chn)) {
+					MessageBox(NULL, "Cannot read offst spectrum. Evaluation stopped.", "Error", MB_OK);
+					return false;
+				}
+				darkcurSpectrum.Sub(offsetSpectrum);	// subtract offset from darkcur
+				adaptiveMode = true;
+			}
 
 			// Get the size of the spectra
 			m_settings.m_window.specLength = skySpectrum.length;
@@ -417,11 +434,27 @@ bool CReEvaluator::DoEvaluation(){
 			// initialize the evaluator
 			evaluator.SetFitWindow(m_settings.m_window);
 
-			// save the sky and dark spectra
-			SaveSkyAndDarkSpectra(skySpectrum, darkSpectrum, chn);
+			// save the sky, dark, and offset spectra
+			SaveSpectra(skySpectrum, "sky", chn);
+			if (!adaptiveMode) {
+				SaveSpectra(darkSpectrum, "dark", chn);
+			}
+			else {
+				SaveSpectra(darkSpectrum, "darkcur", chn);
+				SaveSpectra(offsetSpectrum, "offset", chn);
+			}			
 
-			// Subtract the dark from the sky, and don't do it again
-			if(m_settings.m_skySelection != USE_SKY_USER){
+			// Subtract the dark from the sky, and don't do it again.
+			// note: dark already subtracted if USE_SKY_USER mode.
+			if (m_settings.m_skySelection != USE_SKY_USER) {
+				// Rebuild darkSpectrum if adaptive mode
+				// darkspec = offset + (skySpectrum.exposureTime)*darkcur/(darkcurSpectrum.exposureTime)
+				if (adaptiveMode) {
+					darkSpectrum.Copy(darkcurSpectrum);
+					darkSpectrum.Mult(skySpectrum.exposureTime);
+					darkSpectrum.Div(darkcurSpectrum.exposureTime);
+					darkSpectrum.Add(offsetSpectrum);
+				}
 				skySpectrum.Sub(darkSpectrum);
 			}
 			evaluator.m_subtractDarkFromSky = false;
@@ -476,7 +509,16 @@ bool CReEvaluator::DoEvaluation(){
 				}
 
 				// Get the dark spectrum to use with this spectrum
-				GetDarkSpectrum(darkSpectrum, m_curSpec, chn);
+				if (!adaptiveMode) {
+					GetDarkSpectrum(darkSpectrum, m_curSpec, chn); // don't do if adaptive mode
+				}
+				else {
+					// darkspec = offset + (curSpectrum.intTime)*darkcur/(darkcurSpectrum.intTime)
+					darkSpectrum.Copy(darkcurSpectrum);
+					darkSpectrum.Mult(curSpectrum.exposureTime);
+					darkSpectrum.Div(darkcurSpectrum.exposureTime);
+					darkSpectrum.Add(offsetSpectrum);
+				}
 
 				memcpy(sky, skySpectrum.I, MAX_SPECTRUM_LENGTH*sizeof(double));
 
@@ -634,23 +676,19 @@ bool CReEvaluator::ReadSpectrum(CSpectrum &spec, int number, int channel){
 	return true;
 }
 
-/* Reads the dark spectrum */
-bool CReEvaluator::ReadDarkSpectrum(CSpectrum &spec, int channel){
+/* Reads spectrum from file.  Used for sky, dark, darkcur, and offset. */
+bool CReEvaluator::ReadSpectrumFromFile(CSpectrum &spec, CString filename, int channel) {
 	CString specFileName;
-
-	specFileName.Format("%s\\dark_%1d.STD", m_specFileDir, channel); // the file name
-	if(CSpectrumIO::readSTDFile(specFileName, &spec)){
-		specFileName.Format("%s\\dark.STD", m_specFileDir); // the file name
-		if(CSpectrumIO::readSTDFile(specFileName, &spec)){
-		CString message;
-		message.Format("Cannot read spectrum %s. Evaluation stopped.", specFileName);
-		MessageBox(NULL, message, "Error", MB_OK);
-		return false;
+	specFileName.Format("%s\\%s_%1d.STD", m_specFileDir, filename, channel); // the file name
+	if (CSpectrumIO::readSTDFile(specFileName, &spec)) {
+		specFileName.Format("%s\\%s.STD", m_specFileDir, filename); // the file name
+		if (CSpectrumIO::readSTDFile(specFileName, &spec)) {
+			return false;
 		}
 	}
 
-	if(pView != NULL){
-		m_statusMsg.Format("Read Dark spectrum");
+	if (pView != NULL) {
+		m_statusMsg.Format("Read %s", specFileName);
 		pView->PostMessage(WM_STATUS);
 	}
 
@@ -659,38 +697,39 @@ bool CReEvaluator::ReadDarkSpectrum(CSpectrum &spec, int channel){
 
 /* Reads the sky spectrum */
 bool CReEvaluator::ReadSkySpectrum(CSpectrum &spec, int channel){
-	CString specFileName;
-	CSpectrum curSpectrum;
-	long nAdded = 0;
-	int i;
 
-	// if the sky spectrum is 'sky_0.STD'
+
+	//// if the sky spectrum is 'sky_0.STD'
 	if(m_settings.m_skySelection == USE_SKY_FIRST){
-		specFileName.Format("%s\\sky_%1d.STD", m_specFileDir, channel); // the file name
-		if(CSpectrumIO::readSTDFile(specFileName, &spec)){
-		specFileName.Format("%s\\sky.STD", m_specFileDir); // the file name
-		if(CSpectrumIO::readSTDFile(specFileName, &spec)){
-			CString message;
-			message.Format("Cannot read spectrum %s. Evaluation stopped.", specFileName);
-			MessageBox(NULL, message, "Error", MB_OK);
-			return false;
-		}
-		}
-		if(pView != NULL){
-			m_statusMsg.Format("Read Sky spectrum");
-			pView->PostMessage(WM_STATUS);
-		}
-		return true;
+		//CString specFileName;
+		//specFileName.Format("%s\\sky_%1d.STD", m_specFileDir, channel); // the file name
+		//if(CSpectrumIO::readSTDFile(specFileName, &spec)){
+		//	specFileName.Format("%s\\sky.STD", m_specFileDir); // the file name
+		//	if(CSpectrumIO::readSTDFile(specFileName, &spec)){
+		//		CString message;
+		//		message.Format("Cannot read spectrum %s. Evaluation stopped.", specFileName);
+		//		MessageBox(NULL, message, "Error", MB_OK);
+		//		return false;
+		//	}
+		//}
+		//if(pView != NULL){
+		//	m_statusMsg.Format("Read Sky spectrum");
+		//	pView->PostMessage(WM_STATUS);
+		//}
+		//return true;
+		return ReadSpectrumFromFile(spec, "sky", channel);
 	}
 
 	// set the sky spectrum to zero
 	spec.Clear();
+	CSpectrum curSpectrum;
 	GetSpectrum(curSpectrum, 0, channel);
 	spec.length = curSpectrum.length;
+	long nAdded = 0;
 
 	// if the average of all spectra is to be used as sky
 	if(USE_SKY_ALL == m_settings.m_skySelection){
-		for(i = 0; i < m_recordNum[channel]; ++i){
+		for(int i = 0; i < m_recordNum[channel]; ++i){
 			GetSpectrum(curSpectrum, i, channel);
 			if(!IsDark(curSpectrum)){
 				spec.Add(curSpectrum);
@@ -711,7 +750,7 @@ bool CReEvaluator::ReadSkySpectrum(CSpectrum &spec, int channel){
 	if(USE_SKY_CUSTOM == m_settings.m_skySelection){
 		double avgIntensity = 0.0f;
 
-		for(i = 0; i < m_recordNum[channel]; ++i){
+		for(int i = 0; i < m_recordNum[channel]; ++i){
 			// check if the column value is ok
 			if(m_oldCol[channel][i] < m_settings.m_skyColumnLow || m_oldCol[channel][i] > m_settings.m_skyColumnHigh)
 				continue;
@@ -1204,29 +1243,15 @@ bool CReEvaluator::WriteAverageResidualToFile(){
 	fclose(f);
 	return true;
 }
-
-/* saves a copy of the used sky and dark spectra */
-bool CReEvaluator::SaveSkyAndDarkSpectra(CSpectrum &sky, CSpectrum &dark, int channel){
-	CString darkFileName, skyFileName;
-	darkFileName.Format("%s\\dark_%1d.txt", m_outputDir, channel);
-	skyFileName.Format("%s\\sky_%1d.txt", m_outputDir, channel);
-	FILE *f;
-	int i;
-
-	f = fopen(darkFileName, "w");
+ 
+/* saves a copy of the spectra */
+bool CReEvaluator::SaveSpectra(CSpectrum &spec, CString filename, int channel){
+	CString fileName;
+	fileName.Format("%s\\%s_%1d.txt", m_outputDir, filename, channel);
+	FILE *f = fopen(fileName, "w");
 	if(f != NULL){
-		for(i = 0; i < dark.length; ++i){
-			fprintf(f, "%lg\n", dark.I[i]);
-		}
-		fclose(f);
-	}else{
-		return false;
-	}
-
-	f = fopen(skyFileName, "w");
-	if(f != NULL){
-		for(i = 0; i < sky.length; ++i){
-			fprintf(f, "%lg\n", sky.I[i]);
+		for(int i = 0; i < spec.length; ++i){
+			fprintf(f, "%lg\n", spec.I[i]);
 		}
 		fclose(f);
 	}else{

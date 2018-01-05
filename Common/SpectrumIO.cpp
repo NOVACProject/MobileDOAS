@@ -116,7 +116,7 @@ int CSpectrumIO::readSTDFile(CString filename, CSpectrum *curSpec){
 		fclose(f);
 		return 1;
 	}else{
-		curSpec->intTime = (int)tmpDouble;
+		curSpec->exposureTime = (int)tmpDouble;
 	}
 
 	/* The site is ignored */
