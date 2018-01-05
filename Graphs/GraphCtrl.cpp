@@ -625,10 +625,12 @@ void CGraphCtrl::XYPlot(double *xPosition, double *yPosition, double *color, dou
 			double a;
 			if((color[i] - minC) < (halfC - minC)){
 				a = max(0, color[i] - minC) * halfC_inv;
-				curColor = RGB(0, 255*a, 255*(1 - a));
+				//curColor = RGB(0, 255*a, 255*(1 - a));
+				curColor = RGB(255 * a, 0, 255 * (1 - a));
 			}else{
 				a = max(0, color[i] - halfC) * halfC_inv;
-				curColor = RGB(255 * a, 255 * (1 - a), 0);
+				//curColor = RGB(255 * a, 255 * (1 - a), 0);
+				curColor = RGB(255 * a, 0, 255 * (1 - a));
 			}
 		}
 
@@ -771,6 +773,39 @@ void CGraphCtrl::OnMouseMove(UINT nFlags, CPoint point){
 void CGraphCtrl::CleanPlot()
 {
 	InvalidateCtrl();
+}
+
+/** Prints out a string onto the plot.
+The function generates a text-box into which the string will be
+drawn centered using default font. 	
+x, y are pixel coordinates. */
+void CGraphCtrl::DrawTextBox(double x, double y, CString &str) {
+	CFont tmpFont, *oldFont;
+	
+	// The position...
+	int X, Y;
+	X = (int)(m_rectPlot.left + x );
+	Y = (int)(m_rectPlot.bottom - y );
+
+	// Create the font
+	tmpFont.CreateFont(m_axisOptions.axisFont.height, 0, 0, 0, m_axisOptions.axisFont.width,
+		FALSE, FALSE, 0, ANSI_CHARSET,
+		OUT_DEFAULT_PRECIS,
+		CLIP_DEFAULT_PRECIS,
+		DEFAULT_QUALITY,
+		DEFAULT_PITCH | FF_SWISS, "Arial");
+
+	// grab the new font
+	oldFont = m_dcPlot.SelectObject(&tmpFont);
+
+	m_dcPlot.SetTextColor(m_colors.plot);
+	m_dcPlot.SetBkColor(m_colors.background);
+	m_dcPlot.SetTextAlign(TA_CENTER | TA_BASELINE);
+	//m_dcPlot.ExtTextOut((rect.right + rect.left) / 2, rect.top, ETO_CLIPPED, &rect, str, NULL);
+	m_dcPlot.ExtTextOut(X, Y, ETO_CLIPPED, &m_rectPlot, str, NULL);
+
+	// restore the font
+	m_dcPlot.SelectObject(oldFont);
 }
 
 /** Prints out a string onto the plot.
