@@ -55,7 +55,7 @@ BEGIN_MESSAGE_MAP(CPostPlumeHeightDlg, CDialog)
 	// Actions to perform
 	ON_BN_CLICKED(IDC_BTN_BROWSE_EVALLOG,						OnBrowseEvallog)
 	ON_BN_CLICKED(IDC_BUTTON_CALCULATE_CORRELATION,	OnCalculatePlumeHeight)
-	ON_EN_CHANGE(IDC_EDIT_EVALLOG,									OnChangeEvalLog)
+	//ON_EN_CHANGE(IDC_EDIT_EVALLOG,									OnChangeEvalLog)
 
 	// Changing the settings
 	ON_BN_CLICKED(IDC_BUTTON_SOURCE_LAT, OnBnClickedButtonSourceLat)
@@ -78,18 +78,20 @@ void CPostPlumeHeightDlg::OnBrowseEvallog()
 		m_evalLog.Format("%s", evLog);
 
 		// Read the newly opened evaluation-log
-		ReadEvaluationLog();
+		if (ReadEvaluationLog()) {
+			m_automatic = true;
+
+			// Update the text on the screen
+			SetDlgItemText(IDC_EDIT_EVALLOG, m_evalLog);
+
+			// Redraw the screen
+			DrawColumn();
+
+			m_automatic = false;
+		}
 	}
 
-	m_automatic = true;
 
-	// Update the text on the screen
-	SetDlgItemText(IDC_EDIT_EVALLOG, m_evalLog);
-
-	// Redraw the screen
-	DrawColumn();
-
-	m_automatic = false;
 }
 
 void CPostPlumeHeightDlg::OnChangeEvalLog(){
@@ -128,6 +130,10 @@ bool CPostPlumeHeightDlg::ReadEvaluationLog(){
 	  MessageBox(TEXT("The file is not evaluation log file with right format.\nPlease choose a right file"),NULL,MB_OK);
 		return FAIL;
   }
+  if (m_nChannels < 2) {
+	  MessageBox(TEXT("The evaluation log does not contain 2 channels."), NULL, MB_OK);
+	  return FAIL;
+  }
 
   // Read the data from the file
   int oldNumberOfFilesOpened = m_flux->m_traverseNum;
@@ -138,7 +144,7 @@ bool CPostPlumeHeightDlg::ReadEvaluationLog(){
 
 	// Make sure that there are not more channels then the program can handle
 	m_nChannels = std::min(m_nChannels, MAX_N_SERIES);
-	
+
 	// Copy the data to the local variables 'm_originalSeries'
 	for(int chnIndex = 0; chnIndex < m_nChannels; ++chnIndex){
 		// to get less dereferencing
