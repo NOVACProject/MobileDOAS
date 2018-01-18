@@ -58,7 +58,7 @@ BEGIN_MESSAGE_MAP(CPostWindDlg, CDialog)
 	// Actions to perform
 	ON_BN_CLICKED(IDC_BTN_BROWSE_EVALLOG,						OnBrowseEvallog)
 	ON_BN_CLICKED(IDC_BUTTON_CALCULATE_CORRELATION,	OnCalculateWindspeed)
-	//ON_EN_CHANGE(IDC_EDIT_EVALLOG,									OnChangeEvalLog)
+	ON_EN_CHANGE(IDC_EDIT_EVALLOG,									OnChangeEvalLog)
 
 	// Changing the settings
 	ON_EN_CHANGE(IDC_EDIT_LPITERATIONS,							OnChangeLPIterations)
@@ -87,14 +87,14 @@ void CPostWindDlg::OnBrowseEvallog()
 	if(Common::BrowseForFile(filter, evLog)){
 		m_evalLog.Format("%s", evLog);
 
-		if (ReadEvaluationLog()) {
-			// Update the text on the screen
-			SetDlgItemText(IDC_EDIT_EVALLOG, m_evalLog);
-			// Redraw the screen
-			DrawColumn();
-		}
+		ReadEvaluationLog();
 	}
 
+	// Update the text on the screen
+	SetDlgItemText(IDC_EDIT_EVALLOG, m_evalLog);
+
+	// Redraw the screen
+	DrawColumn();
 }
 
 void CPostWindDlg::OnChangeEvalLog(){
@@ -133,11 +133,6 @@ bool CPostWindDlg::ReadEvaluationLog(){
   if(fileType != 1){
 	  MessageBox(TEXT("The file is not evaluation log file with right format.\nPlease choose a right file"),NULL,MB_OK);
 		return FAIL;
-  }
-
-  if (nChannels < 2) {
-	  MessageBox(TEXT("The evaluation log does not contain 2 channels."), NULL, MB_OK);
-	  return FAIL;
   }
 
   // Read the data from the file
