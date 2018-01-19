@@ -38,13 +38,17 @@ namespace Configuration{
 
 		/** Enables the controls that should be enabled, and disables
 				the ones which should be disabled */
-		afx_msg void EnableControls();
+		//afx_msg void EnableControls();
 
 		/** Saves the data in the dialog */
 		afx_msg void SaveData();
 
 		/** The user has changed the currently selected fit-window */
 		afx_msg void OnChangeFitWindow();
+		
+		/** Called when the user wants to see the
+		properties of one reference */
+		void OnShowProperties();
 
 		/** Called when the user wants to see the 
 			size of the references */

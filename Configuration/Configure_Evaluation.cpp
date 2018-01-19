@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "../DMSpec.h"
 #include "Configure_Evaluation.h"
+#include "../Dialogs/ReferencePropertiesDlg.h"
 #include "../Dialogs/ReferencePlotDlg.h"
 
 using namespace Configuration;
@@ -46,7 +47,8 @@ BEGIN_MESSAGE_MAP(CConfigure_Evaluation, CPropertyPage)
 	ON_COMMAND(ID__REMOVE,						OnRemoveReference)
 	ON_BN_CLICKED(IDC_REMOVE_REFERENCE,			OnRemoveReference)
 
-	// The user wants to see the window with the references
+	// The user wants to see the properties or graph of the references
+	ON_BN_CLICKED(IDC_REFERENCE_PROPERTIES,		OnShowProperties)
 	ON_BN_CLICKED(IDC_REFERENCE_VIEW,			OnShowReferenceGraph)
 
 	ON_EN_KILLFOCUS(IDC_REEVAL_WINDOW_FITFROM,	SaveData)
@@ -370,6 +372,42 @@ BOOL CConfigure_Evaluation::PreTranslateMessage(MSG* pMsg){
 	m_toolTip.RelayEvent(pMsg);
 
 	return CPropertyPage::PreTranslateMessage(pMsg);
+}
+
+/** Called when the user wants to see the
+properties of one reference */
+void CConfigure_Evaluation::OnShowProperties() {
+
+	// save the data in the dialog
+	UpdateData(TRUE);
+
+	// Get the currently selected fit window
+	int curSel = m_windowList.GetCurSel();
+	if (curSel < 0)
+		return;
+	Evaluation::CFitWindow &window = m_conf->m_fitWindow[curSel];
+
+	// if there's no reference file, then there's nothing to remove
+	if (window.nRef <= 0)
+		return;
+
+	// Get the selected reference file
+	CCellRange cellRange = m_referenceGrid.GetSelectedCellRange();
+	int minRow = cellRange.GetMinRow() - 1;
+	int nRows = cellRange.GetRowSpan();
+
+	if (nRows <= 0 || nRows > 1) { /* nothing selected or several lines selected */
+		MessageBox("Please select a reference file.", "Properties");
+		return;
+	}
+
+	// Show the properties dialog
+	Dialogs::CReferencePropertiesDlg dlg;
+	dlg.m_ref = &window.ref[minRow];
+	dlg.DoModal();
+
+	// Update the reference grid
+	PopulateReferenceFileControl();
 }
 
 /** Called when the user wants to see the 
