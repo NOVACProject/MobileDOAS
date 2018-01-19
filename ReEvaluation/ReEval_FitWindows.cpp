@@ -304,8 +304,10 @@ void CReEval_FitWindowsDlg::OnShowProperties(){
 	int minRow = cellRange.GetMinRow() - 1;
 	int nRows = cellRange.GetRowSpan();
 
-	if(nRows <= 0 || nRows > 1) /* nothing selected or several lines selected */
+	if (nRows <= 0 || nRows > 1) { /* nothing selected or several lines selected */
+		MessageBox("Please select a reference file.", "Properties");
 		return;
+	}
 
 	// Show the properties dialog
 	Dialogs::CReferencePropertiesDlg dlg;
