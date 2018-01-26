@@ -1774,7 +1774,7 @@ short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxEx
 char* CSpectrometer::ReadGpsDate() {
 
 	int validGPS = 0;
-	char* startDate = "";
+	char* startDate = new char[6];
 
 	if (!m_skipgps)
 		validGPS = GetGPS(); /* GetGPS returns 0 if no satellite connection */
@@ -1785,10 +1785,13 @@ char* CSpectrometer::ReadGpsDate() {
 		time_t t;
 		time(&t);
 		tim = localtime(&t);
-		sprintf(startDate, "%02d%02d%02d", tim->tm_mon, tim->tm_mday, (tim->tm_year - 1900));
+		int mon = tim->tm_mon+1;
+		int day = tim->tm_mday;
+		int year = tim->tm_year - 100; // only good for 21st century
+		sprintf(startDate, "%02d%02d%02d", mon, day, year);
 	}
 	else {
-		startDate = m_gps->GetDate();
+		sprintf(startDate, m_gps->GetDate());
 	}
 
 	return startDate;
