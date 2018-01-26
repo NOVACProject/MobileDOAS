@@ -244,7 +244,6 @@
 #define IDC_REFERENCE_PROPERTIES        1064
 #define IDC_GPSBAUD                     1065
 #define IDC_BROWSE_RING                 1065
-#define IDC_REFERENCE_PROPERTIES2       1065
 #define IDC_REFERENCE_VIEW              1065
 #define IDC_SPECCENTER                  1066
 #define IDC_BROWSE_SKY                  1066
@@ -468,7 +467,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        265
+#define _APS_NEXT_RESOURCE_VALUE        266
 #define _APS_NEXT_COMMAND_VALUE         32799
 #define _APS_NEXT_CONTROL_VALUE         1273
 #define _APS_NEXT_SYMED_VALUE           104

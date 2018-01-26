@@ -100,8 +100,6 @@ BEGIN
             MENUITEM "Set Plot Color",              ID_CONFIGURATION_PLOT_CHANGEPLOTCOLOR
             MENUITEM "Set Plot Color (Slave)",      32784
         END
-        MENUITEM SEPARATOR
-        MENUITEM "Change Exposure time",        ID_CONFIGURATION_CHANGEEXPOSURETIME
     END
     POPUP "&Analysis"
     BEGIN
