@@ -166,7 +166,7 @@ FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
     LTEXT           "Mobile DOAS Version 6.0",IDC_STATIC_VERSION,40,10,171,8,SS_NOPREFIX
-    LTEXT           "Copyright (C) 2004 - 2017   Optical Remote Sensing Group",IDC_STATIC,40,31,207,8
+    LTEXT           "Copyright (C) 2004 - 2018   Optical Remote Sensing Group",IDC_STATIC,40,31,207,8
     DEFPUSHBUTTON   "OK",IDOK,231,7,50,14,WS_GROUP
     LTEXT           "Chalmers University of Technology, Sweden",IDC_STATIC,126,49,140,8
     LTEXT           "Yan Zhang, Mattias Johansson",IDC_STATIC,126,68,99,8
@@ -584,6 +584,11 @@ BEGIN
 END
 
 IDD_REEVAL_FITWINDOW AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_ABOUTBOX AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
