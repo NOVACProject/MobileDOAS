@@ -80,7 +80,6 @@ char* CGPS::GetDate() {
 	return this->gpsInfo.gpsDate;
 }
 
-
 /** Parse the read GPS-Information */
 /** See http://www.gpsinformation.org/dale/nmea.htm/ */
 int CGPS::Parse(char *string){
@@ -88,195 +87,194 @@ int CGPS::Parse(char *string){
 	char sep[]    = ",";   /* the separator */
 	char *token   = 0;
 	char *stopStr = "\0";
-
-	token = strtok(string, sep);  /* find first sentence identifier */
-
-	if(token == NULL)
-		return 0;
-
-	if (0 == strncmp(token, "$GPRMC", 6)) {	// fisrt sentence should be GPRMC
-
-		/* 1: the time */
-		if (NULL == (token = strtok(NULL, sep))) {
-			return 0;
-		}
-		else {
-			this->gpsInfo.gpsTime = strtol(token, &stopStr, 10);
-		}
-
-		/* 2: the fix status */
-		if (NULL == (token = strtok(NULL, sep))) {
-			return 0;
-		}
-		else {
-			if (0 == strncmp(token, "A", 1))
-				this->gpsInfo.nSatellites = 3; /* we can see at least three satellites */
-		}
-
-		/* 3: the latitude */
-		if (NULL == (token = strtok(NULL, sep))) {
-			return 0;
-		}
-		else {
-			this->gpsInfo.gpsPos.latitude = DoubleToAngle(strtod(token, &stopStr));
-		}
-
-		/* 4: north/south hemisphere */
-		if (NULL == (token = strtok(NULL, sep))) {
-			return 0;
-		}
-		else {
-			if (0 == strncmp(token, "S", 1))
-				this->gpsInfo.gpsPos.latitude = -this->gpsInfo.gpsPos.latitude;
-		}
-
-		/* 5: the longitude  */
-		if (NULL == (token = strtok(NULL, sep))) {
-			return 0;
-		}
-		else {
-			this->gpsInfo.gpsPos.longitude = DoubleToAngle(strtod(token, &stopStr));
-		}
-
-		/* 6: east/west hemisphere */
-		if (NULL == (token = strtok(NULL, sep))) {
-			return 0;
-		}
-		else {
-			if (0 == strncmp(token, "W", 1))
-				this->gpsInfo.gpsPos.longitude = -this->gpsInfo.gpsPos.longitude;
-		}
-
-		/* 7: the speed [knots] (ignore) */
-		if (NULL == (token = strtok(NULL, sep))) {
-			return 0;
-		}
-		else {
-			double speed = strtod(token, &stopStr); // not used
-		}
-
-		/* 8: bearing [degrees] (ignore) */
-		if (NULL == (token = strtok(NULL, sep))) {
-			return 0;
-		}
-		else {
-			double bearing = strtod(token, &stopStr); // not used
-		}
-
-		/* 9: date (mmddyy) */
-		if (NULL == (token = strtok(NULL, sep))) {
-			return 0;
-		}
-		else {
-			sprintf(this->gpsInfo.gpsDate, "%s", token);
-		}
-
-		/* 10: magnetic variation(ignore) */
-		if (NULL == (token = strtok(NULL, sep))) {
-			return 0;
-		}
-		else {
-			double mv = strtod(token, &stopStr); // not used
-		}
-		if (NULL == (token = strtok(NULL, "*"))) {
-			return 0;
-		}
-		else {
-			char* mvd = token; // not used
-		}
-
-		/* 11:checksum          (ignore) */
-		if (NULL == (token = strtok(NULL, "\r"))) {
-			return 0;
-		}
-		else {
-			char* cs = token; // not used
-		}
-
-	}else {
-		/*unknown format*/
-		return 0;
-	}
-
-	token = strtok(NULL, sep);  /* find second sentence identifier */
+	
+	token = strtok(string, sep);  /* get first sentence identifier */
 
 	if (token == NULL)
 		return 0;
 
-	if(0 == strncmp(token, "\n$GPGGA", 7)){	// second sentence should be GPGGA
-		/* 1: the time */
-		if(NULL == (token = strtok(NULL, sep))){
-			return 0;
-		}else{
-			this->gpsInfo.gpsTime = strtol(token, &stopStr, 10);
+	while (token != NULL) {
+		
+		if (0 == strncmp(token, "$GPRMC", 6)) {	// fisrt sentence should be GPRMC
+
+			/* 1: the time */
+			if (NULL == (token = strtok(NULL, sep))) {
+				return 0;
+			}
+			else {
+				this->gpsInfo.gpsTime = strtol(token, &stopStr, 10);
+			}
+
+			/* 2: the fix status */
+			if (NULL == (token = strtok(NULL, sep))) {
+				return 0;
+			}
+			else {
+				if (0 == strncmp(token, "A", 1))
+					this->gpsInfo.nSatellites = 3; /* we can see at least three satellites */
+			}
+
+			/* 3: the latitude */
+			if (NULL == (token = strtok(NULL, sep))) {
+				return 0;
+			}
+			else {
+				this->gpsInfo.gpsPos.latitude = DoubleToAngle(strtod(token, &stopStr));
+			}
+
+			/* 4: north/south hemisphere */
+			if (NULL == (token = strtok(NULL, sep))) {
+				return 0;
+			}
+			else {
+				if (0 == strncmp(token, "S", 1))
+					this->gpsInfo.gpsPos.latitude = -this->gpsInfo.gpsPos.latitude;
+			}
+
+			/* 5: the longitude  */
+			if (NULL == (token = strtok(NULL, sep))) {
+				return 0;
+			}
+			else {
+				this->gpsInfo.gpsPos.longitude = DoubleToAngle(strtod(token, &stopStr));
+			}
+
+			/* 6: east/west hemisphere */
+			if (NULL == (token = strtok(NULL, sep))) {
+				return 0;
+			}
+			else {
+				if (0 == strncmp(token, "W", 1))
+					this->gpsInfo.gpsPos.longitude = -this->gpsInfo.gpsPos.longitude;
+			}
+
+			/* 7: the speed [knots] (ignore) */
+			if (NULL == (token = strtok(NULL, sep))) {
+				return 0;
+			}
+			else {
+				double speed = strtod(token, &stopStr); // not used
+			}
+
+			/* 8: bearing [degrees] (ignore) */
+			if (NULL == (token = strtok(NULL, sep))) {
+				return 0;
+			}
+			else {
+				double bearing = strtod(token, &stopStr); // not used
+			}
+
+			/* 9: date (mmddyy) */
+			if (NULL == (token = strtok(NULL, sep))) {
+				return 0;
+			}
+			else {
+				sprintf(this->gpsInfo.gpsDate, "%s", token);
+			}
+
+			/* 10: magnetic variation(ignore) */
+			if (NULL == (token = strtok(NULL, sep))) {
+				return 0;
+			}
+			else {
+				double mv = strtod(token, &stopStr); // not used
+			}
+			if (NULL == (token = strtok(NULL, "*"))) {
+				return 0;
+			}
+			else {
+				char* mvd = token; // not used
+			}
+
+			/* 11:checksum          (ignore) */
 		}
 
-		/* 2: the latitude */
-		if(NULL == (token = strtok(NULL, sep))){
-			return 0;
-		}else{
-			this->gpsInfo.gpsPos.latitude = DoubleToAngle(strtod(token, &stopStr));
+		if (0 == strncmp(token, "$GPGGA", 6)) {	// second sentence should be GPGGA
+			/* 1: the time */
+			if (NULL == (token = strtok(NULL, sep))) {
+				return 0;
+			}
+			else {
+				this->gpsInfo.gpsTime = strtol(token, &stopStr, 10);
+			}
+
+			/* 2: the latitude */
+			if (NULL == (token = strtok(NULL, sep))) {
+				return 0;
+			}
+			else {
+				this->gpsInfo.gpsPos.latitude = DoubleToAngle(strtod(token, &stopStr));
+			}
+
+			/* 3: north/south hemisphere */
+			if (NULL == (token = strtok(NULL, sep))) {
+				return 0;
+			}
+			else {
+				if (0 == strncmp(token, "S", 1))
+					this->gpsInfo.gpsPos.latitude = -this->gpsInfo.gpsPos.latitude;
+			}
+
+			/* 4: longitude */
+			if (NULL == (token = strtok(NULL, sep))) {
+				return 0;
+			}
+			else {
+				this->gpsInfo.gpsPos.longitude = DoubleToAngle(strtod(token, &stopStr));
+			}
+
+			/* 5: east/west hemisphere */
+			if (NULL == (token = strtok(NULL, sep))) {
+				return 0;
+			}
+			else {
+				if (0 == strncmp(token, "W", 1))
+					this->gpsInfo.gpsPos.longitude = -this->gpsInfo.gpsPos.longitude;
+			}
+
+			/* 6: quality of fix (ignore) */
+			if (NULL == (token = strtok(NULL, sep))) {
+				return 0;
+			}
+			else {
+				int quality = strtol(token, &stopStr, 10);
+			}
+
+			/* 7: number of satellites being used */
+			if (NULL == (token = strtok(NULL, sep))) {
+				return 0;
+			}
+			else {
+				this->gpsInfo.nSatellites = strtol(token, &stopStr, 10);
+			}
+
+			/* 8: "horizontal dillution of precision" (ignore) */
+			if (NULL == (token = strtok(NULL, sep))) {
+				return 0;
+			}
+			else {
+				double hd = strtol(token, &stopStr, 10);
+			}
+
+			/* 9: Altitude */
+			if (NULL == (token = strtok(NULL, sep))) {
+				return 0;
+			}
+			else {
+				this->gpsInfo.gpsPos.altitude = strtol(token, &stopStr, 10);
+			}
+
+			// the remainder of stuff
+			/*10: geoidal separation in meters (ignore) */
+			/*11: age of the deferrential correction data (ignore) */
+			/*12: deferential station's ID (ignore) */
+			/*13: checksum for the sentence (ignore) */
 		}
 
-		/* 3: north/south hemisphere */
-		if(NULL == (token = strtok(NULL, sep))){
-			return 0;
-		}else{
-			if(0 == strncmp(token, "S", 1))
-				this->gpsInfo.gpsPos.latitude = - this->gpsInfo.gpsPos.latitude;
+		token = strtok(NULL, "\n"); // go to end of line
+		if (token != NULL) {
+			token = strtok(NULL, sep); // get next sentence identifier
 		}
-
-		/* 4: longitude */
-		if(NULL == (token = strtok(NULL, sep))){
-			return 0;
-		}else{
-			this->gpsInfo.gpsPos.longitude = DoubleToAngle(strtod(token, &stopStr));
-		}
-
-		/* 5: east/west hemisphere */
-		if(NULL == (token = strtok(NULL, sep))){
-			return 0;
-		}else{
-			if(0 == strncmp(token, "W", 1))
-				this->gpsInfo.gpsPos.longitude = - this->gpsInfo.gpsPos.longitude;
-		}
-
-		/* 6: quality of fix (ignore) */
-		if(NULL == (token = strtok(NULL, sep))){
-			return 0;
-		}else {
-			int quality = strtol(token, &stopStr, 10);
-		}
-
-		/* 7: number of satellites being used */
-		if(NULL == (token = strtok(NULL, sep))){
-			return 0;
-		}else{
-			this->gpsInfo.nSatellites = strtol(token, &stopStr, 10);
-		}
-
-		/* 8: "horizontal dillution of precision" (ignore) */
-		if(NULL == (token = strtok(NULL, sep))){
-			return 0;
-		}else {
-			double hd = strtol(token, &stopStr, 10);
-		}
-
-		/* 9: Altitude */
-		if(NULL == (token = strtok(NULL, sep))){
-			return 0;
-		}else{
-			this->gpsInfo.gpsPos.altitude = strtol(token, &stopStr, 10);
-		}
-
-		/*10: geoidal separation in meters (ignore) */
-		/*11: age of the deferrential correction data (ignore) */
-		/*12: deferential station's ID (ignore) */
-		/*13: checksum for the sentence (ignore) */
-
-	}else {
-		/*unknown format*/
-		return 0;
 	}
 
 	return 1;
@@ -347,7 +345,7 @@ bool CGPS::IsRunning(){
 
 int CGPS::ReadGPS(){
 	long cnt;
-	char gpstxt[141];
+	char gpstxt[256];
 
 	gpstxt[0] = 0;
 
@@ -355,7 +353,7 @@ int CGPS::ReadGPS(){
 		cnt = 0;
 		serial.FlushSerialPort(10);
 		if(serial.Check(550)){
-			while(serial.Check(100) && cnt<141){ // Read GPRMC and GPGGA
+			while(serial.Check(100) && cnt<256){ // Read GPRMC and GPGGA
 				serial.Read(gpstxt+cnt,1);
 				cnt++;
 			}
