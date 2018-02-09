@@ -1035,7 +1035,7 @@ BOOL CDMSpecView::OnHelpInfo(HELPINFO* pHelpInfo)
 }
 
 void CDMSpecView::ReadMobileLog(){
-	char baseNameTxt[256];
+	char baseNameTxt[256] = "run";
 	char txt[256];
 	char *pt = 0;
 	size_t i, L, d;
@@ -1232,7 +1232,7 @@ void CDMSpecView::OnMenuControlTestTheGPS()
 
 	for (int i=0; i < 2; i++) {
 		serial.baudrate = baudrate[i];
-		for (int port = 1; port < 20; ++port) {
+		for (int port = 1; port < 10; ++port) {
 			// try this serial-port and see what happens
 			sprintf(serial.serialPort, "COM%d", port);
 			status.Format("Testing port: %s Baud rate: %d", serial.serialPort, serial.baudrate);
@@ -1243,25 +1243,23 @@ void CDMSpecView::OnMenuControlTestTheGPS()
 				// could not connect to this serial-port
 				continue;
 			}
-			else {
-				// it was possible to open the serial-port, test if there is a gps on this port
-				serial.Close();
+			// it was possible to open the serial-port, test if there is a gps on this port
+			serial.Close();
 
-				CGPS *gps = new CGPS(serial.serialPort, serial.baudrate);
-				for (int i = 0; i < 10; ++i) {
-					if (1 == gps->ReadGPS()) {
-						CString msg;
-						msg.Format("Found GPS on serialPort: %s using baud rate %d", serial.serialPort, serial.baudrate);
-						MessageBox(msg, "Found GPS reciever");
+			CGPS *gps = new CGPS(serial.serialPort, serial.baudrate);
+			for (int i = 0; i < 10; ++i) {
+				if (1 == gps->ReadGPS()) {
+					CString msg;
+					msg.Format("Found GPS on serialPort: %s using baud rate %d", serial.serialPort, serial.baudrate);
+					MessageBox(msg, "Found GPS reciever");
 
-						delete gps;
-						return;
-					}
-
-					Sleep(10);
+					delete gps;
+					return;
 				}
-				delete gps;
+
+				Sleep(10);
 			}
+			delete gps;
 		}
 	}
 
