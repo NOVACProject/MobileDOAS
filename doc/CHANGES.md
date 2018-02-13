@@ -2,6 +2,7 @@ MobileDOAS Release Notes
 -----------------------------------------------------
 Version 6.0 (January 2018)
 
+* Fix issue with reading GPS data off of COM ports above 9 (#53)
 * Remove Change Exposure Time menu option (#43)
 * Add message for user when Post-Wind calculations are not supported (#39)
 * Disable WindSpeed Measurement and PlumeHeight Measurement menu items (until dual-beam support can be implemented)
