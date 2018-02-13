@@ -1232,7 +1232,7 @@ void CDMSpecView::OnMenuControlTestTheGPS()
 
 	for (int i=0; i < 2; i++) {
 		serial.baudrate = baudrate[i];
-		for (int port = 1; port < 10; ++port) {
+		for (int port = 1; port < 256; ++port) {
 			// try this serial-port and see what happens
 			sprintf(serial.serialPort, "COM%d", port);
 			status.Format("Testing port: %s Baud rate: %d", serial.serialPort, serial.baudrate);

@@ -35,16 +35,10 @@ CGPS::CGPS(){
 CGPS::CGPS(char* pCOMPort, long pBaudrate) {
 	CGPS::CGPS();
 	serial.baudrate = pBaudrate;
-	if (strlen(pCOMPort) <= 6) {
-		strcpy(serial.serialPort, pCOMPort);
-		if (!serial.Init(pBaudrate)) {
-			MessageBox(NULL, "Could not communicate with GPS. No GPS-data can be retrieved!", "Error", MB_OK | MB_SYSTEMMODAL);
-		}
+	strcpy(serial.serialPort, pCOMPort);
+	if (!serial.Init(pBaudrate)) {
+		MessageBox(NULL, "Could not communicate with GPS. No GPS-data can be retrieved!", "Error", MB_OK | MB_SYSTEMMODAL);
 	}
-	else {
-		MessageBox(NULL, "Illegal GPS-Port. No GPS-data can be retrieved!", "Error", MB_OK | MB_SYSTEMMODAL);
-	}
-
 	gotContact = true;
 }
 
