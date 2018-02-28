@@ -1249,9 +1249,9 @@ void CDMSpecView::OnMenuControlTestTheGPS()
 			CGPS *gps = new CGPS(serial.serialPort, serial.baudrate);
 			for (int i = 0; i < 10; ++i) {
 				if (1 == gps->ReadGPS()) {
-					CString msg;
-					msg.Format("Found GPS on serialPort: %s using baud rate %d", serial.serialPort, serial.baudrate);
-					MessageBox(msg, "Found GPS reciever");
+					status.Format("Found GPS on serialPort: %s using baud rate %d", serial.serialPort, serial.baudrate);
+					MessageBox(status, "Found GPS reciever");
+					ShowStatusMsg(status);
 
 					delete gps;
 					return;
@@ -1262,8 +1262,9 @@ void CDMSpecView::OnMenuControlTestTheGPS()
 			delete gps;
 		}
 	}
-
-	MessageBox("No GPS reciever could be found");
+	status = "No GPS reciever could be found";
+	ShowStatusMsg(status);
+	MessageBox(status);
 }
 
 void CDMSpecView::UpdateLegend(){
