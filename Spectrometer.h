@@ -11,8 +11,8 @@
 
 #include <ArrayTypes.h> // located in %OMNIDRIVER_HOME%\include
 #include <Wrapper.h>
-#include <ADC1000USB.h>
-#include <ADC1000Channel.h>
+//#include <ADC1000USB.h>
+//#include <ADC1000Channel.h>
 
 
 #if !defined(AFX_COMMUNICATION_H__7C04DDEA_2314_405E_A09D_02B403AC7762__INCLUDED_)
