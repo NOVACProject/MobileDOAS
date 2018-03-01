@@ -268,7 +268,6 @@ int CSpectrometer::Scan(long sumInComputer, long sumInSpectrometer, double pResu
 */
 int CSpectrometer::ScanUSB(long sumInComputer, long sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]) {
 	int chn;
-	ADC1000USB doubleSpec;
 
 	// clear the old spectrum
 	memset(pResult, 0, MAX_N_CHANNELS * MAX_SPECTRUM_LENGTH * sizeof(double));
@@ -321,7 +320,7 @@ int CSpectrometer::ScanUSB(long sumInComputer, long sumInSpectrometer, double pR
 	else if (m_NChannels == 2) {
 
 		//// create a new ADC1000-USB spectrometer
-		//doubleSpec = ADC1000USB(m_spectrometerIndex);
+		//ADC1000USB doubleSpec; = ADC1000USB(m_spectrometerIndex);
 		//
 		//// Make sure that this spectrometer has enough available channels
 		//if(m_NChannels > doubleSpec.getNumberOfEnabledChannels()){
@@ -1307,7 +1306,7 @@ int CSpectrometer::TestUSBConnection() {
 		m_wrapper.getLastException();
 	}
 	else if (m_numberOfSpectrometersAttached == 0) {
-		MessageBox(pView->m_hWnd, "No spectrometer found. Make sure that the spectrometer is attached properly to the USB-port and re-start the program.", "Error", MB_OK);
+		MessageBox(pView->m_hWnd, "No spectrometer found. Make sure that the spectrometer is attached properly to the USB-port and the driver is installed.", "Error", MB_OK);
 		return 0;
 	}
 	else if (m_numberOfSpectrometersAttached > 1) {
