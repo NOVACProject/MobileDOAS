@@ -104,8 +104,12 @@ int CGPS::Parse(char *string){
 				return 0;
 			}
 			else {
-				if (0 == strncmp(token, "A", 1))
+				if (0 == strncmp(token, "A", 1)) {
 					this->gpsInfo.nSatellites = 3; /* we can see at least three satellites */
+				}
+				else {
+					this->gpsInfo.nSatellites = -1; /* void */
+				}
 			}
 
 			/* 3: the latitude */
