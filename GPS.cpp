@@ -251,7 +251,7 @@ int CGPS::Parse(char *string){
 				return 0;
 			}
 			else {
-				double hd = strtol(token, &stopStr, 10);
+				double hd = strtod(token, &stopStr);
 			}
 
 			/* 9: Altitude */
@@ -259,7 +259,7 @@ int CGPS::Parse(char *string){
 				return 0;
 			}
 			else {
-				this->gpsInfo.gpsPos.altitude = strtol(token, &stopStr, 10);
+				this->gpsInfo.gpsPos.altitude = strtod(token, &stopStr);
 			}
 
 			// the remainder of stuff

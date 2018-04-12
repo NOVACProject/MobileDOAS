@@ -464,7 +464,7 @@ void CPostWindDlg::SaveResult() {
 			fprintf(f, "%lf\t", m_calc.corr[k]);
 			fprintf(f, "%lf\t", m_calc.delays[k]);
 			if (fabs(m_calc.delays[k]) < 1e-5) {
-				fprintf(f, "%0.0\n");
+				fprintf(f, "%%0.0\n");
 			}
 		}
 		else {
