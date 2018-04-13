@@ -13,7 +13,10 @@
 static char THIS_FILE[]=__FILE__;
 #define new DEBUG_NEW
 #endif
-#define PI 3.14159265
+#define PI 3.14159265 // TODO: is this needed here?
+
+extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -26,7 +29,6 @@ CGPS::CGPS(){
 	gpsInfo.gpsTime = 0;
 
 	gotContact = false;
-	m_logFile.Format("gps.log"); // for testing only
 
 	m_gpsThread = NULL;
 	fRun = false;
@@ -104,8 +106,12 @@ int CGPS::Parse(char *string){
 				return 0;
 			}
 			else {
-				if (0 == strncmp(token, "A", 1))
+				if (0 == strncmp(token, "A", 1)) {
 					this->gpsInfo.nSatellites = 3; /* we can see at least three satellites */
+				}
+				else {
+					this->gpsInfo.nSatellites = -1; /* void */
+				}
 			}
 
 			/* 3: the latitude */
@@ -247,7 +253,7 @@ int CGPS::Parse(char *string){
 				return 0;
 			}
 			else {
-				double hd = strtol(token, &stopStr, 10);
+				double hd = strtod(token, &stopStr);
 			}
 
 			/* 9: Altitude */
@@ -255,7 +261,7 @@ int CGPS::Parse(char *string){
 				return 0;
 			}
 			else {
-				this->gpsInfo.gpsPos.altitude = strtol(token, &stopStr, 10);
+				this->gpsInfo.gpsPos.altitude = strtod(token, &stopStr);
 			}
 
 			// the remainder of stuff
@@ -359,13 +365,16 @@ int CGPS::ReadGPS(){
 		}
 	}while(!this->Parse(gpstxt));
 
+	#ifdef _DEBUG
+	m_logFile.Format("gps.log"); // for testing only
 	if(strlen(m_logFile) > 0){
-		FILE *f = fopen(m_logFile, "a+");
+		FILE *f = fopen(g_exePath + m_logFile, "a+");
 		fprintf(f, "%s\t%d\t", gpsInfo.gpsDate, gpsInfo.gpsTime);
 		fprintf(f, "%lf\t%lf\t%lf\t", gpsInfo.gpsPos.latitude, gpsInfo.gpsPos.longitude, gpsInfo.gpsPos.altitude);
 		fprintf(f, "%d\n", gpsInfo.nSatellites);
 		fclose(f);
 	}
+	#endif
 
 	// we've got contact with the gps again
 	this->gotContact = true;
