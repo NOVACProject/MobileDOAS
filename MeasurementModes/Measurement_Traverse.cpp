@@ -234,7 +234,7 @@ void CMeasurement_Traverse::Run(){
 			memcpy((void*)dark, (void*)scanResult, sizeof(double)*MAX_N_CHANNELS*MAX_SPECTRUM_LENGTH);
 
 			pView->PostMessage(WM_DRAWSPECTRUM);//draw dark spectrum
-			for(i = 0; i < m_NChannels; ++i)
+			for(int i = 0; i < m_NChannels; ++i)
 				averageValue[i] = AverageIntens(scanResult[i],1);
 			m_statusMsg.Format("Average value around center channel(dark) %d: %d", m_conf->m_specCenter, averageValue[0]);
 			pView->PostMessage(WM_STATUSMSG);
