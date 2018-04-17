@@ -139,7 +139,7 @@ CDMSpecView::CDMSpecView()
 	}
 	number2Length = MAX_SPECTRUM_LENGTH;
 
-	m_Spectrometer = NULL;
+	m_Spectrometer = nullptr;
 	m_showErrorBar = FALSE;
 	
 	m_minSaturationRatio = 0.0;
@@ -148,9 +148,9 @@ CDMSpecView::CDMSpecView()
 
 CDMSpecView::~CDMSpecView()
 {
-	if(m_Spectrometer != NULL){
+	if(m_Spectrometer != nullptr){
 		delete(m_Spectrometer);
-		m_Spectrometer = NULL;
+		m_Spectrometer = nullptr;
 	}
 }
 
@@ -473,7 +473,7 @@ LRESULT CDMSpecView::OnShowIntTime(WPARAM wParam, LPARAM lParam){
 	UpdateLegend();
 
 	// forward the message to the spectrum-settings dialog(if any);
-	if(this->m_specSettingsDlg.m_hWnd != NULL){
+	if(this->m_specSettingsDlg.m_hWnd != nullptr){
 		m_specSettingsDlg.PostMessage(WM_SHOWINTTIME);
 	}
 
@@ -482,7 +482,7 @@ LRESULT CDMSpecView::OnShowIntTime(WPARAM wParam, LPARAM lParam){
 
 LRESULT CDMSpecView::OnChangeSpectrometer(WPARAM wParam, LPARAM lParam){
 	// forward the message to the spectrum-settings dialog(if any);
-	if(this->m_specSettingsDlg.m_hWnd != NULL){
+	if(this->m_specSettingsDlg.m_hWnd != nullptr){
 		m_specSettingsDlg.PostMessage(WM_CHANGEDSPEC);
 	}
 	return 0;
@@ -879,7 +879,7 @@ void CDMSpecView::OnControlStop()
 
 		DWORD dwExitCode;
 		HANDLE hThread = pSpecThread->m_hThread;
-		if(hThread !=NULL && GetExitCodeThread(hThread, &dwExitCode) && dwExitCode ==STILL_ACTIVE)
+		if(hThread != nullptr && GetExitCodeThread(hThread, &dwExitCode) && dwExitCode ==STILL_ACTIVE)
 		{
 			AfxGetApp()->BeginWaitCursor();
 			m_Spectrometer->m_wrapper.stopAveraging(m_Spectrometer->m_spectrometerIndex);
@@ -970,7 +970,7 @@ void CDMSpecView::DrawSpectrum()
 		m_ColumnPlot.XYPlot(NULL, spectrum1, spectrumLength, Graph::CGraphCtrl::PLOT_CONNECTED);
 
 		// Plot the wavelengths of each of the lines
-		if(m_calibration != NULL){
+		if(m_calibration != nullptr){
 			for(unsigned int k = 0; k < m_calibration->m_lineNum; ++k){
 				lambdaStr.Format("%.1lf", m_calibration->m_lines[k].wavelength);
 				m_ColumnPlot.DrawLine(Graph::VERTICAL, m_calibration->m_lines[k].pixelNumber, RGB(255, 255, 0), Graph::STYLE_DASHED, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
@@ -1121,7 +1121,7 @@ void CDMSpecView::OnViewRealtimeroute(){
 		m_realTimeRouteGraph.m_spectrometer		= this->m_Spectrometer;
 			m_realTimeRouteGraph.m_intensityLimit = m_Spectrometer->m_spectrometerDynRange * (100 - m_intensitySliderLow.GetPos());
 		}else{
-		m_realTimeRouteGraph.m_spectrometer		= NULL;
+		m_realTimeRouteGraph.m_spectrometer		= nullptr;
 			m_realTimeRouteGraph.m_intensityLimit = 0.25 * 4095;
 		}
 		m_realTimeRouteGraph.ShowWindow(SW_SHOW);
@@ -1163,7 +1163,7 @@ void CDMSpecView::OnViewSpectrumFit(){
 		if(fRunSpec){
 		m_showFitDlg.m_spectrometer = this->m_Spectrometer;
 		}else{
-		m_showFitDlg.m_spectrometer = NULL;
+		m_showFitDlg.m_spectrometer = nullptr;
 		}
 		m_showFitDlg.ShowWindow(SW_SHOW);
 	}
@@ -1206,7 +1206,7 @@ void CDMSpecView::OnUpdateControlReevaluate(CCmdUI *pCmdUI){
 }
 void CDMSpecView::OnConfigurationChangeexposuretime()
 {
-	if(m_Spectrometer != NULL)
+	if(m_Spectrometer != nullptr)
 	  m_Spectrometer->m_adjustIntegrationTime = TRUE;
 }
 void CDMSpecView::OnMenuAnalysisWindSpeedMeasurement()
@@ -1268,7 +1268,7 @@ void CDMSpecView::OnMenuControlTestTheGPS()
 }
 
 void CDMSpecView::UpdateLegend(){
-	if(m_Spectrometer == NULL){
+	if(m_Spectrometer == nullptr){
 		// if the program has not been started yet
 		m_colorLabelSpectrum1.ShowWindow(SW_HIDE);
 		m_colorLabelSpectrum2.ShowWindow(SW_HIDE);
@@ -1332,7 +1332,7 @@ void CDMSpecView::OnViewColumnError(){
 }
 
 void CDMSpecView::OnUpdate_EnableOnRun(CCmdUI *pCmdUI){
-	if(m_Spectrometer != NULL && m_Spectrometer->fRun){
+	if(m_Spectrometer != nullptr && m_Spectrometer->fRun){
 		// enable
 		pCmdUI->Enable(TRUE);
 	}else{
@@ -1342,7 +1342,7 @@ void CDMSpecView::OnUpdate_EnableOnRun(CCmdUI *pCmdUI){
 }
 
 void CDMSpecView::OnUpdate_DisableOnRun(CCmdUI *pCmdUI){
-	if(m_Spectrometer != NULL && m_Spectrometer->fRun){
+	if(m_Spectrometer != nullptr && m_Spectrometer->fRun){
 		// disable
 		pCmdUI->Enable(FALSE);
 	}else{

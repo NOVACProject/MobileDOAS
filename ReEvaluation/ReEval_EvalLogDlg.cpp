@@ -15,13 +15,13 @@ CReEval_EvalLogDlg::CReEval_EvalLogDlg()
 	: CPropertyPage(CReEval_EvalLogDlg::IDD)
 {
 	m_reeval = 0;
-	number = NULL;
+	number = nullptr;
 	m_wavelengthRegion = 0;
 }
 
 CReEval_EvalLogDlg::~CReEval_EvalLogDlg()
 {
-	if(number != NULL)
+	if(number != nullptr)
 		free(number);
 }
 
@@ -111,7 +111,7 @@ void CReEval_EvalLogDlg::OnBnClickedButtonBrowseEvlog(){
 
 /* Initialize the 'number' vector */
 bool CReEval_EvalLogDlg::InitializeNumber(){
-	if(number != NULL)
+	if(number != nullptr)
 		return true;
 
 	number = (double *)calloc(MAX_TRAVERSE_LENGTH, sizeof(double));
@@ -126,7 +126,7 @@ bool CReEval_EvalLogDlg::InitializeNumber(){
 /* Draw the traverse */
 void CReEval_EvalLogDlg::DrawColumn(){
 	Common common;
-	if(number == NULL)
+	if(number == nullptr)
 		InitializeNumber();
 
 	long m_left, m_right;

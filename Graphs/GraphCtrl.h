@@ -523,7 +523,7 @@ namespace Graph
 		template <class T> void GetDataRange(T *xValues, T *yValues, int pointSum,
 			T &maxX, T &minX, T &maxY, T &minY){
 			Common common;
-			if(xValues == NULL){
+			if(xValues == nullptr){
 				maxX = pointSum;
 				minX = 0;
 			}else{

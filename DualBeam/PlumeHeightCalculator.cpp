@@ -95,7 +95,7 @@ double CPlumeHeightCalculator::GetPlumeHeight_CentreOfMass(const CMeasurementSer
 	delete[] col2;
 
 
-	if(windDir != NULL)
+	if(windDir != nullptr)
 		*windDir = windDirection;
 
 	return plumeHeight;
@@ -106,14 +106,12 @@ double CPlumeHeightCalculator::GetPlumeHeight_CentreOfMass(const CMeasurementSer
 		@param distances - the distance between each two measurement points 
 		@return the index of the centre of mass point in the given arrays*/
 int CPlumeHeightCalculator::GetCentreOfMass(const double *columns, const double *distances, long length){
-	if(length <= 0 || columns == NULL || distances == NULL)
+	if(length <= 0 || columns == nullptr || distances == nullptr)
 		return -1;
-
-	int k;
-
+	
 	// 1. Calculate the total mass of the plume
 	double totalMass = 0.0;
-	for(k = 0; k < length - 1; ++k){
+	for(int k = 0; k < length - 1; ++k){
 		totalMass += columns[k] * distances[k];
 		if(fabs(columns[k]) > 300 || fabs(distances[k]) > 100){
 			puts("StrangeData");
@@ -125,7 +123,7 @@ int CPlumeHeightCalculator::GetCentreOfMass(const double *columns, const double 
 
 	// 3. Find the index of the half centre of mass
 	double totalMassSoFar = 0.0;
-	for(k = 0; k < length - 1; ++k){
+	for(int k = 0; k < length - 1; ++k){
 		totalMassSoFar += columns[k] * distances[k];
 		if(totalMassSoFar > midMass){
 			return (k-1);

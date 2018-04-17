@@ -13,7 +13,7 @@ namespace Dialogs{
 		DECLARE_DYNAMIC(CSpectrumInspectionDlg)
 
 	public:
-		CSpectrumInspectionDlg(CWnd* pParent = NULL);   // standard constructor
+		CSpectrumInspectionDlg(CWnd* pParent = nullptr);   // standard constructor
 		virtual ~CSpectrumInspectionDlg();
 
 	// Dialog Data
@@ -52,7 +52,7 @@ namespace Dialogs{
 		afx_msg void OnTimer(UINT_PTR nIDEvent);
 
 		/** Gets the range of the plot, this is to enable zooming of the graph */
-		void GetPlotRange(Graph::CSpectrumGraph::plotRange &range, const CSpectrum *spectrum = NULL);
+		void GetPlotRange(Graph::CSpectrumGraph::plotRange &range, const CSpectrum *spectrum = nullptr);
 
 		/** The directory where the spectra are stored (and where the evaluation-log file is stored) */
 		CString m_spectrumPath;

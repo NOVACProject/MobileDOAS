@@ -14,7 +14,7 @@
 		DECLARE_DYNAMIC(CWindFieldDlg)
 
 	public:
-		CWindFieldDlg(CWnd* pParent = NULL);   // standard constructor
+		CWindFieldDlg(CWnd* pParent = nullptr);   // standard constructor
 		virtual ~CWindFieldDlg();
 
 	// Dialog Data

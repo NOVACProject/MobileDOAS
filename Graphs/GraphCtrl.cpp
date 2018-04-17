@@ -76,8 +76,8 @@ CGraphCtrl::CGraphCtrl()
 	m_strYUnitsString.Format("Y units") ;  // can also be set with SetYUnits
 
 	// protected bitmaps to restore the memory DC's
-	m_pbitmapOldGrid = NULL ;
-	m_pbitmapOldPlot = NULL ;
+	m_pbitmapOldGrid = nullptr;
+	m_pbitmapOldPlot = nullptr;
 
 	// The options for the grid lines
 	m_gridOptions.Y().gridSpacing			= 5;
@@ -97,9 +97,9 @@ CGraphCtrl::~CGraphCtrl()
 {
 	// just to be picky restore the bitmaps for the two memory dc's
 	// (these dc's are being destroyed so there shouldn't be any leaks)
-	if (m_pbitmapOldGrid != NULL)
+	if (m_pbitmapOldGrid != nullptr)
 		m_dcGrid.SelectObject(m_pbitmapOldGrid) ;  
-	if (m_pbitmapOldPlot != NULL)
+	if (m_pbitmapOldPlot != nullptr)
 		m_dcPlot.SelectObject(m_pbitmapOldPlot) ;  
 
 } // ~CGraphCtrl
@@ -288,7 +288,7 @@ void CGraphCtrl::InvalidateCtrl()
 	dc.SaveDC();
 
 	// if we don't have one yet, set up a memory dc for the grid
-	if (m_dcGrid.GetSafeHdc() == NULL)
+	if (m_dcGrid.GetSafeHdc() == nullptr)
 	{
 		m_dcGrid.CreateCompatibleDC(&dc) ;
 		m_bitmapGrid.CreateCompatibleBitmap(&dc, m_nClientWidth, m_nClientHeight) ;
@@ -463,7 +463,7 @@ void CGraphCtrl::InvalidateCtrl()
 	// no more drawing to this bitmap is needed until the setting are changed
 	  
 	// if we don't have one yet, set up a memory dc for the plot
-	if (m_dcPlot.GetSafeHdc() == NULL)
+	if (m_dcPlot.GetSafeHdc() == nullptr)
 	{
 		m_dcPlot.CreateCompatibleDC(&dc) ;
 		m_bitmapPlot.CreateCompatibleBitmap(&dc, m_nClientWidth, m_nClientHeight) ;
@@ -503,7 +503,7 @@ void CGraphCtrl::OnPaint()
 	memBitmap.CreateCompatibleBitmap(&dc, m_nClientWidth, m_nClientHeight) ;
 	oldBitmap = (CBitmap *)memDC.SelectObject(&memBitmap) ;
 
-	if (memDC.GetSafeHdc() != NULL)
+	if (memDC.GetSafeHdc() != nullptr)
 	{
 		// Changed 2006-06-05
 		//// first drop the grid on the memory dc
@@ -539,7 +539,7 @@ void CGraphCtrl::XYPlot(double *xPosition, double *yPosition, double *color, dou
 		return;
 
 	// make sure there's a memory dc for the plot
-	if(m_dcPlot.GetSafeHdc() == NULL)
+	if(m_dcPlot.GetSafeHdc() == nullptr)
 		return;
 	m_dcPlot.SaveDC();
 
@@ -562,7 +562,7 @@ void CGraphCtrl::XYPlot(double *xPosition, double *yPosition, double *color, dou
 	double bottom		= (double)m_rectPlot.bottom;
 
 	// Prepare the coloring of the plot
-	if(color != NULL){
+	if(color != nullptr){
 		if(plotOption & PLOT_NORMALIZED_COLORS){
 			maxC = 1.0;
 			minC = 0.0;
@@ -587,7 +587,7 @@ void CGraphCtrl::XYPlot(double *xPosition, double *yPosition, double *color, dou
 	// ---------- START PLOTTING ----------------
 
 	// The starting point
-	if(xPosition == NULL)
+	if(xPosition == nullptr)
 		prevX = (int)left;
 	else
 		prevX = (int)(left + (xPosition[0] - offsLeft)*xFactor);
@@ -600,7 +600,7 @@ void CGraphCtrl::XYPlot(double *xPosition, double *yPosition, double *color, dou
 	for(i = 0; i < pointSum; ++i)
 	{
 		// Calculate the next point...
-		if(xPosition == NULL){
+		if(xPosition == nullptr){
 			curX = (int)(left + xFactor * (i - offsLeft));
 		}else{
 			curX = (int)(left + xFactor * (xPosition[i] - offsLeft) );
@@ -608,20 +608,20 @@ void CGraphCtrl::XYPlot(double *xPosition, double *yPosition, double *color, dou
 		curY = (int)(bottom - (yPosition[i] - offsBottom) * yFactor);
 
 		// Calculate the positions of the error-bars...
-		if(xError != NULL && xPosition == NULL){
+		if(xError != nullptr && xPosition == nullptr){
 			curXError[0]	= (int)(left + xFactor * (i - xError[i] - offsLeft));
 			curXError[1]	= (int)(left + xFactor * (i + xError[i] - offsLeft));
-		}else if(xError != NULL && xPosition != NULL){
+		}else if(xError != nullptr && xPosition != nullptr){
 			curXError[0]	= (int)(left + xFactor * (xPosition[i] - xError[i] - offsLeft));
 			curXError[1]	= (int)(left + xFactor * (xPosition[i] + xError[i] - offsLeft));
 		}
-		if(yError != NULL){
+		if(yError != nullptr){
 			curYError[0] = (int)(bottom - (yPosition[i] - yError[i] - offsBottom) * yFactor);
 			curYError[1] = (int)(bottom - (yPosition[i] + yError[i] - offsBottom) * yFactor);
 		}
 
 		// Calculate which color to use...
-		if(color != NULL && !(plotOption & PLOT_SCALE_CIRCLE)){
+		if(color != nullptr && !(plotOption & PLOT_SCALE_CIRCLE)){
 			double a;
 			if((color[i] - minC) < (halfC - minC)){
 				a = max(0, color[i] - minC) * halfC_inv;
@@ -651,7 +651,7 @@ void CGraphCtrl::XYPlot(double *xPosition, double *yPosition, double *color, dou
 		}
 
 		// Draw the x-error bar
-		if(NULL != xError){
+		if(nullptr != xError){
 			m_dcPlot.MoveTo(curXError[0], curY - 2);
 			m_dcPlot.LineTo(curXError[0], curY + 2);
 			m_dcPlot.MoveTo(curXError[0], curY);
@@ -661,7 +661,7 @@ void CGraphCtrl::XYPlot(double *xPosition, double *yPosition, double *color, dou
 		}
 
 		// Draw the y-error bar
-		if(NULL != yError){
+		if(nullptr != yError){
 			m_dcPlot.MoveTo(curX - 2,	curYError[0]);
 			m_dcPlot.LineTo(curX + 2,	curYError[0]);
 			m_dcPlot.MoveTo(curX,		curYError[0]);
@@ -694,7 +694,7 @@ int CGraphCtrl::SaveGraph(const CString &fileName){
 	CImage image;
 
 	// make sure there's a memory dc for the plot
-	if(m_dcPlot.GetSafeHdc() == NULL)
+	if(m_dcPlot.GetSafeHdc() == nullptr)
 		return 1;
 
 	// Copy the current graph to the image
@@ -738,25 +738,25 @@ void CGraphCtrl::OnSize(UINT nType, int cx, int cy)
 	m_dHorizonFactor	= (double)m_nPlotWidth / (m_axisOptions.first.right - m_axisOptions.first.left);
 
 	// change the memory dc for the grid
-	if(m_dcGrid.GetSafeHdc() != NULL){
+	if(m_dcGrid.GetSafeHdc() != nullptr){
 		CClientDC dc(this);
 		m_bitmapGrid.Detach();
 		m_bitmapGrid.DeleteObject();
 		m_bitmapGrid.CreateCompatibleBitmap(&dc, m_nClientWidth, m_nClientHeight);
 		m_pbitmapOldGrid = m_dcGrid.SelectObject(&m_bitmapGrid) ;
 		m_pbitmapOldGrid->DeleteObject();
-		m_pbitmapOldGrid = NULL;
+		m_pbitmapOldGrid = nullptr;
 	}
 
 	// change the memory dc for the plot
-	if(m_dcPlot.GetSafeHdc() != NULL){
+	if(m_dcPlot.GetSafeHdc() != nullptr){
 		CClientDC dc(this);
 		m_bitmapPlot.Detach();
 		m_bitmapPlot.DeleteObject();
 		m_bitmapPlot.CreateCompatibleBitmap(&dc, m_nClientWidth, m_nClientHeight) ;
 		m_pbitmapOldPlot = m_dcPlot.SelectObject(&m_bitmapPlot) ;
 		m_pbitmapOldPlot->DeleteObject();
-		m_pbitmapOldPlot = NULL;
+		m_pbitmapOldPlot = nullptr;
 	}
 	
 	InvalidateCtrl();
@@ -895,7 +895,7 @@ void CGraphCtrl::BarChart(double *xPosition, double *yValues, double *yError, in
 	Common common;
 	int i;
 	CPen errorBarPen;
-	if(yError != NULL)
+	if(yError != nullptr)
 		errorBarPen.CreatePen(PS_SOLID, 1, RGB(255, 255, 255));
 
 	// -- If there's nothing to plot, just return at once.
@@ -903,7 +903,7 @@ void CGraphCtrl::BarChart(double *xPosition, double *yValues, double *yError, in
 		return;
 
 	// make sure there's a memory dc for the plot
-	if(m_dcPlot.GetSafeHdc() == NULL)
+	if(m_dcPlot.GetSafeHdc() == nullptr)
 		return;
 
   axisFont.CreateFont (10, 0, 0, 0, 300,
@@ -946,7 +946,7 @@ void CGraphCtrl::BarChart(double *xPosition, double *yValues, double *yError, in
 
 	for(i = 0; i < pointSum; ++i){
 		double X;
-		if(xPosition == NULL)
+		if(xPosition == nullptr)
 			X = (double)(i - offsLeft) * xFactor;
 		else
 			X = (double)(xPosition[i] - offsLeft) * xFactor;
@@ -963,7 +963,7 @@ void CGraphCtrl::BarChart(double *xPosition, double *yValues, double *yError, in
 
 		// Draw the number below the rectangle
 		if(plotOption & PLOT_BAR_SHOW_X){
-			if(xPosition != NULL){
+			if(xPosition != nullptr){
 				strTemp.Format("%.0lf", xPosition[i]);
 			}else{
 				strTemp.Format("%d", i);
@@ -973,7 +973,7 @@ void CGraphCtrl::BarChart(double *xPosition, double *yValues, double *yError, in
 			m_dcPlot.SelectObject(oldFont);
 		}
 		// Draw the error-bar
-		if(yError != NULL && yError[i] > 0.0){
+		if(yError != nullptr && yError[i] > 0.0){
 			curYError[0] = (int)(m_rectPlot.bottom - (yValues[i] - yError[i] - offsBottom) * yFactor);
 			curYError[1] = (int)(m_rectPlot.bottom - (yValues[i] + yError[i] - offsBottom) * yFactor);
 			int curX		 = (int)(m_rectPlot.left + X);
@@ -1021,14 +1021,13 @@ void CGraphCtrl::BarChart2(double *xPosition, double *yValues1, double *yValues2
 	double maxX, minX, maxY, minY;
 	double xFactor,yFactor, offsLeft, offsBottom;
 	int curYError[2]; // <-- the extreme points for the error-bars in y-direction
-	int i, pass;
 
 	// -- If there's nothing to plot, just return at once.
 	if(pointSum == 0)
 		return;
 
 	// make sure there's a memory dc for the plot
-	if(m_dcPlot.GetSafeHdc() == NULL)
+	if(m_dcPlot.GetSafeHdc() == nullptr)
 		return;
 
 	axisFont.CreateFont (10, 0, 0, 0, 300,
@@ -1039,9 +1038,9 @@ void CGraphCtrl::BarChart2(double *xPosition, double *yValues1, double *yValues2
 						DEFAULT_PITCH|FF_SWISS, "Arial") ;
 
 	// Take the pen to use to draw the error-bars
-	CPen *oldPen = NULL;
+	CPen *oldPen = nullptr;
 	CPen errorPen;
-	if(yError1 != NULL){
+	if(yError1 != nullptr){
 		errorPen.CreatePen(PS_SOLID, 1, RGB(255, 255, 255));
 		oldPen = m_dcPlot.SelectObject(&errorPen);
 	}
@@ -1054,20 +1053,20 @@ void CGraphCtrl::BarChart2(double *xPosition, double *yValues1, double *yValues2
 	double *smallV			= new double[pointSum];
 	double *smallVErr		= new double[pointSum];
 	COLORREF *smallCol		= new COLORREF[pointSum];
-	for(i = 0; i < pointSum; ++i){
+	for(int i = 0; i < pointSum; ++i){
 		if(fabs(yValues1[i]) > fabs(yValues2[i])){
 			extreme[i]		= yValues1[i];
-			extremeErr[i]	= (yError1 != NULL) ? yError1[i] : 0;
+			extremeErr[i]	= (yError1 != nullptr) ? yError1[i] : 0;
 			extremeCol[i]	= m_colors.plot;
 			smallV[i]		= yValues2[i];
-			smallVErr[i]	= (yError2 != NULL) ? yError2[i] : 0;
+			smallVErr[i]	= (yError2 != nullptr) ? yError2[i] : 0;
 			smallCol[i]		= color;
 		}else{
 			extreme[i]		= yValues2[i];
-			extremeErr[i]	= (yError2 != NULL) ? yError2[i] : 0;
+			extremeErr[i]	= (yError2 != nullptr) ? yError2[i] : 0;
 			extremeCol[i]	= color;
 			smallV[i]		= yValues1[i];
-			smallVErr[i]	= (yError1 != NULL) ? yError1[i] : 0;
+			smallVErr[i]	= (yError1 != nullptr) ? yError1[i] : 0;
 			smallCol[i]		= m_colors.plot;
 		}
 	}
@@ -1105,10 +1104,10 @@ void CGraphCtrl::BarChart2(double *xPosition, double *yValues1, double *yValues2
 
 	// Draw the graph in two passes, in the first draw the extreme values
 	//	in the second draw the small values
-	for(pass = 0; pass < 2; ++pass){
-		for(i = 0; i < pointSum; ++i){
+	for(int pass = 0; pass < 2; ++pass){
+		for(int i = 0; i < pointSum; ++i){
 			double X;
-			if(xPosition == NULL)
+			if(xPosition == nullptr)
 				X = (double)(i - offsLeft) * xFactor;
 			else
 				X = (double)(xPosition[i] - offsLeft) * xFactor;
@@ -1131,7 +1130,7 @@ void CGraphCtrl::BarChart2(double *xPosition, double *yValues1, double *yValues2
 
 			// Draw the number below the rectangle
 			if(plotOption & PLOT_BAR_SHOW_X){
-				if(xPosition != NULL){
+				if(xPosition != nullptr){
 					strNumber.Format("%.0lf", xPosition[i]);
 				}else{
 					strNumber.Format("%d", i);
@@ -1142,7 +1141,7 @@ void CGraphCtrl::BarChart2(double *xPosition, double *yValues1, double *yValues2
 			}
 
 			// Draw the error bar
-			if(yError1 != NULL && yError2 != NULL){
+			if(yError1 != nullptr && yError2 != nullptr){
 				if(pass == 0){
 					curYError[0] = (int)(m_rectPlot.bottom - (extreme[i] - extremeErr[i] - offsBottom) * yFactor);
 					curYError[1] = (int)(m_rectPlot.bottom - (extreme[i] + extremeErr[i] - offsBottom) * yFactor);
@@ -1164,7 +1163,7 @@ void CGraphCtrl::BarChart2(double *xPosition, double *yValues1, double *yValues2
 	}
 
 	// restore the pen 
-	if(yError1 != NULL){
+	if(yError1 != nullptr){
 		m_dcPlot.SelectObject(oldPen);
 		errorPen.DeleteObject();
 	}
@@ -1225,7 +1224,7 @@ void CGraphCtrl::DrawLine(DIRECTION direction, double value,COLORREF pColor, LIN
 	AxisOptions::FloatRect curAxis;
 	double offsLeft, offsBottom, xFactor, yFactor;
 
-	if(m_dcPlot.GetSafeHdc() == NULL)
+	if(m_dcPlot.GetSafeHdc() == nullptr)
 		return;
 
 	m_dcPlot.SetBkColor(m_colors.background);

@@ -11,7 +11,7 @@ namespace Dialogs
 	  DECLARE_DYNAMIC(CSelectionDialog)
 
   public:
-	  CSelectionDialog(CWnd* pParent = NULL);   // standard constructor
+	  CSelectionDialog(CWnd* pParent = nullptr);   // standard constructor
 	  virtual ~CSelectionDialog();
 
   // Dialog Data

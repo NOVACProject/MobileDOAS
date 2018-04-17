@@ -57,8 +57,8 @@ CSpectrometer::CSpectrometer()
 	m_fitRegion[0].eval[0] = new Evaluation::CEvaluation();
 	m_fitRegion[0].eval[1] = new Evaluation::CEvaluation();
 	for (int k = 1; k < MAX_FIT_WINDOWS; ++k) {
-		m_fitRegion[k].eval[0] = NULL;
-		m_fitRegion[k].eval[1] = NULL;
+		m_fitRegion[k].eval[0] = nullptr;
+		m_fitRegion[k].eval[1] = nullptr;
 	}
 
 	spectrometerName = TEXT("..........");
@@ -77,7 +77,7 @@ CSpectrometer::CSpectrometer()
 	m_fitRegion[0].window.nRef = 0;
 	m_fitRegion[0].window.specLength = MAX_SPECTRUM_LENGTH;
 
-	m_gps = NULL;
+	m_gps = nullptr;
 
 	// Make an initial guess of the spectrometer wavelengths
 	for (int k = 0; k < MAX_SPECTRUM_LENGTH; ++k) {
@@ -92,7 +92,7 @@ CSpectrometer::~CSpectrometer()
 	delete this->m_fitRegion[0].eval[0];
 	delete this->m_fitRegion[0].eval[1];
 
-	if (m_gps != NULL)
+	if (m_gps != nullptr)
 		delete m_gps;
 }
 
@@ -267,7 +267,6 @@ int CSpectrometer::Scan(long sumInComputer, long sumInSpectrometer, double pResu
 
 */
 int CSpectrometer::ScanUSB(long sumInComputer, long sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]) {
-	int chn;
 
 	// clear the old spectrum
 	memset(pResult, 0, MAX_N_CHANNELS * MAX_SPECTRUM_LENGTH * sizeof(double));
@@ -281,7 +280,7 @@ int CSpectrometer::ScanUSB(long sumInComputer, long sumInSpectrometer, double pR
 		m_wrapper.setScansToAverage(m_spectrometerIndex, m_spectrometerChannel, sumInSpectrometer);
 	}
 	else {
-		for (chn = 0; chn < m_NChannels; ++chn) {
+		for (int chn = 0; chn < m_NChannels; ++chn) {
 			// Set the exposure time to use (this function takes exp-time in micro-seconds)
 			m_wrapper.setIntegrationTime(m_spectrometerIndex, chn, integrationTime * 1000);
 
@@ -465,10 +464,10 @@ int CSpectrometer::CheckSettings() {
 	for (int k = 0; k < m_fitRegion[0].window.nRef; ++k) {
 		int nRows = 0;
 		FILE *f = fopen(m_fitRegion[0].window.ref[k].m_path, "r");
-		if (NULL == f) {
+		if (nullptr == f) {
 			fileName.Format("%s%s", g_exePath, m_fitRegion[0].window.ref[k].m_path);
 			f = fopen(fileName, "r");
-			if (NULL == f) {
+			if (nullptr == f) {
 				msgStr.Format("Cannot open reference file : %s for reading.", m_fitRegion[0].window.ref[k].m_path);
 				MessageBox(pView->m_hWnd, msgStr, "Error", MB_OK);
 				return 1;
@@ -669,22 +668,20 @@ double* CSpectrometer::GetLastColumn() {
 }
 
 void CSpectrometer::GetDark() {
-	int i, j;
-
 	m_NChannels = std::max(std::min(m_NChannels, MAX_N_CHANNELS), 1);
 
 	if (m_fixexptime >= 0) {
 		// fixed exposure-time throughout the traverse
-		for (j = 0; j < m_NChannels; ++j) {
-			for (i = 0; i < MAX_SPECTRUM_LENGTH; ++i) {
+		for (int j = 0; j < m_NChannels; ++j) {
+			for (int i = 0; i < MAX_SPECTRUM_LENGTH; ++i) {
 				tmpDark[j][i] = dark[j][i];
 			}
 		}
 	}
 	else {
 		// Adaptive exposure-time
-		for (j = 0; j < m_NChannels; ++j) {
-			for (i = 0; i < MAX_SPECTRUM_LENGTH; ++i) {
+		for (int j = 0; j < m_NChannels; ++j) {
+			for (int i = 0; i < MAX_SPECTRUM_LENGTH; ++i) {
 				tmpDark[j][i] = offset[j][i] + darkCur[j][i] * (integrationTime / DARK_CURRENT_EXPTIME);
 			}
 		}
@@ -692,13 +689,13 @@ void CSpectrometer::GetDark() {
 }
 
 void CSpectrometer::GetSky() {
-	int i, j;
 
 	m_NChannels = std::max(std::min(m_NChannels, MAX_N_CHANNELS), 1);
 
-	for (j = 0; j < m_NChannels; ++j) {
-		for (i = 0; i < MAX_SPECTRUM_LENGTH; ++i)
+	for (int j = 0; j < m_NChannels; ++j) {
+		for (int i = 0; i < MAX_SPECTRUM_LENGTH; ++i) {
 			tmpSky[j][i] = sky[j][i];
+		}
 	}
 }
 
@@ -708,7 +705,7 @@ int CSpectrometer::Stop()
 	fRun = FALSE;
 
 	// Also stop the GPS-reading thread
-	if (m_gps != NULL) {
+	if (m_gps != nullptr) {
 		m_gps->fRun = false;
 	}
 
@@ -765,13 +762,12 @@ int CSpectrometer::ReadReferenceFiles() {
 
 void CSpectrometer::DoEvaluation(double pSky[][MAX_SPECTRUM_LENGTH], double pDark[][MAX_SPECTRUM_LENGTH], double pSpectrum[][MAX_SPECTRUM_LENGTH]) {
 	CString fileName;
-	int i, j;
 	double curColumn[8];
 	double curColumnError[8];
 
 	memset(m_fitResult, 0, MAX_FIT_WINDOWS*MAX_SPECTRUM_LENGTH * sizeof(double));
 
-	for (j = 0; j < m_fitRegionNum; ++j) {
+	for (int j = 0; j < m_fitRegionNum; ++j) {
 		int chn = m_fitRegion[j].window.channel;
 
 		// Evaluate
@@ -790,18 +786,18 @@ void CSpectrometer::DoEvaluation(double pSky[][MAX_SPECTRUM_LENGTH], double pDar
 		curColumnError[chn] = evaluateResult[j][chn][1];
 
 		// Save the results in the lists
-		for (i = 0; i < 6; ++i) {
+		for (int i = 0; i < 6; ++i) {
 			m_fitRegion[j].vColumn[i].Append(evaluateResult[j][chn][i]);
 		}
 
 		// copy the high pass filtered spectrum
-		for (i = 0; i < m_fitRegionNum; ++i) {
+		for (int i = 0; i < m_fitRegionNum; ++i) {
 			memcpy(m_spectrum[i], m_fitRegion[i].eval[chn]->m_filteredSpectrum, MAX_SPECTRUM_LENGTH * sizeof(double));
 		}
 
 		// copy the fitted reference
 		for (int r = 0; r < m_fitRegion[j].window.nRef + 1; ++r) {
-			for (i = m_fitRegion[j].window.fitLow; i < m_fitRegion[j].window.fitHigh; ++i) {
+			for (int i = m_fitRegion[j].window.fitLow; i < m_fitRegion[j].window.fitHigh; ++i) {
 				m_fitResult[j][i] += m_fitRegion[j].eval[chn]->m_fitResult[r].GetAt(i);
 			}
 		}
@@ -1508,7 +1504,7 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 
 	/* Print the information to a file */
 	CString fileName = m_subFolder + "\\" + strBaseName + "_" + strDateTime + "AdditionalLog.txt";
-	FILE *f = NULL;
+	FILE *f = nullptr;
 
 	if (!IsExistingFile(fileName)) {
 		f = fopen(fileName, "w");
@@ -1528,7 +1524,7 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 	}
 
 	f = fopen(fileName, "a+");
-	if (f == NULL) {
+	if (f == nullptr) {
 		this->m_statusMsg.Format("ERROR! Could not open the Additional Log file - Information has been lost!");
 		pView->PostMessage(WM_STATUSMSG);
 	}

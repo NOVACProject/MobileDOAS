@@ -6,9 +6,9 @@ using namespace FileHandler;
 
 CXMLFileReader::CXMLFileReader(void)
 {
-	this->m_File = NULL;
+	this->m_File = nullptr;
 	this->nLinesRead = 0;
-	this->szToken = NULL;
+	this->szToken = nullptr;
 }
 
 CXMLFileReader::~CXMLFileReader(void)
@@ -22,8 +22,8 @@ void CXMLFileReader::SetFile(CStdioFile *file)
 
 char *CXMLFileReader::NextToken(){
 	char separators[] = "<>\t";
-	static char *pt = NULL;
-	szToken = NULL;
+	static char *pt = nullptr;
+	szToken = nullptr;
 
 	if(nLinesRead == 0){
 	// if this is the first call to this function

@@ -53,8 +53,8 @@ namespace DlgControls
   // Operations
   public:
 	  void Show(CRect rectTitle, LPCTSTR lpszTitleText, 
-                int xoffset = 0, LPRECT lpHoverRect = NULL, 
-                const LOGFONT* lpLogFont = NULL,
+                int xoffset = 0, LPRECT lpHoverRect = nullptr,
+                const LOGFONT* lpLogFont = nullptr,
                 COLORREF crTextClr = CLR_DEFAULT, COLORREF crBackClr = CLR_DEFAULT);
       void Hide();
 

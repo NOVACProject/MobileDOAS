@@ -5,7 +5,7 @@ using namespace Graph;
 
 CSpectrumGraph::CSpectrumGraph(void)
 {
-  parentWnd = NULL;
+	parentWnd = nullptr;
 	m_zooming = false;
 	m_zoomRect.minLambda	= 0.0;
 	m_zoomRect.maxLambda	= 0.0;
@@ -118,7 +118,7 @@ void CSpectrumGraph::OnLButtonDown(UINT nFlags, CPoint point)
 	lbdIntens	= m_curIntens;
 
 	// if we don't have one yet, set up a memory dc for the plot
-	if (m_dcRoute.GetSafeHdc() == NULL)
+	if (m_dcRoute.GetSafeHdc() == nullptr)
 	{
 		CClientDC dc(this);
 		m_dcRoute.CreateCompatibleDC(&dc) ;
@@ -205,7 +205,7 @@ void CSpectrumGraph::DrawShadedRect(double lat1, double lon1, double lat2, doubl
 	y[1] = y[2] = lat2;
 
 	// make sure there's a memory dc for the plot
-	if(m_dcRoute.GetSafeHdc() == NULL)
+	if(m_dcRoute.GetSafeHdc() == nullptr)
 		return;
 
 	GetDataRange(x, y, 5, maxX, minX, maxY, minY);		

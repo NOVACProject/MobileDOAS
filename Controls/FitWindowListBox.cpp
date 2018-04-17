@@ -12,12 +12,12 @@ using namespace DlgControls;
 IMPLEMENT_DYNAMIC(CFitWindowListBox, CListBox)
 CFitWindowListBox::CFitWindowListBox()
 {
-	m_conf = NULL;
+	m_conf = nullptr;
 }
 
 CFitWindowListBox::~CFitWindowListBox()
 {
-	m_conf = NULL;
+	m_conf = nullptr;
 }
 
 
@@ -36,7 +36,7 @@ END_MESSAGE_MAP()
 
 /** Called to populate the list */
 void CFitWindowListBox::PopulateList(){
-	if(m_conf == NULL)
+	if(m_conf == nullptr)
 		return;
 
 	this->ResetContent(); // clear the list
@@ -58,7 +58,7 @@ void CFitWindowListBox::OnContextMenu(CWnd *pWnd, CPoint pos){
   CMenu menu;
   VERIFY(menu.LoadMenu(IDR_FITWINDOWLIST_MENU));
   CMenu* pPopup = menu.GetSubMenu(0);
-  ASSERT(pPopup != NULL);
+  ASSERT(pPopup != nullptr);
 
 	// There has to be at least one fit window defined at all times
 	//	if there are too few, don't allow the user to remove any
@@ -83,7 +83,7 @@ void CFitWindowListBox::OnInsertFitWindow(){
 	CString name;
 
 	// Make sure the list box is initialized ok.
-	if(m_conf == NULL)
+	if(m_conf == nullptr)
 		return;
 
 	// Make sure that there's enough space to store one more window 
@@ -191,7 +191,7 @@ void CFitWindowListBox::OnInsertFitWindow(){
 void CFitWindowListBox::OnRenameWindow(){
 	CString name;
 
-	if(m_conf == NULL)
+	if(m_conf == nullptr)
 		return;
 
 	int curSel = GetCurSel();
@@ -219,7 +219,7 @@ void CFitWindowListBox::OnRenameWindow(){
 
 /** Called to remove a fit window from the list */
 void CFitWindowListBox::OnRemoveFitWindow(){
-	if(NULL == m_conf)
+	if(nullptr == m_conf)
 		return;
 
 	// make sure that there's always at least one window defined

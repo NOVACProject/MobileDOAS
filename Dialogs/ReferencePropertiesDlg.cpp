@@ -15,7 +15,7 @@ IMPLEMENT_DYNAMIC(CReferencePropertiesDlg, CDialog)
 CReferencePropertiesDlg::CReferencePropertiesDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CReferencePropertiesDlg::IDD, pParent)
 {
-	m_ref					= NULL;
+	m_ref					= nullptr;
 	m_shiftOption			= 1;
 	m_squeezeOption			= 1;
 
@@ -27,14 +27,14 @@ CReferencePropertiesDlg::CReferencePropertiesDlg(CWnd* pParent /*=NULL*/)
 
 CReferencePropertiesDlg::~CReferencePropertiesDlg()
 {
-	m_ref = NULL;
+	m_ref = nullptr;
 }
 
 void CReferencePropertiesDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 
-	if(m_ref != NULL){
+	if(m_ref != nullptr){
 		DDX_Text(pDX, IDC_EDIT_SPECIE,			m_ref->m_specieName);
 		DDX_Text(pDX, IDC_EDIT_PATH,			m_ref->m_path);
 
@@ -68,7 +68,7 @@ END_MESSAGE_MAP()
 void CReferencePropertiesDlg::SaveData(){
 	UpdateData(TRUE); // <-- Save the data in the dialog	
 
-	if(m_ref == NULL)
+	if(m_ref == nullptr)
 		return;
 
 	// save the shift option
@@ -96,7 +96,7 @@ void CReferencePropertiesDlg::SaveData(){
 
 /** Updates the contents in the dialog */
 void CReferencePropertiesDlg::UpdateDlg(){
-	if(m_ref == NULL)
+	if(m_ref == nullptr)
 		return;
 
 	// save the shift option
@@ -139,7 +139,7 @@ void CReferencePropertiesDlg::BrowseForReference(){
 	filter[n + 2] = 0;
 	fileName.Format("");
 
-	if(m_ref == NULL)
+	if(m_ref == nullptr)
 		return;
 
 	// 1. Let the user browse for the reference file
@@ -174,7 +174,7 @@ BOOL Dialogs::CReferencePropertiesDlg::OnInitDialog()
 
 void Dialogs::CReferencePropertiesDlg::InitToolTips(){
 	// Don't initialize the tool tips twice
-	if(m_toolTip.m_hWnd != NULL)
+	if(m_toolTip.m_hWnd != nullptr)
 		return;
 
 	// Enable the tool tips

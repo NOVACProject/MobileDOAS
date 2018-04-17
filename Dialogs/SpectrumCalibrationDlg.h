@@ -12,7 +12,7 @@ namespace Dialogs{
 		DECLARE_DYNAMIC(CSpectrumCalibrationDlg)
 
 	public:
-		CSpectrumCalibrationDlg(CWnd* pParent = NULL);   // standard constructor
+		CSpectrumCalibrationDlg(CWnd* pParent = nullptr);   // standard constructor
 		virtual ~CSpectrumCalibrationDlg();
 
 	// Dialog Data

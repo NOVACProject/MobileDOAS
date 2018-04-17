@@ -23,7 +23,7 @@ namespace DualBeamMeasurement{
 		double GetPlumeHeight_CentreOfMass(
 			const CMeasurementSeries *forwardLookingSerie,
 			const CMeasurementSeries *backwardLookingSerie,
-			double	sourceLat, double sourceLon, double angleSeparation, double *windDir = NULL);
+			double	sourceLat, double sourceLon, double angleSeparation, double *windDir = nullptr);
 
 	protected:
 		/** Calculates the centre of mass distance.

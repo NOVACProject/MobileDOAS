@@ -10,7 +10,7 @@ namespace Dialogs{
 		DECLARE_DYNAMIC(CSpectrumSettingsDlg)
 
 	public:
-		CSpectrumSettingsDlg(CWnd* pParent = NULL);   // standard constructor
+		CSpectrumSettingsDlg(CWnd* pParent = nullptr);   // standard constructor
 		virtual ~CSpectrumSettingsDlg();
 
 	// Dialog Data

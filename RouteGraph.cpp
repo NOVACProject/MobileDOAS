@@ -101,7 +101,7 @@ void CRouteGraph::OnLButtonDown(UINT nFlags, CPoint point)
 	lbdLong	= curLong;
 
 	// if we don't have one yet, set up a memory dc for the plot
-	if (m_dcRoute.GetSafeHdc() == NULL)
+	if (m_dcRoute.GetSafeHdc() == nullptr)
 	{
 		CClientDC dc(this);
 		m_dcRoute.CreateCompatibleDC(&dc) ;
@@ -188,7 +188,7 @@ void CRouteGraph::DrawShadedRect(double lat1, double lon1, double lat2, double l
 	y[1] = y[2] = lat2;
 
 	// make sure there's a memory dc for the plot
-	if(m_dcRoute.GetSafeHdc() == NULL)
+	if(m_dcRoute.GetSafeHdc() == nullptr)
 		return;
 
 	GetDataRange(x, y, 5, maxX, minX, maxY, minY);		

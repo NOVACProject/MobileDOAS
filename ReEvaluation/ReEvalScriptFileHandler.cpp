@@ -17,7 +17,7 @@ CReEvalScriptFileHandler::~CReEvalScriptFileHandler(void)
 int CReEvalScriptFileHandler::WriteToFile(const CString &fileName, const ReEvaluation::CReEvaluation_Script &script){
 	// Open the file for writing
 	FILE *f = fopen(fileName, "w");
-	if(f == NULL){
+	if(f == nullptr){
 		return 1;
 	}
 	
@@ -31,7 +31,7 @@ int CReEvalScriptFileHandler::WriteToFile(const CString &fileName, const ReEvalu
 	
 	// Write each of the jobs that is to be processed
 	POSITION pos = script.m_jobs.GetHeadPosition();
-	while(pos != NULL){
+	while(pos != nullptr){
 		const ReEvaluation::CReEvaluation_Script::Job &j = script.m_jobs.GetNext(pos);
 		
 		fprintf(f, "\t<Job>\n");

@@ -86,7 +86,7 @@ void CShowFitDlg::OnSize(UINT nType, int cx, int cy)
     return;
 
   if(IsWindow(m_fitPlot.m_hWnd)){
-		if(this->m_spectrometer != NULL && m_spectrometer->GetFitRegionNum() > 1){
+		if(this->m_spectrometer != nullptr && m_spectrometer->GetFitRegionNum() > 1){
 	    m_fitPlot.MoveWindow(0, 0, cx, cy/2, FALSE);
 		  m_fitPlot.CleanPlot();
 	    m_fitPlot2.MoveWindow(0, cy/2, cx, cy/2, FALSE);
@@ -129,11 +129,11 @@ void CShowFitDlg::DrawFit1(){
   static double fitResult[MAX_SPECTRUM_LENGTH];
   static double residual[MAX_SPECTRUM_LENGTH];
 
-  if(m_spectrometer == NULL)
-    return;
+  if (m_spectrometer == nullptr)
+	  return;
 
-	int fitLow = m_spectrometer->GetFitLow();
-	int fitHigh = m_spectrometer->GetFitHigh();
+  int fitLow = m_spectrometer->GetFitLow();
+  int fitHigh = m_spectrometer->GetFitHigh();
   int fitWidth = fitHigh - fitLow;
 
   double minV = 1000;
@@ -186,11 +186,11 @@ void CShowFitDlg::DrawFit2(){
   static double fitResult[MAX_SPECTRUM_LENGTH];
   static double residual[MAX_SPECTRUM_LENGTH];
 
-	if(m_spectrometer == NULL || m_spectrometer->GetFitRegionNum() == 1)
-    return;
+  if (m_spectrometer == nullptr || m_spectrometer->GetFitRegionNum() == 1)
+	  return;
 
-	int fitLow = m_spectrometer->GetFitLow(1);
-	int fitHigh = m_spectrometer->GetFitHigh(1);
+  int fitLow = m_spectrometer->GetFitLow(1);
+  int fitHigh = m_spectrometer->GetFitHigh(1);
   int fitWidth = fitHigh - fitLow;
 
   double minV = 1000;

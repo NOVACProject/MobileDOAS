@@ -34,7 +34,7 @@ class CPostFluxDlg : public CDialog
 {
 // Construction
 public:
-	CPostFluxDlg(CWnd* pParent = NULL);   // standard constructor
+	CPostFluxDlg(CWnd* pParent = nullptr);   // standard constructor
 	~CPostFluxDlg();
 
 	enum { IDD = IDD_POST_FLUX_DIALOG };

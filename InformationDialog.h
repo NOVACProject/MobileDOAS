@@ -8,7 +8,7 @@ namespace Dialogs{
 		DECLARE_DYNAMIC(CInformationDialog)
 
 	public:
-		CInformationDialog(CWnd* pParent = NULL);   // standard constructor
+		CInformationDialog(CWnd* pParent = nullptr);   // standard constructor
 		virtual ~CInformationDialog();
 
 	// Dialog Data

@@ -9,7 +9,7 @@ IMPLEMENT_DYNAMIC(CReEval_DoEvaluationDlg, CPropertyPage)
 CReEval_DoEvaluationDlg::CReEval_DoEvaluationDlg()
 	: CPropertyPage(CReEval_DoEvaluationDlg::IDD)
 {
-	this->pReEvalThread = NULL;
+	this->pReEvalThread = nullptr;
 }
 
 CReEval_DoEvaluationDlg::~CReEval_DoEvaluationDlg()
@@ -235,7 +235,7 @@ void CReEval_DoEvaluationDlg::OnBnClickedCancel(){
 
 	DWORD dwExitCode;
 	HANDLE hThread = this->pReEvalThread->m_hThread;
-	if(hThread !=NULL && GetExitCodeThread(hThread, &dwExitCode) && dwExitCode ==STILL_ACTIVE){
+	if(hThread != nullptr && GetExitCodeThread(hThread, &dwExitCode) && dwExitCode ==STILL_ACTIVE){
 		AfxGetApp()->BeginWaitCursor();
 		this->m_reeval->Stop();
 		

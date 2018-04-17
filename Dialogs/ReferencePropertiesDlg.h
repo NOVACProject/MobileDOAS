@@ -10,7 +10,7 @@ namespace Dialogs
 		DECLARE_DYNAMIC(CReferencePropertiesDlg)
 
 	public:
-		CReferencePropertiesDlg(CWnd* pParent = NULL);   // standard constructor
+		CReferencePropertiesDlg(CWnd* pParent = nullptr);   // standard constructor
 		virtual ~CReferencePropertiesDlg();
 
 	// Dialog Data

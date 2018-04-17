@@ -440,8 +440,8 @@ namespace DlgControls
       // SetRedraw stops/starts redraws on things like changing the # rows/columns
       // and autosizing, but not for user-intervention such as resizes
       void SetRedraw(BOOL bAllowDraw, BOOL bResetScrollBars = FALSE);
-      BOOL RedrawCell(int nRow, int nCol, CDC* pDC = NULL);
-      BOOL RedrawCell(const CCellID& cell, CDC* pDC = NULL);
+      BOOL RedrawCell(int nRow, int nCol, CDC* pDC = nullptr);
+      BOOL RedrawCell(const CCellID& cell, CDC* pDC = nullptr);
       BOOL RedrawRow(int row);
       BOOL RedrawColumn(int col);
 
@@ -509,7 +509,7 @@ namespace DlgControls
   ///////////////////////////////////////////////////////////////////////////////////
   #if !defined(_WIN32_WCE_NO_PRINTING) && !defined(GRIDCONTROL_NO_PRINTING)
   public:
-      void Print(CPrintDialog* pPrntDialog = NULL);
+      void Print(CPrintDialog* pPrntDialog = nullptr);
 
       // EFW - New printing support functions
       void EnableWysiwygPrinting(BOOL bEnable = TRUE) { m_bWysiwygPrinting = bEnable;     }

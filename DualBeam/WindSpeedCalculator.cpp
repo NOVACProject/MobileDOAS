@@ -7,10 +7,10 @@ using namespace DualBeamMeasurement;
 
 CWindSpeedCalculator::CWindSpeedCalculator(void)
 {
-	shift = NULL;
-	corr = NULL;
-	used = NULL;
-	delays = NULL;
+	shift = nullptr;
+	corr = nullptr;
+	used = nullptr;
+	delays = nullptr;
 	m_length = 0;
 	m_lastError = ERROR_NO_ERROR;
 }
@@ -35,11 +35,11 @@ bool CWindSpeedCalculator::CalculateDelay(
 	CMeasurementSeries modifiedDownWind;
 
 	// 0. Error checking of the input
-	if(upWindSerie == NULL || upWindSerie->length == 0){
+	if(upWindSerie == nullptr || upWindSerie->length == 0){
 		m_lastError = ERROR_EMPTY_SERIES;
 		return FAIL;
 	}
-	if(downWindSerie == NULL || downWindSerie->length == 0){
+	if(downWindSerie == nullptr || downWindSerie->length == 0){
 		m_lastError = ERROR_EMPTY_SERIES;
 		return FAIL;
 	}

@@ -10,22 +10,22 @@ IMPLEMENT_DYNAMIC(CPostWindDlg, CDialog)
 CPostWindDlg::CPostWindDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CPostWindDlg::IDD, pParent)
 {
-	m_flux = NULL;
+	m_flux = nullptr;
 	m_showOption = 0;
 
 	for (int k = 0; k < MAX_N_SERIES; ++k) {
-		this->m_OriginalSeries[k] = NULL;
-		this->m_PreparedSeries[k] = NULL;
+		this->m_OriginalSeries[k] = nullptr;
+		this->m_PreparedSeries[k] = nullptr;
 	}
 
-	corr = delay = ws = NULL;
+	corr = delay = ws = nullptr;
 }
 
 CPostWindDlg::~CPostWindDlg()
 {
-	if (m_flux != NULL) {
+	if (m_flux != nullptr) {
 		delete m_flux;
-		m_flux = NULL;
+		m_flux = nullptr;
 	}
 	for (int k = 0; k < MAX_N_SERIES; ++k) {
 		delete m_OriginalSeries[k];
@@ -107,7 +107,7 @@ void CPostWindDlg::OnChangeEvalLog() {
 		return;
 
 	FILE *f = fopen(evalLog, "r");
-	if (f == NULL)
+	if (f == nullptr)
 		return;
 	fclose(f);
 
@@ -121,7 +121,7 @@ void CPostWindDlg::OnChangeEvalLog() {
 
 bool CPostWindDlg::ReadEvaluationLog() {
 	// Completely reset the old data
-	if (m_flux != NULL)
+	if (m_flux != nullptr)
 		delete m_flux;
 	m_flux = new Flux::CFlux();
 
@@ -156,7 +156,7 @@ bool CPostWindDlg::ReadEvaluationLog() {
 
 											 // create a new data series
 		m_OriginalSeries[chnIndex] = new DualBeamMeasurement::CDualBeamCalculator::CMeasurementSeries(length);
-		if (m_OriginalSeries[chnIndex] == NULL)
+		if (m_OriginalSeries[chnIndex] == nullptr)
 			return FAIL; // <-- failed to allocate enough memory
 
 		Time &startTime = traverse->time[0];
@@ -228,7 +228,7 @@ void CPostWindDlg::DrawColumn() {
 
 	// get the range for the plot
 	for (int k = 0; k < MAX_N_SERIES; ++k) {
-		if (m_OriginalSeries[k] != NULL) {
+		if (m_OriginalSeries[k] != nullptr) {
 			minT = min(minT, m_OriginalSeries[k]->time[0]);
 			maxT = max(maxT, m_OriginalSeries[k]->time[m_OriginalSeries[k]->length - 1]);
 
@@ -247,7 +247,7 @@ void CPostWindDlg::DrawColumn() {
 
 	// Draw the time series
 	for (int k = 0; k < MAX_N_SERIES; ++k) {
-		if (m_OriginalSeries[k] != NULL) {
+		if (m_OriginalSeries[k] != nullptr) {
 
 			// ---------- Draw the original time series -----------
 			// set the color
@@ -285,7 +285,7 @@ void CPostWindDlg::DrawColumn() {
 /** Draws the result */
 void	CPostWindDlg::DrawResult() {
 	static const int BUFFER_SIZE = 1024;
-	if (corr == NULL) {
+	if (corr == nullptr) {
 		corr = new double[BUFFER_SIZE];
 		delay = new double[BUFFER_SIZE];
 		ws = new double[BUFFER_SIZE];
@@ -341,14 +341,14 @@ int	CPostWindDlg::LowPassFilter(int seriesNo) {
 	if (seriesNo < 0 || seriesNo > MAX_N_SERIES)
 		return 0;
 
-	if (m_OriginalSeries[seriesNo] == NULL)
+	if (m_OriginalSeries[seriesNo] == nullptr)
 		return 0;
 
 	int length = m_OriginalSeries[seriesNo]->length;
 	if (length <= 0)
 		return 0;
 
-	if (m_PreparedSeries[seriesNo] == NULL)
+	if (m_PreparedSeries[seriesNo] == nullptr)
 		m_PreparedSeries[seriesNo] = new CWindSpeedCalculator::CMeasurementSeries();
 
 	if (SUCCESS != CWindSpeedCalculator::LowPassFilter(m_OriginalSeries[seriesNo], m_PreparedSeries[seriesNo], m_settings.lowPassFilterAverage))
@@ -443,7 +443,7 @@ void CPostWindDlg::SaveResult() {
 
 	// 3. Open the log-file for writing
 	FILE *f = fopen(fileName, "w");
-	if (f == NULL) {
+	if (f == nullptr) {
 		// Could not open the file
 		MessageBox("Could not open log-file for writing, no data saved");
 		return;

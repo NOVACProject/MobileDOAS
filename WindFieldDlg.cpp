@@ -16,7 +16,7 @@ IMPLEMENT_DYNAMIC(CWindFieldDlg, CDialog)
 CWindFieldDlg::CWindFieldDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CWindFieldDlg::IDD, pParent)
 {
-  m_flux = NULL;
+  m_flux = nullptr;
   m_windfile.Format("");
   m_windField = new CWindField();
 	m_useTimeShift = 0;
@@ -25,10 +25,10 @@ CWindFieldDlg::CWindFieldDlg(CWnd* pParent /*=NULL*/)
 
 CWindFieldDlg::~CWindFieldDlg()
 {
-  m_flux = NULL;
-  if(m_windField != NULL){
+  m_flux = nullptr;
+  if(m_windField != nullptr){
     delete(m_windField);
-    m_windField = NULL;
+    m_windField = nullptr;
   }
 }
 
@@ -208,9 +208,9 @@ void CWindFieldDlg::OnOK()
 {
 	UpdateData(TRUE); // <-- Save the data in the dialog
 
-  if(m_flux != NULL){
+  if(m_flux != nullptr){
     int layer = m_altitudeCombo.GetCurSel();
-    if(m_flux->m_windField != NULL)
+    if(m_flux->m_windField != nullptr)
       delete(m_flux->m_windField);
 
     m_flux->m_useWindField = true;

@@ -30,7 +30,7 @@ CGPS::CGPS(){
 
 	gotContact = false;
 
-	m_gpsThread = NULL;
+	m_gpsThread = nullptr;
 	fRun = false;
 }
 
@@ -46,7 +46,7 @@ CGPS::CGPS(char* pCOMPort, long pBaudrate) {
 
 CGPS::~CGPS(){
 
-	m_gpsThread = NULL;
+	m_gpsThread = nullptr;
 	serial.Close();
 }
 
@@ -329,13 +329,13 @@ void CGPS::Run(){
 
 void CGPS::Stop(){
 	this->fRun = false;
-	if(m_gpsThread != NULL){
+	if(m_gpsThread != nullptr){
 	}
 }
 
 // IsRunning returns true if the gps-collecting thread is running.
 bool CGPS::IsRunning(){
-	if(m_gpsThread == NULL)
+	if(m_gpsThread == nullptr)
 		return false;
 
 	// the thread is probably running

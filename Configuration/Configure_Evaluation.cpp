@@ -13,12 +13,12 @@ IMPLEMENT_DYNAMIC(CConfigure_Evaluation, CPropertyPage)
 CConfigure_Evaluation::CConfigure_Evaluation()
 	: CPropertyPage(CConfigure_Evaluation::IDD)
 {
-	m_conf = NULL;
+	m_conf = nullptr;
 }
 
 CConfigure_Evaluation::~CConfigure_Evaluation()
 {
-	m_conf = NULL;
+	m_conf = nullptr;
 }
 
 void CConfigure_Evaluation::DoDataExchange(CDataExchange* pDX)
@@ -182,7 +182,7 @@ void CConfigure_Evaluation::PopulateReferenceFileControl(){
 	m_referenceGrid.SetItemTextFmt(1 + i, 3, "");
 
 	// Update the grid
-	if(m_referenceGrid.m_hWnd != NULL)
+	if(m_referenceGrid.m_hWnd != nullptr)
 		m_referenceGrid.UpdateData(FALSE);
 }
 
@@ -347,7 +347,7 @@ void CConfigure_Evaluation::OnChangeFitWindow(){
 
 void CConfigure_Evaluation::InitToolTips(){
 	// Don't initialize the tool tips twice
-	if(m_toolTip.m_hWnd != NULL)
+	if(m_toolTip.m_hWnd != nullptr)
 		return;
 
 	// Enable the tool tips

@@ -11,7 +11,7 @@ namespace Dialogs{
 		DECLARE_DYNAMIC(CCommentDlg)
 
 	public:
-		CCommentDlg(CWnd* pParent = NULL);   // standard constructor
+		CCommentDlg(CWnd* pParent = nullptr);   // standard constructor
 		virtual ~CCommentDlg();
 
 	// Dialog Data
@@ -27,7 +27,7 @@ namespace Dialogs{
 		CEdit   m_commentEdit;
 		CString outputDir;
 
-		virtual BOOL Create(UINT nID, CWnd* pParentWnd = NULL);
+		virtual BOOL Create(UINT nID, CWnd* pParentWnd = nullptr);
 		virtual BOOL OnInitDialog();
 		afx_msg void OnBnClickedOk();
 	};
