@@ -64,13 +64,13 @@ namespace MathFit
 		*/
 		CVector()
 		{
-			mData = NULL;
+			mData = nullptr;
 			mLength = 0;
 			mStepSize = 1;
 			mAutoRelease = true;
 
-			mFloatPtr = NULL;
-			mDoublePtr = NULL;
+			mFloatPtr = nullptr;
+			mDoublePtr = nullptr;
 		}
 
 		/**
@@ -80,13 +80,13 @@ namespace MathFit
 		*/
 		CVector(const CVector &vRight)
 		{
-			mData = NULL;
+			mData = nullptr;
 			mLength = 0;
 			mStepSize = 1;
 			mAutoRelease = true;
 
-			mFloatPtr = NULL;
-			mDoublePtr = NULL;
+			mFloatPtr = nullptr;
+			mDoublePtr = nullptr;
 
 			Copy(vRight);
 		}
@@ -98,13 +98,13 @@ namespace MathFit
 		*/
 		CVector(int iSize)
 		{
-			mData = NULL;
+			mData = nullptr;
 			mLength = 0;
 			mStepSize = 1;
 			mAutoRelease = true;
 
-			mFloatPtr = NULL;
-			mDoublePtr = NULL;
+			mFloatPtr = nullptr;
+			mDoublePtr = nullptr;
 
 			SetSize(iSize);
 		}
@@ -121,8 +121,8 @@ namespace MathFit
 			MATHFIT_ASSERT(iOffset + iSize <= vSecond.GetSize());
 			MATHFIT_ASSERT(iSize > 0);
 
-			mFloatPtr = NULL;
-			mDoublePtr = NULL;
+			mFloatPtr = nullptr;
+			mDoublePtr = nullptr;
 
 			mStepSize = vSecond.mStepSize;
 
@@ -146,13 +146,13 @@ namespace MathFit
 		*/
 		CVector(TFitData* fData, int iSize, int iStepSize = 1, bool bAutoRelease = true)
 		{
-			mData = NULL;
+			mData = nullptr;
 			mLength = 0;
 			mStepSize = 1;
 			mAutoRelease = true;
 
-			mFloatPtr = NULL;
-			mDoublePtr = NULL;
+			mFloatPtr = nullptr;
+			mDoublePtr = nullptr;
 
 			Attach(fData, iSize, iStepSize, bAutoRelease);
 		}
@@ -342,7 +342,7 @@ namespace MathFit
 		*/
 		CVector& Detach()
 		{
-			mData = NULL;
+			mData = nullptr;
 			mLength = 0;
 			mStepSize = 1;
 			mAutoRelease = true;
@@ -509,7 +509,7 @@ namespace MathFit
 				ReleaseFloatPtr();
 				ReleaseDoublePtr();
 
-				mData = NULL;
+				mData = nullptr;
 				mStepSize = 1;
 				mLength = iNewSize;
 				if(mLength <= 0)
@@ -592,7 +592,7 @@ namespace MathFit
 		*/
 		CVector& Zero()
 		{
-			MATHFIT_ASSERT(mData != NULL);
+			MATHFIT_ASSERT(mData != nullptr);
 
 			if(mStepSize == 1)
 				memset(mData, 0, sizeof(TFitData) * mLength);
@@ -1048,7 +1048,7 @@ namespace MathFit
 		{
 			if(mFloatPtr)
 				delete mFloatPtr;
-			mFloatPtr = NULL;
+			mFloatPtr = nullptr;
 		}
 
 		double* GetDoublePtr()
@@ -1068,7 +1068,7 @@ namespace MathFit
 		{
 			if(mDoublePtr)
 				delete mDoublePtr;
-			mDoublePtr = NULL;
+			mDoublePtr = nullptr;
 		}
 
 		int GetStepSize()

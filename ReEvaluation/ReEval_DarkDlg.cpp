@@ -16,7 +16,7 @@ CReEval_DarkDlg::CReEval_DarkDlg()
 {
 	m_numDarkSpectra  = 0;
 
-	this->pReEvalThread = NULL;
+	this->pReEvalThread = nullptr;
 }
 
 CReEval_DarkDlg::~CReEval_DarkDlg()

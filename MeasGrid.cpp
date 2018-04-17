@@ -4,12 +4,12 @@
 
 CMeasGrid::CMeasGrid(void)
 {
-	parent = NULL;
+	parent = nullptr;
 }
 
 CMeasGrid::~CMeasGrid(void)
 {
-	parent = NULL;
+	parent = nullptr;
 }
 
 BEGIN_MESSAGE_MAP(CMeasGrid, CGridCtrl)
@@ -20,7 +20,7 @@ void CMeasGrid::OnContextMenu(CWnd* pWnd, CPoint point){
    CMenu menu;
 /*   VERIFY(menu.LoadMenu(IDR_MENU1));
    CMenu* pPopup = menu.GetSubMenu(0);
-   ASSERT(pPopup != NULL);
+   ASSERT(pPopup != nullptr);
 
   CCellRange cellRange = GetSelectedCellRange();
   int minRow = cellRange.GetMinRow() - 1;
@@ -45,7 +45,7 @@ void CMeasGrid::OnEndEditCell(int nRow, int nCol, CString str){
   CGridCtrl::OnEndEditCell(nRow, nCol, str);  
 
 	// tell the parent that we've done editing one box
-	if(parent != NULL)
+	if(parent != nullptr)
 		parent->PostMessage(WM_END_EDIT, 0, 0);
 
   return;

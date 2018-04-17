@@ -50,7 +50,7 @@ CReEvaluator::CReEvaluator(void){
 	m_calibSky.Format("");
 
 	m_progress = 0;
-	pView = NULL;
+	pView = nullptr;
 	m_mode = MODE_NOTHING;
 	m_statusMsg.Format("");
 }
@@ -308,12 +308,12 @@ int CReEvaluator::ReadAllOffsets(){
 
 		// tell the user about the progress
 		m_progress = (nDone++) / nToDo;
-		if(pView != NULL && (i % 10) == 0)
+		if(pView != nullptr && (i % 10) == 0)
 			pView->PostMessage(WM_PROGRESS, (WPARAM)(int)(100.0 * m_progress));
 		}
 	}
 
-	if(pView != NULL)
+	if(pView != nullptr)
 		pView->PostMessage(WM_DONE);
 
 	return 0;
@@ -368,7 +368,7 @@ bool CReEvaluator::DoEvaluation(){
 	if(!AllSpectraHaveSameExpTime()){
 		m_mode = MODE_READING_OFFSETS; // tell the world that we're reading offsets
 
-		if(pView != NULL){
+		if(pView != nullptr){
 			m_statusMsg.Format("Not all spectra have the same exp.time - Reading offsets");
 			pView->PostMessage(WM_STATUS);
 		}
@@ -376,7 +376,7 @@ bool CReEvaluator::DoEvaluation(){
 		ReadAllOffsets();
 		m_mode = MODE_REEVALUATION; // tell the world that we're re-evaluating data
 
-		if(pView != NULL){
+		if(pView != nullptr){
 			m_statusMsg.Format("All offsets read. ");
 			pView->PostMessage(WM_STATUS);
 		}
@@ -404,7 +404,7 @@ bool CReEvaluator::DoEvaluation(){
 		for(chn = 0; chn < m_nChannels; ++chn){
 
 			// Tell the user that we're starting the evaluation
-			if(pView != NULL){
+			if(pView != nullptr){
 				m_statusMsg.Format("Evaluating Channel %d", chn);
 				pView->PostMessage(WM_STATUS);
 			}
@@ -497,7 +497,7 @@ bool CReEvaluator::DoEvaluation(){
 
 				// check if we should ignore the current spectrum
 				if(int ret = Ignore(curSpectrum, m_curSpec)){
-					if(pView != NULL){
+					if(pView != nullptr){
 						if(ret == INTENSITY_SATURATED){
 							m_statusMsg.Format("Ignoring spectrum number: %d - saturated", m_curSpec);
 						}else{
@@ -536,7 +536,7 @@ bool CReEvaluator::DoEvaluation(){
 				AppendResultToEvaluationLog(m_curSpec, chn, evaluator);
 
 				// update the fit on the screen
-				if(pView != NULL){
+				if(pView != nullptr){
 					// the measured spectrum
 					memcpy(m_spectrum, evaluator.m_filteredSpectrum, MAX_SPECTRUM_LENGTH*sizeof(double));
 					if(m_settings.m_window.fitType == FIT_HP_SUB || m_settings.m_window.fitType == FIT_POLY){
@@ -576,7 +576,7 @@ bool CReEvaluator::DoEvaluation(){
 
 				// tell the user about the progress
 				m_progress = (nDone++) / nToDo;
-				if(pView != NULL && (m_curSpec % 10) == 0)
+				if(pView != nullptr && (m_curSpec % 10) == 0)
 					pView->PostMessage(WM_PROGRESS, (WPARAM)(int)(100.0 * m_progress));
 			} // end for(m_curspec...
 
@@ -590,7 +590,7 @@ bool CReEvaluator::DoEvaluation(){
 			WriteAverageResidualToFile();
 		}//end for chn..
 
-		if(pView != NULL)
+		if(pView != nullptr)
 			pView->PostMessage(WM_DONE);
 	}
 
@@ -687,7 +687,7 @@ bool CReEvaluator::ReadSpectrumFromFile(CSpectrum &spec, CString filename, int c
 		}
 	}
 
-	if (pView != NULL) {
+	if (pView != nullptr) {
 		m_statusMsg.Format("Read %s", specFileName);
 		pView->PostMessage(WM_STATUS);
 	}
@@ -712,7 +712,7 @@ bool CReEvaluator::ReadSkySpectrum(CSpectrum &spec, int channel){
 		//		return false;
 		//	}
 		//}
-		//if(pView != NULL){
+		//if(pView != nullptr){
 		//	m_statusMsg.Format("Read Sky spectrum");
 		//	pView->PostMessage(WM_STATUS);
 		//}
@@ -738,7 +738,7 @@ bool CReEvaluator::ReadSkySpectrum(CSpectrum &spec, int channel){
 		}
 		spec.Div(nAdded);
 
-		if(pView != NULL){
+		if(pView != nullptr){
 			m_statusMsg.Format("Created Sky spectrum as average of: %ld spectra", nAdded);
 			pView->PostMessage(WM_STATUS);
 		}
@@ -769,7 +769,7 @@ bool CReEvaluator::ReadSkySpectrum(CSpectrum &spec, int channel){
 		}
 		spec.Div(nAdded);
 
-		if(pView != NULL){
+		if(pView != nullptr){
 			m_statusMsg.Format("Created Sky spectrum as average of: %ld spectra", nAdded);
 			pView->PostMessage(WM_STATUS);
 		}
@@ -799,7 +799,7 @@ bool CReEvaluator::ReadSkySpectrum(CSpectrum &spec, int channel){
 		}
 		spec.Sub(darkSpec); // <-- Remove the dark from the sky
 		
-		if(pView != NULL){
+		if(pView != nullptr){
 			m_statusMsg.Format("Read Sky spectrum");
 			pView->PostMessage(WM_STATUS);
 		}
@@ -974,7 +974,7 @@ bool CReEvaluator::GetDarkSpectrum(CSpectrum &dark, int number, int channel){
 	// If none found, return the first one...
 	if(nFoundDarkSpectra == 0){
 		FILE *f = fopen(m_outputDir + "\\DarkLog.txt", "a+");
-		if(f != NULL) {
+		if(f != nullptr) {
 			fprintf(f, "Spec # %d - using default dark\n", number);
 			fclose(f);
 		}
@@ -984,11 +984,11 @@ bool CReEvaluator::GetDarkSpectrum(CSpectrum &dark, int number, int channel){
 	// If only one dark spectrum with the same exp-time was found, return it
 	if(nFoundDarkSpectra == 1){
 		FILE *f = fopen(m_outputDir + "\\DarkLog.txt", "a+");
-		if(f != NULL) {
+		if(f != nullptr) {
 			fprintf(f, "Spec # %d - using spectrum %d as dark\n", number, foundDarkSpectra[0]);
 			fclose(f);
 		}
-		if(pView != NULL){
+		if(pView != nullptr){
 			m_statusMsg.Format("Spec # %d - using spectrum %d as dark\n", number, foundDarkSpectra[0]);
 			pView->PostMessage(WM_STATUS);
 		}
@@ -1022,11 +1022,11 @@ bool CReEvaluator::GetDarkSpectrum(CSpectrum &dark, int number, int channel){
 	if(closestBelow == -1 && closestAbove != -1){
 		// 1. If only a dark spectrum with higher offset was found...
 		FILE *f = fopen(m_outputDir + "\\DarkLog.txt", "a+");
-		if(f != NULL) {
+		if(f != nullptr) {
 			fprintf(f, "Spec # %d - using spectrum %d as dark\n", number, closestAbove);
 			fclose(f);
 		}
-		if(pView != NULL){
+		if(pView != nullptr){
 			m_statusMsg.Format("Spec # %d - using spectrum %d as dark\n", number, closestAbove);
 			pView->PostMessage(WM_STATUS);
 		}
@@ -1035,11 +1035,11 @@ bool CReEvaluator::GetDarkSpectrum(CSpectrum &dark, int number, int channel){
 	}else if(closestBelow != -1 && closestAbove == -1){
 		// 2. If only a dark spectrum with lower offset was found...
 		FILE *f = fopen(m_outputDir + "\\DarkLog.txt", "a+");
-		if(f != NULL) {
+		if(f != nullptr) {
 			fprintf(f, "Spec # %d - using spectrum %d as dark\n", number, closestBelow);
 			fclose(f);
 		}
-		if(pView != NULL){
+		if(pView != nullptr){
 			m_statusMsg.Format("Spec # %d - using spectrum %d as dark\n", number, closestBelow);
 			pView->PostMessage(WM_STATUS);
 		}
@@ -1056,11 +1056,11 @@ bool CReEvaluator::GetDarkSpectrum(CSpectrum &dark, int number, int channel){
 			dark.I[k] = alpha * dark.I[k] + (1.0 - alpha) * dark2.I[k];
 		}
 		FILE *f = fopen(m_outputDir + "\\DarkLog.txt", "a+");
-		if(f != NULL) {
+		if(f != nullptr) {
 			fprintf(f, "Spec # %d - using average of spectra %d and %d as dark\n", number, closestBelow, closestAbove);
 			fclose(f);
 		}
-		if(pView != NULL){
+		if(pView != nullptr){
 			m_statusMsg.Format("Spec # %d - using average of spectra %d and %d as dark\n", number, closestBelow, closestAbove);
 			pView->PostMessage(WM_STATUS);
 		}
@@ -1078,7 +1078,6 @@ bool CReEvaluator::Stop(){
 
 bool CReEvaluator::FindOptimalShiftAndSqueeze(Evaluation::CEvaluation &evaluator, int channel, CSpectrum &skySpectrum, CSpectrum &darkSpectrum){
 	double		sky[MAX_SPECTRUM_LENGTH];// temporary storage for the sky vector
-	int				i; // iterator
 	CSpectrum curSpectrum; // the read spectrum
 	double		maxColumn = -1e6;
 	int				indexOfMaxColumn = -1;
@@ -1086,7 +1085,7 @@ bool CReEvaluator::FindOptimalShiftAndSqueeze(Evaluation::CEvaluation &evaluator
 	int				linkTo = 0;
 
 	// first find the spectrum with the highest (credible) column value
-	for(i = 0; i < m_recordNum[channel]; ++i){
+	for(int i = 0; i < m_recordNum[channel]; ++i){
 		if(m_oldCol[channel][i] <= maxColumn)
 			continue;
 
@@ -1103,7 +1102,7 @@ bool CReEvaluator::FindOptimalShiftAndSqueeze(Evaluation::CEvaluation &evaluator
 
 	// start by setting the shift and squeeze of the first referenceFile to SHIFT_FREE
 	//  and link the other references to this referenceFile
-	for(i = 0; i < m_settings.m_window.nRef; ++i){
+	for(int i = 0; i < m_settings.m_window.nRef; ++i){
 		Evaluation::CReferenceFile &ref = m_settings.m_window.ref[i];
 
 		if(nLinked == 0){
@@ -1134,7 +1133,7 @@ bool CReEvaluator::FindOptimalShiftAndSqueeze(Evaluation::CEvaluation &evaluator
 	evaluator.SetFitWindow(m_settings.m_window);
 
 	// send a message about the progress
-	if(pView != NULL){
+	if(pView != nullptr){
 		m_statusMsg.Format("Determining shift & squeeze from spec #%d", indexOfMaxColumn);
 		pView->PostMessage(WM_STATUS);
 	}
@@ -1149,7 +1148,7 @@ bool CReEvaluator::FindOptimalShiftAndSqueeze(Evaluation::CEvaluation &evaluator
 
 	// Check if the result is reasonable, if not then only allow the shift to wary - not the squeeze
 	if(evaluator.GetChiSquare() > 0.9){
-		for(i = 0; i < m_settings.m_window.nRef; ++i){
+		for(int i = 0; i < m_settings.m_window.nRef; ++i){
 			Evaluation::CReferenceFile &ref = m_settings.m_window.ref[i];
 			ref.m_squeezeOption = SHIFT_FIX;
 			ref.m_squeezeValue  = 1;
@@ -1170,14 +1169,14 @@ bool CReEvaluator::FindOptimalShiftAndSqueeze(Evaluation::CEvaluation &evaluator
 	optimumSqueezeError = evResult[5];
 
 	// send a message about the progress
-	if(pView != NULL){
+	if(pView != nullptr){
 		m_statusMsg.Format("Shift set to %.2f; Squeeze set to %.2f", optimumShift, optimumSqueeze);
 		pView->PostMessage(WM_STATUS);
 	}
 
 	// set the shift and squeeze of the reference files to the
 	//  newly found optimum value
-	for(i = 0; i < m_settings.m_window.nRef; ++i){
+	for(int i = 0; i < m_settings.m_window.nRef; ++i){
 		Evaluation::CReferenceFile &ref = m_settings.m_window.ref[i];
 
 		ref.m_shiftOption    = SHIFT_FIX;
@@ -1200,7 +1199,6 @@ bool CReEvaluator::FindOptimalShiftAndSqueeze(Evaluation::CEvaluation &evaluator
 
 /* Check the settings before we start */
 bool CReEvaluator::MakeInitialSanityCheck(){
-	int i, k;
 
 	if(this->m_recordNum[0] == 0){
 		MessageBox(NULL, "No spectra found. You have either not chosen an evaluation log or evaluation log is empty. Please choose a proper evaluation log", "Error", MB_OK);
@@ -1208,6 +1206,7 @@ bool CReEvaluator::MakeInitialSanityCheck(){
 	}
 
 	bool findOptimum = false;
+	int i;
 	for(i = 0; i < m_settings.m_window.nRef; ++i){
 		if(m_settings.m_window.ref[i].m_shiftOption == Evaluation::SHIFT_OPTIMAL){
 			findOptimum = true;
@@ -1215,7 +1214,7 @@ bool CReEvaluator::MakeInitialSanityCheck(){
 		}
 	}
 	if(findOptimum){
-		for(k = 0; k < m_settings.m_window.nRef; ++k){
+		for(int k = 0; k < m_settings.m_window.nRef; ++k){
 			if(m_settings.m_window.ref[k].m_shiftOption != Evaluation::SHIFT_LINK && k != i){
 				CString msg;
 				msg.Format("You have selected 'find optimum' for reference %s. This means that all references will be linked to this reference and the optimum shift and squeeze for all references will be searched for", m_settings.m_window.ref[k].m_specieName);
@@ -1234,7 +1233,7 @@ bool CReEvaluator::WriteAverageResidualToFile(){
 
 	CString fileName = m_outputDir + "\\AverageResidual.txt";
 	FILE *f = fopen(fileName, "w");
-	if(f == NULL)
+	if(f == nullptr)
 		return false;
 
 	for(int i = 0; i < fitWidth; ++i){
@@ -1249,7 +1248,7 @@ bool CReEvaluator::SaveSpectra(CSpectrum &spec, CString filename, int channel){
 	CString fileName;
 	fileName.Format("%s\\%s_%1d.txt", m_outputDir, filename, channel);
 	FILE *f = fopen(fileName, "w");
-	if(f != NULL){
+	if(f != nullptr){
 		for(int i = 0; i < spec.length; ++i){
 			fprintf(f, "%lg\n", spec.I[i]);
 		}

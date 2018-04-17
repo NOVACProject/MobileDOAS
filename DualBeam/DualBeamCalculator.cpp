@@ -8,10 +8,10 @@ using namespace DualBeamMeasurement;
 // ------------------------------------------------
 
 CDualBeamCalculator::CMeasurementSeries::CMeasurementSeries(){
-	column = NULL;
-	time = NULL;
-	lat = NULL;
-	lon = NULL;
+	column = nullptr;
+	time = nullptr;
+	lat = nullptr;
+	lon = nullptr;
 	length = 0;
 }
 
@@ -30,19 +30,19 @@ bool CDualBeamCalculator::CMeasurementSeries::SetLength(int len){
 	delete[] lon;
 
 	column = new double[len];
-	if(column == NULL)
+	if(column == nullptr)
 		return FAIL;
 
 	time = new double[len];
-	if(time == NULL)
+	if(time == nullptr)
 		return FAIL;
 
 	lat = new double[len];
-	if(lat == NULL)
+	if(lat == nullptr)
 		return FAIL;
 
 	lon = new double[len];
-	if(lon == NULL)
+	if(lon == nullptr)
 		return FAIL;
 
 	length = len;
@@ -97,7 +97,7 @@ CDualBeamCalculator::~CDualBeamCalculator(void)
 bool CDualBeamCalculator::LowPassFilter(const CMeasurementSeries *series, CMeasurementSeries *result, unsigned int nIterations){
 	
 	// 1. Check for errors in input
-	if(series == NULL || series->length == 0 || result == NULL)
+	if(series == nullptr || series->length == 0 || result == nullptr)
 		return FAIL;
 
 	// 2. Calculate the old and the new data series lengths
@@ -211,7 +211,7 @@ bool CDualBeamCalculator::FindBestCorrelation(
 	// 0. Check for errors in the input
 	if(longLength == 0 || shortLength == 0)
 		return FAIL;
-	if(longVector == NULL || shortVector == NULL)
+	if(longVector == nullptr || shortVector == nullptr)
 		return FAIL;
 	if(longLength <= shortLength)
 		return FAIL;

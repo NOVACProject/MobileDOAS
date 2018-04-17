@@ -12,7 +12,7 @@ IMPLEMENT_DYNAMIC(CConfigure_Spectrometer, CPropertyPage)
 CConfigure_Spectrometer::CConfigure_Spectrometer()
 	: CPropertyPage(CConfigure_Spectrometer::IDD)
 {
-	m_conf = NULL;
+	m_conf = nullptr;
 	m_availableBaudrates[0] = 4800;
 	m_availableBaudrates[1] = 9600;
 	m_availableBaudrates[2] = 19200;
@@ -23,7 +23,7 @@ CConfigure_Spectrometer::CConfigure_Spectrometer()
 
 CConfigure_Spectrometer::~CConfigure_Spectrometer()
 {
-	m_conf = NULL;
+	m_conf = nullptr;
 }
 
 void CConfigure_Spectrometer::DoDataExchange(CDataExchange* pDX)
@@ -185,7 +185,7 @@ void CConfigure_Spectrometer::EnableControls(){
 
 /** Called when the 'Save' - button is pressed */
 void CConfigure_Spectrometer::OnOK(){
-	FILE *f = NULL;
+	FILE *f = nullptr;
 	CString fileName;
 
 	// Get the filename (and path) of the configuration-file
@@ -202,7 +202,7 @@ void CConfigure_Spectrometer::OnOK(){
 
 	// Try to open the file for writing
 	f = fopen(fileName, "w");
-	if(f == NULL){
+	if(f == nullptr){
 		CString errMsg;
 		errMsg.Format("Could not open file %s for writing.", fileName);
 		MessageBox(errMsg, "Error", MB_OK);
@@ -304,7 +304,7 @@ void CConfigure_Spectrometer::OnOK(){
 
 void CConfigure_Spectrometer::InitToolTips(){
 	// Don't initialize the tool tips twice
-	if(m_toolTip.m_hWnd != NULL)
+	if(m_toolTip.m_hWnd != nullptr)
 		return;
 
 	// Enable the tool tips

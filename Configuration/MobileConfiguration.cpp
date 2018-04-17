@@ -589,7 +589,7 @@ int	CMobileConfiguration::ParseReference(Evaluation::CReferenceFile &reference){
 
 /** Parses a shift or squeeze section */
 int CMobileConfiguration::Parse_ShiftOrSqueeze(const CString &label, Evaluation::SHIFT_TYPE &option, double &lowValue/*, double &highValue*/){
-	char *pt = NULL;
+	char *pt = nullptr;
 
 	// the actual reading loop
 	while(szToken = NextToken()){

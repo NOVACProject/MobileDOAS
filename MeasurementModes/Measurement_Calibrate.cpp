@@ -15,9 +15,9 @@ CMeasurement_Calibrate::CMeasurement_Calibrate(void)
 
 CMeasurement_Calibrate::~CMeasurement_Calibrate(void)
 {
-	if(m_calibration != NULL){
+	if(m_calibration != nullptr){
 		delete m_calibration;
-		m_calibration = NULL;
+		m_calibration = nullptr;
 	}
 }
 

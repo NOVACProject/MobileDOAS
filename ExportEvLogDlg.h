@@ -11,7 +11,7 @@ namespace Dialogs{
 		DECLARE_DYNAMIC(CExportEvLogDlg)
 
 	public:
-		CExportEvLogDlg(CWnd* pParent = NULL);   // standard constructor
+		CExportEvLogDlg(CWnd* pParent = nullptr);   // standard constructor
 		virtual ~CExportEvLogDlg();
 
 		static const int MAX_N_EXPORT_COLUMNS = 9;

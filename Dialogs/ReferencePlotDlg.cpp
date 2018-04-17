@@ -25,7 +25,7 @@ CReferencePlotDlg::~CReferencePlotDlg()
 {
 	for(int k = 0; k < MAX_N_REFERENCES; ++k){
 		delete[] m_data[k];
-		m_data[k] = NULL;
+		m_data[k] = nullptr;
 	}
 }
 
@@ -46,7 +46,7 @@ BOOL CReferencePlotDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	if(m_window == NULL || m_window->nRef == 0)
+	if(m_window == nullptr || m_window->nRef == 0)
 		return TRUE; // if there's no window then don't do anything...
 
 	unsigned int nReferences = m_window->nRef;

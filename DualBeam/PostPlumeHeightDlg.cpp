@@ -15,11 +15,11 @@ IMPLEMENT_DYNAMIC(CPostPlumeHeightDlg, CDialog)
 CPostPlumeHeightDlg::CPostPlumeHeightDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CPostPlumeHeightDlg::IDD, pParent)
 {
-	m_flux = NULL;
+	m_flux = nullptr;
 
 	for (int k = 0; k < MAX_N_SERIES; ++k) {
-		this->m_OriginalSeries[k] = NULL;
-		this->m_PreparedSeries[k] = NULL;
+		this->m_OriginalSeries[k] = nullptr;
+		this->m_PreparedSeries[k] = nullptr;
 	}
 	m_automatic = false;
 	m_nChannels = 0;
@@ -29,9 +29,9 @@ CPostPlumeHeightDlg::CPostPlumeHeightDlg(CWnd* pParent /*=NULL*/)
 
 CPostPlumeHeightDlg::~CPostPlumeHeightDlg()
 {
-	if (m_flux != NULL) {
+	if (m_flux != nullptr) {
 		delete m_flux;
-		m_flux = NULL;
+		m_flux = nullptr;
 	}
 	for (int k = 0; k < MAX_N_SERIES; ++k) {
 		delete m_OriginalSeries[k];
@@ -104,7 +104,7 @@ void CPostPlumeHeightDlg::OnChangeEvalLog() {
 		return;
 
 	FILE *f = fopen(evalLog, "r");
-	if (f == NULL)
+	if (f == nullptr)
 		return;
 	fclose(f);
 
@@ -118,7 +118,7 @@ void CPostPlumeHeightDlg::OnChangeEvalLog() {
 
 bool CPostPlumeHeightDlg::ReadEvaluationLog() {
 	// Completely reset the old data
-	if (m_flux != NULL)
+	if (m_flux != nullptr)
 		delete m_flux;
 	m_flux = new Flux::CFlux();
 
@@ -154,7 +154,7 @@ bool CPostPlumeHeightDlg::ReadEvaluationLog() {
 
 											 // create a new data series
 		m_OriginalSeries[chnIndex] = new CDualBeamCalculator::CMeasurementSeries(length);
-		if (m_OriginalSeries[chnIndex] == NULL)
+		if (m_OriginalSeries[chnIndex] == nullptr)
 			return FAIL; // <-- failed to allocate enough memory
 
 		Time &startTime = traverse->time[0];
@@ -221,7 +221,7 @@ void CPostPlumeHeightDlg::DrawColumn() {
 
 	// get the range for the plot
 	for (int k = 0; k < m_nChannels; ++k) {
-		if (m_OriginalSeries[k] != NULL) {
+		if (m_OriginalSeries[k] != nullptr) {
 			minT = std::min(minT, m_OriginalSeries[k]->time[0]);
 			maxT = std::max(maxT, m_OriginalSeries[k]->time[m_OriginalSeries[k]->length - 1]);
 
@@ -240,7 +240,7 @@ void CPostPlumeHeightDlg::DrawColumn() {
 
 	// Draw the time series
 	for (int k = 0; k < m_nChannels; ++k) {
-		if (m_OriginalSeries[k] != NULL) {
+		if (m_OriginalSeries[k] != nullptr) {
 
 			// ---------- Draw the original time series -----------
 			// set the color
@@ -286,14 +286,14 @@ int	CPostPlumeHeightDlg::LowPassFilter(int seriesNo) {
 	if (seriesNo < 0 || seriesNo > MAX_N_SERIES)
 		return 0;
 
-	if (m_OriginalSeries[seriesNo] == NULL)
+	if (m_OriginalSeries[seriesNo] == nullptr)
 		return 0;
 
 	int length = m_OriginalSeries[seriesNo]->length;
 	if (length <= 0)
 		return 0;
 
-	if (m_PreparedSeries[seriesNo] == NULL)
+	if (m_PreparedSeries[seriesNo] == nullptr)
 		m_PreparedSeries[seriesNo] = new CDualBeamCalculator::CMeasurementSeries();
 
 	if (SUCCESS != CPlumeHeightCalculator::LowPassFilter(m_OriginalSeries[seriesNo], m_PreparedSeries[seriesNo], m_settings.lowPassFilterAverage))

@@ -170,7 +170,7 @@ BOOL ReEvaluation::CReEval_SkyDlg::OnKillActive()
 		}
 		// check so that the sky spectrum that the user has supplied does exist
 		FILE *f = fopen(m_reeval->m_settings.m_skySpectrumFile, "r");
-		if(f == NULL){
+		if(f == nullptr){
 			message.Format("Cannot open file: %s", m_reeval->m_settings.m_skySpectrumFile);
 			MessageBox(message, "Error in settings");
 			return 0;
@@ -178,7 +178,7 @@ BOOL ReEvaluation::CReEval_SkyDlg::OnKillActive()
 		fclose(f);
 		// check so that the dark spectrum that the user has supplied does exist
 		f = fopen(m_reeval->m_settings.m_skySpectrumDark, "r");
-		if(f == NULL){
+		if(f == nullptr){
 			message.Format("Cannot open file: %s", m_reeval->m_settings.m_skySpectrumFile);
 			MessageBox(message, "Error in settings");
 			return 0;

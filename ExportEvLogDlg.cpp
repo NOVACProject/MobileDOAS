@@ -38,12 +38,12 @@ CExportEvLogDlg::CExportEvLogDlg(CWnd* pParent /*=NULL*/)
 	m_strings[COL_COLUMN_OFFSET].Format("Offset Corrected Column");
 	m_strings[COL_COLUMN_ERR].Format("Column Error");
 
-	m_traverse = NULL;
+	m_traverse = nullptr;
 }
 
 CExportEvLogDlg::~CExportEvLogDlg()
 {
-	m_traverse = NULL;
+	m_traverse = nullptr;
 
 	delete[] m_strings;
 }
@@ -151,7 +151,7 @@ void CExportEvLogDlg::OnOK()
 	}
 
 	FILE *f = fopen(this->m_exportFileName, "w");
-	if(f == NULL){
+	if(f == nullptr){
 		MessageBox("Cannot open given output-file for writing. Please check settings and try again", "Error");
 		return; // don't close the dialog
 	}
@@ -200,7 +200,7 @@ void CExportEvLogDlg::OnOK()
 
 void CExportEvLogDlg::OnCancel()
 {
-	this->m_traverse = NULL;
+	this->m_traverse = nullptr;
 
 	CDialog::OnCancel();
 }

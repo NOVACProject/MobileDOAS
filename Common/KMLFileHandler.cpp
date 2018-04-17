@@ -17,8 +17,8 @@ CKMLFileHandler::~CKMLFileHandler(void)
 	@return 0 on success.
 */
 int CKMLFileHandler::StoreTraverseAsKML(Flux::CTraverse &traverse, const CString &fileName, int scalingHeight){
-	double *scaledColumns = NULL;
-	int		*levels = NULL;
+	double *scaledColumns = nullptr;
+	int		*levels = nullptr;
 	int k;
 	
 	// 0. Check the input
@@ -27,13 +27,13 @@ int CKMLFileHandler::StoreTraverseAsKML(Flux::CTraverse &traverse, const CString
 
 	// 1. Open the file
 	FILE *f = fopen(fileName, "w");
-	if(f == NULL)
+	if(f == nullptr)
 		return 1;
 
 	// 2. We need to scale the columns to make sure that they are visible on the map
 	scaledColumns	= new double[traverse.m_recordNum];
 	levels			= new int[traverse.m_recordNum];
-	if(scaledColumns == NULL || levels == NULL){
+	if(scaledColumns == nullptr || levels == nullptr){
 		fclose(f);
 		return 1;
 	}

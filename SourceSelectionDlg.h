@@ -15,7 +15,7 @@ class CSourceSelectionDlg : public CDialog
 	DECLARE_DYNAMIC(CSourceSelectionDlg)
 
 public:
-	CSourceSelectionDlg(CWnd* pParent = NULL);   // standard constructor
+	CSourceSelectionDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CSourceSelectionDlg();
 
 // Dialog Data

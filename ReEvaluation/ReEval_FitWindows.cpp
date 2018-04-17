@@ -15,7 +15,7 @@ IMPLEMENT_DYNAMIC(CReEval_FitWindowsDlg, CPropertyPage)
 CReEval_FitWindowsDlg::CReEval_FitWindowsDlg()
 	: CPropertyPage(CReEval_FitWindowsDlg::IDD)
 {
-	m_reeval = NULL;
+	m_reeval = nullptr;
 }
 
 CReEval_FitWindowsDlg::~CReEval_FitWindowsDlg()

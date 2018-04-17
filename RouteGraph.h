@@ -65,7 +65,7 @@ namespace Graph
 
 		/// ---------------------- OVERLOADED FUNCTIONS ----------------------
     /** Creates the graph */
-    virtual BOOL Create(DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID=NULL);
+    virtual BOOL Create(DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID= NULL);
 
 		// ------------------ Communication ------------------------
 

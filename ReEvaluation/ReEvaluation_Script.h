@@ -45,7 +45,7 @@ namespace ReEvaluation{
 		
 		/** Runs this script
 			@return 0 on success */
-		int Run(CWnd *wnd = NULL);
+		int Run(CWnd *wnd = nullptr);
 		
 	};
 }

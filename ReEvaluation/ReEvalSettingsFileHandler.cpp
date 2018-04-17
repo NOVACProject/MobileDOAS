@@ -41,7 +41,7 @@ int CReEvalSettingsFileHandler::ParseFile(ReEvaluation::CReEvaluationSettings &s
 int CReEvalSettingsFileHandler::WriteFile(const ReEvaluation::CReEvaluationSettings &settings, const CString &fileName){
 	// Try to open the file
 	FILE *f = fopen(fileName, "w");
-	if(f == NULL){
+	if(f == nullptr){
 		return 1;
 	}
 
@@ -597,7 +597,7 @@ int CReEvalSettingsFileHandler::ParseReference(Evaluation::CReferenceFile &refer
 
 /** Parses a shift or squeeze section */
 int CReEvalSettingsFileHandler::Parse_ShiftOrSqueeze(const CString &label, Evaluation::SHIFT_TYPE &option, double &lowValue/*, double &highValue*/){
-	char *pt = NULL;
+	char *pt = nullptr;
 
 	// the actual reading loop
 	while(szToken = NextToken()){

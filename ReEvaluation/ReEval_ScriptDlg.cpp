@@ -75,7 +75,7 @@ void CReEval_ScriptDlg::OnBrowseSettingsFile(){
 		// Update the settings file in all the jobs that are already
 		//  configured
 		POSITION pos = m_script.m_jobs.GetHeadPosition();
-		while(pos != NULL){
+		while(pos != nullptr){
 			ReEvaluation::CReEvaluation_Script::Job &job = m_script.m_jobs.GetAt(pos);
 			job.settingsFile.Format(m_settingsFile);
 			m_script.m_jobs.SetAt(pos, job);
@@ -124,7 +124,7 @@ void CReEval_ScriptDlg::OnRemoveEvallog(){
 		m_script.m_jobs.GetNext(pos);
 		++index;
 	
-		if(pos == NULL)
+		if(pos == nullptr)
 			return;	 // shouldn't happen...
 	}
 	m_script.m_jobs.RemoveAt(pos);
@@ -149,7 +149,7 @@ void CReEval_ScriptDlg::OnScanForEvallogs(){
 		
 		// Add the found evaluation log files to the list of jobs
 		POSITION pos = fileList.GetHeadPosition();
-		while(pos != NULL){
+		while(pos != nullptr){
 			ReEvaluation::CReEvaluation_Script::Job j;
 
 			CString &str = fileList.GetNext(pos);
@@ -239,7 +239,7 @@ void CReEval_ScriptDlg::UpdateEvalLogList(){
 
 	POSITION pos = m_script.m_jobs.GetHeadPosition();
 	
-	while(pos != NULL){
+	while(pos != nullptr){
 		ReEvaluation::CReEvaluation_Script::Job &j = m_script.m_jobs.GetNext(pos);
 
 		m_listEvalLogs.AddString(j.evaluationLog);

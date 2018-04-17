@@ -15,7 +15,6 @@ void CMeasurement_Traverse::Run(){
 	CString cfgFile;
 	double scanResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
 	double tmpSpec[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
-	int i, fitRgn;
 
 	char* startDate;
 	long startTime,elapsedSecond;
@@ -89,8 +88,8 @@ void CMeasurement_Traverse::Run(){
 	}
 
 	/* Initialize the evaluator */
-	for(fitRgn = 0; fitRgn < m_fitRegionNum; ++fitRgn){
-		for(i = 0; i < m_NChannels; ++i){
+	for(int fitRgn = 0; fitRgn < m_fitRegionNum; ++fitRgn){
+		for(int i = 0; i < m_NChannels; ++i){
 			m_fitRegion[fitRgn].window.specLength = this->m_detectorSize;
 			m_fitRegion[fitRgn].eval[i]->SetFitWindow(m_fitRegion[fitRgn].window);
 		}
@@ -210,17 +209,17 @@ void CMeasurement_Traverse::Run(){
 		#endif
 
 		// Copy the spectrum to the local variables
-		for(i = 0; i < m_NChannels; ++i){
+		for(int i = 0; i < m_NChannels; ++i){
 			memcpy((void*)tmpSpec[i], (void*)scanResult[i], sizeof(double)*MAX_SPECTRUM_LENGTH);
 			memcpy((void*)curSpectrum[i], (void*)scanResult[i], sizeof(double)*MAX_SPECTRUM_LENGTH);// for plot
 		}
 
 		/* ----------------- Save the spectrum(-a) -------------------- */
 		if(m_skipgps == 0){
-			for(i = 0; i  < m_NChannels; ++i)
+			for(int i = 0; i  < m_NChannels; ++i)
 				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, specTime[counter], specTime[counter]+elapsedSecond, pos[counter].latitude, pos[counter].longitude, pos[counter].altitude, integrationTime, spectrometerName, strBaseName, totalSpecNum);
 		}else{
-			for(i = 0; i < m_NChannels; ++i)
+			for(int i = 0; i < m_NChannels; ++i)
 				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, startTime, startTime+elapsedSecond, 0, 0, 0, integrationTime, spectrometerName, strBaseName, totalSpecNum);
 		}
 
@@ -235,7 +234,7 @@ void CMeasurement_Traverse::Run(){
 			memcpy((void*)dark, (void*)scanResult, sizeof(double)*MAX_N_CHANNELS*MAX_SPECTRUM_LENGTH);
 
 			pView->PostMessage(WM_DRAWSPECTRUM);//draw dark spectrum
-			for(i = 0; i < m_NChannels; ++i)
+			for(int i = 0; i < m_NChannels; ++i)
 				averageValue[i] = AverageIntens(scanResult[i],1);
 			m_statusMsg.Format("Average value around center channel(dark) %d: %d", m_conf->m_specCenter, averageValue[0]);
 			pView->PostMessage(WM_STATUSMSG);
@@ -259,7 +258,7 @@ void CMeasurement_Traverse::Run(){
 
 			pView->PostMessage(WM_DRAWSPECTRUM);//draw sky spectrum
 
-			for(i = 0; i < m_NChannels; ++i){
+			for(int i = 0; i < m_NChannels; ++i){
 				averageValue[i] = AverageIntens(scanResult[i],1);
 
 				// remove the dark spectrum
@@ -267,7 +266,7 @@ void CMeasurement_Traverse::Run(){
 					sky[i][iterator] -= dark[i][iterator];
 
 				// Tell the evaluator(s) that the dark-spectrum does not need to be subtracted from the sky-spectrum
-				for(fitRgn = 0; fitRgn < m_fitRegionNum; ++fitRgn){
+				for(int fitRgn = 0; fitRgn < m_fitRegionNum; ++fitRgn){
 					m_fitRegion[fitRgn].eval[i]->m_subtractDarkFromSky = false;
 				}
 			}
@@ -285,7 +284,7 @@ void CMeasurement_Traverse::Run(){
 		}else if(scanNum > SKY_SPECTRUM){
 			/* -------------- IF THE MEASURED SPECTRUM WAS A NORMAL SPECTRUM ------------- */
 
-			for(i = 0; i < m_NChannels; ++i)
+			for(int i = 0; i < m_NChannels; ++i)
 				averageValue[i] = AverageIntens(tmpSpec[i],1);
 
 			/* Get the information about the spectrum */
@@ -334,7 +333,6 @@ void CMeasurement_Traverse::Run_Adaptive(){
 	CString cfgFile;
 	double scanResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
 	double tmpSpec[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
-	int i, j, fitRgn;
 
 	int roundResult[MAX_N_CHANNELS];
 	long serialDelay,gpsDelay;
@@ -403,17 +401,17 @@ void CMeasurement_Traverse::Run_Adaptive(){
 		elapsedSecond = (long)((double)(cFinish - cStart) / (double)CLOCKS_PER_SEC);
 
 		// Copy the spectrum to the local variables
-		for(i = 0; i < m_NChannels; ++i){
+		for(int i = 0; i < m_NChannels; ++i){
 			memcpy((void*)tmpSpec[i], (void*)scanResult[i], sizeof(double)*MAX_SPECTRUM_LENGTH);
 			memcpy((void*)curSpectrum[i], (void*)scanResult[i], sizeof(double)*MAX_SPECTRUM_LENGTH);// for plot
 		}
 
 		/* ----------------- Save the spectrum(-a) -------------------- */
 		if(m_skipgps == 0){
-			for(i = 0; i  < m_NChannels; ++i)
+			for(int i = 0; i  < m_NChannels; ++i)
 				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, specTime[counter], specTime[counter]+elapsedSecond, pos[counter].latitude, pos[counter].longitude, pos[counter].altitude, integrationTime, spectrometerName, strBaseName, totalSpecNum);
 		}else{
-			for(i = 0; i < m_NChannels; ++i)
+			for(int i = 0; i < m_NChannels; ++i)
 				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, startTime, startTime+elapsedSecond, 0, 0, 0, integrationTime, spectrometerName, strBaseName, totalSpecNum);
 		}
 
@@ -422,7 +420,7 @@ void CMeasurement_Traverse::Run_Adaptive(){
 			memcpy((void*)offset, (void*)scanResult, sizeof(double)*4096);
 
 			pView->PostMessage(WM_DRAWSPECTRUM);//draw offset spectrum
-			for(i = 0; i < m_NChannels; ++i)
+			for(int i = 0; i < m_NChannels; ++i)
 				averageValue[i] = AverageIntens(scanResult[i],1);
 			m_statusMsg.Format("Average value around center channel(offset) %d: %d", m_conf->m_specCenter, averageValue[0]);
 			pView->PostMessage(WM_STATUSMSG);
@@ -446,15 +444,15 @@ void CMeasurement_Traverse::Run_Adaptive(){
 		}else if(scanNum == DARKCURRENT_SPECTRUM){
 
 			/* -------------- IF THE MEASURED SPECTRUM WAS THE DARK-CURRENT SPECTRUM ------------- */
-			for(j = 0; j < m_NChannels; ++j){
-				for(i = 0; i < MAX_SPECTRUM_LENGTH; ++i){
+			for(int j = 0; j < m_NChannels; ++j){
+				for(int i = 0; i < MAX_SPECTRUM_LENGTH; ++i){
 					scanResult[j][i] = scanResult[j][i] - offset[j][i];
 				}
 			}
 			memcpy((void*)darkCur, (void*)scanResult, sizeof(double)*4096);
 
 			pView->PostMessage(WM_DRAWSPECTRUM);//draw dark spectrum
-			for(i = 0; i < m_NChannels; ++i)  
+			for(int i = 0; i < m_NChannels; ++i)  
 				averageValue[i] = AverageIntens(scanResult[i],1);
 				m_statusMsg.Format("Average value around center channel(dark current) %d: %d", m_conf->m_specCenter, averageValue[0]);
 				pView->PostMessage(WM_STATUSMSG);
@@ -480,7 +478,7 @@ void CMeasurement_Traverse::Run_Adaptive(){
 
 			pView->PostMessage(WM_DRAWSPECTRUM);//draw sky spectrum
 
-			for(i = 0; i < m_NChannels; ++i){
+			for(int i = 0; i < m_NChannels; ++i){
 				averageValue[i] = AverageIntens(scanResult[i],1);
 
 				// remove the dark spectrum
@@ -489,7 +487,7 @@ void CMeasurement_Traverse::Run_Adaptive(){
 					sky[i][iterator] -= tmpDark[i][iterator];
 
 				// Tell the evaluator(s) that the dark-spectrum does not need to be subtracted from the sky-spectrum
-				for(fitRgn = 0; fitRgn < m_fitRegionNum; ++fitRgn){
+				for(int fitRgn = 0; fitRgn < m_fitRegionNum; ++fitRgn){
 					m_fitRegion[fitRgn].eval[i]->m_subtractDarkFromSky = false;
 				}
 			}
@@ -513,7 +511,7 @@ void CMeasurement_Traverse::Run_Adaptive(){
 
 		}else if(scanNum > SKY_SPECTRUM){
 			/* -------------- IF THE MEASURED SPECTRUM WAS A NORMAL SPECTRUM ------------- */
-			for(i = 0; i < m_NChannels; ++i)  
+			for(int i = 0; i < m_NChannels; ++i)  
 				averageValue[i] = AverageIntens(tmpSpec[i],1);
 	
 			/* Get the information about the spectrum */

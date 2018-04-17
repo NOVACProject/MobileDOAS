@@ -112,10 +112,10 @@ BOOL CRealTimeRoute::Create(UINT nID, CWnd* pParentWnd){
 }
 
 void CRealTimeRoute::ReadData(){
-	if(NULL == m_spectrometer)
+	if(nullptr == m_spectrometer)
 		return;
 
-	int i, j, sum;
+	int sum;
 
 	sum = m_spectrometer->GetColumnNumber();
 	m_spectrometer->GetLatLongAlt(m_lat, m_lon, NULL, sum);
@@ -125,10 +125,10 @@ void CRealTimeRoute::ReadData(){
 	memset(&m_range, 0, sizeof(struct plotRange));
 
 	/* delete bad points (points without gps or dark points) */
-	for(i = 0; i < sum; ++i){
+	for(int i = 0; i < sum; ++i){
 
 		if((m_lat[i] == 0 && m_lon[i] == 0)){
-			for(j = i; j < sum; ++j){
+			for(int j = i; j < sum; ++j){
 				m_lat[j] = m_lat[j + 1];
 				m_lon[j] = m_lon[j + 1];
 				m_col[j] = m_col[j + 1];
@@ -149,7 +149,7 @@ void CRealTimeRoute::ReadData(){
 	m_range.minLon = m_lon[0];
 	m_colmax = m_col[0];
 	m_colmin = m_col[0];
-	for(i = 0; i < sum; i++){
+	for(int i = 0; i < sum; i++){
 		//m_lat[i] = m_lat[i];
 		//m_lon[i] = m_lon[i];	
 		m_range.maxLat = std::max(m_range.maxLat,m_lat[i]);

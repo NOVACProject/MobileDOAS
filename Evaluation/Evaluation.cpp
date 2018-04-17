@@ -77,7 +77,6 @@ void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum
 	//	const int iNumSpec = 1;//5;
 
 	CVector vXData, vMeas;
-	int i;
 
 	// Copy the spectra to local variables
 	double *measArray = new double[sumChn];
@@ -91,7 +90,7 @@ void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum
 
 	// calculate the 'wavelength' column
 	vXData.SetSize(sumChn);
-	for(i = 0; i < sumChn; ++i)
+	for(int i = 0; i < sumChn; ++i)
 		vXData.SetAt(i, (TFitData)(1.0f + (double)i));
 
 	//----------------------------------------------------------------
@@ -136,7 +135,7 @@ void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum
 	// reference spectra used in the DOAS model function
 	//	CReferenceSpectrumFunction ref[iNumSpec];
 	CReferenceSpectrumFunction ref[20];
-	for(i = 0; i < iNumSpec; i++)
+	for(int i = 0; i < iNumSpec; i++)
 	{
 		// reset all reference's parameters
 		ref[i].ResetLinearParameter();
@@ -241,6 +240,8 @@ void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum
 		m_result.m_ref.SetSize(m_window.nRef);
 
 		// finally display the fit results for each reference spectrum including their appropriate error
+
+		int i;
 		for(i = 0; i < iNumSpec; i++){
 			// Get the name of the evaluated specie
 			m_result.m_ref[i].m_specieName.Format(m_window.ref[i].m_specieName);

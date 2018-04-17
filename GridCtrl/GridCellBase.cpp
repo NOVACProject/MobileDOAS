@@ -507,11 +507,11 @@ CSize CGridCellBase::GetTextExtent(LPCTSTR szText, CDC* pDC /*= NULL*/)
     ASSERT(pGrid);
 
     BOOL bReleaseDC = FALSE;
-    if (pDC == NULL || szText == NULL)
+    if (pDC == nullptr || szText == nullptr)
     {
         if (szText)
 			pDC = pGrid->GetDC();
-        if (pDC == NULL || szText == NULL) 
+        if (pDC == nullptr || szText == nullptr)
         {
             CGridDefaultCell* pDefCell = (CGridDefaultCell*) GetDefaultCell();
             ASSERT(pDefCell);
@@ -520,7 +520,7 @@ CSize CGridCellBase::GetTextExtent(LPCTSTR szText, CDC* pDC /*= NULL*/)
         bReleaseDC = TRUE;
     }
 
-    CFont *pOldFont = NULL,
+    CFont *pOldFont = nullptr,
           *pFont = GetFontObject();
     if (pFont)
         pOldFont = pDC->SelectObject(pFont);

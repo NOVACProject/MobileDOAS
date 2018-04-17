@@ -354,15 +354,15 @@ bool Common::BrowseForFile(char *filter, CString &fileName){
 	// Initialize OPENFILENAME
 	ZeroMemory(&ofn, sizeof(OPENFILENAME));
 	ofn.lStructSize = sizeof(OPENFILENAME);
-	ofn.hwndOwner = NULL;
+	ofn.hwndOwner = nullptr;
 	ofn.hInstance = AfxGetInstanceHandle();
 	ofn.lpstrFile = szFile;
 	ofn.nMaxFile = sizeof(szFile);
 	ofn.lpstrFilter = filter;
 	ofn.nFilterIndex = 1;
-	ofn.lpstrFileTitle = NULL;
+	ofn.lpstrFileTitle = nullptr;
 	ofn.nMaxFileTitle = 0;
-	ofn.lpstrInitialDir = NULL;
+	ofn.lpstrInitialDir = nullptr;
 	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_EXPLORER ;
 
 	if (GetOpenFileName(&ofn) == TRUE){
@@ -382,15 +382,15 @@ bool Common::BrowseForFile_SaveAs(TCHAR *filter, CString &fileName){
 	// Initialize OPENFILENAME
 	ZeroMemory(&ofn, sizeof(OPENFILENAME));
 	ofn.lStructSize = sizeof(OPENFILENAME);
-	ofn.hwndOwner = NULL;
+	ofn.hwndOwner = nullptr;
 	ofn.hInstance = AfxGetInstanceHandle();
 	ofn.lpstrFile = szFile;
 	ofn.nMaxFile = sizeof(szFile);
 	ofn.lpstrFilter = filter;
 	ofn.nFilterIndex = 1;
-	ofn.lpstrFileTitle = NULL;
+	ofn.lpstrFileTitle = nullptr;
 	ofn.nMaxFileTitle = 0;
-	ofn.lpstrInitialDir = NULL;
+	ofn.lpstrInitialDir = nullptr;
 	ofn.Flags = OFN_PATHMUSTEXIST | OFN_EXPLORER ;
 
 	if (GetSaveFileName(&ofn) == TRUE){
@@ -408,14 +408,14 @@ bool Common::BrowseForDirectory(CString &folderName){
 
 	// Initialize BROWSEINFO
 	ZeroMemory(&bi, sizeof(BROWSEINFO));
-	bi.hwndOwner      = NULL;
-	bi.pidlRoot       = NULL;
+	bi.hwndOwner      = nullptr;
+	bi.pidlRoot       = nullptr;
 	bi.pszDisplayName = tmp_FolderName;
 	bi.lpszTitle      = title;
 	bi.ulFlags        = BIF_USENEWUI | BIF_VALIDATE | BIF_RETURNONLYFSDIRS;
 
 	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
-	if(NULL != pidl){
+	if(nullptr != pidl){
 		// get the name of the folder
 		TCHAR path[MAX_PATH];
 		if ( SHGetPathFromIDList ( pidl, path ) )

@@ -19,7 +19,7 @@ IMPLEMENT_DYNAMIC(CSpectrumSettingsDlg, CDialog)
 CSpectrumSettingsDlg::CSpectrumSettingsDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CSpectrumSettingsDlg::IDD, pParent)
 {
-	m_Spectrometer = NULL;
+	m_Spectrometer = nullptr;
 	m_exptime = 100;
 	m_average = 1;
 	m_channel = 0;
@@ -27,7 +27,7 @@ CSpectrumSettingsDlg::CSpectrumSettingsDlg(CWnd* pParent /*=NULL*/)
 
 CSpectrumSettingsDlg::~CSpectrumSettingsDlg()
 {
-	m_Spectrometer = NULL;
+	m_Spectrometer = nullptr;
 }
 
 void CSpectrumSettingsDlg::DoDataExchange(CDataExchange* pDX)
@@ -83,7 +83,7 @@ BOOL CSpectrumSettingsDlg::OnInitDialog()
 
 /** Updates the dialog with the data from the CSpectrometer */
 LRESULT CSpectrumSettingsDlg::UpdateFromSpectrometer(WPARAM wParam, LPARAM lParam){
-	if(this->m_Spectrometer == NULL){
+	if(this->m_Spectrometer == nullptr){
 		return 0;
 	}
 
@@ -92,7 +92,7 @@ LRESULT CSpectrumSettingsDlg::UpdateFromSpectrometer(WPARAM wParam, LPARAM lPara
 	this->m_exptime = m_Spectrometer->integrationTime;
 	
 	// Update the window
-	if(this->m_hWnd != NULL)
+	if(this->m_hWnd != nullptr)
 		UpdateData(FALSE);
 	
 	return 0;
@@ -102,7 +102,7 @@ LRESULT CSpectrumSettingsDlg::UpdateFromSpectrometer(WPARAM wParam, LPARAM lPara
 /** Saves the settings in the dialog to the spectrometer */
 void CSpectrumSettingsDlg::SaveToSpectrometer(){
 
-	if(this->m_Spectrometer == NULL){
+	if(this->m_Spectrometer == nullptr){
 		return;
 	}
 
@@ -247,7 +247,7 @@ void CSpectrumSettingsDlg::UpdateListOfSpectrometers(){
 		// build the list 
 		m_comboSpecs.ResetContent();
 		POSITION p = spectrometers.GetHeadPosition();
-		while(p != NULL){
+		while(p != nullptr){
 			m_comboSpecs.AddString(spectrometers.GetNext(p));
 		}
 
@@ -274,7 +274,7 @@ LRESULT CSpectrumSettingsDlg::OnChangeSpectrometer(WPARAM wParam, LPARAM lParam)
 	// build the list 
 	m_comboSpecs.ResetContent();
 	POSITION p = spectrometers.GetHeadPosition();
-	while(p != NULL){
+	while(p != nullptr){
 		m_comboSpecs.AddString(spectrometers.GetNext(p));
 	}
 

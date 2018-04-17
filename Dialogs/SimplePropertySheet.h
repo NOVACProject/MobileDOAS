@@ -9,8 +9,8 @@ class CSimplePropertySheet : public CPropertySheet
 
 public:
 	CSimplePropertySheet();
-	CSimplePropertySheet(UINT nIDCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0);
-	CSimplePropertySheet(LPCTSTR pszCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0);
+	CSimplePropertySheet(UINT nIDCaption, CWnd* pParentWnd = nullptr, UINT iSelectPage = 0);
+	CSimplePropertySheet(LPCTSTR pszCaption, CWnd* pParentWnd = nullptr, UINT iSelectPage = 0);
 	virtual ~CSimplePropertySheet();
 
 	/** Initializing the dialog */ 

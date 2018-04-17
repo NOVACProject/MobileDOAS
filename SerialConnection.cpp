@@ -7,7 +7,7 @@ CSerialConnection::CSerialConnection(void)
 {
 	baudrate = 57600;
 	serbufpt = 0;
-	hComm = NULL;
+	hComm = nullptr;
 }
 
 CSerialConnection::~CSerialConnection(void)
@@ -132,7 +132,7 @@ void CSerialConnection::FlushSerialPort(long timeOut)
 //-----------------------------------------------------------------
 void CSerialConnection::Close()
 {
-	if(hComm != NULL)
+	if(hComm != nullptr)
 		CloseHandle(hComm);
 }
 

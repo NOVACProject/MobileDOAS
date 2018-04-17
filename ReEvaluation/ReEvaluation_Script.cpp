@@ -40,7 +40,7 @@ int CReEvaluation_Script::Run(CWnd *wnd){
 
 	// Loop through each of the jobs in the list
 	POSITION pos = m_jobs.GetHeadPosition();
-	while(pos != NULL){
+	while(pos != nullptr){
 		Job &j = m_jobs.GetNext(pos);
 		
 		// Setup the re-evaluator
@@ -63,7 +63,7 @@ int CReEvaluation_Script::Run(CWnd *wnd){
 			reeval->m_specFileDir.Format(j.evaluationLog);
 		
 		// run the evaluation
-		if(wnd != NULL){
+		if(wnd != nullptr){
 			pView->m_reeval = reeval;
 			pView->OnBnClickedDoEvaluation();
 			

@@ -208,7 +208,7 @@ namespace MathFit
 		*/
 		bool InitClear()
 		{
-			mBspSpec = NULL;
+			mBspSpec = nullptr;
 			mDownSampleSize = 0;
 
 			return true;
@@ -223,7 +223,7 @@ namespace MathFit
 		{
 			if(mBspSpec)
 				delete(mBspSpec);
-			mBspSpec = NULL;
+			mBspSpec = nullptr;
 
 			return true;
 		}

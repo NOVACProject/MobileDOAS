@@ -861,36 +861,36 @@ void CRouteDlg::OnUpdateMenuShowColumnBySize(CCmdUI *pCmdUI){
 
 void CRouteDlg::OnInitMenuPopup(CMenu *pPopupMenu, UINT nIndex,BOOL bSysMenu)
 {
-	ASSERT(pPopupMenu != NULL);
+	ASSERT(pPopupMenu != nullptr);
 	// Check the enabled state of various menu items.
 
 	CCmdUI state;
 	state.m_pMenu = pPopupMenu;
-	ASSERT(state.m_pOther == NULL);
-	ASSERT(state.m_pParentMenu == NULL);
+	ASSERT(state.m_pOther == nullptr);
+	ASSERT(state.m_pParentMenu == nullptr);
 
 	// Determine if menu is popup in top-level menu and set m_pOther to
 	// it if so (m_pParentMenu == NULL indicates that it is secondary popup).
 	HMENU hParentMenu;
 	if (AfxGetThreadState()->m_hTrackingMenu == pPopupMenu->m_hMenu)
 		state.m_pParentMenu = pPopupMenu;    // Parent == child for tracking popup.
-	else if ((hParentMenu = ::GetMenu(m_hWnd)) != NULL)
+	else if ((hParentMenu = ::GetMenu(m_hWnd)) != nullptr)
 	{
 		CWnd* pParent = this;
 		// Child windows don't have menus--need to go to the top!
-		if (pParent != NULL &&
-		(hParentMenu = ::GetMenu(pParent->m_hWnd)) != NULL)
+		if (pParent != nullptr &&
+			(hParentMenu = ::GetMenu(pParent->m_hWnd)) != nullptr)
 		{
-		int nIndexMax = ::GetMenuItemCount(hParentMenu);
-		for (int nIndex = 0; nIndex < nIndexMax; nIndex++)
-		{
-			if (::GetSubMenu(hParentMenu, nIndex) == pPopupMenu->m_hMenu)
+			int nIndexMax = ::GetMenuItemCount(hParentMenu);
+			for (int nIndex = 0; nIndex < nIndexMax; nIndex++)
 			{
-				// When popup is found, m_pParentMenu is containing menu.
-				state.m_pParentMenu = CMenu::FromHandle(hParentMenu);
-				break;
+				if (::GetSubMenu(hParentMenu, nIndex) == pPopupMenu->m_hMenu)
+				{
+					// When popup is found, m_pParentMenu is containing menu.
+					state.m_pParentMenu = CMenu::FromHandle(hParentMenu);
+					break;
+				}
 			}
-		}
 		}
 	}
 
@@ -902,13 +902,13 @@ void CRouteDlg::OnInitMenuPopup(CMenu *pPopupMenu, UINT nIndex,BOOL bSysMenu)
 		if (state.m_nID == 0)
 		continue; // Menu separator or invalid cmd - ignore it.
 
-		ASSERT(state.m_pOther == NULL);
-		ASSERT(state.m_pMenu != NULL);
+		ASSERT(state.m_pOther == nullptr);
+		ASSERT(state.m_pMenu != nullptr);
 		if (state.m_nID == (UINT)-1)
 		{
 		// Possibly a popup menu, route to first item of that popup.
 		state.m_pSubMenu = pPopupMenu->GetSubMenu(state.m_nIndex);
-		if (state.m_pSubMenu == NULL ||
+		if (state.m_pSubMenu == nullptr ||
 			(state.m_nID = state.m_pSubMenu->GetMenuItemID(0)) == 0 ||
 			state.m_nID == (UINT)-1)
 		{
@@ -921,7 +921,7 @@ void CRouteDlg::OnInitMenuPopup(CMenu *pPopupMenu, UINT nIndex,BOOL bSysMenu)
 			// Normal menu item.
 			// Auto enable/disable if frame window has m_bAutoMenuEnable
 			// set and command is _not_ a system command.
-			state.m_pSubMenu = NULL;
+			state.m_pSubMenu = nullptr;
 			state.DoUpdate(this, FALSE);
 		}
 

@@ -4,7 +4,7 @@
 
 CFluxPathListBox::CFluxPathListBox(void)
 {
-  m_parentWindow = NULL;
+  m_parentWindow = nullptr;
 }
 
 CFluxPathListBox::~CFluxPathListBox(void)
@@ -19,13 +19,13 @@ END_MESSAGE_MAP()
 /* Show the context menu */
 void CFluxPathListBox::OnContextMenu(CWnd* pWnd, CPoint point)
 {
-	if(m_parentWindow == NULL)
+	if(m_parentWindow == nullptr)
 		return;
 
   CMenu menu;
   VERIFY(menu.LoadMenu(IDR_FLUX_PATH_MENU));
   CMenu* pPopup = menu.GetSubMenu(0);
-  ASSERT(pPopup != NULL);
+  ASSERT(pPopup != nullptr);
 
   int selected = this->GetCurSel();
   if(selected == LB_ERR){

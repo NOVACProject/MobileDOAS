@@ -15,7 +15,7 @@ namespace Dialogs
 		DECLARE_DYNAMIC(CRealTimeRoute)
 
 	public:
-		CRealTimeRoute(CWnd* pParent = NULL);   // standard constructor
+		CRealTimeRoute(CWnd* pParent = nullptr);   // standard constructor
 		virtual ~CRealTimeRoute();
 
 		// Dialog Data
@@ -55,7 +55,7 @@ namespace Dialogs
 
 		afx_msg void OnSize(UINT nType, int cx, int cy);
 
-		virtual BOOL Create(UINT nID, CWnd* pParentWnd = NULL);
+		virtual BOOL Create(UINT nID, CWnd* pParentWnd = nullptr);
 		afx_msg void OnClose();
 	};
 

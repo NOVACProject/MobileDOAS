@@ -10,7 +10,7 @@ IMPLEMENT_DYNAMIC(CConfigure_GPS, CPropertyPage)
 CConfigure_GPS::CConfigure_GPS()
 	: CPropertyPage(CConfigure_GPS::IDD)
 {
-	m_conf = NULL;
+	m_conf = nullptr;
 	m_availableBaudrates[0] = 4800;
 	m_availableBaudrates[1] = 9600;
 	m_availableBaudrates[2] = 19200;
@@ -21,7 +21,7 @@ CConfigure_GPS::CConfigure_GPS()
 
 CConfigure_GPS::~CConfigure_GPS()
 {
-	m_conf = NULL;
+	m_conf = nullptr;
 }
 
 void CConfigure_GPS::DoDataExchange(CDataExchange* pDX)
