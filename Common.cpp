@@ -35,6 +35,13 @@ int IsExistingFile(const CString &fileName){
 	return IsExistingFile(&fileName);
 }
 
+void ExtractTime(const gpsData& gpsData, int& hours, int& minutes, int& seconds)
+{
+	hours   = gpsData.time / 10000;
+	minutes = (gpsData.time - hours * 10000) / 100;
+	seconds = gpsData.time % 100;
+}
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////

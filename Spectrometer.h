@@ -406,7 +406,7 @@ public:
 	bool UpdateGpsData();
 	
 	/** Retrieves the last GPS position */
-	int     GetGPSPos(double* data);
+	int GetGpsPos(gpsData& data) const;
 	
 	/** Retrieves the current time, either from the GPS or the system time */
 	long GetCurrentTime();

@@ -1061,15 +1061,17 @@ void CSpectrometer::WriteFluxLog()
 
 
 
-int CSpectrometer::GetGPSPos(double *data)
+int CSpectrometer::GetGpsPos(gpsData& data) const
 {
-	data[0] = pos[counter].latitude;
-	data[1] = pos[counter].longitude;
-	data[2] = specTime[counter];
-	data[3] = pos[counter].altitude;
-	data[4] = pos[counter].nSat;
+	const int c = this->counter; // local buffer, to avoid race conditions
 
-	return counter;
+	data.latitude    = pos[c].latitude;
+	data.longitude   = pos[c].longitude;
+	data.time        = specTime[c];
+	data.altitude    = pos[c].altitude;
+	data.nSatellites = pos[c].nSat;
+
+	return c;
 }
 
 void CSpectrometer::Sing(double factor)

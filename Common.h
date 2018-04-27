@@ -106,6 +106,9 @@ struct gpsData {
 	char date[6];
 };
 
+/** Extracts the time from the provided gpsData and separates it into hour-minute-second */
+void ExtractTime(const gpsData& gpsData, int& hours, int& minutes, int& seconds);
+
 typedef struct Time{
 	char hour = 0;
 	char minute = 0;

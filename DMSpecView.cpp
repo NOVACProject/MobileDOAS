@@ -535,7 +535,7 @@ LRESULT CDMSpecView::OnShowStatus(WPARAM wParam, LPARAM lParam)
 
 LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 {
-	double data[5];
+	gpsData data;
 	static int latNSat = 10;
 	
 	// if the program is no longer running, then don't try to draw anything more...
@@ -543,23 +543,21 @@ LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 		return 0;
 	}
 	
-	m_Spectrometer->GetGPSPos(data);
+	m_Spectrometer->GetGpsPos(data);
 
 	CString lat,lon,tim,strHr,strMin,strSec, nSat;
-	int hr,min,sec;
-	hr = (long)data[2]/10000;
-	min = ((long)data[2] - hr*10000)/100;
-	sec = (long)data[2]%100;
+	int hr, min, sec;
+	ExtractTime(data, hr, min, sec);
 
-	if(data[0]>=0.0)
-		lat.Format("%f  degree N",data[0]);
+	if(data.latitude >= 0.0)
+		lat.Format("%f  degree N",data.latitude);
 	else 
-		lat.Format("%f  degree S",-1.0*data[0]);
+		lat.Format("%f  degree S",-1.0*data.latitude);
 
-	if(data[1] >= 0.0)
-		lon.Format("%f  degree E",data[1]);
+	if(data.longitude >= 0.0)
+		lon.Format("%f  degree E", data.longitude);
 	else
-		lon.Format("%f  degree W",-1.0*data[1]);
+		lon.Format("%f  degree W",-1.0 * data.longitude);
 
 	if(hr<10)
 		strHr.Format("0%d:",hr);
@@ -576,7 +574,7 @@ LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 	else
 		strSec.Format("%d",sec);
 
-	nSat.Format("%d", (long)data[4]);
+	nSat.Format("%d", (long)data.nSatellites);
 
 	tim = strHr + strMin + strSec;
 	this->SetDlgItemText(IDC_GPSTIME, tim);
@@ -584,7 +582,7 @@ LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 	this->SetDlgItemText(IDC_LON, lon);
 	this->SetDlgItemText(IDC_NGPSSAT, nSat);
 
-	if(latNSat == 0 && data[4] != 0){
+	if(latNSat == 0 && data.nSatellites != 0){
 		COLORREF normal = RGB(236, 233, 216);
 
 		// Set the background color to normal
@@ -593,7 +591,7 @@ LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 		m_gpsTimeLabel.SetBackgroundColor(normal);
 		m_gpsNSatLabel.SetBackgroundColor(normal);
 
-	}else if(latNSat != 0 && data[4] == 0){
+	}else if(latNSat != 0 && data.nSatellites == 0){
 		COLORREF warning = RGB(255, 75, 75);
 
 		// Set the background color to red
@@ -604,7 +602,7 @@ LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 	}
 
 	// Remember the number of satelites
-	latNSat = (int)data[4];
+	latNSat = (int)data.nSatellites;
 
 	return 0;
 }
