@@ -414,8 +414,9 @@ public:
 	/** Pointer to the gps reading thread */
 	CGPS*   m_gps;
 	
-	/** This is zero if we should use the GPS receiver. Otherwise non-zero */
-	int     m_skipgps;
+	/** This is true if we should use the GPS receiver (default behavior).
+		Set to false if the gps is missing or nor working. */
+	bool	m_useGps = true;
 	
 	/** The Serial-port that we should read the GPS data from 
 		This is something like 'COM4' */

@@ -120,7 +120,7 @@ void CMeasurement_Wind::Run(){
 		}
 
 		/* Start the GPS collection thread */
-		if(m_skipgps == 0){
+		if(m_useGps){
 			m_gps	= new CGPS(GPSPort, GPSBaud);
 			m_gps->Run(); /* start the gps-reading thread */
 		}
@@ -230,7 +230,7 @@ void CMeasurement_Wind::Run(){
 
 		/* ----------------- Save the spectrum(-a) -------------------- */
 		if(m_spectrometerMode != MODE_VIEW){
-			if(m_skipgps == 0){
+			if(m_useGps){
 				for(i = 0; i  < m_NChannels; ++i)
 					CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, specTime[counter], specTime[counter]+elapsedSecond, pos[counter].latitude, pos[counter].longitude, pos[counter].altitude, integrationTime, spectrometerName, strBaseName, totalSpecNum);
 			}else{

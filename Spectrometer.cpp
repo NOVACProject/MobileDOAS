@@ -30,7 +30,7 @@ static char THIS_FILE[] = __FILE__;
 CFormView* pView;
 
 CSpectrometer::CSpectrometer()
-	: m_skipgps(0) {
+	: m_useGps(true) {
 	fUseUSB = true;
 
 	fRun = TRUE;
@@ -411,10 +411,7 @@ void CSpectrometer::ApplySettings() {
 	// The GPS-settings
 	GPSBaud = m_conf->m_gpsBaudrate;
 	sprintf(GPSPort, "%s", (LPCTSTR)m_conf->m_gpsPort);
-	if (m_conf->m_useGPS)
-		m_skipgps = 0;
-	else
-		m_skipgps = 1;
+	m_useGps = (m_conf->m_useGPS != 0);
 
 	// The exposure-time settings
 	if (m_conf->m_expTimeMode == Configuration::CMobileConfiguration::EXPOSURETIME_FIXED) {
@@ -1771,8 +1768,9 @@ char* CSpectrometer::ReadGpsDate() {
 	int validGPS = 0;
 	char* startDate = new char[7];
 
-	if (!m_skipgps)
+	if (m_useGps) {
 		validGPS = GetGPS(); /* GetGPS returns 0 if no satellite connection */
+	}
 
 	if (!validGPS) {
 		// date
@@ -1796,15 +1794,14 @@ long CSpectrometer::ReadGpsStartTime() {
 	int validGPS = 0;
 	long startTime = 0;
 
-	if (!m_skipgps)
+	if (m_useGps) {
 		validGPS = GetGPS(); /* GetGPS returns 0 if no satellite connection */
+	}
 
 	if (!validGPS) {
 		startTime = GetTimeValue_UMT();
 		specTime[counter] = startTime;
 		pos[counter].altitude = pos[counter].latitude = pos[counter].longitude = pos[counter].nSat = 0;
-		/*   if(!m_skipgps)
-			pView->PostMessage(WM_SHOWDIALOG, INVALID_GPS);*/
 	}
 	else if (timeDiff == 0) {
 		time_t t;
