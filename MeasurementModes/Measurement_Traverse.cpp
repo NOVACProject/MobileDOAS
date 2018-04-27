@@ -218,7 +218,7 @@ void CMeasurement_Traverse::Run(){
 		/* ----------------- Save the spectrum(-a) -------------------- */
 		if(m_useGps){
 			for(int i = 0; i  < m_NChannels; ++i)
-				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, m_specTime[m_spectrumCounter], m_specTime[m_spectrumCounter]+elapsedSecond, pos[m_spectrumCounter].latitude, pos[m_spectrumCounter].longitude, pos[m_spectrumCounter].altitude, m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);
+				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, m_spectrumGpsData[m_spectrumCounter].time, m_spectrumGpsData[m_spectrumCounter].time + elapsedSecond, m_spectrumGpsData[m_spectrumCounter].latitude, m_spectrumGpsData[m_spectrumCounter].longitude, m_spectrumGpsData[m_spectrumCounter].altitude, m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);
 		}else{
 			for(int i = 0; i < m_NChannels; ++i)
 				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, startTime, startTime+elapsedSecond, 0, 0, 0, m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);
@@ -412,11 +412,15 @@ void CMeasurement_Traverse::Run_Adaptive(){
 
 		/* ----------------- Save the spectrum(-a) -------------------- */
 		if(m_useGps){
-			for(int i = 0; i  < m_NChannels; ++i)
-				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, m_specTime[m_spectrumCounter], m_specTime[m_spectrumCounter]+elapsedSecond, pos[m_spectrumCounter].latitude, pos[m_spectrumCounter].longitude, pos[m_spectrumCounter].altitude, m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);
+			const gpsData& spectrumGpsData = m_spectrumGpsData[m_spectrumCounter];
+			for(int i = 0; i  < m_NChannels; ++i) {
+				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, spectrumGpsData.time, spectrumGpsData.time + elapsedSecond, 
+					spectrumGpsData.latitude, spectrumGpsData.longitude, spectrumGpsData.altitude, m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);
+			}
 		}else{
-			for(int i = 0; i < m_NChannels; ++i)
+			for(int i = 0; i < m_NChannels; ++i) {
 				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, startTime, startTime+elapsedSecond, 0, 0, 0, m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);
+			}
 		}
 
 		if(m_scanNum == OFFSET_SPECTRUM){

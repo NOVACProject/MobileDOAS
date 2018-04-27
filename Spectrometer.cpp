@@ -532,15 +532,14 @@ void CSpectrometer::WriteEvFile(CString filename, FitRegion *fitRegion) {
 		return;
 	}
 
-	int hr = m_specTime[m_spectrumCounter] / 10000;
-	int min = (m_specTime[m_spectrumCounter] - hr * 10000) / 100;
-	int sec = m_specTime[m_spectrumCounter] % 100;
+	int hr, min, sec;
+	ExtractTime(m_spectrumGpsData[m_spectrumCounter], hr, min, sec);
 
 	// 1. Write the time of the spectrum
 	fprintf(f, "%02d:%02d:%02d\t", hr, min, sec);
 
 	// 2. Write the GPS-information about the spectrum
-	fprintf(f, "%f\t%f\t%.1f\t", pos[m_spectrumCounter].latitude, pos[m_spectrumCounter].longitude, pos[m_spectrumCounter].altitude);
+	fprintf(f, "%f\t%f\t%.1f\t", m_spectrumGpsData[m_spectrumCounter].latitude, m_spectrumGpsData[m_spectrumCounter].longitude, m_spectrumGpsData[m_spectrumCounter].altitude);
 
 	// 3. The number of spectra averaged and the exposure-time
 	fprintf(f, "%ld\t%d\t", m_totalSpecNum, m_integrationTime);
@@ -625,15 +624,15 @@ double CSpectrometer::CountFlux(double windSpeed, double windAngle)
 	else
 	{
 		columnSize = m_fitRegion[0].vColumn[0].GetSize();
-		lat1 = pos[m_spectrumCounter - 1].latitude;
-		lat2 = pos[m_spectrumCounter - 2].latitude;
-		lon1 = pos[m_spectrumCounter - 1].longitude;
-		lon2 = pos[m_spectrumCounter - 2].longitude;
+		lat1 = m_spectrumGpsData[m_spectrumCounter - 1].latitude;
+		lat2 = m_spectrumGpsData[m_spectrumCounter - 2].latitude;
+		lon1 = m_spectrumGpsData[m_spectrumCounter - 1].longitude;
+		lon2 = m_spectrumGpsData[m_spectrumCounter - 2].longitude;
 
 		if ((lat2 == 0) && (lon2 == 0)) // when the gps coordinate just become not equal to (0,0)
 		{
-			lat2 = pos[m_spectrumCounter - 2 - zeroPosNum].latitude;
-			lon2 = pos[m_spectrumCounter - 2 - zeroPosNum].longitude;
+			lat2 = m_spectrumGpsData[m_spectrumCounter - 2 - zeroPosNum].latitude;
+			lon2 = m_spectrumGpsData[m_spectrumCounter - 2 - zeroPosNum].longitude;
 			distance = GPSDistance(lat1, lon1, lat2, lon2) / (zeroPosNum + 1);
 			column = 1E-6*(m_fitRegion[0].vColumn[0].GetAt(columnSize - 1))*m_gasFactor + accColumn;
 		}
@@ -812,8 +811,7 @@ void CSpectrometer::DoEvaluation(double pSky[][MAX_SPECTRUM_LENGTH], double pDar
 
 	++m_spectrumCounter;
 	if (m_spectrumCounter == 65535) {
-		memset((void*)pos, 0, sizeof(struct position) * 65536);
-		memset((void*)m_specTime, 0, sizeof(long) * 65536);
+		memset((void*)m_spectrumGpsData, 0, sizeof(struct gpsData) * 65536);
 		m_spectrumCounter = 0;
 		zeroPosNum = 0;
 	}
@@ -984,11 +982,11 @@ long CSpectrometer::GetLatLongAlt(double *la, double *lo, double *al, long sum) 
 
 		for (i = 0; i < sum; i++) {
 			if (la != 0)
-				la[i] = pos[i].latitude;
+				la[i] = m_spectrumGpsData[i].latitude;
 			if (lo != 0)
-				lo[i] = pos[i].longitude;
+				lo[i] = m_spectrumGpsData[i].longitude;
 			if (al != 0)
-				al[i] = pos[i].altitude;
+				al[i] = m_spectrumGpsData[i].altitude;
 		}
 	}
 
@@ -1000,17 +998,17 @@ void CSpectrometer::GetCurrentPos(double *la, double *lo, double *al) {
 	long nColumns = m_fitRegion[0].vColumn[0].GetSize();
 
 	if (la != 0)
-		la[0] = pos[nColumns - 1].latitude;
+		la[0] = m_spectrumGpsData[nColumns - 1].latitude;
 	if (lo != 0)
-		lo[0] = pos[nColumns - 1].longitude;
+		lo[0] = m_spectrumGpsData[nColumns - 1].longitude;
 	if (al != 0)
-		al[0] = pos[nColumns - 1].altitude;
+		al[0] = m_spectrumGpsData[nColumns - 1].altitude;
 }
 
 long CSpectrometer::GetCurrentGPSTime() {
 	long nColumns = m_fitRegion[0].vColumn[0].GetSize();
 
-	return this->m_specTime[nColumns];
+	return this->m_spectrumGpsData[nColumns].time;
 }
 
 long CSpectrometer::GetIntensity(double *list, long sum)
@@ -1067,11 +1065,7 @@ int CSpectrometer::GetGpsPos(gpsData& data) const
 {
 	const int c = this->m_spectrumCounter; // local buffer, to avoid race conditions
 
-	data.latitude    = pos[c].latitude;
-	data.longitude   = pos[c].longitude;
-	data.time        = m_specTime[c];
-	data.altitude    = pos[c].altitude;
-	data.nSatellites = pos[c].nSat;
+	data = m_spectrumGpsData[c];
 
 	return c;
 }
@@ -1132,18 +1126,13 @@ bool CSpectrometer::UpdateGpsData() {
 
 	bool gpsDataIsValid = true;
 
-	m_gps->GetDate(specDate[m_spectrumCounter]);
-	m_specTime[m_spectrumCounter] = m_gps->GetTime();
-	pos[m_spectrumCounter].latitude = m_gps->GetLatitude();
-	pos[m_spectrumCounter].longitude = m_gps->GetLongitude();
-	pos[m_spectrumCounter].altitude = m_gps->GetAltitude();
-	pos[m_spectrumCounter].nSat = m_gps->GetNumberOfSatellites();
+	m_gps->Get(m_spectrumGpsData[m_spectrumCounter]);
 
-	if ((pos[m_spectrumCounter].latitude == 0.0) && (pos[m_spectrumCounter].longitude == 0.0)) {
+	if ((m_spectrumGpsData[m_spectrumCounter].latitude == 0.0) && (m_spectrumGpsData[m_spectrumCounter].longitude == 0.0)) {
 		// Invalid data, no latitude / longitude could be retrieved
 		gpsDataIsValid = false;
 	}
-	else if (pos[m_spectrumCounter].nSat == 0) {
+	else if (m_spectrumGpsData[m_spectrumCounter].nSatellites == 0) {
 		// Invalid data, the receiver couldn't connect to any satellite
 		gpsDataIsValid = false;
 	}
@@ -1801,8 +1790,8 @@ std::string CSpectrometer::GetCurrentDate() {
 	}
 	else {
 		const int c = this->m_spectrumCounter; // local buffer, to avoid race conditions...
-		m_gps->GetDate(specDate[c]);
-		return specDate[c];
+		m_gps->Get(m_spectrumGpsData[c]);
+		return std::string(m_spectrumGpsData[c].date, 6);
 	}
 }
 
@@ -1811,23 +1800,28 @@ long CSpectrometer::GetCurrentTime() {
 
 	const bool couldReadValidGPSData = (m_useGps) ? UpdateGpsData() : false;
 
+	const int currentSpectrumCounter = this->m_spectrumCounter; // local copy to prevent race conditions
+
 	if (!couldReadValidGPSData) {
 		startTime = GetTimeValue_UMT();
-		m_specTime[m_spectrumCounter] = startTime;
-		pos[m_spectrumCounter].altitude = pos[m_spectrumCounter].latitude = pos[m_spectrumCounter].longitude = pos[m_spectrumCounter].nSat = 0;
+		m_spectrumGpsData[currentSpectrumCounter].time = startTime;
+		m_spectrumGpsData[currentSpectrumCounter].altitude = 0.0;
+		m_spectrumGpsData[currentSpectrumCounter].latitude = 0.0;
+		m_spectrumGpsData[currentSpectrumCounter].longitude = 0.0;
+		m_spectrumGpsData[currentSpectrumCounter].nSatellites = 0;
 	}
 	else if (m_timeDiffToUtc == 0) {
 		time_t t;
 		time(&t);
 		struct tm *localTime = localtime(&t);
 
-		long gpstime = m_gps->GetTime();
-		long hr = (long)gpstime / 10000;
-		long mi = ((long)gpstime - hr * 10000) / 100;
-		long se = ((long)gpstime) % 100;
+		m_gps->Get(m_spectrumGpsData[currentSpectrumCounter]);
+
+		int hr, min, sec;
+		ExtractTime(m_spectrumGpsData[currentSpectrumCounter], hr, min, sec);
 
 		/* get the difference between the local time and the GPS-time */
-		m_timeDiffToUtc = 3600 * (hr - localTime->tm_hour) + 60 * (mi - localTime->tm_min) + (se - localTime->tm_sec);
+		m_timeDiffToUtc = 3600 * (hr - localTime->tm_hour) + 60 * (min - localTime->tm_min) + (sec - localTime->tm_sec);
 	}
 
 	return startTime;

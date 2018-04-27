@@ -87,6 +87,11 @@ typedef struct gpsPosition{
 }gpsPosition;
 
 struct gpsData {
+	gpsData();
+	gpsData(const gpsData& other);
+
+	gpsData& operator=(gpsData other);
+
 	/* Latitude in (decimal) degrees. */
 	double latitude = 0.0;
 
@@ -97,10 +102,10 @@ struct gpsData {
 	double altitude = 0.0;
 
 	/* The time stamp from the Gps */
-	long time;
+	long time = 0;
 
 	/* Number of satellites seen by the receiver. */
-	long nSatellites;
+	long nSatellites = 0;
 
 	/** Date, formatted as mmddyy */
 	char date[6];

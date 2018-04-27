@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "DMSpec.h"
 #include "Common.h"
+#include <utility>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -34,6 +35,39 @@ int IsExistingFile(const CString *fileName){
 int IsExistingFile(const CString &fileName){
 	return IsExistingFile(&fileName);
 }
+
+//////////////////////////////////////////////////////////////////////
+// gpsData
+//////////////////////////////////////////////////////////////////////
+
+gpsData::gpsData() {
+	date[0] = 0;
+	date[1] = 0;
+	date[2] = 0;
+	date[3] = 0;
+	date[4] = 0;
+	date[5] = 0;
+}
+gpsData::gpsData(const gpsData& other) {
+	this->latitude = other.latitude;
+	this->longitude = other.longitude;
+	this->altitude = other.altitude;
+	this->time = other.time;
+	this->nSatellites = other.nSatellites;
+	this->date[0] = other.date[0];
+	this->date[1] = other.date[1];
+	this->date[2] = other.date[2];
+	this->date[3] = other.date[3];
+	this->date[4] = other.date[4];
+	this->date[5] = other.date[5];
+}
+gpsData& gpsData::operator=(gpsData other)
+{
+	std::swap(*this, other);
+	return *this;
+}
+
+
 
 void ExtractTime(const gpsData& gpsData, int& hours, int& minutes, int& seconds)
 {

@@ -20,13 +20,8 @@ extern CString g_exePath;  // <-- This is the path to the executable. This is a 
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CGPS::CGPS(){
-	gpsInfo.nSatellites = 0;
-	gpsInfo.altitude = 0;
-	gpsInfo.latitude = 0;
-	gpsInfo.longitude = 0;
-	gpsInfo.time = 0;
-
+CGPS::CGPS()
+	: gpsInfo() {
 	m_gotContact = false;
 
 	m_gpsThread = nullptr;
@@ -54,29 +49,10 @@ CGPS::~CGPS(){
 *
 */
 
-/** Get the UCT time */
-long CGPS::GetTime() const{
-	return this->gpsInfo.time;
-}
 
-double CGPS::GetAltitude() const {
-	return this->gpsInfo.altitude;
-}
-
-double CGPS::GetLatitude() const {
-	return this->gpsInfo.latitude;
-}
-
-double CGPS::GetLongitude() const {
-	return this->gpsInfo.longitude;
-}
-
-void CGPS::GetDate(std::string& dateStr) const {
-	dateStr = std::string(this->gpsInfo.date, 6);
-}
-
-long CGPS::GetNumberOfSatellites() const {
-	return this->gpsInfo.nSatellites;
+void CGPS::Get(gpsData& dst) const
+{
+	dst = this->gpsInfo;
 }
 
 /** Parse the read GPS-Information */

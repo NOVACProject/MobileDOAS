@@ -31,13 +31,9 @@ public:
 		into the format DD.DDDDDDD */
 	static double ConvertToDecimalDegrees(double degreesAndMinutes);
 
-	/* Communication with other parts of the program */
-	long    GetTime() const;
-	double  GetAltitude() const;
-	double  GetLatitude() const;
-	double  GetLongitude() const;
-	void    GetDate(std::string& dateStr) const;
-	long    GetNumberOfSatellites() const;
+	/** Retrieving the read out data (this will not communicate with 
+		the device, only copy out the last read piece of data. */
+	void    Get(gpsData& dst) const;
 
 	/* WriteGPSLog and WriteLog are currently not used */
 	// void    WriteGPSLog(char *pFile,double *pPos,double pTime);

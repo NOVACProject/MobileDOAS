@@ -231,11 +231,15 @@ void CMeasurement_Wind::Run(){
 		/* ----------------- Save the spectrum(-a) -------------------- */
 		if(m_spectrometerMode != MODE_VIEW){
 			if(m_useGps){
-				for(i = 0; i  < m_NChannels; ++i)
-					CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, m_specTime[m_spectrumCounter], m_specTime[m_spectrumCounter]+elapsedSecond, pos[m_spectrumCounter].latitude, pos[m_spectrumCounter].longitude, pos[m_spectrumCounter].altitude, m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);
+				const gpsData& spectrumGpsData = m_spectrumGpsData[m_spectrumCounter];
+				for(i = 0; i  < m_NChannels; ++i) {
+					CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, spectrumGpsData.time, spectrumGpsData .time + elapsedSecond, 
+						spectrumGpsData.latitude, spectrumGpsData.longitude, spectrumGpsData.altitude, m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);
+				}
 			}else{
-				for(i = 0; i < m_NChannels; ++i)
+				for(i = 0; i < m_NChannels; ++i) {
 					CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, startTime, startTime+elapsedSecond, 0, 0, 0, m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);
+				}
 			}
 		}
 

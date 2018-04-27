@@ -483,28 +483,6 @@ public:
 	
 	/** This is the text to show in the status bar of the program*/
 	CString m_statusMsg;
-	
-	/** The 'position' struct is used to save the position for each 
-		measurement */
-	struct position{
-		double latitude;
-		double longitude;
-		double altitude;
-		/** The number of satellites that we had connection with
-			at the collection time of this spectrum. */
-		int    nSat;
-	};
-
-	/** pos[i] holds the position that we had when collecting 
-		spectrum number 'i' */
-	struct position pos[65536];
-
-	/** specDate[i] holds the date at which spectrum number 'i'
-	was collected */
-	std::string specDate[65536];
-
-	/** m_specTime[i] holds the time at which spectrum number 'i' was collected */
-	long    m_specTime[65536];
 
 	/** Retrieves the lower range for the fit region for 
 		fit window number 'region' */
@@ -575,6 +553,14 @@ protected:
 	/** The highpass filtered measured spectrum.
 	This is used for plotting mostly */
 	double  m_spectrum[MAX_FIT_WINDOWS][MAX_SPECTRUM_LENGTH];
+
+
+	// ---------------------------------------------------------------------------------------
+	// --------------------- Keeping track of the route... -------------
+	// ---------------------------------------------------------------------------------------
+
+	/** m_spectrumGpsData[i] holds the Gps information associated with spectrum number 'i' */
+	struct gpsData m_spectrumGpsData[65536];
 
 
 	// ---------------------------------------------------------------------------------------
