@@ -1,5 +1,6 @@
 #include "stdafx.h"
-#include "plumeheightcalculator.h"
+#include "PlumeHeightCalculator.h"
+#include <vector>
 
 using namespace DualBeamMeasurement;
 
@@ -24,25 +25,24 @@ double CPlumeHeightCalculator::GetPlumeHeight_CentreOfMass(const CMeasurementSer
 
 	// 1. Make local copies of the data
 	long length = forwardLookingSerie->length;
-	double *lat = new double[length];
-	double *lon = new double[length];
-	double *col1= new double[length];
-	double *col2= new double[length];
-	if(lat == 0 || lon == 0 || col1 == 0 || col2 == 0)
-		return -1.0;
-	memcpy(lat,  forwardLookingSerie->lat, length*sizeof(double));
-	memcpy(lon,  forwardLookingSerie->lon, length*sizeof(double));
-	memcpy(col1, forwardLookingSerie->column, length*sizeof(double));
-	memcpy(col2, backwardLookingSerie->column,length*sizeof(double));
+	std::vector<double> lat(length);
+	std::vector<double> lon(length);
+	std::vector<double> col1(length);
+	std::vector<double> col2(length);
+
+	memcpy(lat.data(),  forwardLookingSerie->lat, length*sizeof(double));
+	memcpy(lon.data(),  forwardLookingSerie->lon, length*sizeof(double));
+	memcpy(col1.data(), forwardLookingSerie->column, length*sizeof(double));
+	memcpy(col2.data(), backwardLookingSerie->column,length*sizeof(double));
 
 	// 2. Remove the offset from the traverses
-	RemoveOffset(col1, length);
-	RemoveOffset(col2, length);
+	RemoveOffset(col1.data(), length);
+	RemoveOffset(col2.data(), length);
 
 	// 3. Calculate the wind-direction from the measured data 
 
 	// calculate the distances between each pair of measurement points
-	double *distances = new double[length];
+	std::vector<double> distances(length);
 	for(k = 0; k < length-1; ++k){
 		distances[k] = GPSDistance(lat[k], lon[k], lat[k+1], lon[k+1]);
 	}
@@ -51,7 +51,7 @@ double CPlumeHeightCalculator::GetPlumeHeight_CentreOfMass(const CMeasurementSer
 	while(fabs(windDirection - oldWindDirection) > 5){
 
     // get the mass center of the plume
-		massIndexF = GetCentreOfMass(col1,		distances, length);
+	massIndexF = GetCentreOfMass(col1.data(), distances.data(), length);
    
     oldWindDirection = windDirection;
 
@@ -74,7 +74,7 @@ double CPlumeHeightCalculator::GetPlumeHeight_CentreOfMass(const CMeasurementSer
 
 	// 4. Calculate the distance between the two centre of mass positions
 	//		Geometrically corrected for the wind-direction
-	massIndexB = GetCentreOfMass(col2,	distances, backwardLookingSerie->length);
+	massIndexB = GetCentreOfMass(col2.data(), distances.data(), backwardLookingSerie->length);
 
 	// 4a. The distances
 	double centreDistance		= GPSDistance(lat[massIndexF], lon[massIndexF], lat[massIndexB], lon[massIndexB]);
@@ -87,13 +87,6 @@ double CPlumeHeightCalculator::GetPlumeHeight_CentreOfMass(const CMeasurementSer
 
 	// 4d. The Plume Height
 	double plumeHeight			= centreDistance_corrected / tan(DEGREETORAD * angleSeparation);
-
-	delete[] distances;
-	delete[] lat;
-	delete[] lon;
-	delete[] col1;
-	delete[] col2;
-
 
 	if(windDir != nullptr)
 		*windDir = windDirection;

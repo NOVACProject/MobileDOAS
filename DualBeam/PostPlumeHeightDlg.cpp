@@ -208,7 +208,7 @@ BOOL CPostPlumeHeightDlg::OnInitDialog()
 	// Setup the colors to use for the different time-series
 	m_colorSeries[0] = RGB(255, 0, 0);
 	m_colorSeries[1] = RGB(0, 0, 255);
-	m_colorSeries[2] = RGB(0, 255, 0);
+	// m_colorSeries[2] = RGB(0, 255, 0);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // EXCEPTION: OCX Property Pages should return FALSE

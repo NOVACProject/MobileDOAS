@@ -1769,7 +1769,7 @@ short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxEx
 char* CSpectrometer::ReadGpsDate() {
 
 	int validGPS = 0;
-	char* startDate = new char[6];
+	char* startDate = new char[7];
 
 	if (!m_skipgps)
 		validGPS = GetGPS(); /* GetGPS returns 0 if no satellite connection */

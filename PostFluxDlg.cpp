@@ -898,6 +898,7 @@ void CPostFluxDlg::ReadMobileLog(){
 		return;
 	}
 
+    fclose(f);
 
 	return;
 }

@@ -1,5 +1,6 @@
 #include "stdafx.h"
-#include "kmlfilehandler.h"
+#include "KMLFileHandler.h"
+#include <vector>
 
 using namespace FileHandler;
 
@@ -17,8 +18,6 @@ CKMLFileHandler::~CKMLFileHandler(void)
 	@return 0 on success.
 */
 int CKMLFileHandler::StoreTraverseAsKML(Flux::CTraverse &traverse, const CString &fileName, int scalingHeight){
-	double *scaledColumns = nullptr;
-	int		*levels = nullptr;
 	int k;
 	
 	// 0. Check the input
@@ -31,12 +30,9 @@ int CKMLFileHandler::StoreTraverseAsKML(Flux::CTraverse &traverse, const CString
 		return 1;
 
 	// 2. We need to scale the columns to make sure that they are visible on the map
-	scaledColumns	= new double[traverse.m_recordNum];
-	levels			= new int[traverse.m_recordNum];
-	if(scaledColumns == nullptr || levels == nullptr){
-		fclose(f);
-		return 1;
-	}
+	std::vector<double> scaledColumns(traverse.m_recordNum);
+	std::vector<int> levels(traverse.m_recordNum);
+
 	// get the minimum and maximum column...
 	double minColumn	= Min(traverse.columnArray, traverse.m_recordNum);
 	double scaleFactor	= scalingHeight / Max(traverse.columnArray, traverse.m_recordNum);
@@ -61,7 +57,7 @@ int CKMLFileHandler::StoreTraverseAsKML(Flux::CTraverse &traverse, const CString
 	int end		= 1;
 	while(1){
 		if(levels[start] != levels[end]){
-			WritePlaceMark(traverse.longitude + start, traverse.latitude + start, scaledColumns + start, end-start + 1, levels[start], f);
+			WritePlaceMark(traverse.longitude + start, traverse.latitude + start, scaledColumns.data() + start, end-start + 1, levels[start], f);
 			start = end;
 		}
 		end = end + 1;
@@ -77,9 +73,6 @@ int CKMLFileHandler::StoreTraverseAsKML(Flux::CTraverse &traverse, const CString
 	// Always remember to close the file
 	fclose(f);
 	
-	// Clean up
-	delete scaledColumns;
-
 	return 0;
 }
 

@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "SpectrumIO.h"
+#include <vector>
 
 CSpectrumIO::CSpectrumIO(void)
 {
@@ -216,8 +217,8 @@ bool CSpectrumIO::WriteStdFile(const CString &fileName, const double *spectrum, 
 	std::string m = dmy.substr(2, 2);
 	std::string y = dmy.substr(4, 2);
 	dmy = d + '.' + m + '.' + y;
-	char *datetxt = new char[dmy.length()+1];
-	std::strcpy(datetxt, dmy.c_str());
+	std::vector<char> datetxt(dmy.length()+1);
+	std::strcpy(datetxt.data(), dmy.c_str());
 
 	// Find the name of the file itself (removing the path)
 	CString name;
@@ -228,7 +229,7 @@ bool CSpectrumIO::WriteStdFile(const CString &fileName, const double *spectrum, 
 	fprintf(f,"%s\n", (LPCTSTR)spectrometer);  /* The name of the spectrometer */
 	fprintf(f,"%s\n", (LPCTSTR)spectrometer); // why is there a second output of spectrometer name?
 	
-	fprintf(f,"%s\n",datetxt);
+	fprintf(f,"%s\n", datetxt.data());
 	fprintf(f,"%02d:%02d:%02d\n",hr,min,sec);
 	fprintf(f,"%02d:%02d:%02d\n",hr2,min2,sec2);
 	fprintf(f,"0.0\n");

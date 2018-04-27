@@ -249,6 +249,8 @@ void CWindFieldDlg::ReadMobileLog(){
   }else{
     return;
   }
+  
+  fclose(f);
 }
 
 void CWindFieldDlg::UpdateMobileLog(){
@@ -309,4 +311,6 @@ void CWindFieldDlg::OnChangeWindFieldFile(){
 		FillCombos();
 		DrawField();
 	}
+    
+    fclose(f);
 }

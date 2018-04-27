@@ -1068,6 +1068,7 @@ void CDMSpecView::ReadMobileLog(){
 	}else{
 		return;
 	}
+    fclose(f);    
 
 	if(fFoundBaseName){
 		i = L = strlen(baseNameTxt);
