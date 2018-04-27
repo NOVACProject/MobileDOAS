@@ -81,15 +81,15 @@ struct plotRange{
 };
 
 typedef struct gpsPosition{
-	double latitude;
-	double longitude;
-	double altitude;
+	double latitude = 0.0;
+	double longitude = 0.0;
+	double altitude = 0.0;
 }gpsPosition;
 
 typedef struct Time{
-	char hour;
-	char minute;
-	char second;
+	char hour = 0;
+	char minute = 0;
+	char second = 0;
 }Time;
 
 // ---------------------------------------------------------------
