@@ -136,7 +136,6 @@ bool CPostPlumeHeightDlg::ReadEvaluationLog() {
 	}
 
 	// Read the data from the file
-	int oldNumberOfFilesOpened = m_flux->m_traverseNum;
 	if (0 == m_flux->ReadLogFile("", m_evalLog, m_nChannels, fileVersion)) {
 		MessageBox(TEXT("That file is empty"));
 		return FAIL;

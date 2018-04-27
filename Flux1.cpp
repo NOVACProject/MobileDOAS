@@ -130,7 +130,6 @@ long CFlux::ReadLogFile(CString filePath, CString fileName, int nChannels, doubl
 /* called when re-reading an old evaluation log */
 long CFlux::ReadLogFile(CString filePath, CString fileName, long fileIndex, int nChannels, double fileVersion){
 	char buf[4096];
-	int iFalseCount = 0;
 	int n = 0;
 
 	FILE *f = fopen(fileName, "r");
