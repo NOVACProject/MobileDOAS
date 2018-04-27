@@ -73,7 +73,7 @@
 #define SUCCESS true
 #define FAIL false
 
-struct plotRange{	
+struct plotRange{
 	double maxLat;
 	double maxLon;
 	double minLat;
@@ -85,6 +85,26 @@ typedef struct gpsPosition{
 	double longitude = 0.0;
 	double altitude = 0.0;
 }gpsPosition;
+
+struct gpsData {
+	/* Latitude in (decimal) degrees. */
+	double latitude = 0.0;
+
+	/* Longitude in (decimal) degrees. */
+	double longitude = 0.0;
+
+	/* Altitude above sea level in meters. */
+	double altitude = 0.0;
+
+	/* The time stamp from the Gps */
+	long time;
+
+	/* Number of satellites seen by the receiver. */
+	long nSatellites;
+
+	/** Date, formatted as mmddyy */
+	char date[6];
+};
 
 typedef struct Time{
 	char hour = 0;

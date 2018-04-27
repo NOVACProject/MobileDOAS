@@ -13,13 +13,6 @@
 #include "Common.h"
 #include <string>
 
-struct gpsInformation {
-	struct    gpsPosition gpsPos;
-	long      gpsTime;
-	long      nSatellites;
-	char      gpsDate[6];
-};
-
 class CGPS {
 public:
 	CGPS();
@@ -32,7 +25,7 @@ public:
 	/* Tries to parse the text read from the GPS.
 		The parsed information will be filled into the provided 'data.
 		@return true if the parsing suceeded, otherwise false. */
-	static bool Parse(char* string, gpsInformation& data);
+	static bool Parse(char* string, gpsData& data);
 
 	/* Convert an angle from the raw format of the GPS data DDMM.MMMMM
 		into the format DD.DDDDDDD */
@@ -71,7 +64,7 @@ private:
 	CString m_logFile;
 
 	/* The actual information */
-	struct gpsInformation gpsInfo;
+	struct gpsData gpsInfo;
 
 	/* Serial communication */
 	CSerialConnection serial;

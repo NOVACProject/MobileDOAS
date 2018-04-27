@@ -22,10 +22,10 @@ extern CString g_exePath;  // <-- This is the path to the executable. This is a 
 
 CGPS::CGPS(){
 	gpsInfo.nSatellites = 0;
-	gpsInfo.gpsPos.altitude = 0;
-	gpsInfo.gpsPos.latitude = 0;
-	gpsInfo.gpsPos.longitude = 0;
-	gpsInfo.gpsTime = 0;
+	gpsInfo.altitude = 0;
+	gpsInfo.latitude = 0;
+	gpsInfo.longitude = 0;
+	gpsInfo.time = 0;
 
 	m_gotContact = false;
 
@@ -56,23 +56,23 @@ CGPS::~CGPS(){
 
 /** Get the UCT time */
 long CGPS::GetTime() const{
-	return this->gpsInfo.gpsTime;
+	return this->gpsInfo.time;
 }
 
 double CGPS::GetAltitude() const {
-	return this->gpsInfo.gpsPos.altitude;
+	return this->gpsInfo.altitude;
 }
 
 double CGPS::GetLatitude() const {
-	return this->gpsInfo.gpsPos.latitude;
+	return this->gpsInfo.latitude;
 }
 
 double CGPS::GetLongitude() const {
-	return this->gpsInfo.gpsPos.longitude;
+	return this->gpsInfo.longitude;
 }
 
 void CGPS::GetDate(std::string& dateStr) const {
-	dateStr = std::string(this->gpsInfo.gpsDate, 6);
+	dateStr = std::string(this->gpsInfo.date, 6);
 }
 
 long CGPS::GetNumberOfSatellites() const {
@@ -81,7 +81,7 @@ long CGPS::GetNumberOfSatellites() const {
 
 /** Parse the read GPS-Information */
 /** See http://www.gpsinformation.org/dale/nmea.htm/ */
-bool CGPS::Parse(char *string, gpsInformation& data){
+bool CGPS::Parse(char *string, gpsData& data){
 
 	const char sep[]    = ",";   /* the separator */
 	char* stopStr       = "\0";
@@ -101,7 +101,7 @@ bool CGPS::Parse(char *string, gpsInformation& data){
 				return false;
 			}
 			else {
-				data.gpsTime = strtol(token, &stopStr, 10);
+				data.time = strtol(token, &stopStr, 10);
 			}
 
 			/* 2: the fix status */
@@ -122,7 +122,7 @@ bool CGPS::Parse(char *string, gpsInformation& data){
 				return false;
 			}
 			else {
-				data.gpsPos.latitude = ConvertToDecimalDegrees(strtod(token, &stopStr));
+				data.latitude = ConvertToDecimalDegrees(strtod(token, &stopStr));
 			}
 
 			/* 4: north/south hemisphere */
@@ -131,7 +131,7 @@ bool CGPS::Parse(char *string, gpsInformation& data){
 			}
 			else {
 				if (0 == strncmp(token, "S", 1))
-					data.gpsPos.latitude = -data.gpsPos.latitude;
+					data.latitude = -data.latitude;
 			}
 
 			/* 5: the longitude  */
@@ -139,7 +139,7 @@ bool CGPS::Parse(char *string, gpsInformation& data){
 				return false;
 			}
 			else {
-				data.gpsPos.longitude = ConvertToDecimalDegrees(strtod(token, &stopStr));
+				data.longitude = ConvertToDecimalDegrees(strtod(token, &stopStr));
 			}
 
 			/* 6: east/west hemisphere */
@@ -148,7 +148,7 @@ bool CGPS::Parse(char *string, gpsInformation& data){
 			}
 			else {
 				if (0 == strncmp(token, "W", 1))
-					data.gpsPos.longitude = -data.gpsPos.longitude;
+					data.longitude = -data.longitude;
 			}
 
 			/* 7: the speed [knots] (ignore) */
@@ -172,7 +172,7 @@ bool CGPS::Parse(char *string, gpsInformation& data){
 				return false;
 			}
 			else {
-				sprintf(data.gpsDate, "%s", token);
+				sprintf(data.date, "%s", token);
 			}
 
 			/* 10: magnetic variation(ignore) */
@@ -199,7 +199,7 @@ bool CGPS::Parse(char *string, gpsInformation& data){
 				return false;
 			}
 			else {
-				data.gpsTime = strtol(token, &stopStr, 10);
+				data.time = strtol(token, &stopStr, 10);
 			}
 
 			/* 2: the latitude */
@@ -207,7 +207,7 @@ bool CGPS::Parse(char *string, gpsInformation& data){
 				return false;
 			}
 			else {
-				data.gpsPos.latitude = ConvertToDecimalDegrees(strtod(token, &stopStr));
+				data.latitude = ConvertToDecimalDegrees(strtod(token, &stopStr));
 			}
 
 			/* 3: north/south hemisphere */
@@ -216,7 +216,7 @@ bool CGPS::Parse(char *string, gpsInformation& data){
 			}
 			else {
 				if (0 == strncmp(token, "S", 1))
-					data.gpsPos.latitude = -data.gpsPos.latitude;
+					data.latitude = -data.latitude;
 			}
 
 			/* 4: longitude */
@@ -224,7 +224,7 @@ bool CGPS::Parse(char *string, gpsInformation& data){
 				return false;
 			}
 			else {
-				data.gpsPos.longitude = ConvertToDecimalDegrees(strtod(token, &stopStr));
+				data.longitude = ConvertToDecimalDegrees(strtod(token, &stopStr));
 			}
 
 			/* 5: east/west hemisphere */
@@ -233,7 +233,7 @@ bool CGPS::Parse(char *string, gpsInformation& data){
 			}
 			else {
 				if (0 == strncmp(token, "W", 1))
-					data.gpsPos.longitude = -data.gpsPos.longitude;
+					data.longitude = -data.longitude;
 			}
 
 			/* 6: quality of fix (ignore) */
@@ -265,7 +265,7 @@ bool CGPS::Parse(char *string, gpsInformation& data){
 				return false;
 			}
 			else {
-				data.gpsPos.altitude = strtod(token, &stopStr);
+				data.altitude = strtod(token, &stopStr);
 			}
 
 			// the remainder of stuff
@@ -338,8 +338,8 @@ bool CGPS::ReadGPS(){
 	m_logFile.Format("gps.log"); // for testing only
 	if(strlen(m_logFile) > 0){
 		FILE *f = fopen(g_exePath + m_logFile, "a+");
-		fprintf(f, "%s\t%ld\t", gpsInfo.gpsDate, gpsInfo.gpsTime);
-		fprintf(f, "%lf\t%lf\t%lf\t", gpsInfo.gpsPos.latitude, gpsInfo.gpsPos.longitude, gpsInfo.gpsPos.altitude);
+		fprintf(f, "%s\t%ld\t", gpsInfo.date, gpsInfo.time);
+		fprintf(f, "%lf\t%lf\t%lf\t", gpsInfo.latitude, gpsInfo.longitude, gpsInfo.altitude);
 		fprintf(f, "%ld\n", gpsInfo.nSatellites);
 		fclose(f);
 	}
