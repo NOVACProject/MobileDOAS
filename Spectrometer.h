@@ -398,18 +398,22 @@ public:
 	// ----------------------- The GPS -------------------------------
 	// ---------------------------------------------------------------
 	
-	/** Reads the last position from the GPS - thread to the member variables
-		'specTime' and 'pos' */
-	int     GetGPS();
+	/** Updates the member variables 'specTime' and 'pos' with the last read 
+		data from the GPS-thread 
+		This will NOT call the Gps itself, nor cause any block.
+		@return true if the updated data is valid (i.e. if the GPS can retrieve lat/long).
+		@return false if the data is not valid or the GPS isn't used. */
+	bool UpdateGpsData();
 	
 	/** Retrieves the last GPS position */
 	int     GetGPSPos(double* data);
 	
-	/** Reads the GPS... 
-		What's the difference between this and GetGPS ? */
-	long    ReadGpsStartTime();
+	/** Retrieves the current time, either from the GPS or the system time */
+	long GetCurrentTime();
 
-	char*   ReadGpsDate();
+	/** Retrieves the current date, either from the GPS or the system time.
+		The date is a string formatted as: mmddyy (6 characters) */
+	std::string GetCurrentDate();
 	
 	/** Pointer to the gps reading thread */
 	CGPS*   m_gps = nullptr;

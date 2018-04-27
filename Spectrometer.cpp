@@ -1121,8 +1121,12 @@ long CSpectrometer::AverageIntens(double *pSpectrum, long ptotalNum) {
 	return (long)sum;
 }
 
-int CSpectrometer::GetGPS() {
-	int validValue = 1;
+bool CSpectrometer::UpdateGpsData() {
+	if (nullptr == m_gps) {
+		return false;
+	}
+
+	bool gpsDataIsValid = true;
 
 	m_gps->GetDate(specDate[counter]);
 	specTime[counter] = m_gps->GetTime();
@@ -1132,15 +1136,17 @@ int CSpectrometer::GetGPS() {
 	pos[counter].nSat = m_gps->GetNumberOfSatellites();
 
 	if ((pos[counter].latitude == 0.0) && (pos[counter].longitude == 0.0)) {
-		validValue = 0;
+		// Invalid data, no latitude / longitude could be retrieved
+		gpsDataIsValid = false;
 	}
 	else if (pos[counter].nSat == 0) {
-		validValue = 0;
+		// Invalid data, the receiver couldn't connect to any satellite
+		gpsDataIsValid = false;
 	}
 
 	pView->PostMessage(WM_READGPS);
 
-	return validValue;
+	return gpsDataIsValid;
 }
 
 
@@ -1765,17 +1771,13 @@ short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxEx
 	}
 }
 
-char* CSpectrometer::ReadGpsDate() {
+std::string CSpectrometer::GetCurrentDate() {
 
-	int validGPS = 0;
-	char* startDate = new char[7];
+	const bool couldReadValidGPSData = (m_useGps) ? UpdateGpsData() : false;
 
-	if (m_useGps) {
-		validGPS = GetGPS(); /* GetGPS returns 0 if no satellite connection */
-	}
+	if (!couldReadValidGPSData) {
+		char startDate[7];
 
-	if (!validGPS) {
-		// date
 		struct tm *tim;
 		time_t t;
 		time(&t);
@@ -1784,23 +1786,22 @@ char* CSpectrometer::ReadGpsDate() {
 		int day = tim->tm_mday;
 		int year = tim->tm_year - 100; // only good for 21st century
 		sprintf(startDate, "%02d%02d%02d", mon, day, year);
+
+		return std::string(startDate, 6);
 	}
 	else {
-		m_gps->GetDate(specDate[counter]);
+		const int c = this->counter; // local buffer, to avoid race conditions...
+		m_gps->GetDate(specDate[c]);
+		return specDate[c];
 	}
-
-	return startDate;
 }
 
-long CSpectrometer::ReadGpsStartTime() {
-	int validGPS = 0;
+long CSpectrometer::GetCurrentTime() {
 	long startTime = 0;
 
-	if (m_useGps) {
-		validGPS = GetGPS(); /* GetGPS returns 0 if no satellite connection */
-	}
+	const bool couldReadValidGPSData = (m_useGps) ? UpdateGpsData() : false;
 
-	if (!validGPS) {
+	if (!couldReadValidGPSData) {
 		startTime = GetTimeValue_UMT();
 		specTime[counter] = startTime;
 		pos[counter].altitude = pos[counter].latitude = pos[counter].longitude = pos[counter].nSat = 0;

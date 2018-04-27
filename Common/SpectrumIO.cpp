@@ -186,7 +186,7 @@ int CSpectrumIO::readTextFile(CString filename, CSpectrum *curSpec){
 
 }
 
-bool CSpectrumIO::WriteStdFile(const CString &fileName, const double *spectrum, long specLength, char* startdate, long starttime, long stoptime, double lat, double lon, double alt, long integrationTime, const CString &spectrometer, const CString &measName, long exposureNum){
+bool CSpectrumIO::WriteStdFile(const CString &fileName, const double *spectrum, long specLength, const std::string& startdate, long starttime, long stoptime, double lat, double lon, double alt, long integrationTime, const CString &spectrometer, const CString &measName, long exposureNum){
 	int extendedFormat = 1;
 	long i;
 	FILE *f;

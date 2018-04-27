@@ -17,7 +17,7 @@ void CMeasurement_Wind::Run(){
 	double tmpSpec[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
 	int i, fitRgn;
 
-	char* startDate;
+	std::string startDate;
 	long startTime,elapsedSecond;
 	clock_t cStart, cFinish;
 
@@ -173,8 +173,8 @@ void CMeasurement_Wind::Run(){
 		SetFileName();
 
 		/* ------------ Get the date, time and position --------------- */
-		startDate = ReadGpsDate();
-		startTime = ReadGpsStartTime();
+		startDate = GetCurrentDate();
+		startTime = GetCurrentTime();
 
 		/** ---------------- if the user wants to change the exposure time, 
 									calculate a new exposure time. --------------------- */

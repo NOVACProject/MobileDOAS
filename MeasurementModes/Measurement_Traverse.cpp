@@ -16,7 +16,7 @@ void CMeasurement_Traverse::Run(){
 	double scanResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
 	double tmpSpec[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
 
-	char* startDate;
+	std::string startDate;
 	long startTime,elapsedSecond;
 	clock_t cStart, cFinish;
 
@@ -159,8 +159,8 @@ void CMeasurement_Traverse::Run(){
 		SetFileName();
 
 		/* ------------ Get the date, time and position --------------- */
-		startDate = ReadGpsDate();
-		startTime = ReadGpsStartTime();
+		startDate = GetCurrentDate();
+		startTime = GetCurrentTime();
 
 		/** ---------------- if the user wants to change the exposure time, 
 									calculate a new exposure time. --------------------- */
@@ -337,7 +337,7 @@ void CMeasurement_Traverse::Run_Adaptive(){
 	int roundResult[MAX_N_CHANNELS];
 	long serialDelay,gpsDelay;
 
-	char* startDate;
+	std::string startDate;
 	long startTime,elapsedSecond;
 	clock_t cStart, cFinish;
 
@@ -376,8 +376,8 @@ void CMeasurement_Traverse::Run_Adaptive(){
 		SetFileName();
 
 		/* ------------ Get the date, time and position --------------- */
-		startDate = ReadGpsDate();
-		startTime = ReadGpsStartTime();
+		startDate = GetCurrentDate();
+		startTime = GetCurrentTime();
 	
 		// Initialize the spectrometer, if using the serial-port
 		if(!fUseUSB){
