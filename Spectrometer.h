@@ -232,20 +232,15 @@ public:
 	
 	/** The wind direction used to calculate the flux.
 		Set by the user at startup */
-	double  windAngle;
+	double  m_windAngle;
 
 	/** The wind speed used to calculate the flux.
 		Set by the user at startup */
-	double  windSpeed;
+	double  m_windSpeed;
 
 	/** The gas factor used to calculate the flux.
 		Set to 2.66 (SO2) */
 	double  m_gasFactor;
-
-	/** Used by 'CountFlux' to calculate the flux */
-	long    posFlag;
-	/** Used by 'CountFlux' to calculate the flux */
-	long    zeroPosNum;
 
 	/** Evaluates the given spectrum using the given dark and sky spectra 
 		@param pSky - the sky spectrum(-a) to use. Should already be dark-corrected!
@@ -317,10 +312,6 @@ public:
 	/** Writes the last evaluation result from the given fit region 
 		to the specified file-name */
 	void    WriteEvFile(CString filename, FitRegion *fitRegion);
-	
-	/** The base name of the measurement.
-		This is given by the user at startup */
-	char*   m_Base;
 	
 	/** The directory that we're currently writing to.
 		Set by 'CreateDirectories' */
@@ -609,6 +600,15 @@ protected:
 	CString m_measurementBaseName;
 
 private:
+
+
+	/** Used by 'CountFlux' to calculate the flux.
+		TODO: Is this really necessary?? */
+	long    m_posFlag;
+
+	/** Used by 'CountFlux' to calculate the flux
+		TODO: Is this really necessary?? */
+	long    m_zeroPosNum;
 
 	/** The offset of the last dark-spectrum collected. This is used
 		to keep track of wheter we should warn the user about the fact

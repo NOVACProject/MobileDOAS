@@ -622,17 +622,19 @@ void CDMSpecView::ShowStatusMsg(CString &str)
 
 
 void CDMSpecView::OnControlCountflux() {
-	double flux;
-	CString str;
 	if(fRunSpec){
-		flux = m_Spectrometer->GetFlux();
+		double flux = m_Spectrometer->GetFlux();
 		m_Spectrometer->WriteFluxLog();
+
+		CString str;
 		str.Format("By now the flux is %f",flux);
+
 		MessageBox(str,"Flux",MB_OK);
 	}
-	else
+	else {
 		MessageBox(TEXT("The spectrometer hasn't been started.\nStart it first,\nthen you can use this function")
 		,"Notice",MB_OK);
+	}
 }
 
 void CDMSpecView::OnConfigurationPlotChangebackground(){
@@ -669,7 +671,6 @@ void CDMSpecView::OnConfigurationPlotChangeplotcolor_Slave(){
 
 void CDMSpecView::OnControlStart() 
 {
-	char text[100];
 	CString tmpStr;
 
 	if(!fRunSpec){
@@ -686,6 +687,7 @@ void CDMSpecView::OnControlStart()
 		m_Spectrometer = new CMeasurement_Traverse();
 
 		// Copy the settings that the user typed in the dialog
+		char text[100];
 		memset(text,0,(size_t)100);
 		if(UpdateData(TRUE)){
 			m_BaseEdit.GetWindowText(text,255);

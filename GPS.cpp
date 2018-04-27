@@ -277,25 +277,14 @@ void CGPS::Stop(){
 	}
 }
 
-bool CGPS::IsRunning() const 
-{
-	if(m_gpsThread == nullptr) {
-		return false;
-	}
-
-	// the thread is probably running
-	return true;
-}
-
 
 bool CGPS::ReadGPS(){
-	long cnt;
 	char gpstxt[256];
 
 	gpstxt[0] = 0;
 
 	do{
-		cnt = 0;
+		long cnt = 0;
 		serial.FlushSerialPort(10);
 		if(serial.Check(550)){
 			while(serial.Check(100) && cnt<256){ // Read GPRMC and GPGGA

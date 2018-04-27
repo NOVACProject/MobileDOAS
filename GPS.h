@@ -48,9 +48,6 @@ public:
 		@return SUCCESS if the reading succeeded */
 	bool ReadGPS();
 
-	/** @returns true if the gps-collecting thread is running. */
-	bool IsRunning() const;
-
 private:
 
 	/** true if the serial connection and the GPS seems to work */

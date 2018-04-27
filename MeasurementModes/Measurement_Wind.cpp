@@ -332,7 +332,7 @@ void CMeasurement_Wind::Run(){
 		}
 		
 		if(m_spectrumCounter > 1)
-			CountFlux(windSpeed,windAngle);
+			CountFlux(m_windSpeed, m_windAngle);
 
 		#ifdef _DEBUG
 		cFinish = clock();

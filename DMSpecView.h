@@ -249,10 +249,7 @@ protected:
 	Dialogs::CSpectrumCalibrationDlg m_specCalibrationDlg;
 
 	/** The spectrometer thread */
-	CWinThread* pSpecThread;
-
-	/** The GPS-reading thread */
-	CWinThread* pGPSThread;
+	CWinThread* pSpecThread = nullptr;
 
 	DECLARE_MESSAGE_MAP()
 

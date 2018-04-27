@@ -308,18 +308,18 @@ void CMeasurement_Traverse::Run(){
 		}
 		
 		if(m_spectrumCounter > 1)
-			CountFlux(windSpeed,windAngle);
+			CountFlux(m_windSpeed, m_windAngle);
 
 		#ifdef _DEBUG
-		cFinish = clock();
-		evSecond = ((double)(cFinish - cStart) / (double)CLOCKS_PER_SEC);
+			cFinish = clock();
+			evSecond = ((double)(cFinish - cStart) / (double)CLOCKS_PER_SEC);
 
-		/* aggressive timing */
-		tmpString.Format("GPS-Reading took: %lf [s] \t Scanning took %lf [s] \t Evaluation took %lf [s] \t Writing to file took: %lf [s]\n", gpsSecond, scanSecond, evSecond, writeSecond);
-		timerFile = fopen("times.txt", "a");
-		fprintf(timerFile, tmpString);
-		fclose(timerFile);
-		timerFile = 0;
+			/* aggressive timing */
+			tmpString.Format("GPS-Reading took: %lf [s] \t Scanning took %lf [s] \t Evaluation took %lf [s] \t Writing to file took: %lf [s]\n", gpsSecond, scanSecond, evSecond, writeSecond);
+			timerFile = fopen("times.txt", "a");
+			fprintf(timerFile, tmpString);
+			fclose(timerFile);
+			timerFile = 0;
 		#endif
 
 		memset((void*)scanResult,0,sizeof(double)*4096);
@@ -554,7 +554,7 @@ void CMeasurement_Traverse::Run_Adaptive(){
 		}
 		
 		if(m_spectrumCounter > 1)
-			CountFlux(windSpeed,windAngle);
+			CountFlux(m_windSpeed, m_windAngle);
 
 		memset((void*)scanResult,0,sizeof(double)*4096);
 		m_scanNum++;

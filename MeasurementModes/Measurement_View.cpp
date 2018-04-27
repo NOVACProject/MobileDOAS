@@ -113,7 +113,7 @@ void CMeasurement_View::Run(){
 	}
 	
 	if(m_spectrumCounter > 1)
-		CountFlux(windSpeed,windAngle);
+		CountFlux(m_windSpeed, m_windAngle);
 
 	memset((void*)scanResult,0,sizeof(double)*4096);
 	m_scanNum++;

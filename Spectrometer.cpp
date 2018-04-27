@@ -36,12 +36,11 @@ CSpectrometer::CSpectrometer()
 
 	m_isRunning = true;
 	m_spectrometerMode = MODE_TRAVERSE; // default mode
-	posFlag = 1;
-	zeroPosNum = 0;
+	m_posFlag = 1;
+	m_zeroPosNum = 0;
 	m_timeResolution = 0;
-	windSpeed = 1.0;
-	windAngle = 0;
-	m_Base = "base1";
+	m_windSpeed = 1.0;
+	m_windAngle = 0;
 	m_detectorSize = 2048;
 	m_spectrometerDynRange = 4095;
 	m_spectrometerModel.Format("Unknown");
@@ -375,10 +374,13 @@ int CSpectrometer::ScanUSB(long sumInComputer, long sumInSpectrometer, double pR
 
 //-----------------------------------------------------------------
 void CSpectrometer::SetUserParameters(double windspeed, double winddirection, char *baseName) {
-	m_Base = new char[100];
-	windSpeed = windspeed;
-	windAngle = winddirection;
-	sprintf(m_Base, "%s", baseName);
+
+	m_windSpeed = windspeed;
+	m_windAngle = winddirection;
+
+	m_measurementBaseName.Format("%s", baseName);
+	m_measurementBaseName.TrimLeft(' ');
+	m_measurementBaseName.TrimRight(' ');
 }
 
 void CSpectrometer::ApplySettings() {
@@ -611,9 +613,9 @@ double CSpectrometer::CountFlux(double windSpeed, double windAngle)
 	double column, windFactor, distance, lat1, lat2, lon1, lon2;
 	long   columnSize;
 	double  accColumn = 0;	//total column when gps position is 0
-	if (posFlag == 0)		// when the gps coordinate is (0,0)
+	if (m_posFlag == 0)		// when the gps coordinate is (0,0)
 	{
-		zeroPosNum++;
+		m_zeroPosNum++;
 		columnSize = m_fitRegion[0].vColumn[0].GetSize();
 		accColumn += 1E-6*(m_fitRegion[0].vColumn[0].GetAt(columnSize - 1))*m_gasFactor;
 		flux = 0;
@@ -631,9 +633,9 @@ double CSpectrometer::CountFlux(double windSpeed, double windAngle)
 
 		if ((lat2 == 0) && (lon2 == 0)) // when the gps coordinate just become not equal to (0,0)
 		{
-			lat2 = m_spectrumGpsData[m_spectrumCounter - 2 - zeroPosNum].latitude;
-			lon2 = m_spectrumGpsData[m_spectrumCounter - 2 - zeroPosNum].longitude;
-			distance = GPSDistance(lat1, lon1, lat2, lon2) / (zeroPosNum + 1);
+			lat2 = m_spectrumGpsData[m_spectrumCounter - 2 - m_zeroPosNum].latitude;
+			lon2 = m_spectrumGpsData[m_spectrumCounter - 2 - m_zeroPosNum].longitude;
+			distance = GPSDistance(lat1, lon1, lat2, lon2) / (m_zeroPosNum + 1);
 			column = 1E-6*(m_fitRegion[0].vColumn[0].GetAt(columnSize - 1))*m_gasFactor + accColumn;
 		}
 		else					// the gps coordinate is not (0,0)
@@ -642,7 +644,7 @@ double CSpectrometer::CountFlux(double windSpeed, double windAngle)
 			column = 1E-6*(m_fitRegion[0].vColumn[0].GetAt(columnSize - 1))*m_gasFactor;
 		}
 		accColumn = 0;
-		zeroPosNum = 0;
+		m_zeroPosNum = 0;
 		windFactor = GetWindFactor(lat1, lon1, lat2, lon2, windAngle);
 		flux = column * distance * windSpeed * windFactor;
 
@@ -813,7 +815,7 @@ void CSpectrometer::DoEvaluation(double pSky[][MAX_SPECTRUM_LENGTH], double pDar
 	if (m_spectrumCounter == 65535) {
 		memset((void*)m_spectrumGpsData, 0, sizeof(struct gpsData) * 65536);
 		m_spectrumCounter = 0;
-		zeroPosNum = 0;
+		m_zeroPosNum = 0;
 	}
 }
 
@@ -826,16 +828,13 @@ void CSpectrometer::CreateDirectories()
 {
 	char dateText[11];
 	char cDateTime[14];
-	int strLength;
 	struct tm *tim;
 	time_t t;
 
-	m_measurementBaseName.Format(m_Base);
-	m_measurementBaseName.TrimLeft(' ');
-	m_measurementBaseName.TrimRight(' ');
-	strLength = m_measurementBaseName.GetLength();
-	if (strLength == 0)
+	int strLength = m_measurementBaseName.GetLength();
+	if (strLength == 0) {
 		m_measurementBaseName = TEXT("base1");
+	}
 
 	time(&t);
 	tim = localtime(&t);
@@ -1165,7 +1164,7 @@ void CSpectrometer::WriteBeginEvFile(int fitRegion) {
 	CString evPath = m_subFolder + "\\" + m_measurementBaseName + "_" + m_measurementStartTimeStr + TEXT("evaluationLog_" + m_fitRegion[fitRegion].window.name + ".txt");
 	CString str1, str2, str3, str4, str5, str6, str7, channelName;
 	str1.Format("***Desktop Mobile Program***\nVERSION=%1d.%1d\nFILETYPE=evaluationlog\n", CVersion::majorNumber, CVersion::minorNumber);
-	str2.Format("BASENAME=%s\nWINDSPEED=%f\nWINDDIRECTION=%f\n", m_Base, windSpeed, windAngle);
+	str2.Format("BASENAME=%s\nWINDSPEED=%f\nWINDDIRECTION=%f\n", (LPCSTR)m_measurementBaseName, m_windSpeed, m_windAngle);
 	str3 = TEXT("***copy of related configuration file ***\n");
 
 	if (!m_connectViaUsb)
@@ -1569,9 +1568,9 @@ void CSpectrometer::UpdateMobileLog() {
 			return;
 		}
 		else {
-			fprintf(f, "BASENAME=%s\n", m_Base);
-			fprintf(f, "WINDSPEED=%.2lf\n", windSpeed);
-			fprintf(f, "WINDDIRECTION=%.2lf\n", windAngle);
+			fprintf(f, "BASENAME=%s\n", (LPCSTR)m_measurementBaseName);
+			fprintf(f, "WINDSPEED=%.2lf\n", m_windSpeed);
+			fprintf(f, "WINDDIRECTION=%.2lf\n", m_windAngle);
 			fclose(f);
 			return;
 		}
@@ -1587,9 +1586,9 @@ void CSpectrometer::UpdateMobileLog() {
 		fclose(f);
 		f = fopen(g_exePath + "MobileLog.txt", "w");
 		fprintf(f, "%s", (LPCTSTR)tmpStr);
-		fprintf(f, "BASENAME=%s\n", m_Base);
-		fprintf(f, "WINDSPEED=%.2lf\n", windSpeed);
-		fprintf(f, "WINDDIRECTION=%.2lf\n", windAngle);
+		fprintf(f, "BASENAME=%s\n", (LPCSTR)m_measurementBaseName);
+		fprintf(f, "WINDSPEED=%.2lf\n", m_windSpeed);
+		fprintf(f, "WINDDIRECTION=%.2lf\n", m_windAngle);
 
 		fclose(f);
 	}
