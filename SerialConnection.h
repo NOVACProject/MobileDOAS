@@ -30,7 +30,7 @@ public:
 	long	br2;
 	long	br1;
 
-	BOOL *fRun;					/* pointer to spectrometer->runFlag */
+	volatile bool* isRunning;	/* pointer to spectrometer->runFlag */
 	CString *statusMsg;			/* pointer to spectrometer->m_statusMsg */
 //	ErrorLogHandler errorLog;	/* same error handler as spectrometer uses */
 

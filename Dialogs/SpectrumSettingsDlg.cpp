@@ -88,8 +88,8 @@ LRESULT CSpectrumSettingsDlg::UpdateFromSpectrometer(WPARAM wParam, LPARAM lPara
 	}
 
 	// Get the parameters from the spectrometer
-	this->m_average = m_Spectrometer->totalSpecNum;
-	this->m_exptime = m_Spectrometer->integrationTime;
+	this->m_average = m_Spectrometer->m_totalSpecNum;
+	this->m_exptime = m_Spectrometer->m_integrationTime;
 	
 	// Update the window
 	if(this->m_hWnd != nullptr)
@@ -115,8 +115,8 @@ void CSpectrumSettingsDlg::SaveToSpectrometer(){
 	}
 		
 	// set the parameters
-	m_Spectrometer->integrationTime		= m_exptime;
-	m_Spectrometer->totalSpecNum		= m_average;
+	m_Spectrometer->m_integrationTime	= m_exptime;
+	m_Spectrometer->m_totalSpecNum		= m_average;
 	if(Equals(m_Spectrometer->m_spectrometerModel, "USB2000+")){
 		m_Spectrometer->m_sumInSpectrometer = m_average;
 		m_Spectrometer->m_sumInComputer = 1;
@@ -132,7 +132,7 @@ void CSpectrumSettingsDlg::SaveToSpectrometer(){
 			m_Spectrometer->m_sumInComputer		= 1;
 		}
 	}
-	m_Spectrometer->totalSpecNum = m_Spectrometer->m_sumInComputer * m_Spectrometer->m_sumInSpectrometer;
+	m_Spectrometer->m_totalSpecNum = m_Spectrometer->m_sumInComputer * m_Spectrometer->m_sumInSpectrometer;
 }
 
 int GetLargestDivisorBelow16(int n){
@@ -181,7 +181,7 @@ void CSpectrumSettingsDlg::SaveSpectrum(){
 	}
 
 	// write the file
-	CSpectrumIO::WriteStdFile(stdFileName, spectrum1, spectrumLength, startdate, starttime, stoptime, lat, lon, alt, m_Spectrometer->integrationTime, m_Spectrometer->spectrometerName, "...", m_Spectrometer->totalSpecNum);
+	CSpectrumIO::WriteStdFile(stdFileName, spectrum1, spectrumLength, startdate, starttime, stoptime, lat, lon, alt, m_Spectrometer->m_integrationTime, m_Spectrometer->m_spectrometerName, "...", m_Spectrometer->m_totalSpecNum);
 }
 
 // Called when the user has pressed the spin button that controlls the exposure-time

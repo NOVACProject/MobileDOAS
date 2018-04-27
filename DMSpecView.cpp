@@ -313,7 +313,7 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam){
 	
 	// Get the last value and the total number of values
 	result = m_Spectrometer->GetLastColumn();
-	scanNo = m_Spectrometer->scanNum - 2;
+	scanNo = m_Spectrometer->GetNumberOfSpectraAcquired() - 2;
 
 	// Get the number of channels used and the number of fit-regions used
 	int nChannels		= m_Spectrometer->m_NChannels;
@@ -880,7 +880,6 @@ void CDMSpecView::OnControlStop()
 		if(hThread != nullptr && GetExitCodeThread(hThread, &dwExitCode) && dwExitCode ==STILL_ACTIVE)
 		{
 			AfxGetApp()->BeginWaitCursor();
-			m_Spectrometer->m_wrapper.stopAveraging(m_Spectrometer->m_spectrometerIndex);
 			m_Spectrometer->Stop();
 			Sleep(500);			
 			WaitForSingleObject(hThread,INFINITE);
@@ -1329,7 +1328,7 @@ void CDMSpecView::OnViewColumnError(){
 }
 
 void CDMSpecView::OnUpdate_EnableOnRun(CCmdUI *pCmdUI){
-	if(m_Spectrometer != nullptr && m_Spectrometer->fRun){
+	if(m_Spectrometer != nullptr && m_Spectrometer->m_isRunning){
 		// enable
 		pCmdUI->Enable(TRUE);
 	}else{
@@ -1339,7 +1338,7 @@ void CDMSpecView::OnUpdate_EnableOnRun(CCmdUI *pCmdUI){
 }
 
 void CDMSpecView::OnUpdate_DisableOnRun(CCmdUI *pCmdUI){
-	if(m_Spectrometer != nullptr && m_Spectrometer->fRun){
+	if(m_Spectrometer != nullptr && m_Spectrometer->m_isRunning){
 		// disable
 		pCmdUI->Enable(FALSE);
 	}else{

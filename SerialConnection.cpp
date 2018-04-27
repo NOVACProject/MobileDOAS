@@ -112,7 +112,7 @@ long CSerialConnection::Read(void *ptBuf,long byteNum)
 	timeouts.ReadIntervalTimeout = MAXDWORD; 
 	timeouts.ReadTotalTimeoutMultiplier = 0;
 	timeouts.ReadTotalTimeoutConstant = 0;
-	if ((!SetCommTimeouts(hComm, &timeouts))&&fRun) {
+	if ((!SetCommTimeouts(hComm, &timeouts)) && isRunning) {
 		//	  MessageBox(NULL,TEXT("Error setting time-outs in ReadSerial."),TEXT("ERROR"),MB_OK);
 		return 0;
 	}
