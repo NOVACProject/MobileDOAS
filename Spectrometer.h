@@ -579,7 +579,7 @@ public:
 
 	/** specDate[i] holds the date at which spectrum number 'i'
 	was collected */
-	char*    specDate[65536];
+	std::string specDate[65536];
 
 	/** specTime[i] holds the time at which spectrum number 'i' 
 		was collected */

@@ -13,7 +13,6 @@
 static char THIS_FILE[]=__FILE__;
 #define new DEBUG_NEW
 #endif
-#define PI 3.14159265 // TODO: is this needed here?
 
 extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
 
@@ -34,8 +33,8 @@ CGPS::CGPS(){
 	fRun = false;
 }
 
-CGPS::CGPS(char* pCOMPort, long pBaudrate) {
-	CGPS::CGPS();
+CGPS::CGPS(char* pCOMPort, long pBaudrate)
+	: CGPS() {
 	serial.baudrate = pBaudrate;
 	strcpy(serial.serialPort, pCOMPort);
 	if (!serial.Init(pBaudrate)) {
@@ -56,24 +55,28 @@ CGPS::~CGPS(){
 */
 
 /** Get the UCT time */
-long CGPS::GetTime(){
+long CGPS::GetTime() const{
 	return this->gpsInfo.gpsTime;
 }
 
-double CGPS::GetAltitude(){
+double CGPS::GetAltitude() const {
 	return this->gpsInfo.gpsPos.altitude;
 }
 
-double CGPS::GetLatitude(){
+double CGPS::GetLatitude() const {
 	return this->gpsInfo.gpsPos.latitude;
 }
 
-double CGPS::GetLongitude(){
+double CGPS::GetLongitude() const {
 	return this->gpsInfo.gpsPos.longitude;
 }
 
-char* CGPS::GetDate() {
-	return this->gpsInfo.gpsDate;
+void CGPS::GetDate(std::string& dateStr) const {
+	dateStr = std::string(this->gpsInfo.gpsDate, 6);
+}
+
+long CGPS::GetNumberOfSatellites() const {
+	return this->gpsInfo.nSatellites;
 }
 
 /** Parse the read GPS-Information */
@@ -81,10 +84,9 @@ char* CGPS::GetDate() {
 int CGPS::Parse(char *string){
 
 	char sep[]    = ",";   /* the separator */
-	char *token   = 0;
 	char *stopStr = "\0";
 	
-	token = strtok(string, sep);  /* get first sentence identifier */
+	char *token = strtok(string, sep);  /* get first sentence identifier */
 
 	if (token == NULL)
 		return 0;
@@ -280,45 +282,12 @@ int CGPS::Parse(char *string){
 	return 1;
 }
 
-/* Write log file  */
-void CGPS::WriteGPSLog(char *pFile,double *pPos,double pTime){
-
-	FILE *f;
-	f = fopen(pFile,"a+");
-	if(f < (FILE*)1)
-		return;
-	
-	fprintf(f,"%6.2f\t\t%6.2f\t\t%f\n",pPos[0],pPos[1],pTime);
-	fclose(f);
-}
-
-void CGPS::WriteLog(char *pFile,char* txt){
-	FILE *f;
-	f = fopen(pFile,"a+");
-	if(f < (FILE*)1)
-		return;
-	
-	fprintf(f,"%s\n",txt);
-
-	fclose(f);
-}
-
-
-/* Get N flag and S flag */
-void CGPS::GetDirection(int *flags){
-	flags[0] = (gpsInfo.gpsPos.latitude < 0) ? -1 : 1;
-	flags[1] = (gpsInfo.gpsPos.longitude < 0) ? -1 : 1;
-}
-
 /* The GPS reports latitude and longitude in the format ddmm.mmmm
   , this function converts this to the format dd.dddd */
 double CGPS::DoubleToAngle(double rawData){
-	int degree;
-	double remainder, fDegree;
-
-	remainder	= fmod(rawData,100.0); // The minutes
-	degree		= (int)(rawData/100);	 // The degrees
-	fDegree		= degree + remainder/60.0;
+	double remainder = fmod(rawData,100.0); // The minutes
+	int degree       = (int)(rawData/100);	 // The degrees
+	double fDegree   = degree + remainder/60.0;
 
 	return fDegree;
 }
@@ -369,9 +338,9 @@ int CGPS::ReadGPS(){
 	m_logFile.Format("gps.log"); // for testing only
 	if(strlen(m_logFile) > 0){
 		FILE *f = fopen(g_exePath + m_logFile, "a+");
-		fprintf(f, "%s\t%d\t", gpsInfo.gpsDate, gpsInfo.gpsTime);
+		fprintf(f, "%s\t%ld\t", gpsInfo.gpsDate, gpsInfo.gpsTime);
 		fprintf(f, "%lf\t%lf\t%lf\t", gpsInfo.gpsPos.latitude, gpsInfo.gpsPos.longitude, gpsInfo.gpsPos.altitude);
-		fprintf(f, "%d\n", gpsInfo.nSatellites);
+		fprintf(f, "%ld\n", gpsInfo.nSatellites);
 		fclose(f);
 	}
 	#endif
@@ -390,17 +359,14 @@ UINT CollectGPSData(LPVOID pParam){
 	CGPS *gps = (CGPS *)pParam;
 	gps->fRun = true;
 
-	while(1){
-		if(!gps->fRun){
-			gps->CloseSerial();
-			return 0;
-		}
-
+	while(gps->fRun){
 		gps->ReadGPS();
 
 		/* make a small pause */
 		Sleep(100);
 	}
+
+	gps->CloseSerial();
 
 	return 0;
 }

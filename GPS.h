@@ -11,33 +11,36 @@
 
 #include "SerialConnection.h"
 #include "Common.h"
+#include <string>
 
 class CGPS {
-	//implementations
 public:
 	CGPS();
 	CGPS(char* pCOMPort, long pBaudrate);
 	virtual ~CGPS();
+
+	/** Set to true when the gps-collecting thread is running. */
+	volatile bool fRun;
 
 	/* try to parse the text read from the GPS. 
 	    Returns 1 if all is ok, otherwise 0 */
 	int Parse(char *string);
 
 	/* Communication with other parts of the program */
-	long    GetTime();
-	double  GetAltitude();
-	double  GetLatitude();
-	double  GetLongitude();
-	char*   GetDate();
-	void    GetDirection(int* flags);
+	long    GetTime() const;
+	double  GetAltitude() const;
+	double  GetLatitude() const;
+	double  GetLongitude() const;
+	void    GetDate(std::string& dateStr) const;
+	long    GetNumberOfSatellites() const;
 
 	/* convert the raw GPS data into the format DD.DDDDDDD
 			from being in the raw format DDMM.MMMMM */
 	double  DoubleToAngle(double degreesAndMinutes);
 
 	/* WriteGPSLog and WriteLog are currently not used */
-	void    WriteGPSLog(char *pFile,double *pPos,double pTime);
-	void    WriteLog(char *pFile,char* txt);
+	// void    WriteGPSLog(char *pFile,double *pPos,double pTime);
+	// void    WriteLog(char *pFile,char* txt);
 
 	/* Running the GPS collection */
 	void    Run();
@@ -47,20 +50,17 @@ public:
 	bool    IsRunning(); // <-- returns true if the gps-collecting thread is running.
 
 //variables 
-public:
+private:
 
 	/** true if the serial connection and the GPS seems to work */
 	bool gotContact;
-
-	/** Set to true when the gps-collecting thread is running. */
-	bool fRun;
 
 	/** The gps-logfile*/
 	CString m_logFile;
 
 	struct gpsInformation{
-		struct		gpsPosition gpsPos;
-		long		  gpsTime;
+		struct    gpsPosition gpsPos;
+		long      gpsTime;
 		long      nSatellites;
 		char      gpsDate[6];
 	};
@@ -68,14 +68,8 @@ public:
 	/* The actual information */
 	struct gpsInformation gpsInfo;
 
-protected:
 	/* Serial communication */
 	CSerialConnection serial;
-	long    m_Baudrate;
-	char    m_serialPort[6];
-	char    serbuf[10];
-	int     bufFlag;
-	HANDLE	hComm;
 
 	/** The gps-reading thread. */
 	CWinThread *m_gpsThread;

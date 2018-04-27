@@ -1125,12 +1125,12 @@ long CSpectrometer::AverageIntens(double *pSpectrum, long ptotalNum) {
 int CSpectrometer::GetGPS() {
 	int validValue = 1;
 
-	specDate[counter] = m_gps->GetDate();
+	m_gps->GetDate(specDate[counter]);
 	specTime[counter] = m_gps->GetTime();
 	pos[counter].latitude = m_gps->GetLatitude();
 	pos[counter].longitude = m_gps->GetLongitude();
 	pos[counter].altitude = m_gps->GetAltitude();
-	pos[counter].nSat = m_gps->gpsInfo.nSatellites;
+	pos[counter].nSat = m_gps->GetNumberOfSatellites();
 
 	if ((pos[counter].latitude == 0.0) && (pos[counter].longitude == 0.0)) {
 		validValue = 0;
@@ -1786,7 +1786,7 @@ char* CSpectrometer::ReadGpsDate() {
 		sprintf(startDate, "%02d%02d%02d", mon, day, year);
 	}
 	else {
-		sprintf(startDate, m_gps->GetDate());
+		m_gps->GetDate(specDate[counter]);
 	}
 
 	return startDate;
