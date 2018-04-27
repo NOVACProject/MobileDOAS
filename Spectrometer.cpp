@@ -543,7 +543,7 @@ void CSpectrometer::WriteEvFile(CString filename, FitRegion *fitRegion) {
 	fprintf(f, "%f\t%f\t%.1f\t", pos[counter].latitude, pos[counter].longitude, pos[counter].altitude);
 
 	// 3. The number of spectra averaged and the exposure-time
-	fprintf(f, "%d\t%d\t", totalSpecNum, integrationTime);
+	fprintf(f, "%ld\t%d\t", totalSpecNum, integrationTime);
 
 	// 4. The intensity
 	fprintf(f, "%ld\t", averageValue[0]);
@@ -1537,15 +1537,15 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 	}
 	else {
 		// Spectrum number
-		fprintf(f, "%d\t", counter);
+		fprintf(f, "%ld\t", counter);
 		// The board temperature (?)
 		if (temperature != NOT_A_NUMBER)
 			fprintf(f, "%.3lf\t", temperature);
 
 		// The master-channel
-		fprintf(f, "%lf\t%d\t%d", specInfo[0].offset, averageValue[0], specInfo[0].isDark);
+		fprintf(f, "%lf\t%ld\t%d", specInfo[0].offset, averageValue[0], specInfo[0].isDark);
 		if (m_NChannels > 1)
-			fprintf(f, "%lf\t%d\t%d", specInfo[1].offset, averageValue[1], specInfo[1].isDark);
+			fprintf(f, "%lf\t%ld\t%d", specInfo[1].offset, averageValue[1], specInfo[1].isDark);
 
 		fprintf(f, "\n");
 

@@ -54,7 +54,7 @@ void CMobileConfiguration::ReadCfgTxt(const CString &fileName){
 			if(pt=strstr(txt,"SPEC_BAUD="))
 			{
 				pt=strstr(txt,"=");
-				sscanf(&pt[1],"%ld",&m_baudrate);
+				sscanf(&pt[1],"%d",&m_baudrate);
 			}
 			if(pt=strstr(txt,"SERIALPORT="))
 			{
@@ -103,7 +103,7 @@ void CMobileConfiguration::ReadCfgTxt(const CString &fileName){
 			if(pt=strstr(txt,"TIMERESOLUTION="))
 			{
 				pt=strstr(txt,"=");
-				sscanf(&pt[1],"%d",&m_timeResolution);
+				sscanf(&pt[1],"%ld",&m_timeResolution);
 			}	
 
 			// ---------------- The GPS ------------------

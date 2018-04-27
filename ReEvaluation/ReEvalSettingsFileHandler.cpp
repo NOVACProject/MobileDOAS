@@ -51,7 +51,7 @@ int CReEvalSettingsFileHandler::WriteFile(const ReEvaluation::CReEvaluationSetti
 
 	fprintf(f, "<MobileDOAS_ReEvalSettings>\n");
 
-	fprintf(f, "\t<Average>%d</Average>\n",			settings.m_nAverageSpectra);
+	fprintf(f, "\t<Average>%ld</Average>\n",			settings.m_nAverageSpectra);
 
 	// settings for ignoring dark spectra
 	fprintf(f, "\t<IgnoreDark>\n");
@@ -91,7 +91,7 @@ int CReEvalSettingsFileHandler::WriteFile(const ReEvaluation::CReEvaluationSetti
 		fprintf(f, "\t\t\t<low>%lf</low>\n",	settings.m_skyColumnLow);
 		fprintf(f, "\t\t</column>\n");
 		fprintf(f, "\t\t<intensity>\n");
-		fprintf(f, "\t\t\t<channel>%d</channel>\n",		settings.m_skyIntensityChannel);
+		fprintf(f, "\t\t\t<channel>%ld</channel>\n",		settings.m_skyIntensityChannel);
 		fprintf(f, "\t\t\t<low>%lf</low>\n",			settings.m_skyIntensityLow);
 		fprintf(f, "\t\t\t<high>%lf</high>\n",			settings.m_skyIntensityHigh);
 		fprintf(f, "\t\t</intensity>\n");

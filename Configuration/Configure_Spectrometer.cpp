@@ -221,7 +221,7 @@ void CConfigure_Spectrometer::OnOK(){
 	}else{
 		fprintf(f, "\t<serialPort>USB</serialPort>\n");
 	}
-	fprintf(f, "\t<timeResolution>%d</timeResolution>\n",	m_conf->m_timeResolution);
+	fprintf(f, "\t<timeResolution>%ld</timeResolution>\n",	m_conf->m_timeResolution);
 
 	fprintf(f, "\t<nchannels>%d</nchannels>\n",					m_conf->m_nChannels);
 
@@ -233,8 +233,8 @@ void CConfigure_Spectrometer::OnOK(){
 
 	// ------------ Settings for the Exposure-time -------------
 	fprintf(f, "\t<Intensity>\n");
-	fprintf(f, "\t\t<Percent>%d</Percent>\n",						m_conf->m_percent);
-	fprintf(f, "\t\t<Channel>%d</Channel>\n",						m_conf->m_specCenter);
+	fprintf(f, "\t\t<Percent>%ld</Percent>\n",						m_conf->m_percent);
+	fprintf(f, "\t\t<Channel>%ld</Channel>\n",						m_conf->m_specCenter);
 	if(m_conf->m_expTimeMode == CMobileConfiguration::EXPOSURETIME_FIXED){
 		fprintf(f, "\t\t<FixExpTime>%d</FixExpTime>\n",		m_conf->m_fixExpTime);
 	}else if(m_conf->m_expTimeMode == CMobileConfiguration::EXPOSURETIME_ADAPTIVE){
@@ -251,7 +251,7 @@ void CConfigure_Spectrometer::OnOK(){
 	else
 		fprintf(f, "\t\t<use>0</use>\n");
 
-	fprintf(f, "\t\t<baudrate>%d</baudrate>\n",	m_conf->m_gpsBaudrate);
+	fprintf(f, "\t\t<baudrate>%ld</baudrate>\n",	m_conf->m_gpsBaudrate);
 	fprintf(f, "\t\t<port>%s</port>\n", (LPCTSTR)m_conf->m_gpsPort);
 	fprintf(f, "\t</GPS>\n");
 

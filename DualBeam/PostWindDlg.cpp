@@ -451,9 +451,9 @@ void CPostWindDlg::SaveResult() {
 	// 4. Write the header, containing the settings for the calculation
 	fprintf(f, "PlumeHeight [m]\t%lf\n", m_settings.plumeHeight);
 	fprintf(f, "AngleSeparation [deg]\t%lf\n", m_settings.angleSeparation);
-	fprintf(f, "LowPassFilterAverage\t%d\n", m_settings.lowPassFilterAverage);
-	fprintf(f, "MaxShift [s]\t%d\n", m_settings.shiftMax);
-	fprintf(f, "TestLength [s]\t%d\n", m_settings.testLength);
+	fprintf(f, "LowPassFilterAverage\t%ud\n", m_settings.lowPassFilterAverage);
+	fprintf(f, "MaxShift [s]\t%ud\n", m_settings.shiftMax);
+	fprintf(f, "TestLength [s]\t%ud\n", m_settings.testLength);
 
 	// 5. Write the result
 	double distance = m_settings.plumeHeight * tan(DEGREETORAD * m_settings.angleSeparation);
