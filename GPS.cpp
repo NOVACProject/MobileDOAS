@@ -27,7 +27,7 @@ CGPS::CGPS(){
 	gpsInfo.gpsPos.longitude = 0;
 	gpsInfo.gpsTime = 0;
 
-	gotContact = false;
+	m_gotContact = false;
 
 	m_gpsThread = nullptr;
 	fRun = false;
@@ -38,9 +38,9 @@ CGPS::CGPS(char* pCOMPort, long pBaudrate)
 	serial.baudrate = pBaudrate;
 	strcpy(serial.serialPort, pCOMPort);
 	if (!serial.Init(pBaudrate)) {
-		MessageBox(NULL, "Could not communicate with GPS. No GPS-data can be retrieved!", "Error", MB_OK | MB_SYSTEMMODAL);
+		MessageBox(nullptr, "Could not communicate with GPS. No GPS-data can be retrieved!", "Error", MB_OK | MB_SYSTEMMODAL);
 	}
-	gotContact = true;
+	m_gotContact = true;
 }
 
 CGPS::~CGPS(){
@@ -81,189 +81,191 @@ long CGPS::GetNumberOfSatellites() const {
 
 /** Parse the read GPS-Information */
 /** See http://www.gpsinformation.org/dale/nmea.htm/ */
-int CGPS::Parse(char *string){
+bool CGPS::Parse(char *string, gpsInformation& data){
 
-	char sep[]    = ",";   /* the separator */
-	char *stopStr = "\0";
+	const char sep[]    = ",";   /* the separator */
+	char* stopStr       = "\0";
 	
 	char *token = strtok(string, sep);  /* get first sentence identifier */
 
-	if (token == NULL)
-		return 0;
+	if (token == nullptr) {
+		return false;
+	}
 
-	while (token != NULL) {
+	while (token != nullptr) {
 		
 		if (0 == strncmp(token, "$GPRMC", 6)) {	// fisrt sentence should be GPRMC
 
 			/* 1: the time */
-			if (NULL == (token = strtok(NULL, sep))) {
-				return 0;
+			if (nullptr == (token = strtok(nullptr, sep))) {
+				return false;
 			}
 			else {
-				this->gpsInfo.gpsTime = strtol(token, &stopStr, 10);
+				data.gpsTime = strtol(token, &stopStr, 10);
 			}
 
 			/* 2: the fix status */
-			if (NULL == (token = strtok(NULL, sep))) {
-				return 0;
+			if (nullptr == (token = strtok(nullptr, sep))) {
+				return false;
 			}
 			else {
 				if (0 == strncmp(token, "A", 1)) {
-					this->gpsInfo.nSatellites = 3; /* we can see at least three satellites */
+					data.nSatellites = 3; /* we can see at least three satellites */
 				}
 				else {
-					this->gpsInfo.nSatellites = -1; /* void */
+					data.nSatellites = -1; /* void */
 				}
 			}
 
 			/* 3: the latitude */
-			if (NULL == (token = strtok(NULL, sep))) {
-				return 0;
+			if (nullptr == (token = strtok(nullptr, sep))) {
+				return false;
 			}
 			else {
-				this->gpsInfo.gpsPos.latitude = DoubleToAngle(strtod(token, &stopStr));
+				data.gpsPos.latitude = ConvertToDecimalDegrees(strtod(token, &stopStr));
 			}
 
 			/* 4: north/south hemisphere */
-			if (NULL == (token = strtok(NULL, sep))) {
-				return 0;
+			if (nullptr == (token = strtok(nullptr, sep))) {
+				return false;
 			}
 			else {
 				if (0 == strncmp(token, "S", 1))
-					this->gpsInfo.gpsPos.latitude = -this->gpsInfo.gpsPos.latitude;
+					data.gpsPos.latitude = -data.gpsPos.latitude;
 			}
 
 			/* 5: the longitude  */
-			if (NULL == (token = strtok(NULL, sep))) {
-				return 0;
+			if (nullptr == (token = strtok(nullptr, sep))) {
+				return false;
 			}
 			else {
-				this->gpsInfo.gpsPos.longitude = DoubleToAngle(strtod(token, &stopStr));
+				data.gpsPos.longitude = ConvertToDecimalDegrees(strtod(token, &stopStr));
 			}
 
 			/* 6: east/west hemisphere */
-			if (NULL == (token = strtok(NULL, sep))) {
-				return 0;
+			if (nullptr == (token = strtok(nullptr, sep))) {
+				return false;
 			}
 			else {
 				if (0 == strncmp(token, "W", 1))
-					this->gpsInfo.gpsPos.longitude = -this->gpsInfo.gpsPos.longitude;
+					data.gpsPos.longitude = -data.gpsPos.longitude;
 			}
 
 			/* 7: the speed [knots] (ignore) */
-			if (NULL == (token = strtok(NULL, sep))) {
-				return 0;
+			if (nullptr == (token = strtok(nullptr, sep))) {
+				return false;
 			}
-			else {
-				double speed = strtod(token, &stopStr); // not used
-			}
+			// else {
+			// 	double speed = strtod(token, &stopStr); // not used
+			// }
 
 			/* 8: bearing [degrees] (ignore) */
-			if (NULL == (token = strtok(NULL, sep))) {
-				return 0;
+			if (nullptr == (token = strtok(nullptr, sep))) {
+				return false;
 			}
-			else {
-				double bearing = strtod(token, &stopStr); // not used
-			}
+			// else {
+			// 	double bearing = strtod(token, &stopStr); // not used
+			// }
 
 			/* 9: date (mmddyy) */
-			if (NULL == (token = strtok(NULL, sep))) {
-				return 0;
+			if (nullptr == (token = strtok(nullptr, sep))) {
+				return false;
 			}
 			else {
-				sprintf(this->gpsInfo.gpsDate, "%s", token);
+				sprintf(data.gpsDate, "%s", token);
 			}
 
 			/* 10: magnetic variation(ignore) */
-			if (NULL == (token = strtok(NULL, sep))) {
-				return 0;
+			if (nullptr == (token = strtok(nullptr, sep))) {
+				return false;
 			}
-			else {
-				double mv = strtod(token, &stopStr); // not used
+			// else {
+			// 	double mv = strtod(token, &stopStr); // not used
+			// }
+
+			if (nullptr == (token = strtok(nullptr, "*"))) {
+				return false;
 			}
-			if (NULL == (token = strtok(NULL, "*"))) {
-				return 0;
-			}
-			else {
-				char* mvd = token; // not used
-			}
+			// else {
+			// 	char* mvd = token; // not used
+			// }
 
 			/* 11:checksum          (ignore) */
 		}
 
 		if (0 == strncmp(token, "$GPGGA", 6)) {	// second sentence should be GPGGA
 			/* 1: the time */
-			if (NULL == (token = strtok(NULL, sep))) {
-				return 0;
+			if (nullptr == (token = strtok(nullptr, sep))) {
+				return false;
 			}
 			else {
-				this->gpsInfo.gpsTime = strtol(token, &stopStr, 10);
+				data.gpsTime = strtol(token, &stopStr, 10);
 			}
 
 			/* 2: the latitude */
-			if (NULL == (token = strtok(NULL, sep))) {
-				return 0;
+			if (nullptr == (token = strtok(nullptr, sep))) {
+				return false;
 			}
 			else {
-				this->gpsInfo.gpsPos.latitude = DoubleToAngle(strtod(token, &stopStr));
+				data.gpsPos.latitude = ConvertToDecimalDegrees(strtod(token, &stopStr));
 			}
 
 			/* 3: north/south hemisphere */
-			if (NULL == (token = strtok(NULL, sep))) {
-				return 0;
+			if (nullptr == (token = strtok(nullptr, sep))) {
+				return false;
 			}
 			else {
 				if (0 == strncmp(token, "S", 1))
-					this->gpsInfo.gpsPos.latitude = -this->gpsInfo.gpsPos.latitude;
+					data.gpsPos.latitude = -data.gpsPos.latitude;
 			}
 
 			/* 4: longitude */
-			if (NULL == (token = strtok(NULL, sep))) {
-				return 0;
+			if (nullptr == (token = strtok(nullptr, sep))) {
+				return false;
 			}
 			else {
-				this->gpsInfo.gpsPos.longitude = DoubleToAngle(strtod(token, &stopStr));
+				data.gpsPos.longitude = ConvertToDecimalDegrees(strtod(token, &stopStr));
 			}
 
 			/* 5: east/west hemisphere */
-			if (NULL == (token = strtok(NULL, sep))) {
-				return 0;
+			if (nullptr == (token = strtok(nullptr, sep))) {
+				return false;
 			}
 			else {
 				if (0 == strncmp(token, "W", 1))
-					this->gpsInfo.gpsPos.longitude = -this->gpsInfo.gpsPos.longitude;
+					data.gpsPos.longitude = -data.gpsPos.longitude;
 			}
 
 			/* 6: quality of fix (ignore) */
-			if (NULL == (token = strtok(NULL, sep))) {
-				return 0;
+			if (nullptr == (token = strtok(nullptr, sep))) {
+				return false;
 			}
-			else {
-				int quality = strtol(token, &stopStr, 10);
-			}
+			// else {
+			// 	int quality = strtol(token, &stopStr, 10);
+			// }
 
 			/* 7: number of satellites being used */
-			if (NULL == (token = strtok(NULL, sep))) {
-				return 0;
+			if (nullptr == (token = strtok(nullptr, sep))) {
+				return false;
 			}
 			else {
-				this->gpsInfo.nSatellites = strtol(token, &stopStr, 10);
+				data.nSatellites = strtol(token, &stopStr, 10);
 			}
 
 			/* 8: "horizontal dillution of precision" (ignore) */
-			if (NULL == (token = strtok(NULL, sep))) {
-				return 0;
+			if (nullptr == (token = strtok(nullptr, sep))) {
+				return false;
 			}
-			else {
-				double hd = strtod(token, &stopStr);
-			}
+			// else {
+			// 	double hd = strtod(token, &stopStr);
+			// }
 
 			/* 9: Altitude */
-			if (NULL == (token = strtok(NULL, sep))) {
-				return 0;
+			if (nullptr == (token = strtok(nullptr, sep))) {
+				return false;
 			}
 			else {
-				this->gpsInfo.gpsPos.altitude = strtod(token, &stopStr);
+				data.gpsPos.altitude = strtod(token, &stopStr);
 			}
 
 			// the remainder of stuff
@@ -273,27 +275,24 @@ int CGPS::Parse(char *string){
 			/*13: checksum for the sentence (ignore) */
 		}
 
-		token = strtok(NULL, "\n"); // go to end of line
-		if (token != NULL) {
-			token = strtok(NULL, sep); // get next sentence identifier
+		token = strtok(nullptr, "\n"); // go to end of line
+		if (token != nullptr) {
+			token = strtok(nullptr, sep); // get next sentence identifier
 		}
 	}
 
-	return 1;
+	return true;
 }
 
-/* The GPS reports latitude and longitude in the format ddmm.mmmm
-  , this function converts this to the format dd.dddd */
-double CGPS::DoubleToAngle(double rawData){
-	double remainder = fmod(rawData,100.0); // The minutes
-	int degree       = (int)(rawData/100);	 // The degrees
-	double fDegree   = degree + remainder/60.0;
-
-	return fDegree;
+double CGPS::ConvertToDecimalDegrees(double rawData) {
+	const double minutes  = fmod(rawData, 100.0);
+	double integerDegrees = (int)(rawData/100);
+	
+	return integerDegrees + minutes / 60.0;
 }
 
 void CGPS::Run(){
-	m_gpsThread = AfxBeginThread(CollectGPSData, (LPVOID)this, THREAD_PRIORITY_NORMAL,0,0,NULL);
+	m_gpsThread = AfxBeginThread(CollectGPSData, (LPVOID)this, THREAD_PRIORITY_NORMAL,0,0,nullptr);
 }
 
 void CGPS::Stop(){
@@ -302,17 +301,18 @@ void CGPS::Stop(){
 	}
 }
 
-// IsRunning returns true if the gps-collecting thread is running.
-bool CGPS::IsRunning(){
-	if(m_gpsThread == nullptr)
+bool CGPS::IsRunning() const 
+{
+	if(m_gpsThread == nullptr) {
 		return false;
+	}
 
 	// the thread is probably running
 	return true;
 }
 
 
-int CGPS::ReadGPS(){
+bool CGPS::ReadGPS(){
 	long cnt;
 	char gpstxt[256];
 
@@ -329,10 +329,10 @@ int CGPS::ReadGPS(){
 		}else{
 			printf("timeout in getting gps\n");
 			serial.FlushSerialPort(1);
-			this->gotContact = false;
+			m_gotContact = false;
 			return(0);
 		}
-	}while(!this->Parse(gpstxt));
+	}while(!Parse(gpstxt, this->gpsInfo));
 
 	#ifdef _DEBUG
 	m_logFile.Format("gps.log"); // for testing only
@@ -346,9 +346,9 @@ int CGPS::ReadGPS(){
 	#endif
 
 	// we've got contact with the gps again
-	this->gotContact = true;
+	m_gotContact = true;
 
-	return 1;
+	return SUCCESS;
 }
 
 void CGPS::CloseSerial(){

@@ -412,7 +412,7 @@ public:
 	char*   ReadGpsDate();
 	
 	/** Pointer to the gps reading thread */
-	CGPS*   m_gps;
+	CGPS*   m_gps = nullptr;
 	
 	/** This is true if we should use the GPS receiver (default behavior).
 		Set to false if the gps is missing or nor working. */
@@ -420,11 +420,11 @@ public:
 	
 	/** The Serial-port that we should read the GPS data from 
 		This is something like 'COM4' */
-	char    GPSPort[20];
+	char    m_GPSPort[20];
 	
 	/** The baudrate that we should use to communicate with the GPS 
-		reveiver, typicallly 4800 */
-	long    GPSBaud;
+		reveiver, typicallly 9600 */
+	long    m_GPSBaudRate = 9600;
 
 
 	// ----------------------------- Handling the serial communication -----------------
@@ -611,7 +611,6 @@ public:
 
 protected:
 
-
 	/** The time difference in seconds between UMT and local time */
 	long timeDiff; 
 
@@ -630,6 +629,9 @@ protected:
 	
 	/** The base-name of the measurement. As set by the user */
 	CString strBaseName;
+
+private:
+
 };
 
 #endif // !defined(AFX_COMMUNICATION_H__7C04DDEA_2314_405E_A09D_02B403AC7762__INCLUDED_)

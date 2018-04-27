@@ -13,6 +13,13 @@
 #include "Common.h"
 #include <string>
 
+struct gpsInformation {
+	struct    gpsPosition gpsPos;
+	long      gpsTime;
+	long      nSatellites;
+	char      gpsDate[6];
+};
+
 class CGPS {
 public:
 	CGPS();
@@ -22,9 +29,14 @@ public:
 	/** Set to true when the gps-collecting thread is running. */
 	volatile bool fRun;
 
-	/* try to parse the text read from the GPS. 
-	    Returns 1 if all is ok, otherwise 0 */
-	int Parse(char *string);
+	/* Tries to parse the text read from the GPS.
+		The parsed information will be filled into the provided 'data.
+		@return true if the parsing suceeded, otherwise false. */
+	static bool Parse(char* string, gpsInformation& data);
+
+	/* Convert an angle from the raw format of the GPS data DDMM.MMMMM
+		into the format DD.DDDDDDD */
+	static double ConvertToDecimalDegrees(double degreesAndMinutes);
 
 	/* Communication with other parts of the program */
 	long    GetTime() const;
@@ -34,10 +46,6 @@ public:
 	void    GetDate(std::string& dateStr) const;
 	long    GetNumberOfSatellites() const;
 
-	/* convert the raw GPS data into the format DD.DDDDDDD
-			from being in the raw format DDMM.MMMMM */
-	double  DoubleToAngle(double degreesAndMinutes);
-
 	/* WriteGPSLog and WriteLog are currently not used */
 	// void    WriteGPSLog(char *pFile,double *pPos,double pTime);
 	// void    WriteLog(char *pFile,char* txt);
@@ -45,25 +53,22 @@ public:
 	/* Running the GPS collection */
 	void    Run();
 	void    Stop();
-	void	CloseSerial();
-	int     ReadGPS();
-	bool    IsRunning(); // <-- returns true if the gps-collecting thread is running.
+	void    CloseSerial();
 
-//variables 
+	/** Reads data from the gps, this will use and block the serial port. 
+		@return SUCCESS if the reading succeeded */
+	bool ReadGPS();
+
+	/** @returns true if the gps-collecting thread is running. */
+	bool IsRunning() const;
+
 private:
 
 	/** true if the serial connection and the GPS seems to work */
-	bool gotContact;
+	bool m_gotContact = false;
 
 	/** The gps-logfile*/
 	CString m_logFile;
-
-	struct gpsInformation{
-		struct    gpsPosition gpsPos;
-		long      gpsTime;
-		long      nSatellites;
-		char      gpsDate[6];
-	};
 
 	/* The actual information */
 	struct gpsInformation gpsInfo;

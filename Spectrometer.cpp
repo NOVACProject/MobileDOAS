@@ -30,8 +30,9 @@ static char THIS_FILE[] = __FILE__;
 CFormView* pView;
 
 CSpectrometer::CSpectrometer()
-	: m_useGps(true) {
-	fUseUSB = true;
+	: m_useGps(true), fUseUSB(true) {
+
+	sprintf(m_GPSPort, "COM5");
 
 	fRun = TRUE;
 	m_spectrometerMode = MODE_TRAVERSE; // default mode
@@ -92,8 +93,9 @@ CSpectrometer::~CSpectrometer()
 	delete this->m_fitRegion[0].eval[0];
 	delete this->m_fitRegion[0].eval[1];
 
-	if (m_gps != nullptr)
+	if (m_gps != nullptr) {
 		delete m_gps;
+	}
 }
 
 
@@ -409,8 +411,8 @@ void CSpectrometer::ApplySettings() {
 	}
 
 	// The GPS-settings
-	GPSBaud = m_conf->m_gpsBaudrate;
-	sprintf(GPSPort, "%s", (LPCTSTR)m_conf->m_gpsPort);
+	m_GPSBaudRate = m_conf->m_gpsBaudrate;
+	sprintf(m_GPSPort, "%s", (LPCTSTR)m_conf->m_gpsPort);
 	m_useGps = (m_conf->m_useGPS != 0);
 
 	// The exposure-time settings
@@ -703,7 +705,7 @@ int CSpectrometer::Stop()
 
 	// Also stop the GPS-reading thread
 	if (m_gps != nullptr) {
-		m_gps->fRun = false;
+		m_gps->Stop();
 	}
 
 	return 1;
@@ -1169,10 +1171,10 @@ void CSpectrometer::WriteBeginEvFile(int fitRegion) {
 
 	if (!fUseUSB)
 		str4.Format("SPEC_BAUD=%d\nSERIALPORT=%s\nGPSBAUD=%d\nGPSPORT=%s\nTIMERESOLUTION=%d\n",
-			serial.baudrate, serial.serialPort, GPSBaud, GPSPort, m_timeResolution);
+			serial.baudrate, serial.serialPort, m_GPSBaudRate, m_GPSPort, m_timeResolution);
 	else
 		str4.Format("SERIALPORT=USB\nGPSBAUD=%d\nGPSPORT=%s\nTIMERESOLUTION=%d\n",
-			GPSBaud, GPSPort, m_timeResolution);
+			m_GPSBaudRate, m_GPSPort, m_timeResolution);
 
 	str5.Format("FIXEXPTIME=%d\nFITFROM=%d\nFITTO=%d\nPOLYNOM=%d\n",
 		m_fixexptime, m_fitRegion[fitRegion].window.fitLow, m_fitRegion[fitRegion].window.fitHigh, m_fitRegion[fitRegion].window.polyOrder);

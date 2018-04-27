@@ -1079,16 +1079,16 @@ void CDMSpecView::ReadMobileLog(){
 		if(i == L){
 			sprintf(m_Base, "%s%02d", baseNameTxt, 1);
 		}else{
-			sscanf(baseNameTxt + i, "%d", &d);
+			sscanf(baseNameTxt + i, "%zu", &d);
 			baseNameTxt[i] = 0;
 			switch(L - i){
-				case 1: sprintf(m_Base, "%s%01d", baseNameTxt, ++d); break;
-				case 2: sprintf(m_Base, "%s%02d", baseNameTxt, ++d); break;
-				case 3: sprintf(m_Base, "%s%03d", baseNameTxt, ++d); break;
-				case 4: sprintf(m_Base, "%s%04d", baseNameTxt, ++d); break;
-				case 5: sprintf(m_Base, "%s%05d", baseNameTxt, ++d); break;
-				case 6: sprintf(m_Base, "%s%06d", baseNameTxt, ++d); break;
-				case 7: sprintf(m_Base, "%s%07d", baseNameTxt, ++d); break;
+				case 1: sprintf(m_Base, "%s%01zu", baseNameTxt, ++d); break;
+				case 2: sprintf(m_Base, "%s%02zu", baseNameTxt, ++d); break;
+				case 3: sprintf(m_Base, "%s%03zu", baseNameTxt, ++d); break;
+				case 4: sprintf(m_Base, "%s%04zu", baseNameTxt, ++d); break;
+				case 5: sprintf(m_Base, "%s%05zu", baseNameTxt, ++d); break;
+				case 6: sprintf(m_Base, "%s%06zu", baseNameTxt, ++d); break;
+				case 7: sprintf(m_Base, "%s%07zu", baseNameTxt, ++d); break;
 			}
 		}
 		m_BaseEdit.SetWindowText(m_Base);
@@ -1247,20 +1247,18 @@ void CDMSpecView::OnMenuControlTestTheGPS()
 			// it was possible to open the serial-port, test if there is a gps on this port
 			serial.Close();
 
-			CGPS *gps = new CGPS(serial.serialPort, serial.baudrate);
+			CGPS gps{serial.serialPort, serial.baudrate};
 			for (int i = 0; i < 10; ++i) {
-				if (1 == gps->ReadGPS()) {
+				if (SUCCESS == gps.ReadGPS()) {
 					status.Format("Found GPS on serialPort: %s using baud rate %d", serial.serialPort, serial.baudrate);
 					ShowStatusMsg(status); 
 					MessageBox(status, "Found GPS reciever");
 
-					delete gps;
 					return;
 				}
 
 				Sleep(10);
 			}
-			delete gps;
 		}
 	}
 	status = "No GPS reciever could be found";

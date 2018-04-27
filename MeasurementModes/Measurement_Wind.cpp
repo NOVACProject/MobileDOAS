@@ -121,7 +121,7 @@ void CMeasurement_Wind::Run(){
 
 		/* Start the GPS collection thread */
 		if(m_useGps){
-			m_gps	= new CGPS(GPSPort, GPSBaud);
+			m_gps	= new CGPS(m_GPSPort, m_GPSBaudRate);
 			m_gps->Run(); /* start the gps-reading thread */
 		}
 	}else{
