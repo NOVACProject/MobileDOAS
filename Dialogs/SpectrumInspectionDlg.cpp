@@ -37,9 +37,9 @@ CSpectrumInspectionDlg::CSpectrumInspectionDlg(CWnd* pParent /*=NULL*/)
 
 CSpectrumInspectionDlg::~CSpectrumInspectionDlg()
 {
-	if(m_number != NULL){
+	if(m_number != nullptr){
 		delete m_number;
-		m_number = NULL;
+		m_number = nullptr;
 	}		
 }
 
@@ -309,7 +309,7 @@ void CSpectrumInspectionDlg::GetPlotRange(Graph::CSpectrumGraph::plotRange &rang
 	if(fabs(rect.maxLambda) > 0.1){
 		range = rect;
 		return;
-	}else if(spectrum != NULL){
+	}else if(spectrum != nullptr){
 		long maxV		= (long)spectrum->GetMax();
 		range.minIntens = 0.0;
 		range.maxIntens	= maxV;
@@ -365,7 +365,7 @@ void CSpectrumInspectionDlg::FillInSpectrumPropertiesList(const CSpectrum *spec)
 	CString str;
 	int index = 0;
 
-	if(spec != NULL){
+	if(spec != nullptr){
 		// ---- Show the information to the user... ----
 		str.Format("%s", spec->spectrometer);
 		m_propertyList.SetItemText(index++, 1,		str);
@@ -379,7 +379,7 @@ void CSpectrumInspectionDlg::FillInSpectrumPropertiesList(const CSpectrum *spec)
 		str.Format("%.2lf", spec->GetAverage(2, 20));
 		m_propertyList.SetItemText(index++, 1,		str);
 
-		str.Format("%d", spec->intTime);
+		str.Format("%d", spec->exposureTime);
 		m_propertyList.SetItemText(index++, 1,		str);
 
 		str.Format("%d", spec->scans);

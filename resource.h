@@ -7,7 +7,7 @@
 #define IDD_REEVAL_EVALUATIONLOG        106
 #define IDR_MAINFRAME                   128
 #define IDR_DMSPECTYPE                  129
-#define IDD_DIALOG2                     131
+#define IDD_POST_FLUX_DIALOG            131
 #define IDD_FLUXDIALOG                  131
 #define IDB_GREEN                       133
 #define IDB_YELLOW                      134
@@ -130,7 +130,6 @@
 #define IDC_SRC_LAT_EDIT                1000
 #define IDC_COMMENT_EDIT                1000
 #define IDC_EDIT_EVLOG                  1000
-#define IDC_LOW_INTENSITY               1000
 #define IDC_EDIT_SO2                    1000
 #define IDC_PATH_WINDFIELDFILE          1000
 #define IDC_REEVAL_WINDOW_FITFROM       1000
@@ -146,7 +145,6 @@
 #define IDC_TIMERES                     1001
 #define IDC_SRC_LON_EDIT                1001
 #define IDC_NMERGE_EDIT                 1001
-#define IDC_HIGH_INTENSITY              1001
 #define IDC_EDIT_NO2                    1001
 #define IDC_REEVAL_WINDOW_FITTO         1001
 #define IDC_EDIT_TIMESHIFT              1001
@@ -154,17 +152,14 @@
 #define IDC_EDIT_FITFROM                1001
 #define IDC_EDIT_PERCENT                1001
 #define IDC_EDIT_SPECSCALE_MIN          1001
-#define IDC_INTENSITY_CHANNEL           1002
 #define IDC_EDIT_O3                     1002
 #define IDC_REEVAL_WINDOW_POLYNOM       1002
 #define IDC_EDIT_MAXSHIFTTIME           1002
 #define IDC_EDIT_FITTO                  1002
 #define IDC_EDIT_SPECSCALE_MAX          1002
 #define IDC_SETBUTTON                   1003
-#define IDC_COLUMN_LOW                  1003
 #define IDC_EDIT_RING                   1003
 #define IDC_BASEEDIT                    1004
-#define IDC_COLUMN_HIGH                 1004
 #define IDC_EDIT_SKY                    1004
 #define IDC_EDIT_TESTLENGTH             1004
 #define IDC_REEVAL_WINDOW_POLYNOM2      1004
@@ -212,7 +207,9 @@
 #define IDC_BTNDEL                      1053
 #define IDC_SLIDEROFFSET                1054
 #define IDC_SLIDERINTENSITY             1055
+#define IDC_SLIDERINTENSITY_LOW         1055
 #define IDC_BTNROUTE                    1056
+#define IDC_SLIDERINTENSITY_HIGH        1056
 #define IDC_SPECCOM                     1057
 #define IDC_BTN_IMPORT_WINDFIELD        1057
 #define IDC_SPECBAUD                    1058
@@ -247,7 +244,6 @@
 #define IDC_REFERENCE_PROPERTIES        1064
 #define IDC_GPSBAUD                     1065
 #define IDC_BROWSE_RING                 1065
-#define IDC_REFERENCE_PROPERTIES2       1065
 #define IDC_REFERENCE_VIEW              1065
 #define IDC_SPECCENTER                  1066
 #define IDC_BROWSE_SKY                  1066
@@ -282,11 +278,15 @@
 #define IDC_TREE1                       1103
 #define IDC_SHIFT_COMBO_RING            1104
 #define IDC_BTN_DEL_LOW_INTENSITY       1106
+#define IDC_BTN_DEL_INTENSITY           1106
 #define IDC_FLUX_EDIT                   1107
 #define IDC_FLUX_UNIT                   1108
+#define IDC_BTN_DEL_HIGH_INTENSITY      1108
 #define IDC_INTENSITY_EDIT              1109
+#define IDC_INTENSITY_EDIT_LOW          1109
 #define IDC_STATISTICS                  1110
 #define IDC_ADDITIONAL_CHECK            1111
+#define IDC_INTENSITY_EDIT_HIGH         1111
 #define IDC_STATIC_LATITUDE             1113
 #define IDC_CHECK_SHOW_SOURCE           1114
 #define IDC_STATIC_LONGITUDE            1115
@@ -308,7 +308,6 @@
 #define IDC_PROGRESS1                   1138
 #define IDC_SINGLE_SKY                  1139
 #define IDC_ALL_SKY                     1140
-#define IDC_CONDITIONAL_SKY             1141
 #define IDC_USER_SKY                    1142
 #define IDC_CHECK_USESO2                1148
 #define IDC_CHECK_USEO3                 1149
@@ -468,7 +467,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        265
+#define _APS_NEXT_RESOURCE_VALUE        266
 #define _APS_NEXT_COMMAND_VALUE         32799
 #define _APS_NEXT_CONTROL_VALUE         1273
 #define _APS_NEXT_SYMED_VALUE           104

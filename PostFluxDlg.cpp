@@ -25,9 +25,9 @@ using namespace Graph;
 extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
 
 
-#define DLGLEFT 40
+#define DLGLEFT 93
 #define DLGTOP 14
-#define DLGRIGHT 620
+#define DLGRIGHT 673
 #define DLGBOTTOM 556
 
 #define ORANGE RGB(255,128,0)
@@ -52,7 +52,7 @@ CPostFluxDlg::CPostFluxDlg(CWnd* pParent /*=NULL*/)
 	m_windDirectionAverage  = 0;
 	m_windDirectionMax      = 0;
 
-	m_GraphToolTip = NULL;
+	m_GraphToolTip = nullptr;
 
 	m_recordNumber = 0;
 	
@@ -69,7 +69,7 @@ CPostFluxDlg::CPostFluxDlg(CWnd* pParent /*=NULL*/)
 
 
 CPostFluxDlg::~CPostFluxDlg(){
-	if(m_flux != NULL)
+	if(m_flux != nullptr)
 		delete(m_flux);
 }
 
@@ -103,7 +103,8 @@ void CPostFluxDlg::DoDataExchange(CDataExchange* pDX)
 	DDV_MinMaxDouble(pDX, m_WindSpeed, 0., 1000000.);
 
 	// Selecting points based on intensity
-	DDX_Control(pDX, IDC_SLIDERINTENSITY,	m_intensitySlider);
+	DDX_Control(pDX, IDC_SLIDERINTENSITY_LOW,	m_intensitySliderLow);
+	DDX_Control(pDX, IDC_SLIDERINTENSITY_HIGH, m_intensitySliderHigh);
 	DDX_Control(pDX, IDC_PATH_LIST,			m_pathList);
 	DDX_Control(pDX, IDC_UNIT_COMBO,		m_unitSelection);
 	//}}AFX_DATA_MAP
@@ -127,7 +128,7 @@ BEGIN_MESSAGE_MAP(CPostFluxDlg, CDialog)
 	ON_BN_CLICKED(IDC_BTNROUTE,				OnBtnShowRoute)
 
 	// Deleting points
-	ON_BN_CLICKED(IDC_BTN_DEL_LOW_INTENSITY, OnBnClickedBtnDelLowIntensity)
+	ON_BN_CLICKED(IDC_BTN_DEL_INTENSITY, OnBnClickedBtnDelIntensity)
 	ON_BN_CLICKED(IDC_BTNDEL,				OnBtnDeleteSelected)
 
 	// Showing the sources-list
@@ -138,11 +139,12 @@ BEGIN_MESSAGE_MAP(CPostFluxDlg, CDialog)
 	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDERFROM,		OnReleasedcaptureSliderfrom)
 	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDERTO,			OnReleasedcaptureSliderto)
 	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDEROFFSET,		OnReleasedcaptureSlideroffset)
-	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDERINTENSITY,	OnNMReleasedcaptureSliderintensity)
+	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDERINTENSITY_LOW,	OnNMReleasedcaptureSliderintensityLow)
+	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDERINTENSITY_HIGH, OnNMReleasedcaptureSliderintensityHigh)
 
 	// Changing the source latitude/longitude
-	ON_EN_CHANGE(IDC_FLUXDLON,		OnChangeSource)
-	ON_EN_CHANGE(IDC_FLUXDLAT,		OnChangeSource)
+	ON_EN_KILLFOCUS(IDC_FLUXDLON, OnChangeSource)
+	ON_EN_KILLFOCUS(IDC_FLUXDLAT, OnChangeSource)
 
 	// Tool-tips
 	ON_NOTIFY_EX(TTN_NEEDTEXT, 0, OnToolTipNotify)
@@ -198,7 +200,7 @@ BEGIN_MESSAGE_MAP(CPostFluxDlg, CDialog)
 	//	http://support.microsoft.com/kb/242577
 	ON_WM_INITMENUPOPUP()
 
-	//}}AFX_MSG_MAP
+	ON_CBN_SELCHANGE(IDC_UNIT_COMBO, &CPostFluxDlg::ChangeFluxUnit)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -218,9 +220,9 @@ void CPostFluxDlg::OnBtnOpenLogFile(){
 	ofn.nMaxFile = sizeof(szFile);
 	ofn.lpstrFilter = "Evaluation Logs\0*.txt";
 	ofn.nFilterIndex = 1;
-	ofn.lpstrFileTitle = NULL;
+	ofn.lpstrFileTitle = nullptr;
 	ofn.nMaxFileTitle = 0;
-	ofn.lpstrInitialDir = NULL;
+	ofn.lpstrInitialDir = nullptr;
 	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_EXPLORER | OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT;
 
 	if(GetOpenFileName(&ofn) == TRUE){
@@ -370,27 +372,34 @@ void CPostFluxDlg::OnCalculateFlux()
 	double fluxError_High = (m_flux->m_totalFlux_High - m_flux->m_totalFlux) / m_flux->m_totalFlux;
 
 	// Convert the unit...
+	CString dispFmt, dispUnit;
+	double dispFlux, dispLow, dispHigh, dispErrorLow, dispErrorHigh;
 	if(m_unitSelection.GetCurSel() == UNIT_KGS){
-		fluxMessage.Format(_T("%f"), totalFlux);
-		fluxRangeMessage.Format("(%.2f - %.2f) [kg/s] <-> \n (%.1lf - %.1lf) [%%]", 
-			m_flux->m_totalFlux_Low, m_flux->m_totalFlux_High, 
-			100 * fluxError_Low, 100 * fluxError_High);
-		this->SetDlgItemText(IDC_FLUX_EDIT, fluxMessage);
-		this->SetDlgItemText(IDC_LABEL_FLUXRANGE, fluxRangeMessage);
-		fluxMessage.AppendFormat(" [kg/s]\n");
+		dispFmt = "(%.2f - %.2f) [kg/s] <-> \n (%.1lf - %.1lf) [%%]";
+		dispUnit = " [kg/s]\n";
+		dispFlux = abs(totalFlux);
+		dispLow = abs(m_flux->m_totalFlux_Low);
+		dispHigh = abs(m_flux->m_totalFlux_High);
+		dispErrorLow = 100 * fluxError_Low;
+		dispErrorHigh = 100 * fluxError_High;
 	}else{
-		fluxMessage.Format(_T("%f"), totalFlux * 3.6 * 24);
-		fluxRangeMessage.Format("(%.2f - %.2f) [ton/day] <-> \n (%.1lf - %.1lf) [%%]", 
-			m_flux->m_totalFlux_Low * 3.6 * 24, m_flux->m_totalFlux_High * 3.6 * 24,
-			100 * fluxError_Low, 100 * fluxError_High);
-		this->SetDlgItemText(IDC_FLUX_EDIT, fluxMessage);
-		this->SetDlgItemText(IDC_LABEL_FLUXRANGE, fluxRangeMessage);
-		fluxMessage.AppendFormat(" [ton/day]\n");
+		dispFmt = "(%.2f - %.2f) [ton/day] <-> \n (%.1lf - %.1lf) [%%]";
+		dispUnit = " [ton/day]\n";
+		dispFlux = abs(totalFlux) * 3.6 * 24;
+		dispLow = abs(m_flux->m_totalFlux_Low) * 3.6 * 24;
+		dispHigh = abs(m_flux->m_totalFlux_High) * 3.6 * 24;
+		dispErrorLow = 100 * fluxError_Low;
+		dispErrorHigh = 100 * fluxError_High;
 	}
+	fluxMessage.Format(_T("%f"), dispFlux);
+	fluxRangeMessage.Format(dispFmt, dispLow, dispHigh, dispErrorLow, dispErrorHigh);
+	this->SetDlgItemText(IDC_FLUX_EDIT, fluxMessage);
+	this->SetDlgItemText(IDC_LABEL_FLUXRANGE, fluxRangeMessage);
+	fluxMessage.AppendFormat(dispUnit);
 
 	// Output the results to the user
 	strMessage.Format("PlumeWidth=%ld [m]\r\nTraverseLength=%ld [m]", 
-				(long)m_flux->plumeWidth, (long)m_flux->traverseLength);
+				(long)abs(m_flux->plumeWidth), (long)m_flux->traverseLength);
 	this->SetDlgItemText(IDC_STATISTICS, strMessage);
 
 	// Output the results to file
@@ -437,11 +446,16 @@ BOOL CPostFluxDlg::OnInitDialog()
 	m_sliderTo.SetPos(499);
 	m_sliderOffset.SetPos(100);
 
-	m_intensitySlider.SetRange(0, 100);// the intensity slider is in percent
-	m_intensitySlider.SetPos(100 - 10);/* The intensity slider is upside down */
-	m_intensitySlider.SetTicFreq(25);
+	m_intensitySliderLow.SetRange(0, 100);// the intensity slider is in percent
+	m_intensitySliderLow.SetPos(95);/* The intensity slider is upside down */
+	m_intensitySliderLow.SetTicFreq(25);
 
-	this->SetDlgItemText(IDC_INTENSITY_EDIT, TEXT("400"));
+	m_intensitySliderHigh.SetRange(0, 100);// the intensity slider is in percent
+	m_intensitySliderHigh.SetPos(5);/* The intensity slider is upside down */
+	m_intensitySliderHigh.SetTicFreq(25);
+
+	this->SetDlgItemText(IDC_INTENSITY_EDIT_LOW, TEXT("400"));
+	this->SetDlgItemText(IDC_INTENSITY_EDIT_HIGH, TEXT("-400"));
 
 	this->SetDlgItemText(IDC_STATISTICS, TEXT(""));
 
@@ -487,19 +501,19 @@ BOOL CPostFluxDlg::OnInitDialog()
 
 void CPostFluxDlg::OnClose()
 {
-	if(m_flux != NULL){
+	if(m_flux != nullptr){
 		delete(m_flux);
-		m_flux = NULL;
+		m_flux = nullptr;
 	}
 
-	if(m_routeDlg != NULL){
+	if(m_routeDlg != nullptr){
 		delete(m_routeDlg);
-		m_routeDlg = NULL;
+		m_routeDlg = nullptr;
 	}
 
-	if(m_GraphToolTip != NULL){
+	if(m_GraphToolTip != nullptr){
 		delete(m_GraphToolTip);
-		m_GraphToolTip = NULL;
+		m_GraphToolTip = nullptr;
 	}
 
 	CDialog::OnClose();
@@ -520,7 +534,7 @@ void CPostFluxDlg::ShowColumn()
 		return;
 
 	// Set the buffer to use for the x-axis data
-	double *xBuffer = NULL;
+	double *xBuffer = nullptr;
 	if(m_XAxisUnit == 2){
 		m_ColumnPlot.SetXAxisNumberFormat(Graph::FORMAT_GENERAL);
 		m_ColumnPlot.SetXUnits("Distance travelled [km]");
@@ -573,9 +587,13 @@ void CPostFluxDlg::ShowColumn()
 
 	/* draw the intensity */
 	if(m_showIntensity){
-		/* the intensity limit */
-		int selectedIntensity = 100 - m_intensitySlider.GetPos();
-		m_ColumnPlot.DrawLine(HORIZONTAL, selectedIntensity, YELLOW, STYLE_DASHED, CGraphCtrl::PLOT_SECOND_AXIS);
+		/* the intensity low limit */
+		int selectedIntensityLow = 100 - m_intensitySliderLow.GetPos();
+		m_ColumnPlot.DrawLine(HORIZONTAL, selectedIntensityLow, YELLOW, STYLE_DASHED, CGraphCtrl::PLOT_SECOND_AXIS);
+
+		/* the intensity high limit */
+		int selectedIntensityHigh = 100 - m_intensitySliderHigh.GetPos();
+		m_ColumnPlot.DrawLine(HORIZONTAL, selectedIntensityHigh, YELLOW, STYLE_DASHED, CGraphCtrl::PLOT_SECOND_AXIS);
 
 		/* the circles showing the intensity */
 		m_ColumnPlot.DrawCircles(xBuffer, intensityBuffer, (int)(m_right-m_left+1), CGraphCtrl::PLOT_SECOND_AXIS);
@@ -742,15 +760,18 @@ void CPostFluxDlg::OnBtnDeleteSelected()
 	}
 }
 
-void CPostFluxDlg::OnBnClickedBtnDelLowIntensity()
+void CPostFluxDlg::OnBnClickedBtnDelIntensity()
 {
 	long nDeleted;
 	if(UpdateData(TRUE)){
 		// delete the points
 		long	dynRange	= m_flux->GetDynamicRange();
-		long	intensityLimit	= (long) (dynRange * (100.0 - m_intensitySlider.GetPos()) / 100.0);
-		nDeleted = m_flux->m_traverse[m_flux->m_curTraverse]->DeleteLowIntensityPoints(intensityLimit);
 
+		long	intensityLimitLow = (long)(dynRange * (100.0 - m_intensitySliderLow.GetPos()) / 100.0);
+		nDeleted = m_flux->m_traverse[m_flux->m_curTraverse]->DeleteLowIntensityPoints(intensityLimitLow);
+
+		long	intensityLimitHigh = (long)(dynRange * (100.0 - m_intensitySliderHigh.GetPos()) / 100.0);
+		nDeleted += m_flux->m_traverse[m_flux->m_curTraverse]->DeleteHighIntensityPoints(intensityLimitHigh);
 		m_recordNumber = m_flux->GetColumn(columnBuffer);
 		m_flux->GetColumnError(colErrBuffer);
 		m_flux->GetIntensity(intensityBuffer);
@@ -827,14 +848,26 @@ void CPostFluxDlg::OnMenuViewShowColumnError()
 	ShowColumn();
 }
 
-void CPostFluxDlg::OnNMReleasedcaptureSliderintensity(NMHDR *pNMHDR, LRESULT *pResult)
+void CPostFluxDlg::OnNMReleasedcaptureSliderintensityLow(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	// TODO: Add your control notification handler code here
 	*pResult = 0;
 	  
 	CString tmpStr;
-	tmpStr.Format("%ld", 100 - m_intensitySlider.GetPos());
-	this->SetDlgItemText(IDC_INTENSITY_EDIT, tmpStr);
+	tmpStr.Format("%ld", 100 - m_intensitySliderLow.GetPos());
+	this->SetDlgItemText(IDC_INTENSITY_EDIT_LOW, tmpStr);
+
+	ShowColumn();
+}
+
+void CPostFluxDlg::OnNMReleasedcaptureSliderintensityHigh(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	// TODO: Add your control notification handler code here
+	*pResult = 0;
+
+	CString tmpStr;
+	tmpStr.Format("%ld", 100 - m_intensitySliderHigh.GetPos());
+	this->SetDlgItemText(IDC_INTENSITY_EDIT_HIGH, tmpStr);
 
 	ShowColumn();
 }
@@ -934,13 +967,13 @@ BOOL CPostFluxDlg::OnToolTipNotify( UINT id, NMHDR * pNMHDR, LRESULT * pResult )
 	static char string[512];
 
 	TOOLTIPTEXT *pTTT = (TOOLTIPTEXT *)pNMHDR;
-	UINT nID = pNMHDR->idFrom;
+	UINT_PTR nID = pNMHDR->idFrom;
 	nID = ::GetDlgCtrlID((HWND)nID);
 
 	int ok = 0;
 
-	if(nID == IDC_BTN_DEL_LOW_INTENSITY){
-		ok = sprintf(string, "Deletes all spectra with intensity below the value indicated by the Intensity slider to the far left.");
+	if(nID == IDC_BTN_DEL_INTENSITY){
+		ok = sprintf(string, "Deletes all spectra with intensity below or above the values indicated by the Intensity sliders above.");
 	}
 	if(nID == IDC_BTNDEL){
 		ok = sprintf(string, "Deletes all spectra in the range indicated by the 'From' and 'To' sliders above.");
@@ -948,11 +981,17 @@ BOOL CPostFluxDlg::OnToolTipNotify( UINT id, NMHDR * pNMHDR, LRESULT * pResult )
 	if(nID == IDC_CALC){
 		ok = sprintf(string, "Calculates the flux using the spectrum in the selected range and the values of wind speed and wind direction given above");
 	}
-	if(nID == IDC_SLIDERINTENSITY){
-		ok = sprintf(string, "Intensity slider: exact value of this slider is shown below. ");
+	if(nID == IDC_SLIDERINTENSITY_LOW){
+		ok = sprintf(string, "Intensity slider low: exact value of this slider is shown below. ");
 	}
-	if(nID == IDC_INTENSITY_EDIT){
-		ok = sprintf(string, "Value of the Intensity slider.");
+	if (nID == IDC_SLIDERINTENSITY_HIGH) {
+		ok = sprintf(string, "Intensity slider high: exact value of this slider is shown below. ");
+	}
+	if(nID == IDC_INTENSITY_EDIT_LOW){
+		ok = sprintf(string, "Value of the Intensity (low) slider.");
+	}
+	if (nID == IDC_INTENSITY_EDIT_HIGH) {
+		ok = sprintf(string, "Value of the Intensity (high) slider.");
 	}
 	if(nID == IDC_SLIDEROFFSET){
 		ok = sprintf(string, "Offset Slider. Should be set so that the column values outside of the plume varies around zero. Exact value shown below.");
@@ -1003,7 +1042,7 @@ BOOL CPostFluxDlg::OnToolTipNotify( UINT id, NMHDR * pNMHDR, LRESULT * pResult )
 }
 
 BOOL CPostFluxDlg::PreTranslateMessage(MSG* pMsg){
-	if (NULL != m_GraphToolTip)
+	if (nullptr != m_GraphToolTip)
 		m_GraphToolTip->RelayEvent(pMsg);
 
 	return CDialog::PreTranslateMessage(pMsg);
@@ -1011,7 +1050,7 @@ BOOL CPostFluxDlg::PreTranslateMessage(MSG* pMsg){
 
 void CPostFluxDlg::OnBnClickedBtnSourceLat(){
 	Dialogs::CSourceSelectionDlg sourceDlg;
-	int modal = sourceDlg.DoModal();
+	INT_PTR modal = sourceDlg.DoModal();
 	if(IDOK == modal){
 		m_srcLat = sourceDlg.m_selectedLat;
 		m_srcLon = sourceDlg.m_selectedLon;
@@ -1025,7 +1064,7 @@ void CPostFluxDlg::OnBnClickedBtnSourceLat(){
 
 void CPostFluxDlg::OnBnClickedBtnSourceLong(){
 	Dialogs::CSourceSelectionDlg sourceDlg;
-	int modal = sourceDlg.DoModal();
+	INT_PTR modal = sourceDlg.DoModal();
 	if(IDOK == modal){
 		if(sourceDlg.m_selectedLat > -1){
 		this->m_srcLat = sourceDlg.m_selectedLat;
@@ -1265,77 +1304,36 @@ void CPostFluxDlg::OnReEvaluateThisTraverse()
 {
 	if(m_flux->m_traverseNum == 0)
 		return;
-
-	CReEvaluator *reeval = new CReEvaluator();
-
+	
 	/* the reevaluation dialog */
 	CReEvaluationDlg reEvalDlg;
 	reEvalDlg.Construct("ReEvaluation", this, 0);
 
-	// the evaluation log page
-	CReEval_EvalLogDlg m_page1;
-	m_page1.Construct(IDD_REEVAL_EVALUATIONLOG);
-	m_page1.m_reeval = reeval;
-
-	// the dark spectrum page
-	CReEval_DarkDlg m_page2;
-	m_page2.Construct(IDD_REEVAL_DARK);
-	m_page2.m_reeval = reeval;
-
-	// the sky spectrum page
-	CReEval_SkyDlg m_page3;
-	m_page3.Construct(IDD_REEVAL_SKY);
-	m_page3.m_reeval = reeval;
-
-	// the references page
-	CReEval_FitWindowsDlg m_page4;
-	m_page4.Construct(IDD_REEVAL_FITWINDOW);
-	m_page4.m_reeval = reeval;
-
-	// the do evaluation page
-	CReEval_DoEvaluationDlg m_page5;
-	m_page5.Construct(IDD_REEVAL_EVALUATE);
-	m_page5.m_reeval = reeval;
-
-	// add the pages to the window
-	reEvalDlg.AddPage(&m_page1);
-	reEvalDlg.AddPage(&m_page2);
-	reEvalDlg.AddPage(&m_page3);
-	reEvalDlg.AddPage(&m_page4);
-	reEvalDlg.AddPage(&m_page5);
-
-	CString fileName;
-	m_flux->GetCurrentFileName(reeval->m_evalLogFileName);
-	reeval->m_specFileDir.Format("%s", m_flux->m_traverse[m_flux->m_curTraverse]->m_filePath);
-	reeval->ReadEvaluationLog();
-//  m_page1.DrawColumn();
+	m_flux->GetCurrentFileName(reEvalDlg.m_reeval->m_evalLogFileName);
+	reEvalDlg.m_reeval->m_specFileDir.Format("%s", m_flux->m_traverse[m_flux->m_curTraverse]->m_filePath);
+	reEvalDlg.m_reeval->ReadEvaluationLog();
 
 	// open the window
 	reEvalDlg.DoModal();
 
 	// reeval->pView should be NULL if there is no page to recieve the messages generated by 'reeval'
-	reeval->pView = NULL;
+	reEvalDlg.m_reeval->pView = nullptr;
 
 	// if the reevaluation is still running, quit it...
-	if(reeval->fRun){
+	if(reEvalDlg.m_reeval->fRun){
 		DWORD dwExitCode;
-		HANDLE hThread = NULL;
+		HANDLE hThread = nullptr;
 		CString messageToUser;
 
 		// find which thread is running
-		if(m_page5.pReEvalThread != NULL){
-		hThread = m_page5.pReEvalThread->m_hThread;
-		messageToUser.Format("ReEvaluation has been stopped");
-		}else{
-		if(m_page2.pReEvalThread != NULL){
-			hThread = m_page2.pReEvalThread->m_hThread;
-			messageToUser.Format("Offset Checking has been stopped");
-		}
+		if(reEvalDlg.m_page5.pReEvalThread != nullptr){
+			hThread = reEvalDlg.m_page5.pReEvalThread->m_hThread;
+			messageToUser.Format("ReEvaluation has been stopped");
 		}
 
-		if(hThread != NULL && GetExitCodeThread(hThread, &dwExitCode) && dwExitCode ==STILL_ACTIVE){
+		if(hThread != nullptr && GetExitCodeThread(hThread, &dwExitCode) && dwExitCode ==STILL_ACTIVE){
 			AfxGetApp()->BeginWaitCursor();
-			reeval->Stop();
+			reEvalDlg.m_reeval->Stop();
 			
 			WaitForSingleObject(hThread,INFINITE);
 			AfxGetApp()->EndWaitCursor();
@@ -1344,7 +1342,7 @@ void CPostFluxDlg::OnReEvaluateThisTraverse()
 
 		}
 	}
-	delete reeval;
+	delete reEvalDlg.m_reeval;
 }
 
 /* Close all the open log files */
@@ -1452,7 +1450,7 @@ void CPostFluxDlg::OnFileExportToKML(){
 }
 
 
-void CPostFluxDlg::OnInitMenuPopup(CMenu *pPopupMenu, UINT nIndex,BOOL bSysMenu)
+void CPostFluxDlg::OnInitMenuPopup(CMenu *pPopupMenu, UINT nIndex, BOOL bSysMenu)
 {
 	ASSERT(pPopupMenu != NULL);
 	// Check the enabled state of various menu items.
@@ -1472,41 +1470,41 @@ void CPostFluxDlg::OnInitMenuPopup(CMenu *pPopupMenu, UINT nIndex,BOOL bSysMenu)
 		CWnd* pParent = this;
 		// Child windows don't have menus--need to go to the top!
 		if (pParent != NULL &&
-		(hParentMenu = ::GetMenu(pParent->m_hWnd)) != NULL)
+			(hParentMenu = ::GetMenu(pParent->m_hWnd)) != NULL)
 		{
-		int nIndexMax = ::GetMenuItemCount(hParentMenu);
-		for (int nIndex = 0; nIndex < nIndexMax; nIndex++)
-		{
-			if (::GetSubMenu(hParentMenu, nIndex) == pPopupMenu->m_hMenu)
+			int nIndexMax = ::GetMenuItemCount(hParentMenu);
+			for (int nIndex = 0; nIndex < nIndexMax; nIndex++)
 			{
-				// When popup is found, m_pParentMenu is containing menu.
-				state.m_pParentMenu = CMenu::FromHandle(hParentMenu);
-				break;
+				if (::GetSubMenu(hParentMenu, nIndex) == pPopupMenu->m_hMenu)
+				{
+					// When popup is found, m_pParentMenu is containing menu.
+					state.m_pParentMenu = CMenu::FromHandle(hParentMenu);
+					break;
+				}
 			}
-		}
 		}
 	}
 
 	state.m_nIndexMax = pPopupMenu->GetMenuItemCount();
 	for (state.m_nIndex = 0; state.m_nIndex < state.m_nIndexMax;
-	state.m_nIndex++)
+		state.m_nIndex++)
 	{
 		state.m_nID = pPopupMenu->GetMenuItemID(state.m_nIndex);
 		if (state.m_nID == 0)
-		continue; // Menu separator or invalid cmd - ignore it.
+			continue; // Menu separator or invalid cmd - ignore it.
 
-		ASSERT(state.m_pOther == NULL);
-		ASSERT(state.m_pMenu != NULL);
+		ASSERT(state.m_pOther == nullptr);
+		ASSERT(state.m_pMenu != nullptr);
 		if (state.m_nID == (UINT)-1)
 		{
-		// Possibly a popup menu, route to first item of that popup.
-		state.m_pSubMenu = pPopupMenu->GetSubMenu(state.m_nIndex);
-		if (state.m_pSubMenu == NULL ||
-			(state.m_nID = state.m_pSubMenu->GetMenuItemID(0)) == 0 ||
-			state.m_nID == (UINT)-1)
-		{
-			continue;       // First item of popup can't be routed to.
-		}
+			// Possibly a popup menu, route to first item of that popup.
+			state.m_pSubMenu = pPopupMenu->GetSubMenu(state.m_nIndex);
+			if (state.m_pSubMenu == nullptr ||
+				(state.m_nID = state.m_pSubMenu->GetMenuItemID(0)) == 0 ||
+				state.m_nID == (UINT)-1)
+			{
+				continue;       // First item of popup can't be routed to.
+			}
 			state.DoUpdate(this, TRUE);   // Popups are never auto disabled.
 		}
 		else
@@ -1514,7 +1512,7 @@ void CPostFluxDlg::OnInitMenuPopup(CMenu *pPopupMenu, UINT nIndex,BOOL bSysMenu)
 			// Normal menu item.
 			// Auto enable/disable if frame window has m_bAutoMenuEnable
 			// set and command is _not_ a system command.
-			state.m_pSubMenu = NULL;
+			state.m_pSubMenu = nullptr;
 			state.DoUpdate(this, FALSE);
 		}
 
@@ -1523,7 +1521,7 @@ void CPostFluxDlg::OnInitMenuPopup(CMenu *pPopupMenu, UINT nIndex,BOOL bSysMenu)
 		if (nCount < state.m_nIndexMax)
 		{
 			state.m_nIndex -= (state.m_nIndexMax - nCount);
-			while (state.m_nIndex < nCount && pPopupMenu->GetMenuItemID(state.m_nIndex) == state.m_nID){
+			while (state.m_nIndex < nCount && pPopupMenu->GetMenuItemID(state.m_nIndex) == state.m_nID) {
 				state.m_nIndex++;
 			}
 		}
@@ -1556,3 +1554,11 @@ void CPostFluxDlg::OnViewShowVsNumber(){
 	ShowColumn();
 }
 
+
+
+
+
+void CPostFluxDlg::ChangeFluxUnit()
+{
+	OnCalculateFlux();
+}

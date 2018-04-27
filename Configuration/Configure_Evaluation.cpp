@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "../DMSpec.h"
 #include "Configure_Evaluation.h"
+#include "../Dialogs/ReferencePropertiesDlg.h"
 #include "../Dialogs/ReferencePlotDlg.h"
 
 using namespace Configuration;
@@ -12,12 +13,12 @@ IMPLEMENT_DYNAMIC(CConfigure_Evaluation, CPropertyPage)
 CConfigure_Evaluation::CConfigure_Evaluation()
 	: CPropertyPage(CConfigure_Evaluation::IDD)
 {
-	m_conf = NULL;
+	m_conf = nullptr;
 }
 
 CConfigure_Evaluation::~CConfigure_Evaluation()
 {
-	m_conf = NULL;
+	m_conf = nullptr;
 }
 
 void CConfigure_Evaluation::DoDataExchange(CDataExchange* pDX)
@@ -46,7 +47,8 @@ BEGIN_MESSAGE_MAP(CConfigure_Evaluation, CPropertyPage)
 	ON_COMMAND(ID__REMOVE,						OnRemoveReference)
 	ON_BN_CLICKED(IDC_REMOVE_REFERENCE,			OnRemoveReference)
 
-	// The user wants to see the window with the references
+	// The user wants to see the properties or graph of the references
+	ON_BN_CLICKED(IDC_REFERENCE_PROPERTIES,		OnShowProperties)
 	ON_BN_CLICKED(IDC_REFERENCE_VIEW,			OnShowReferenceGraph)
 
 	ON_EN_KILLFOCUS(IDC_REEVAL_WINDOW_FITFROM,	SaveData)
@@ -106,14 +108,11 @@ void CConfigure_Evaluation::InitReferenceFileControl(){
 	m_referenceGrid.InsertColumn("Squeeze");
 	m_referenceGrid.SetColumnWidth(3, (int)(rect.right / 6));
 
-	// Make sure that there are two empty rows
-	m_referenceGrid.SetRowCount(3);
-
 	// Makes sure that the user cannot edit the titles of the grid
 	m_referenceGrid.SetFixedRowCount(1);
 
 	// make sure the user can edit items in the grid
-	m_referenceGrid.SetEditable(TRUE); 
+	//m_referenceGrid.SetEditable(TRUE); 
 
 	// Disable the small title tips
 	m_referenceGrid.EnableTitleTips(FALSE);
@@ -125,6 +124,8 @@ void CConfigure_Evaluation::PopulateReferenceFileControl(){
 		m_windowList.SetCurSel(0);
 		curSel = 0;
 	}
+
+	m_referenceGrid.DeleteNonFixedRows();
 
 	Evaluation::CFitWindow &window	= m_conf->m_fitWindow[curSel];
 	m_referenceGrid.m_window				= &m_conf->m_fitWindow[curSel];
@@ -142,7 +143,7 @@ void CConfigure_Evaluation::PopulateReferenceFileControl(){
 	//	m_btnRemoveRef.EnableWindow(TRUE);
 	//}
 	int i;
-	for(i = 0; i < window.nRef; ++i){
+	for(i = 0; i < window.nRef; i++){
 
 		CReferenceFile &ref = window.ref[i];
 
@@ -181,7 +182,7 @@ void CConfigure_Evaluation::PopulateReferenceFileControl(){
 	m_referenceGrid.SetItemTextFmt(1 + i, 3, "");
 
 	// Update the grid
-	if(m_referenceGrid.m_hWnd != NULL)
+	if(m_referenceGrid.m_hWnd != nullptr)
 		m_referenceGrid.UpdateData(FALSE);
 }
 
@@ -294,7 +295,7 @@ void CConfigure_Evaluation::OnInsertReference(){
 		window.name.Format("%s", specie);
 		PopulateWindowList();
 	}
-
+	//m_windowList.SetCurSel(curSel);
 	// Update the grid
 	PopulateReferenceFileControl();
 
@@ -307,7 +308,7 @@ void CConfigure_Evaluation::PopulateWindowList(){
 		m_windowList.AddString(m_conf->m_fitWindow[i].name);
 	}
 
-	m_windowList.SetCurSel(0);
+	//m_windowList.SetCurSel(0);
 }
 
 void CConfigure_Evaluation::SaveData(){
@@ -346,7 +347,7 @@ void CConfigure_Evaluation::OnChangeFitWindow(){
 
 void CConfigure_Evaluation::InitToolTips(){
 	// Don't initialize the tool tips twice
-	if(m_toolTip.m_hWnd != NULL)
+	if(m_toolTip.m_hWnd != nullptr)
 		return;
 
 	// Enable the tool tips
@@ -371,6 +372,42 @@ BOOL CConfigure_Evaluation::PreTranslateMessage(MSG* pMsg){
 	m_toolTip.RelayEvent(pMsg);
 
 	return CPropertyPage::PreTranslateMessage(pMsg);
+}
+
+/** Called when the user wants to see the
+properties of one reference */
+void CConfigure_Evaluation::OnShowProperties() {
+
+	// save the data in the dialog
+	UpdateData(TRUE);
+
+	// Get the currently selected fit window
+	int curSel = m_windowList.GetCurSel();
+	if (curSel < 0)
+		return;
+	Evaluation::CFitWindow &window = m_conf->m_fitWindow[curSel];
+
+	// if there's no reference file, then there's nothing to remove
+	if (window.nRef <= 0)
+		return;
+
+	// Get the selected reference file
+	CCellRange cellRange = m_referenceGrid.GetSelectedCellRange();
+	int minRow = cellRange.GetMinRow() - 1;
+	int nRows = cellRange.GetRowSpan();
+
+	if (nRows <= 0 || nRows > 1) { /* nothing selected or several lines selected */
+		MessageBox("Please select a reference file.", "Properties");
+		return;
+	}
+
+	// Show the properties dialog
+	Dialogs::CReferencePropertiesDlg dlg;
+	dlg.m_ref = &window.ref[minRow];
+	dlg.DoModal();
+
+	// Update the reference grid
+	PopulateReferenceFileControl();
 }
 
 /** Called when the user wants to see the 

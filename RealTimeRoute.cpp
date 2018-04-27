@@ -44,11 +44,6 @@ BOOL CRealTimeRoute::OnInitDialog()
 
 	CRect rect;
 	this->GetClientRect(&rect);
-	int margin = 0;
-	rect.right -= margin;
-	rect.bottom -= margin;
-	rect.left = margin;
-	rect.top = margin;
 
 	m_range.maxLat = 10.0f;
 	m_range.maxLon = 10.0f;
@@ -63,8 +58,8 @@ BOOL CRealTimeRoute::OnInitDialog()
 	m_gpsPlot.SetBackgroundColor(RGB(0, 0, 0));
 	m_gpsPlot.SetGridColor(RGB(255,255,255));
 	m_gpsPlot.SetAxisEqual();					// make sure that the latitude scale and the longitude scale are the same
-	m_gpsPlot.SetMarginSpace(0.05f);			// Set some space around the graph
-	m_gpsPlot.SetRange(m_range.minLat, m_range.maxLat, 1, m_range.minLon, m_range.maxLon, 1);
+	m_gpsPlot.SetMarginSpace(0.01f);			// Set some space around the graph
+	m_gpsPlot.SetRange(m_range.minLat, m_range.maxLat, 2, m_range.minLon, m_range.maxLon, 2);
 
 	DrawRouteGraph();
 
@@ -77,11 +72,20 @@ void CRealTimeRoute::DrawRouteGraph(){
 	// Read the data from the CSpectrometer class
 	ReadData();
 
-	/* draw the traverse */
-	m_gpsPlot.SetPlotColor(RGB(255, 255, 255)) ;
+	// set range
+	m_gpsPlot.SetRange(m_range.minLat, m_range.maxLat, 2, m_range.minLon, m_range.maxLon, 2);
+	
+	// Draw route plot
+	m_gpsPlot.DrawCircles(m_lon, m_lat, m_col, m_pointNum);
 
-	//  m_gpsPlot.DrawCirclesColor(m_lon, m_lat, m_col, (maxLat-minLat + 2*marginSpace),minLat-marginSpace,m_pointNum);
-	m_gpsPlot.DrawCircles(m_lon, m_lat, m_pointNum);
+	// draw min/max col label
+	m_gpsPlot.SetPlotColor(RGB(255, 255, 255));
+	CString maxcol;
+	maxcol.Format("Max column: %d", (int)m_colmax);
+	m_gpsPlot.DrawTextBox(65, 40, maxcol);
+	CString mincol;
+	mincol.Format("Min column: %d", (int)m_colmin);
+	m_gpsPlot.DrawTextBox(65, 20, mincol);
 }
 
 void CRealTimeRoute::OnSize(UINT nType, int cx, int cy)
@@ -108,10 +112,10 @@ BOOL CRealTimeRoute::Create(UINT nID, CWnd* pParentWnd){
 }
 
 void CRealTimeRoute::ReadData(){
-	if(NULL == m_spectrometer)
+	if(nullptr == m_spectrometer)
 		return;
 
-	int i, j, sum;
+	int sum;
 
 	sum = m_spectrometer->GetColumnNumber();
 	m_spectrometer->GetLatLongAlt(m_lat, m_lon, NULL, sum);
@@ -121,10 +125,10 @@ void CRealTimeRoute::ReadData(){
 	memset(&m_range, 0, sizeof(struct plotRange));
 
 	/* delete bad points (points without gps or dark points) */
-	for(i = 0; i < sum; ++i){
+	for(int i = 0; i < sum; ++i){
 
 		if((m_lat[i] == 0 && m_lon[i] == 0)){
-			for(j = i; j < sum; ++j){
+			for(int j = i; j < sum; ++j){
 				m_lat[j] = m_lat[j + 1];
 				m_lon[j] = m_lon[j + 1];
 				m_col[j] = m_col[j + 1];
@@ -143,13 +147,21 @@ void CRealTimeRoute::ReadData(){
 	m_range.maxLon = m_lon[0];
 	m_range.minLat = m_lat[0];
 	m_range.minLon = m_lon[0];
-	for(i = 0; i < sum; i++){
-		m_lat[i] = m_lat[i];
-		m_lon[i] = m_lon[i];	
+	m_colmax = m_col[0];
+	m_colmin = m_col[0];
+	for(int i = 0; i < sum; i++){
+		//m_lat[i] = m_lat[i];
+		//m_lon[i] = m_lon[i];	
 		m_range.maxLat = std::max(m_range.maxLat,m_lat[i]);
 		m_range.maxLon = std::max(m_range.maxLon,m_lon[i]);
 		m_range.minLat = std::min(m_range.minLat,m_lat[i]);
 		m_range.minLon = std::min(m_range.minLon,m_lon[i]);
+		if (m_col[i] > m_colmax) {
+			m_colmax = m_col[i];
+		}
+		if (m_col[i] < m_colmin) {
+			m_colmin = m_col[i];
+		}
 	}
 }
 

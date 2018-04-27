@@ -34,8 +34,7 @@ void CMobileConfiguration::ReadCfgTxt(const CString &fileName){
 	fil = fopen(fileName, "r");
 	if(fil<(FILE *)1)
 	{
-		msg.Format("Could not open file %s",fileName);
-		MessageBox(pView->m_hWnd, msg,TEXT("Error"),MB_OK);
+		MessageBox(pView->m_hWnd, "No configuration file found. Configure software and click 'Save' to create cfg.xml.",TEXT("Warning"),MB_OK);
 		return;
 	}
 
@@ -590,7 +589,7 @@ int	CMobileConfiguration::ParseReference(Evaluation::CReferenceFile &reference){
 
 /** Parses a shift or squeeze section */
 int CMobileConfiguration::Parse_ShiftOrSqueeze(const CString &label, Evaluation::SHIFT_TYPE &option, double &lowValue/*, double &highValue*/){
-	char *pt = NULL;
+	char *pt = nullptr;
 
 	// the actual reading loop
 	while(szToken = NextToken()){

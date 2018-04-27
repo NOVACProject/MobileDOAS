@@ -6,7 +6,7 @@ using namespace Graph;
 
 CColumnGraph::CColumnGraph(void)
 {
-  m_parentWindow = NULL;
+  m_parentWindow = nullptr;
 }
 
 CColumnGraph::~CColumnGraph(void)
@@ -23,7 +23,7 @@ void CColumnGraph::OnContextMenu(CWnd* pWnd, CPoint point)
    CMenu menu;
    VERIFY(menu.LoadMenu(IDR_FLUX_VIEW_MENU));
    CMenu* pPopup = menu.GetSubMenu(0);
-   ASSERT(pPopup != NULL);
+   ASSERT(pPopup != nullptr);
 
    pPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, point.x, point.y, m_parentWindow);
 }

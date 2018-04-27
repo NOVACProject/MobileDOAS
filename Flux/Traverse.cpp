@@ -27,8 +27,8 @@ CTraverse::CTraverse(void)
 	this->m_correctedTraverseLength = 0;
 	m_useWindField = false;
 
-	m_fCreateAdditionalLog = NULL;
-	m_additionalLogName = NULL;
+	m_fCreateAdditionalLog = nullptr;
+	m_additionalLogName = nullptr;
 
 	// reset the column errors, as these cannot always be read in from the file
 	memset(columnError, 0, MAX_TRAVERSELENGTH*sizeof(double));
@@ -76,6 +76,21 @@ long CTraverse::DeleteLowIntensityPoints(double intensityLimit){
 	return nDeleted;
 }
 
+/* Delete all data points with an intensity higher than @intensityLimit */
+long CTraverse::DeleteHighIntensityPoints(double intensityLimit) {
+	long nDeleted = 0;
+
+	for (long i = 0; i < m_recordNum; ++i) {
+		if (intensArray[i] > intensityLimit) {
+			DeletePoints(i, i + 1);
+			--i;
+			++nDeleted;
+		}
+	}
+
+	return nDeleted;
+}
+
 /** Calculates the flux using the wind field defined by the vectors 'm_windspeed'
     and 'm_windDirection'. */
 double  CTraverse::GetTotalFlux(){
@@ -105,7 +120,7 @@ double CTraverse::GetTotalFlux(double windSpeed, double windDirection){
 
 	accColumn	= 0;
 
-	if(m_fCreateAdditionalLog != NULL && m_fCreateAdditionalLog && m_additionalLogName != NULL){
+	if(m_fCreateAdditionalLog != nullptr && m_fCreateAdditionalLog && m_additionalLogName != nullptr){
 		FILE *f = fopen(*m_additionalLogName, "w");
 		if(0 == f){
 			m_fCreateAdditionalLog = false;
@@ -204,7 +219,7 @@ double CTraverse::CalculateFlux(double column, const gpsPosition &pos1, const gp
 		m_plumeWidth					+= distance * windFactor;
 		++m_spectraInPlume;
 	}
-	if(m_fCreateAdditionalLog != NULL && m_fCreateAdditionalLog && m_additionalLogName != NULL){
+	if(m_fCreateAdditionalLog != nullptr && m_fCreateAdditionalLog && m_additionalLogName != nullptr){
 		FILE *f = fopen(*m_additionalLogName, "a+");
 		fprintf(f, "%lf\t%lf\t%lf\t", lat2, lon2, column);
 		fprintf(f, "%lf\t%lf\t%lf\t%lf\t%lf\n", 
@@ -388,7 +403,7 @@ CTraverse &CTraverse::operator=(const CTraverse &t){
 	this->m_refFile.Format(t.m_refFile);
 	this->m_fCreateAdditionalLog	= t.m_fCreateAdditionalLog;
 	
-	if(t.m_additionalLogName != NULL){
+	if(t.m_additionalLogName != nullptr){
 		this->m_additionalLogName = new CString(*t.m_additionalLogName);
 	}
 

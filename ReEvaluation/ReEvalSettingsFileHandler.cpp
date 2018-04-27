@@ -41,7 +41,7 @@ int CReEvalSettingsFileHandler::ParseFile(ReEvaluation::CReEvaluationSettings &s
 int CReEvalSettingsFileHandler::WriteFile(const ReEvaluation::CReEvaluationSettings &settings, const CString &fileName){
 	// Try to open the file
 	FILE *f = fopen(fileName, "w");
-	if(f == NULL){
+	if(f == nullptr){
 		return 1;
 	}
 
@@ -96,8 +96,8 @@ int CReEvalSettingsFileHandler::WriteFile(const ReEvaluation::CReEvaluationSetti
 		fprintf(f, "\t\t\t<high>%lf</high>\n",			settings.m_skyIntensityHigh);
 		fprintf(f, "\t\t</intensity>\n");
 	}else if(settings.m_skySelection == USE_SKY_USER){
-		fprintf(f, "\t\t<path_sky>%s</path_sky>\n",		settings.m_skySpectrumFile);
-		fprintf(f, "\t\t<path_dark>%s</path_dark>\n",	settings.m_skySpectrumDark);	
+		fprintf(f, "\t\t<path_sky>%s</path_sky>\n", (LPCTSTR)settings.m_skySpectrumFile);
+		fprintf(f, "\t\t<path_dark>%s</path_dark>\n", (LPCTSTR)settings.m_skySpectrumDark);
 	}
 	fprintf(f, "\t</Sky>\n");
 
@@ -106,7 +106,7 @@ int CReEvalSettingsFileHandler::WriteFile(const ReEvaluation::CReEvaluationSetti
 	
 	fprintf(f, "\t<FitWindow>\n");
 
-	fprintf(f, "\t\t<name>%s</name>\n",					settings.m_window.name);
+	fprintf(f, "\t\t<name>%s</name>\n", (LPCTSTR)settings.m_window.name);
 	fprintf(f, "\t\t<fitLow>%d</fitLow>\n",				settings.m_window.fitLow);
 	fprintf(f, "\t\t<fitHigh>%d</fitHigh>\n",			settings.m_window.fitHigh);
 	fprintf(f, "\t\t<spec_channel>%d</spec_channel>\n",	settings.m_window.channel);
@@ -116,8 +116,8 @@ int CReEvalSettingsFileHandler::WriteFile(const ReEvaluation::CReEvaluationSetti
 
 	for(int j = 0; j < settings.m_window.nRef; ++j){
 		fprintf(f, "\t\t<Reference>\n");
-		fprintf(f, "\t\t\t<name>%s</name>\n",				settings.m_window.ref[j].m_specieName);
-		fprintf(f, "\t\t\t<path>%s</path>\n",				settings.m_window.ref[j].m_path);
+		fprintf(f, "\t\t\t<name>%s</name>\n", (LPCTSTR)settings.m_window.ref[j].m_specieName);
+		fprintf(f, "\t\t\t<path>%s</path>\n", (LPCTSTR)settings.m_window.ref[j].m_path);
 		fprintf(f, "\t\t\t<gasFactor>%.2lf</gasFactor>\n",	settings.m_window.ref[j].m_gasFactor);
 
 		// Shift
@@ -597,7 +597,7 @@ int CReEvalSettingsFileHandler::ParseReference(Evaluation::CReferenceFile &refer
 
 /** Parses a shift or squeeze section */
 int CReEvalSettingsFileHandler::Parse_ShiftOrSqueeze(const CString &label, Evaluation::SHIFT_TYPE &option, double &lowValue/*, double &highValue*/){
-	char *pt = NULL;
+	char *pt = nullptr;
 
 	// the actual reading loop
 	while(szToken = NextToken()){

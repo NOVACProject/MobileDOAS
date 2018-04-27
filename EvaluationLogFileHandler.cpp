@@ -19,7 +19,7 @@ bool CEvaluationLogFileHandler::ReadEvaluationLogFile(const CString &logFileName
 
 	// 1. Try to open the file, if it's not possible to open it then return
 	FILE *f = fopen(logFileName, "r");
-	if(NULL == f){
+	if(nullptr == f){
   		MessageBox(NULL,TEXT("Can not read log file"),TEXT("Error"),MB_OK);
 		return FAIL;
 	}

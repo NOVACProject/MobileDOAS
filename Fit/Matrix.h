@@ -118,16 +118,16 @@ namespace MathFit
 		*/
 		CMatrix()
 		{
-			mRows = NULL;
-			mCols = NULL;
-			mData = NULL;
+			mRows = nullptr;
+			mCols = nullptr;
+			mData = nullptr;
 			mAutoRelease = true;
 			mSizeX = mSizeY = 0;
 			mLineOffset = 0;
 
-			mDoublePtr = NULL;
-			mFloatPtr = NULL;
-			mLUIndex = NULL;
+			mDoublePtr = nullptr;
+			mFloatPtr = nullptr;
+			mLUIndex = nullptr;
 		}
 
 		/**
@@ -137,16 +137,16 @@ namespace MathFit
 		*/
 		CMatrix(const CMatrix &mRight)
 		{
-			mRows = NULL;
-			mCols = NULL;
-			mData = NULL;
+			mRows = nullptr;
+			mCols = nullptr;
+			mData = nullptr;
 			mAutoRelease = true;
 			mSizeX = mSizeY = 0;
 			mLineOffset = 0;
 
-			mDoublePtr = NULL;
-			mFloatPtr = NULL;
-			mLUIndex = NULL;
+			mDoublePtr = nullptr;
+			mFloatPtr = nullptr;
+			mLUIndex = nullptr;
 
 			Copy(mRight);
 		}
@@ -159,16 +159,16 @@ namespace MathFit
 		*/
 		CMatrix(int iCols, int iRows)
 		{
-			mRows = NULL;
-			mCols = NULL;
-			mData = NULL;
+			mRows = nullptr;
+			mCols = nullptr;
+			mData = nullptr;
 			mAutoRelease = true;
 			mSizeX = mSizeY = 0;
 			mLineOffset = 0;
 
-			mDoublePtr = NULL;
-			mFloatPtr = NULL;
-			mLUIndex = NULL;
+			mDoublePtr = nullptr;
+			mFloatPtr = nullptr;
+			mLUIndex = nullptr;
 
 			SetSize(iCols, iRows);
 		}
@@ -187,9 +187,9 @@ namespace MathFit
 			MATHFIT_ASSERT((iStartCol + iCols) <= mSecond.GetNoColumns() && (iStartRow + iCols) <= mSecond.GetNoRows());
 			MATHFIT_ASSERT(iCols > 0 && iRows > 0);
 
-			mDoublePtr = NULL;
-			mFloatPtr = NULL;
-			mLUIndex = NULL;
+			mDoublePtr = nullptr;
+			mFloatPtr = nullptr;
+			mLUIndex = nullptr;
 
 			// create new vector array
 			mRows = new CVector[iRows];
@@ -376,7 +376,7 @@ namespace MathFit
 				delete mData;
 			if(mLUIndex && mAutoRelease)
 				delete mLUIndex;
-			mLUIndex = NULL;
+			mLUIndex = nullptr;
 
 			// get the data pointer
 			mData = fData;
@@ -416,12 +416,12 @@ namespace MathFit
 		*/
 		CMatrix& Detach()
 		{
-			mRows = NULL;
-			mCols = NULL;
+			mRows = nullptr;
+			mCols = nullptr;
 			mSizeX = mSizeY = 0;
 			mLineOffset = 0;
-			mData = NULL;
-			mLUIndex = NULL;
+			mData = nullptr;
+			mLUIndex = nullptr;
 			mAutoRelease = true;
 
 			ReleaseDoublePtr();
@@ -683,13 +683,13 @@ namespace MathFit
 
 				if(mRows)
 					delete[] mRows;
-				mRows = NULL;
+				mRows = nullptr;
 				if(mCols)
 					delete[] mCols;
-				mCols = NULL;
+				mCols = nullptr;
 				if(mData && mAutoRelease)
 					delete mData;
-				mData = NULL;
+				mData = nullptr;
 
 				mSizeY = iYSize;
 				mSizeX = iXSize;
@@ -1307,7 +1307,7 @@ namespace MathFit
 		*/
 		CMatrix& Zero()
 		{
-			MATHFIT_ASSERT(mData != NULL);
+			MATHFIT_ASSERT(mData != nullptr);
 
 			ClearLUDecomposed();
 
@@ -1423,7 +1423,7 @@ namespace MathFit
 				if(fBig == 0.0)
 				{
 					delete mLUIndex;
-					mLUIndex = NULL;
+					mLUIndex = nullptr;
 					throw(EXCEPTION(CMatrixSingularException));
 				}
 
@@ -1564,9 +1564,8 @@ namespace MathFit
 
 			mFloatPtr = new float[GetNoColumns() * GetNoRows()];
 
-			int i, j;
-			for(i = 0; i < GetNoRows(); i++)
-				for(j = 0; j < GetNoColumns(); j++)
+			for(int i = 0; i < GetNoRows(); i++)
+				for(int j = 0; j < GetNoColumns(); j++)
 				mFloatPtr[i * GetNoColumns() + j] = (float)GetAt(i, j);
 
 			return mFloatPtr;
@@ -1576,7 +1575,7 @@ namespace MathFit
 		{
 			if(mFloatPtr)
 				delete mFloatPtr;
-			mFloatPtr = NULL;
+			mFloatPtr = nullptr;
 		}
 
 		double* GetDoublePtr()
@@ -1585,9 +1584,8 @@ namespace MathFit
 
 			mDoublePtr = new double[GetNoColumns() * GetNoRows()];
 
-			int i, j;
-			for(i = 0; i < GetNoRows(); i++)
-				for(j = 0; j < GetNoColumns(); j++)
+			for(int i = 0; i < GetNoRows(); i++)
+				for(int j = 0; j < GetNoColumns(); j++)
 				mDoublePtr[i * GetNoColumns() + j] = (double)GetAt(i, j);
 
 			return mDoublePtr;
@@ -1597,7 +1595,7 @@ namespace MathFit
 		{
 			if(mDoublePtr)
 				delete mDoublePtr;
-			mDoublePtr = NULL;
+			mDoublePtr = nullptr;
 		}
 
 		TFitData* GetSafePtr() const
@@ -1610,14 +1608,14 @@ namespace MathFit
 
 		bool IsLUDecomposed() const
 		{
-			return mLUIndex != NULL ? true : false;
+			return mLUIndex != nullptr ? true : false;
 		}
 
 		void ClearLUDecomposed()
 		{
 			if(mLUIndex && mAutoRelease)
 				delete mLUIndex;
-			mLUIndex = NULL;
+			mLUIndex = nullptr;
 		}
 
 		/**

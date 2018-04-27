@@ -124,6 +124,17 @@ bool CSpectrum::Div(double value){
   return true;
 }
 
+// multiply a spectrum with a constant
+bool CSpectrum::Mult(double value) {
+	if (value == 0)
+		return false;
+
+	for (int i = 0; i < this->length; ++i) {
+		this->I[i] *= value;
+	}
+	return true;
+}
+
 // subtract a constant from a spectrum
 bool CSpectrum::Sub(double value){
   for(int i = 0; i < this->length; ++i){
@@ -135,7 +146,7 @@ bool CSpectrum::Sub(double value){
 bool CSpectrum::Copy(const CSpectrum &spec2){
   this->isDark    = spec2.isDark;
   this->length    = spec2.length;
-  this->intTime   = spec2.intTime;
+  this->exposureTime   = spec2.exposureTime;
   this->lat       = spec2.lat;
   this->lon       = spec2.lon;
   this->scans     = spec2.scans;
@@ -154,7 +165,7 @@ bool CSpectrum::Copy(const CSpectrum &spec2){
 void	CSpectrum::Clear(){
   length	= 0;
 	scans		= 0;
-	intTime = 0;
+	exposureTime = 0;
 	lat			= 0.0;
 	lon			= 0.0;
 	spectrometer.Format("");

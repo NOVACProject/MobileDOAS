@@ -20,7 +20,7 @@ CWindField::CWindField(CWindField &wf)
     for(int j = 0; j < MAX_HOURS; ++j){
       if(wf.m_wind[i][j].GetSize() > 0){
         POSITION pos = wf.m_wind[i][j].GetHeadPosition();
-        while(pos != NULL){
+        while(pos != nullptr){
           m_wind[i][j].AddTail(new Wind(*wf.m_wind[i][j].GetNext(pos)));
         }
       }
@@ -35,7 +35,7 @@ CWindField::~CWindField(void)
   for(int i = 0; i < MAX_LAYERS; ++i){
     for(int j = 0; j < MAX_HOURS; ++j){
       POSITION pos = m_wind[i][j].GetHeadPosition();
-      while(pos != NULL){
+      while(pos != nullptr){
         delete(m_wind[i][j].GetNext(pos));
       }
       m_wind[i][j].RemoveAll();
@@ -58,7 +58,7 @@ bool CWindField::GetWindData(const int layer, const int hour, CList<Wind *, Wind
   // empty w.
   w.RemoveAll();
   POSITION p = m_wind[layer][hour].GetHeadPosition();
-  while(p != NULL){
+  while(p != nullptr){
     Wind *wind = m_wind[layer][hour].GetNext(p);
     w.AddTail(wind);
   }
@@ -233,7 +233,7 @@ void CWindField::Reset(){
   for(int i = 0; i < MAX_LAYERS; ++i){
     for(int j = 0; j < MAX_HOURS; ++j){
       POSITION pos = m_wind[i][j].GetHeadPosition();
-      while(pos != NULL){
+      while(pos != nullptr){
         delete(m_wind[i][j].GetNext(pos));
       }
       m_wind[i][j].RemoveAll();
@@ -288,7 +288,7 @@ int CWindField::GetWindField(int layer, int hour, int maxPoints, double *lat, do
   POSITION pos = m_wind[layer][hour].GetHeadPosition();
 
   // iterate over the entire list
-  while(pos != NULL){
+  while(pos != nullptr){
     Wind *wind = m_wind[layer][hour].GetNext(pos);
     lat[nPoints]  = wind->lat;
     lon[nPoints]  = wind->lon;
@@ -349,7 +349,7 @@ int CWindField::Interpolate(const double *lat, const double *lon, const Time *ti
 
   // 1. Pick out the hours to interpolate between
   int hours[25], nHours = 0;
-  if(times == NULL){
+  if(times == nullptr){
     nHours = 1;
     hours[0] = 0;
   }else{
@@ -381,7 +381,7 @@ int CWindField::Interpolate(const double *lat, const double *lon, const Time *ti
   // 3. Interpolate
   int nPointsInterpolated = 0;
   for(k = 0; k < nPoints; ++k){
-    Wind *w1 = NULL, *w2 = NULL;
+    Wind *w1 = nullptr, *w2 = nullptr;
     if(mode == INTERPOLATION_NEAREST){
 			// w1 is the wind field just before the measurement
       w1 = NearestNeighbour(m_wind[layer][times[k].hour - m_timeShift], lat[k], lon[k], true);
@@ -392,15 +392,15 @@ int CWindField::Interpolate(const double *lat, const double *lon, const Time *ti
       else
         w2 = NearestNeighbour(m_wind[layer][times[k].hour - 1 - m_timeShift], lat[k], lon[k], true);
     }
-    if(w1 != NULL && w2 != NULL){
+    if(w1 != nullptr && w2 != nullptr){
       windSpeed[k]      = (w1->ws * times[k].minute + w2->ws * (60 - times[k].minute) ) / 60;
       windDirection[k]  = (w1->wd * times[k].minute + w2->wd * (60 - times[k].minute) ) / 60;
       ++nPointsInterpolated;
-		}else if(w1 != NULL){
+		}else if(w1 != nullptr){
 			windSpeed[k]			= w1->ws;
 			windDirection[k]	= w1->wd;
 			++nPointsInterpolated;
-		}else if(w1 != NULL){
+		}else if(w1 != nullptr){
 			windSpeed[k]			= w2->ws;
 			windDirection[k]	= w2->wd;
 			++nPointsInterpolated;
@@ -428,7 +428,7 @@ int CWindField::SortList(CList<Wind*, Wind*> &wind){
   // This function uses mergesort to sort the list
 
   CList<Wind*, Wind*> list1, list2;
-  int listLength = wind.GetSize();
+  INT_PTR listLength = wind.GetSize();
 
   // 1. A list of only one item is sorted.
   if(listLength <= 1)
@@ -455,27 +455,27 @@ int CWindField::SortList(CList<Wind*, Wind*> &wind){
   Wind *w1 = list1.GetAt(pos1);
   Wind *w2 = list2.GetAt(pos2);
 
-  while((pos1 != NULL) && (pos2 != NULL)){
+  while((pos1 != nullptr) && (pos2 != nullptr)){
     if(*w1 <= *w2){
       wind.AddTail(list1.GetNext(pos1));
-      if(pos1 != NULL)
+      if(pos1 != nullptr)
         w1 = list1.GetAt(pos1);
     }else{
       wind.AddTail(list2.GetNext(pos2));
-      if(pos2 != NULL)
+      if(pos2 != nullptr)
         w2 = list2.GetAt(pos2);
     }
   }
 
   // if list1 runs out of elements first
-  if(pos1 == NULL){
-    while(pos2 != NULL)
+  if(pos1 == nullptr){
+    while(pos2 != nullptr)
       wind.AddTail(list2.GetNext(pos2));
   }
 
   // if list2 runs out of element first
-  if(pos2 == NULL){
-    while(pos1 != NULL)
+  if(pos2 == nullptr){
+    while(pos1 != nullptr)
       wind.AddTail(list1.GetNext(pos1));
   }
   return 0;
@@ -485,14 +485,14 @@ Wind *CWindField::NearestNeighbour(const CList<Wind *, Wind*> &wind, double lat,
   if(wind.GetSize() <= 0)
     return NULL;
 
-  Wind *best = NULL;
+  Wind *best = nullptr;
   double distance2, dlat, dlon;
   double nearestDistance = 1e9;
   
   // TODO: This function performes a simple search to find the point - not efficient!
   //      if the list is sorted, this fact should be used
   POSITION pos = wind.GetHeadPosition();
-  while(pos != NULL){
+  while(pos != nullptr){
     Wind *w = wind.GetNext(pos);
 
     dlat      = w->lat - lat;

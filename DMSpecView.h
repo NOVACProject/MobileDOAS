@@ -65,7 +65,7 @@ public:
 	COLORREF					m_Spectrum1FitColor;
 
 	/* Measurement points with intensity below 'intensityLimit' does not affect the column scale */
-	CSliderCtrl m_intensitySlider;
+	CSliderCtrl m_intensitySliderLow;
 
 	/** The actual graph, shows the columns, the spectra, the intensities, etc...*/
 	Graph::CGraphCtrl m_ColumnPlot;
@@ -203,7 +203,7 @@ public:
 	afx_msg void OnMenuAnalysisPlumeheightmeasurement();
 
 	afx_msg void OnMenuControlTestTheGPS();
-	afx_msg void OnUpdate_TestTheGPS(CCmdUI *pCmdUI);
+	//afx_msg void OnUpdate_TestTheGPS(CCmdUI *pCmdUI);
 
 	// Updating the interface
 	afx_msg void OnUpdate_EnableOnRun(CCmdUI *pCmdUI);

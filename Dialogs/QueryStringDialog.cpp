@@ -14,7 +14,7 @@ CQueryStringDialog::CQueryStringDialog(CWnd* pParent /*=NULL*/)
 	: CDialog(CQueryStringDialog::IDD, pParent)
 {
   m_windowText.Format("Query Dialog");
-  m_inputString = NULL;
+  m_inputString = nullptr;
 }
 
 CQueryStringDialog::~CQueryStringDialog()
@@ -54,7 +54,7 @@ BOOL CQueryStringDialog::OnInitDialog()
 
 void CQueryStringDialog::OnOK()
 {
-  if(this->m_inputString != NULL){
+  if(this->m_inputString != nullptr){
     CString tmpStr;
     this->GetDlgItemText(IDC_STRING_EDIT, tmpStr);
     m_inputString->Format("%s", tmpStr);

@@ -354,15 +354,15 @@ bool Common::BrowseForFile(char *filter, CString &fileName){
 	// Initialize OPENFILENAME
 	ZeroMemory(&ofn, sizeof(OPENFILENAME));
 	ofn.lStructSize = sizeof(OPENFILENAME);
-	ofn.hwndOwner = NULL;
+	ofn.hwndOwner = nullptr;
 	ofn.hInstance = AfxGetInstanceHandle();
 	ofn.lpstrFile = szFile;
 	ofn.nMaxFile = sizeof(szFile);
 	ofn.lpstrFilter = filter;
 	ofn.nFilterIndex = 1;
-	ofn.lpstrFileTitle = NULL;
+	ofn.lpstrFileTitle = nullptr;
 	ofn.nMaxFileTitle = 0;
-	ofn.lpstrInitialDir = NULL;
+	ofn.lpstrInitialDir = nullptr;
 	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_EXPLORER ;
 
 	if (GetOpenFileName(&ofn) == TRUE){
@@ -376,21 +376,21 @@ bool Common::BrowseForFile(char *filter, CString &fileName){
 // open a browser window and let the user search for a file
 bool Common::BrowseForFile_SaveAs(TCHAR *filter, CString &fileName){
 	static TCHAR szFile[4096];
-	sprintf(szFile, "%s", fileName);
+	sprintf(szFile, "%s", (LPCTSTR)fileName);
 
 	OPENFILENAME ofn;       // common dialog box structure
 	// Initialize OPENFILENAME
 	ZeroMemory(&ofn, sizeof(OPENFILENAME));
 	ofn.lStructSize = sizeof(OPENFILENAME);
-	ofn.hwndOwner = NULL;
+	ofn.hwndOwner = nullptr;
 	ofn.hInstance = AfxGetInstanceHandle();
 	ofn.lpstrFile = szFile;
 	ofn.nMaxFile = sizeof(szFile);
 	ofn.lpstrFilter = filter;
 	ofn.nFilterIndex = 1;
-	ofn.lpstrFileTitle = NULL;
+	ofn.lpstrFileTitle = nullptr;
 	ofn.nMaxFileTitle = 0;
-	ofn.lpstrInitialDir = NULL;
+	ofn.lpstrInitialDir = nullptr;
 	ofn.Flags = OFN_PATHMUSTEXIST | OFN_EXPLORER ;
 
 	if (GetSaveFileName(&ofn) == TRUE){
@@ -408,14 +408,14 @@ bool Common::BrowseForDirectory(CString &folderName){
 
 	// Initialize BROWSEINFO
 	ZeroMemory(&bi, sizeof(BROWSEINFO));
-	bi.hwndOwner      = NULL;
-	bi.pidlRoot       = NULL;
+	bi.hwndOwner      = nullptr;
+	bi.pidlRoot       = nullptr;
 	bi.pszDisplayName = tmp_FolderName;
 	bi.lpszTitle      = title;
 	bi.ulFlags        = BIF_USENEWUI | BIF_VALIDATE | BIF_RETURNONLYFSDIRS;
 
 	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
-	if(NULL != pidl){
+	if(nullptr != pidl){
 		// get the name of the folder
 		TCHAR path[MAX_PATH];
 		if ( SHGetPathFromIDList ( pidl, path ) )
@@ -466,12 +466,12 @@ void GetHrMinSec(int time, int &hr, int &min, int &sec){
 	min = (time - hr*10000)/100;
 	sec = time % 100;
 
-	// make sure that there's no numbers larger than 60 (or 24) !!!
-	if(sec > 60){
+	// make sure that there's no numbers greather than or equal to 60 (or 24) !!!
+	if(sec >= 60){
 		sec -= 60;
 		min +=1;
 	}
-	if(min > 60){
+	if(min >= 60){
 		min -= 60;
 		hr += 1;
 	}

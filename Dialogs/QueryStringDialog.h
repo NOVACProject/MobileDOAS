@@ -10,7 +10,7 @@ namespace Dialogs
 	    DECLARE_DYNAMIC(CQueryStringDialog)
 
     public:
-	    CQueryStringDialog(CWnd* pParent = NULL);   // standard constructor
+	    CQueryStringDialog(CWnd* pParent = nullptr);   // standard constructor
 	    virtual ~CQueryStringDialog();
 
       virtual BOOL OnInitDialog();

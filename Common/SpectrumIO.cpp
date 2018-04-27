@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#include "spectrumio.h"
+#include "SpectrumIO.h"
 
 CSpectrumIO::CSpectrumIO(void)
 {
@@ -116,7 +116,7 @@ int CSpectrumIO::readSTDFile(CString filename, CSpectrum *curSpec){
 		fclose(f);
 		return 1;
 	}else{
-		curSpec->intTime = (int)tmpDouble;
+		curSpec->exposureTime = (int)tmpDouble;
 	}
 
 	/* The site is ignored */
@@ -185,15 +185,11 @@ int CSpectrumIO::readTextFile(CString filename, CSpectrum *curSpec){
 
 }
 
-bool CSpectrumIO::WriteStdFile(const CString &fileName, const double *spectrum, long specLength, long starttime, long stoptime, double lat, double lon, long integrationTime, const CString &spectrometer, const CString &measName, long exposureNum){
+bool CSpectrumIO::WriteStdFile(const CString &fileName, const double *spectrum, long specLength, char* startdate, long starttime, long stoptime, double lat, double lon, double alt, long integrationTime, const CString &spectrometer, const CString &measName, long exposureNum){
 	int extendedFormat = 1;
 	long i;
 	FILE *f;
-	char datetxt[10];
 	int hr,min,sec,hr2,min2,sec2;	
-	struct tm *timstruct;
-	time_t t;
-	time(&t);
 	GetHrMinSec(starttime, hr, min, sec);
 	GetHrMinSec(stoptime, hr2, min2, sec2);
 
@@ -213,37 +209,38 @@ bool CSpectrumIO::WriteStdFile(const CString &fileName, const double *spectrum, 
 	{
 		fprintf(f,"%.9lf\n", spectrum[i]);
 	}
-	timstruct=localtime(&t);
-	long yr = timstruct->tm_year+1900;
-	yr = yr%100;
 
-	sprintf(datetxt,"%02d.%02d.%02d",timstruct->tm_mday,timstruct->tm_mon+1,yr);
+	// date
+	std::string dmy = std::string(startdate);
+	std::string d = dmy.substr(0,2);
+	std::string m = dmy.substr(2, 2);
+	std::string y = dmy.substr(4, 2);
+	dmy = d + '.' + m + '.' + y;
+	char *datetxt = new char[dmy.length()+1];
+	std::strcpy(datetxt, dmy.c_str());
 
 	// Find the name of the file itself (removing the path)
 	CString name;
 	name.Format(fileName);
 	Common::GetFileName(name);
 
-	fprintf(f,"%s\n", name);                /* The name of the spectrum */
-	fprintf(f,"%s\n", spectrometer);  /* The name of the spectrometer */
-	fprintf(f,"%s\n", spectrometer);
+	fprintf(f,"%s\n", (LPCTSTR)name);                /* The name of the spectrum */
+	fprintf(f,"%s\n", (LPCTSTR)spectrometer);  /* The name of the spectrometer */
+	fprintf(f,"%s\n", (LPCTSTR)spectrometer); // why is there a second output of spectrometer name?
 	
 	fprintf(f,"%s\n",datetxt);
-//	GetTimeText(txt);
-
 	fprintf(f,"%02d:%02d:%02d\n",hr,min,sec);
-//	fprintf(f,"%s\n",txt);
-	
 	fprintf(f,"%02d:%02d:%02d\n",hr2,min2,sec2);
 	fprintf(f,"0.0\n");
 	fprintf(f,"0.0\n");
 	fprintf(f,"SCANS %ld\n",		exposureNum);
 	fprintf(f,"INT_TIME %d\n",	integrationTime);
-	fprintf(f,"SITE %s\n",			measName);
+	fprintf(f,"SITE %s\n",	(LPCTSTR)measName);
 	fprintf(f,"LONGITUDE %f\n",	lon);
 	fprintf(f,"LATITUDE %f\n",	lat);
 
 	if(extendedFormat){
+		fprintf(f, "Altitude = %.1lf\n", alt);
 		fprintf(f, "Author = \"\"\n");
 		fprintf(f, "Average = 0\n");
 		fprintf(f, "AzimuthAngle = 0\n");
@@ -253,7 +250,7 @@ bool CSpectrumIO::WriteStdFile(const CString &fileName, const double *spectrum, 
 		fprintf(f, "Device = \"\"\n");
 		fprintf(f, "ElevationAngle = 90\n");
 		fprintf(f, "ExposureTime = %d\n",				integrationTime);
-		fprintf(f, "FileName = %s\n",						fileName);
+		fprintf(f, "FileName = %s\n", (LPCTSTR)fileName);
 		fprintf(f, "FitHigh = 0\n");
 		fprintf(f, "FitLow = 0\n");
 		fprintf(f, "Gain = 0\n");
@@ -269,7 +266,7 @@ bool CSpectrumIO::WriteStdFile(const CString &fileName, const double *spectrum, 
 		fprintf(f, "Min = 0\n");
 		fprintf(f, "MinChannel = 0\n");
 		fprintf(f, "MultiChannelCounter = 0\n");
-		fprintf(f, "Name = \"%s\"\n",						measName);
+		fprintf(f, "Name = \"%s\"\n", (LPCTSTR)measName);
 		fprintf(f, "NumScans = %d\n",						exposureNum);
 		fprintf(f, "OpticalDensity = 0\n");
 		fprintf(f, "OpticalDensityCenter = %d\n",	specLength / 2);

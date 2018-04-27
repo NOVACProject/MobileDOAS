@@ -40,8 +40,8 @@ namespace MathFit
 		*/
 		CFitException() : CMessageLog("CFitException", __FILE__, __LINE__)
 		{
-			mMessage = NULL;
-			mModule = NULL;
+			mMessage = nullptr;
+			mModule = nullptr;
 			mLineNo = 0;
 			mErrorNo = 0;
 		}
@@ -95,7 +95,7 @@ namespace MathFit
 				strcpy(mMessage, cSource.mMessage);
 			}
 			else
-				mMessage = NULL;
+				mMessage = nullptr;
 
 			if(cSource.mModule)
 			{
@@ -103,7 +103,7 @@ namespace MathFit
 				strcpy(mModule, cSource.mModule);
 			}
 			else
-				mModule = NULL;
+				mModule = nullptr;
 
 			mLineNo = cSource.mLineNo;
 		}
@@ -133,7 +133,7 @@ namespace MathFit
 			vsprintf(mMessage, szMsg, vaParams);
 			va_end(vaParams);
 
-			mModule = NULL;
+			mModule = nullptr;
 			mLineNo = -1;
 		}
 
@@ -153,13 +153,13 @@ namespace MathFit
 			vsprintf(mMessage, szMsg, vaParams);
 			va_end(vaParams);
 
-			if(szMod != NULL)
+			if(szMod != nullptr)
 			{
 				mModule = new char[strlen(szMod) + 1];
 				strcpy(mModule, szMod);
 			}
 			else
-				mModule = NULL;
+				mModule = nullptr;
 
 			mLineNo = iLine;
 
@@ -177,7 +177,7 @@ namespace MathFit
 
 			vsprintf(mMessage, szMsg, vaParams);
 
-			mModule = NULL;
+			mModule = nullptr;
 			mLineNo = -1;
 		}
 
@@ -195,13 +195,13 @@ namespace MathFit
 
 			vsprintf(mMessage, szMsg, vaParams);
 
-			if(szMod != NULL)
+			if(szMod != nullptr)
 			{
 				mModule = new char[strlen(szMod) + 1];
 				strcpy(mModule, szMod);
 			}
 			else
-				mModule = NULL;
+				mModule = nullptr;
 
 			mLineNo = iLine;
 

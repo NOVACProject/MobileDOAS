@@ -11,14 +11,14 @@ using namespace DlgControls;
 
 CReferenceFileControl::CReferenceFileControl(void)
 {
-	m_window = NULL;
-	parent = NULL;
+	m_window = nullptr;
+	parent = nullptr;
 }
 
 CReferenceFileControl::~CReferenceFileControl(void)
 {
-	m_window = NULL;
-	parent = NULL;
+	m_window = nullptr;
+	parent = nullptr;
 }
 
 BEGIN_MESSAGE_MAP(CReferenceFileControl, CGridCtrl)
@@ -95,7 +95,7 @@ void CReferenceFileControl::ParseShiftOption(Evaluation::SHIFT_TYPE &option, dou
 	char tmpStr[512];
 	char txt[512];
 	str.MakeLower();
-	sprintf(txt, "%s", str);
+	sprintf(txt, "%s", (LPCTSTR)str);
 	char *pt = 0;
 
 	// 1. Shift Fixed 
@@ -107,20 +107,20 @@ void CReferenceFileControl::ParseShiftOption(Evaluation::SHIFT_TYPE &option, dou
 	}
 
 	// 2. Shift Linked
-	if((pt = strstr(txt, "link to")) || (pt = strstr(txt, "linked to"))){
+	if ((pt = strstr(txt, "link to")) || (pt = strstr(txt, "linked to"))) {
 		option = SHIFT_LINK;
 		int n = sscanf(pt, "%s to %lf", &tmpStr, &value);
-		if(n == 0){
-		CString name;
-		n = sscanf(pt, "%s to %s", &tmpStr, &name);
-		if(n != 0){
-			for(int k = 0; k < m_window->nRef; ++k){
-			if(0 == _strnicmp(m_window->ref[k].m_specieName, name, std::min(strlen(name), strlen(m_window->ref[k].m_specieName)))){
-				value = k;
-				return;
+		if (n == 0) {
+			char name[512];
+			n = sscanf(pt, "%s to %s", &tmpStr, &name);
+			if (n != 0) {
+				for (int k = 0; k < m_window->nRef; ++k) {
+					if (0 == _strnicmp(m_window->ref[k].m_specieName, name, std::min(strlen(name), strlen(m_window->ref[k].m_specieName)))) {
+						value = k;
+						return;
+					}
+				}
 			}
-			}
-		}
 		}
 	}
 
@@ -139,7 +139,7 @@ void CReferenceFileControl::ParseShiftOption(Evaluation::SHIFT_TYPE &option, dou
 
 void CReferenceFileControl::OnContextMenu(CWnd* pWnd, CPoint point){
 
-	if(this->parent == NULL)
+	if(this->parent == nullptr)
 		return;
 
 	CMenu menu;

@@ -9,7 +9,7 @@ namespace ReEvaluation{
 		DECLARE_DYNAMIC(CReEval_ScriptDlg)
 
 	public:
-		CReEval_ScriptDlg(CWnd* pParent = NULL);   // standard constructor
+		CReEval_ScriptDlg(CWnd* pParent = nullptr);   // standard constructor
 		virtual ~CReEval_ScriptDlg();
 
 	// Dialog Data

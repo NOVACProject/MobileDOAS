@@ -44,7 +44,7 @@ using namespace DlgControls;
 
 CGridDropTarget::CGridDropTarget()
 {
-    m_pGridCtrl = NULL;
+    m_pGridCtrl = nullptr;
     m_bRegistered = FALSE;
 }
 

@@ -280,9 +280,17 @@ namespace Graph
 			return XYPlot(x, y, color, nSum, plotOption | PLOT_CIRCLES);
 		}
 
+
+		/** Prints out a string onto the plot.
+		The function generates a text-box into which the string will be
+		drawn centered using default font. 		
+		Use pixel coords.		*/
+		void DrawTextBox(double x, double y, CString &str);
+
 		/** Prints out a string onto the plot.
 				The function generates a text-box into which the string will be 
-					drawn centered using default font. 		*/
+					drawn centered using default font. 	
+					Use lat/lon coords. */
 		void DrawTextBox(double x_min, double x_max, double y_min, double y_max, CString &str);
 		
 		/** Shades a filled square onto the plot */
@@ -515,7 +523,7 @@ namespace Graph
 		template <class T> void GetDataRange(T *xValues, T *yValues, int pointSum,
 			T &maxX, T &minX, T &maxY, T &minY){
 			Common common;
-			if(xValues == NULL){
+			if(xValues == nullptr){
 				maxX = pointSum;
 				minX = 0;
 			}else{

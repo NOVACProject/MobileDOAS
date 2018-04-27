@@ -77,63 +77,63 @@ Time *CTraverseResult::GetTime(int spectrumIndex){
 /** Sets the evaluated column for the given spectrum and specie */
 void	CTraverseResult::SetColumn(int spectrumIndex, int specieIndex, double column){
 	EvaluationResult *result = GetEvaluationResult(spectrumIndex);
-	if(result != NULL)
+	if(result != nullptr)
 		result->column[specieIndex] = column;
 }
 
 /** Sets the evaluated column Error for the given spectrum and specie */
 void	CTraverseResult::SetColumnError(int spectrumIndex, int specieIndex, double columnError){
 	EvaluationResult *result = GetEvaluationResult(spectrumIndex);
-	if(result != NULL)
+	if(result != nullptr)
 		result->columnError[specieIndex] = columnError;
 }
 
 /** Sets the gps-altitude for the given spectrum */
 void	CTraverseResult::SetAltitude(int spectrumIndex, double altitude){
 	gpsPosition *gps = GetGPS(spectrumIndex);
-	if(gps != NULL)
+	if(gps != nullptr)
 		gps->altitude = altitude;
 }
 
 /** Sets the gps-latitude for the given spectrum */
 void	CTraverseResult::SetLatitude(int spectrumIndex, double latitude){
 	gpsPosition *gps = GetGPS(spectrumIndex);
-	if(gps != NULL)
+	if(gps != nullptr)
 		gps->latitude = latitude;
 }
 
 /** Sets the gps-longitude for the given spectrum */
 void	CTraverseResult::SetLongitude(int spectrumIndex, double longitude){
 	gpsPosition *gps = GetGPS(spectrumIndex);
-	if(gps != NULL)
+	if(gps != nullptr)
 		gps->longitude = longitude;
 }
 
 /** Sets the exposure-time for the given spectrum */
 void	CTraverseResult::SetExptime(int spectrumIndex, long exptime){
 	SpectrumInfo *info = GetSpectrumInfo(spectrumIndex);
-	if(info != NULL)
+	if(info != nullptr)
 		info->expTime = (long)exptime;
 }
 
 /** Sets the number of exposures for the given spectrum */
 void	CTraverseResult::SetNumExposures(int spectrumIndex, int expNum){
 	SpectrumInfo *info = GetSpectrumInfo(spectrumIndex);
-	if(info != NULL)
+	if(info != nullptr)
 		info->numExposures = expNum;
 }
 
 /** Sets the intensity for the given spectrum */
 void	CTraverseResult::SetIntensity(int spectrumIndex, double intensity){
 	SpectrumInfo *info = GetSpectrumInfo(spectrumIndex);
-	if(info != NULL)
+	if(info != nullptr)
 		info->intensity = intensity;
 }
 
 /** Sets the start-time for the given spectrum */
 void	CTraverseResult::SetStartTime(int spectrumIndex, const Time &startTime){
 	Time *tid = GetTime(spectrumIndex);
-	if(tid != NULL){
+	if(tid != nullptr){
 		tid->hour		= startTime.hour;
 		tid->minute = startTime.minute;
 		tid->second = startTime.second;

@@ -127,6 +127,7 @@ namespace Flux
 
 		// ------------------- MANAGING THE DATA ---------------------
 		long  DeleteLowIntensityPoints(double intensityLimit);
+		long  DeleteHighIntensityPoints(double intensityLimit);
 		long  DeletePoints(long lowIndex,long highIndex);
 
 		// ------------------------ CALCULATING FLUX --------------------

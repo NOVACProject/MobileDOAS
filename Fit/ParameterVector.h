@@ -40,9 +40,9 @@ namespace MathFit
 		CParameterVector()
 		{
 			mSize = mSizeInternal = 0;
-			mIndex = NULL;
-			mBackIndex = NULL;
-			mLink = NULL;
+			mIndex = nullptr;
+			mBackIndex = nullptr;
+			mLink = nullptr;
 		}
 
 		/**
@@ -88,11 +88,11 @@ namespace MathFit
 
 			if(mIndex)
 				delete(mIndex);
-			mIndex = NULL;
+			mIndex = nullptr;
 			if(mBackIndex)
 				delete(mBackIndex);
-			mBackIndex = NULL;
-			mLink = NULL;
+			mBackIndex = nullptr;
+			mLink = nullptr;
 
 			mParams.SetSize(iSize);
 			mParamsInternal.SetSize(iSize);

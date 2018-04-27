@@ -34,10 +34,10 @@ class CPostFluxDlg : public CDialog
 {
 // Construction
 public:
-	CPostFluxDlg(CWnd* pParent = NULL);   // standard constructor
+	CPostFluxDlg(CWnd* pParent = nullptr);   // standard constructor
 	~CPostFluxDlg();
 
-	enum { IDD = IDD_DIALOG2 };
+	enum { IDD = IDD_POST_FLUX_DIALOG };
 
 
 protected:
@@ -78,11 +78,12 @@ protected:
 	/** The user wants to see the route dialog*/
 	afx_msg void OnBtnShowRoute();
 
-	/** The user has pressed the button 'Delete Low Intensity Points' */
-	afx_msg void OnBnClickedBtnDelLowIntensity();
+	/** The user has pressed the button 'Delete Low/High Intensity Points' */
+	afx_msg void OnBnClickedBtnDelIntensity();
 
 	/** */
-	afx_msg void OnNMReleasedcaptureSliderintensity(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnNMReleasedcaptureSliderintensityLow(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnNMReleasedcaptureSliderintensityHigh(NMHDR *pNMHDR, LRESULT *pResult);
 
 	/** Called when the user wants to use the wind direction calculated
 			as the line from the source to the maximum column value
@@ -250,7 +251,8 @@ public:
 	CFlux* m_flux;
 	
 	// Lets the user delete data points with intensity lower than a certain limit
-	CSliderCtrl m_intensitySlider;
+	CSliderCtrl m_intensitySliderLow;
+	CSliderCtrl m_intensitySliderHigh;
 
 	// Lets the user select what unit to use
 	CComboBox m_unitSelection;
@@ -331,6 +333,8 @@ private:
 	int   OnChangeSelectedFile();
 
 	void  UpdatePropertiesWindow();
+public:
+	afx_msg void ChangeFluxUnit();
 };
 
 //{{AFX_INSERT_LOCATION}}

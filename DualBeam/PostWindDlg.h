@@ -14,7 +14,7 @@ class CPostWindDlg : public CDialog
 public:
 	static const int MAX_N_SERIES = 2;
 
-	CPostWindDlg(CWnd* pParent = NULL);   // standard constructor
+	CPostWindDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CPostWindDlg();
 
 // Dialog Data

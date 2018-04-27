@@ -78,7 +78,7 @@ BEGIN_MESSAGE_MAP(CDMSpecView, CFormView)
 	ON_COMMAND(ID_CONFIGURATION_PLOT_CHANGEPLOTCOLOR,			OnConfigurationPlotChangeplotcolor)
 	ON_COMMAND(ID_CONFIGURATION_PLOT_CHANGEPLOTCOLOR_SLAVE,		OnConfigurationPlotChangeplotcolor_Slave)
 
-	ON_COMMAND(ID_ANALYSIS_WINDSPEEDMEASUREMENT, OnMenuAnalysisWindSpeedMeasurement)
+	//ON_COMMAND(ID_ANALYSIS_WINDSPEEDMEASUREMENT, OnMenuAnalysisWindSpeedMeasurement)
 
 
 	ON_COMMAND(ID_CONFIGURATION_OPERATION,			OnConfigurationOperation)
@@ -99,7 +99,7 @@ BEGIN_MESSAGE_MAP(CDMSpecView, CFormView)
 	ON_UPDATE_COMMAND_UI(ID_CONTROL_REEVALUATE,		OnUpdateControlReevaluate)
 	ON_COMMAND(ID_CONFIGURATION_CHANGEEXPOSURETIME,	OnConfigurationChangeexposuretime)
 	ON_WM_HELPINFO()
-	ON_COMMAND(ID_ANALYSIS_PLUMEHEIGHTMEASUREMENT,	OnMenuAnalysisPlumeheightmeasurement)
+	//ON_COMMAND(ID_ANALYSIS_PLUMEHEIGHTMEASUREMENT,	OnMenuAnalysisPlumeheightmeasurement)
 	ON_COMMAND(ID_CONTROL_TESTTHEGPS,				OnMenuControlTestTheGPS)
 
 	ON_COMMAND(ID_VIEW_COLUMNERROR,					OnViewColumnError)
@@ -139,7 +139,7 @@ CDMSpecView::CDMSpecView()
 	}
 	number2Length = MAX_SPECTRUM_LENGTH;
 
-	m_Spectrometer = NULL;
+	m_Spectrometer = nullptr;
 	m_showErrorBar = FALSE;
 	
 	m_minSaturationRatio = 0.0;
@@ -148,9 +148,9 @@ CDMSpecView::CDMSpecView()
 
 CDMSpecView::~CDMSpecView()
 {
-	if(m_Spectrometer != NULL){
+	if(m_Spectrometer != nullptr){
 		delete(m_Spectrometer);
-		m_Spectrometer = NULL;
+		m_Spectrometer = nullptr;
 	}
 }
 
@@ -164,7 +164,7 @@ void CDMSpecView::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_WINDSPEED, m_WindSpeed);
 	DDV_MinMaxDouble(pDX, m_WindSpeed, 0., 1000000.);
 
-	DDX_Control(pDX, IDC_SIGNALLIMIT_SLIDER, m_intensitySlider);
+	DDX_Control(pDX, IDC_SIGNALLIMIT_SLIDER, m_intensitySliderLow);
 
 	// The GPS-Labels
 	DDX_Control(pDX,	IDC_LAT,		m_gpsLatLabel);
@@ -208,7 +208,7 @@ void CDMSpecView::OnInitialUpdate()
 	int left	= 50;
 	int top		= 14;
 	int right	= 970;
-	int bottom	= 520;
+	int bottom = 520;
 
 	// Get the resolution of the screen
 	int cx	= GetSystemMetrics(SM_CXSCREEN);
@@ -217,11 +217,10 @@ void CDMSpecView::OnInitialUpdate()
 	right	= cx * right / 1024;
 	
 	// Also move the slider to the right of the window
-	m_intensitySlider.GetWindowRect(rect);
-	rect.left  = rect.left * cx / 1024;
-	rect.right = rect.right * cx / 1024;
-	this->ScreenToClient(rect);
-	m_intensitySlider.MoveWindow(rect);
+	m_intensitySliderLow.GetWindowRect(rect);
+	int diff = rect.right - rect.left;
+	rect = CRect(right, TOP, right + diff + 1, BOTTOM);
+	m_intensitySliderLow.MoveWindow(rect);
 
 	rect = CRect(LEFT,TOP,right,BOTTOM);
 	m_ColumnPlot.Create(WS_VISIBLE | WS_CHILD, rect, this) ; 
@@ -245,9 +244,9 @@ void CDMSpecView::OnInitialUpdate()
 	ReadMobileLog();
 
 	/* the intensity slider */
-	m_intensitySlider.SetRange(0, 100); /** The scale of the intensity slider is in percent */
-	m_intensitySlider.SetPos(100 - 25); /* The slider is upside down - i.e. the real value is "100 - m_intensitySlider.GetPos()"*/
-	m_intensitySlider.SetTicFreq(25);
+	m_intensitySliderLow.SetRange(0, 100); /** The scale of the intensity slider is in percent */
+	m_intensitySliderLow.SetPos(100 - 25); /* The slider is upside down - i.e. the real value is "100 - m_intensitySlider.GetPos()"*/
+	m_intensitySliderLow.SetTicFreq(25);
 
 	/* The colors for the spectrum plots */
 	m_Spectrum0Color    = RGB(0, 255, 0);
@@ -305,7 +304,7 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam){
 	}
 	
 	dynRange = m_Spectrometer->m_spectrometerDynRange;
-	int intensityLimit = (100 - m_intensitySlider.GetPos());
+	int intensityLimit = (100 - m_intensitySliderLow.GetPos());
 
 	// Reset, is this really necessary??
 	memset((void*)column,		0, sizeof(double)*10000);
@@ -408,7 +407,7 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam){
 
 
 	if(m_realTimeRouteGraph.fVisible){
-		m_realTimeRouteGraph.m_intensityLimit = dynRange * (100 - m_intensitySlider.GetPos());
+		m_realTimeRouteGraph.m_intensityLimit = dynRange * (100 - m_intensitySliderLow.GetPos());
 		m_realTimeRouteGraph.DrawRouteGraph();
 	}
 	if(m_showFitDlg.fVisible){
@@ -474,7 +473,7 @@ LRESULT CDMSpecView::OnShowIntTime(WPARAM wParam, LPARAM lParam){
 	UpdateLegend();
 
 	// forward the message to the spectrum-settings dialog(if any);
-	if(this->m_specSettingsDlg.m_hWnd != NULL){
+	if(this->m_specSettingsDlg.m_hWnd != nullptr){
 		m_specSettingsDlg.PostMessage(WM_SHOWINTTIME);
 	}
 
@@ -483,7 +482,7 @@ LRESULT CDMSpecView::OnShowIntTime(WPARAM wParam, LPARAM lParam){
 
 LRESULT CDMSpecView::OnChangeSpectrometer(WPARAM wParam, LPARAM lParam){
 	// forward the message to the spectrum-settings dialog(if any);
-	if(this->m_specSettingsDlg.m_hWnd != NULL){
+	if(this->m_specSettingsDlg.m_hWnd != nullptr){
 		m_specSettingsDlg.PostMessage(WM_CHANGEDSPEC);
 	}
 	return 0;
@@ -880,7 +879,7 @@ void CDMSpecView::OnControlStop()
 
 		DWORD dwExitCode;
 		HANDLE hThread = pSpecThread->m_hThread;
-		if(hThread !=NULL && GetExitCodeThread(hThread, &dwExitCode) && dwExitCode ==STILL_ACTIVE)
+		if(hThread != nullptr && GetExitCodeThread(hThread, &dwExitCode) && dwExitCode ==STILL_ACTIVE)
 		{
 			AfxGetApp()->BeginWaitCursor();
 			m_Spectrometer->m_wrapper.stopAveraging(m_Spectrometer->m_spectrometerIndex);
@@ -971,7 +970,7 @@ void CDMSpecView::DrawSpectrum()
 		m_ColumnPlot.XYPlot(NULL, spectrum1, spectrumLength, Graph::CGraphCtrl::PLOT_CONNECTED);
 
 		// Plot the wavelengths of each of the lines
-		if(m_calibration != NULL){
+		if(m_calibration != nullptr){
 			for(unsigned int k = 0; k < m_calibration->m_lineNum; ++k){
 				lambdaStr.Format("%.1lf", m_calibration->m_lines[k].wavelength);
 				m_ColumnPlot.DrawLine(Graph::VERTICAL, m_calibration->m_lines[k].pixelNumber, RGB(255, 255, 0), Graph::STYLE_DASHED, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
@@ -1036,10 +1035,10 @@ BOOL CDMSpecView::OnHelpInfo(HELPINFO* pHelpInfo)
 }
 
 void CDMSpecView::ReadMobileLog(){
-	char baseNameTxt[256];
+	char baseNameTxt[256] = "run";
 	char txt[256];
 	char *pt = 0;
-	int i, L, d;
+	size_t i, L, d;
 	char m_Base[256];
 	bool fFoundBaseName = false;
 
@@ -1072,23 +1071,24 @@ void CDMSpecView::ReadMobileLog(){
 
 	if(fFoundBaseName){
 		i = L = strlen(baseNameTxt);
-		while(baseNameTxt[i-1] >= '0' && baseNameTxt[i-1] <= '9')
-		--i;
+		while (baseNameTxt[i - 1] >= '0' && baseNameTxt[i - 1] <= '9') {
+			--i;
+		}
 
 		if(i == L){
-		sprintf(m_Base, "%s%02d", baseNameTxt, 1);
+			sprintf(m_Base, "%s%02d", baseNameTxt, 1);
 		}else{
-		sscanf(baseNameTxt + i, "%d", &d);
-		baseNameTxt[i] = 0;
-		switch(L - i){
-			case 1: sprintf(m_Base, "%s%01d", baseNameTxt, ++d); break;
-			case 2: sprintf(m_Base, "%s%02d", baseNameTxt, ++d); break;
-			case 3: sprintf(m_Base, "%s%03d", baseNameTxt, ++d); break;
-			case 4: sprintf(m_Base, "%s%04d", baseNameTxt, ++d); break;
-			case 5: sprintf(m_Base, "%s%05d", baseNameTxt, ++d); break;
-			case 6: sprintf(m_Base, "%s%06d", baseNameTxt, ++d); break;
-			case 7: sprintf(m_Base, "%s%07d", baseNameTxt, ++d); break;
-		}
+			sscanf(baseNameTxt + i, "%d", &d);
+			baseNameTxt[i] = 0;
+			switch(L - i){
+				case 1: sprintf(m_Base, "%s%01d", baseNameTxt, ++d); break;
+				case 2: sprintf(m_Base, "%s%02d", baseNameTxt, ++d); break;
+				case 3: sprintf(m_Base, "%s%03d", baseNameTxt, ++d); break;
+				case 4: sprintf(m_Base, "%s%04d", baseNameTxt, ++d); break;
+				case 5: sprintf(m_Base, "%s%05d", baseNameTxt, ++d); break;
+				case 6: sprintf(m_Base, "%s%06d", baseNameTxt, ++d); break;
+				case 7: sprintf(m_Base, "%s%07d", baseNameTxt, ++d); break;
+			}
 		}
 		m_BaseEdit.SetWindowText(m_Base);
 		UpdateData(FALSE);
@@ -1119,9 +1119,9 @@ void CDMSpecView::OnViewRealtimeroute(){
 
 		if(fRunSpec){
 		m_realTimeRouteGraph.m_spectrometer		= this->m_Spectrometer;
-			m_realTimeRouteGraph.m_intensityLimit = m_Spectrometer->m_spectrometerDynRange * (100 - m_intensitySlider.GetPos());
+			m_realTimeRouteGraph.m_intensityLimit = m_Spectrometer->m_spectrometerDynRange * (100 - m_intensitySliderLow.GetPos());
 		}else{
-		m_realTimeRouteGraph.m_spectrometer		= NULL;
+		m_realTimeRouteGraph.m_spectrometer		= nullptr;
 			m_realTimeRouteGraph.m_intensityLimit = 0.25 * 4095;
 		}
 		m_realTimeRouteGraph.ShowWindow(SW_SHOW);
@@ -1163,7 +1163,7 @@ void CDMSpecView::OnViewSpectrumFit(){
 		if(fRunSpec){
 		m_showFitDlg.m_spectrometer = this->m_Spectrometer;
 		}else{
-		m_showFitDlg.m_spectrometer = NULL;
+		m_showFitDlg.m_spectrometer = nullptr;
 		}
 		m_showFitDlg.ShowWindow(SW_SHOW);
 	}
@@ -1206,7 +1206,7 @@ void CDMSpecView::OnUpdateControlReevaluate(CCmdUI *pCmdUI){
 }
 void CDMSpecView::OnConfigurationChangeexposuretime()
 {
-	if(m_Spectrometer != NULL)
+	if(m_Spectrometer != nullptr)
 	  m_Spectrometer->m_adjustIntegrationTime = TRUE;
 }
 void CDMSpecView::OnMenuAnalysisWindSpeedMeasurement()
@@ -1228,29 +1228,30 @@ void CDMSpecView::OnMenuControlTestTheGPS()
 	CString status;
 
 	// set the baudrate for the connection
-	serial.baudrate = 4800;
+	long baudrate[] = { 4800, 9600 };
 
-	for(int port = 1; port < 20; ++port){
-		// try this serial-port and see what happens
-		sprintf(serial.serialPort, "COM%d", port);
+	for (int i=0; i < 2; i++) {
+		serial.baudrate = baudrate[i];
+		for (int port = 1; port < 256; ++port) {
+			// try this serial-port and see what happens
+			sprintf(serial.serialPort, "COM%d", port);
+			status.Format("Testing port: %s Baud rate: %d", serial.serialPort, serial.baudrate);
+			ShowStatusMsg(status);
 
-		status.Format("Testing port: %s", serial.serialPort);
-		ShowStatusMsg(status);
-
-		// test the serial-port
-		if(!serial.Init(serial.baudrate)){
-			// could not connect to this serial-port
-			continue;
-		}else{
+			// test the serial-port
+			if (!serial.Init(serial.baudrate)) {
+				// could not connect to this serial-port
+				continue;
+			}
 			// it was possible to open the serial-port, test if there is a gps on this port
 			serial.Close();
 
 			CGPS *gps = new CGPS(serial.serialPort, serial.baudrate);
-			for(int i = 0; i < 10; ++i){
-				if(1 == gps->ReadGPS()){
-					CString msg;
-					msg.Format("Found GPS on serialPort: %s using baudrate %d", serial.serialPort, serial.baudrate);
-					MessageBox(msg, "Found GPS reciever");
+			for (int i = 0; i < 10; ++i) {
+				if (1 == gps->ReadGPS()) {
+					status.Format("Found GPS on serialPort: %s using baud rate %d", serial.serialPort, serial.baudrate);
+					ShowStatusMsg(status); 
+					MessageBox(status, "Found GPS reciever");
 
 					delete gps;
 					return;
@@ -1258,18 +1259,16 @@ void CDMSpecView::OnMenuControlTestTheGPS()
 
 				Sleep(10);
 			}
-
 			delete gps;
-			
 		}
-
 	}
-
-	MessageBox("No GPS reciever could be found");
+	status = "No GPS reciever could be found";
+	ShowStatusMsg(status);
+	MessageBox(status);
 }
 
 void CDMSpecView::UpdateLegend(){
-	if(m_Spectrometer == NULL){
+	if(m_Spectrometer == nullptr){
 		// if the program has not been started yet
 		m_colorLabelSpectrum1.ShowWindow(SW_HIDE);
 		m_colorLabelSpectrum2.ShowWindow(SW_HIDE);
@@ -1333,7 +1332,7 @@ void CDMSpecView::OnViewColumnError(){
 }
 
 void CDMSpecView::OnUpdate_EnableOnRun(CCmdUI *pCmdUI){
-	if(m_Spectrometer != NULL && m_Spectrometer->fRun){
+	if(m_Spectrometer != nullptr && m_Spectrometer->fRun){
 		// enable
 		pCmdUI->Enable(TRUE);
 	}else{
@@ -1343,7 +1342,7 @@ void CDMSpecView::OnUpdate_EnableOnRun(CCmdUI *pCmdUI){
 }
 
 void CDMSpecView::OnUpdate_DisableOnRun(CCmdUI *pCmdUI){
-	if(m_Spectrometer != NULL && m_Spectrometer->fRun){
+	if(m_Spectrometer != nullptr && m_Spectrometer->fRun){
 		// disable
 		pCmdUI->Enable(FALSE);
 	}else{

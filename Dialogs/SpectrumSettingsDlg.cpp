@@ -19,7 +19,7 @@ IMPLEMENT_DYNAMIC(CSpectrumSettingsDlg, CDialog)
 CSpectrumSettingsDlg::CSpectrumSettingsDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CSpectrumSettingsDlg::IDD, pParent)
 {
-	m_Spectrometer = NULL;
+	m_Spectrometer = nullptr;
 	m_exptime = 100;
 	m_average = 1;
 	m_channel = 0;
@@ -27,7 +27,7 @@ CSpectrumSettingsDlg::CSpectrumSettingsDlg(CWnd* pParent /*=NULL*/)
 
 CSpectrumSettingsDlg::~CSpectrumSettingsDlg()
 {
-	m_Spectrometer = NULL;
+	m_Spectrometer = nullptr;
 }
 
 void CSpectrumSettingsDlg::DoDataExchange(CDataExchange* pDX)
@@ -83,7 +83,7 @@ BOOL CSpectrumSettingsDlg::OnInitDialog()
 
 /** Updates the dialog with the data from the CSpectrometer */
 LRESULT CSpectrumSettingsDlg::UpdateFromSpectrometer(WPARAM wParam, LPARAM lParam){
-	if(this->m_Spectrometer == NULL){
+	if(this->m_Spectrometer == nullptr){
 		return 0;
 	}
 
@@ -92,7 +92,7 @@ LRESULT CSpectrumSettingsDlg::UpdateFromSpectrometer(WPARAM wParam, LPARAM lPara
 	this->m_exptime = m_Spectrometer->integrationTime;
 	
 	// Update the window
-	if(this->m_hWnd != NULL)
+	if(this->m_hWnd != nullptr)
 		UpdateData(FALSE);
 	
 	return 0;
@@ -102,7 +102,7 @@ LRESULT CSpectrumSettingsDlg::UpdateFromSpectrometer(WPARAM wParam, LPARAM lPara
 /** Saves the settings in the dialog to the spectrometer */
 void CSpectrumSettingsDlg::SaveToSpectrometer(){
 
-	if(this->m_Spectrometer == NULL){
+	if(this->m_Spectrometer == nullptr){
 		return;
 	}
 
@@ -169,6 +169,8 @@ void CSpectrumSettingsDlg::SaveSpectrum(){
 	int spectrumLength       = m_Spectrometer->m_detectorSize;
 	double lat = 0.0;	// <-- this we don't know anything about
 	double lon = 0.0;	// <-- this we don't know anything about
+	double alt = 0.0;
+	char* startdate = "000000";
 	long starttime = 0; // <-- this we don't know anything about
 	long stoptime  = 0; // <-- this we don't know anything about
 
@@ -179,7 +181,7 @@ void CSpectrumSettingsDlg::SaveSpectrum(){
 	}
 
 	// write the file
-	CSpectrumIO::WriteStdFile(stdFileName, spectrum1, spectrumLength, starttime, stoptime, lat, lon, m_Spectrometer->integrationTime, m_Spectrometer->spectrometerName, "...", m_Spectrometer->totalSpecNum);
+	CSpectrumIO::WriteStdFile(stdFileName, spectrum1, spectrumLength, startdate, starttime, stoptime, lat, lon, alt, m_Spectrometer->integrationTime, m_Spectrometer->spectrometerName, "...", m_Spectrometer->totalSpecNum);
 }
 
 // Called when the user has pressed the spin button that controlls the exposure-time
@@ -238,14 +240,14 @@ void CSpectrumSettingsDlg::UpdateListOfSpectrometers(){
 
 	m_Spectrometer->GetConnectedSpecs(spectrometers);
 	
-	int nFoundSpecs = spectrometers.GetCount();
+	INT_PTR nFoundSpecs = spectrometers.GetCount();
 	if(nFoundSpecs == 0 || (m_Spectrometer->m_spectrometerIndex < 0 || m_Spectrometer->m_spectrometerIndex >= nFoundSpecs)){
 		return;
 	}else{
 		// build the list 
 		m_comboSpecs.ResetContent();
 		POSITION p = spectrometers.GetHeadPosition();
-		while(p != NULL){
+		while(p != nullptr){
 			m_comboSpecs.AddString(spectrometers.GetNext(p));
 		}
 
@@ -268,11 +270,11 @@ LRESULT CSpectrumSettingsDlg::OnChangeSpectrometer(WPARAM wParam, LPARAM lParam)
 
 	m_Spectrometer->GetConnectedSpecs(spectrometers);
 	
-	int nFoundSpecs = spectrometers.GetCount();
+	//INT_PTR nFoundSpecs = spectrometers.GetCount();
 	// build the list 
 	m_comboSpecs.ResetContent();
 	POSITION p = spectrometers.GetHeadPosition();
-	while(p != NULL){
+	while(p != nullptr){
 		m_comboSpecs.AddString(spectrometers.GetNext(p));
 	}
 

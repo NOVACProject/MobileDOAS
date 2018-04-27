@@ -77,7 +77,6 @@ void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum
 	//	const int iNumSpec = 1;//5;
 
 	CVector vXData, vMeas;
-	int i;
 
 	// Copy the spectra to local variables
 	double *measArray = new double[sumChn];
@@ -91,13 +90,13 @@ void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum
 
 	// calculate the 'wavelength' column
 	vXData.SetSize(sumChn);
-	for(i = 0; i < sumChn; ++i)
+	for(int i = 0; i < sumChn; ++i)
 		vXData.SetAt(i, (TFitData)(1.0f + (double)i));
 
 	//----------------------------------------------------------------
 	// --------- prepare the spectrum for evaluation -----------------
 	//----------------------------------------------------------------
-	PrepareSpectra(darkArray, skyArray, measArray, m_window);
+	PrepareSpectra(darkArray, skyArray, measArray, m_window); // why not pass in CSpectrum instead of array?
 
 	// Copy the highpass-filtered spectrum to the designated storage
 	memcpy(m_filteredSpectrum, measArray, sumChn*sizeof(double));
@@ -136,7 +135,7 @@ void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum
 	// reference spectra used in the DOAS model function
 	//	CReferenceSpectrumFunction ref[iNumSpec];
 	CReferenceSpectrumFunction ref[20];
-	for(i = 0; i < iNumSpec; i++)
+	for(int i = 0; i < iNumSpec; i++)
 	{
 		// reset all reference's parameters
 		ref[i].ResetLinearParameter();
@@ -241,6 +240,8 @@ void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum
 		m_result.m_ref.SetSize(m_window.nRef);
 
 		// finally display the fit results for each reference spectrum including their appropriate error
+
+		int i;
 		for(i = 0; i < iNumSpec; i++){
 			// Get the name of the evaluated specie
 			m_result.m_ref[i].m_specieName.Format(m_window.ref[i].m_specieName);
@@ -427,8 +428,11 @@ void CEvaluation::PrepareSpectra_HP_Div(double *darkArray, double *skyArray, dou
 
 	// 1. Subtract the dark spectrum
 	Sub(measArray,darkArray,window.specLength,0.0);
-	if(m_subtractDarkFromSky)
-		Sub(skyArray,darkArray,window.specLength,0.0);
+	if (m_subtractDarkFromSky) {
+		// TODO:should never be called in re-evaluation mode or in adaptive mode if in real-time
+		// TEST THIS!!!
+		Sub(skyArray, darkArray, window.specLength, 0.0);
+	}
 
 	//  2. Remove any remaining offset
 	RemoveOffset(measArray, window.specLength, window.offsetFrom, window.offsetTo);

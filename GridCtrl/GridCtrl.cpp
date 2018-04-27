@@ -221,7 +221,7 @@ CGridCtrl::CGridCtrl(int nRows, int nCols, int nFixedRows, int nFixedCols)
     m_nFixedCols          = 0;
 
     m_bVirtualMode        = FALSE;
-    m_pfnCallback         = NULL;
+    m_pfnCallback         = nullptr;
 
     m_nVScrollMax         = 0;          // Scroll position
     m_nHScrollMax         = 0;
@@ -261,7 +261,7 @@ CGridCtrl::CGridCtrl(int nRows, int nCols, int nFixedRows, int nFixedCols)
 
     m_bAscending          = TRUE;       // sorting stuff
     m_nSortColumn         = -1;
-	m_pfnCompare		  = NULL;
+	m_pfnCompare		  = nullptr;
 
     m_nAutoSizeColumnStyle = GVS_BOTH;  // Autosize grid using header and data info
 
@@ -270,7 +270,7 @@ CGridCtrl::CGridCtrl(int nRows, int nCols, int nFixedRows, int nFixedCols)
     m_nResizeCaptureRange = 3;          // When resizing columns/row, the cursor has to be
                                         // within +/-3 pixels of the dividing line for
                                         // resizing to be possible
-    m_pImageList          = NULL;       // Images in the grid
+    m_pImageList          = nullptr;       // Images in the grid
     m_bAllowDragAndDrop   = FALSE;      // for drag and drop - EFW - off by default
     m_bTrackFocusCell     = TRUE;       // Track Focus cell?
     m_bFrameFocus         = TRUE;       // Frame the selected cell?
@@ -334,14 +334,14 @@ BOOL CGridCtrl::RegisterWindowClass()
         wndcls.lpfnWndProc      = ::DefWindowProc;
         wndcls.cbClsExtra       = wndcls.cbWndExtra = 0;
         wndcls.hInstance        = hInst;
-        wndcls.hIcon            = NULL;
+        wndcls.hIcon            = nullptr;
 #ifndef _WIN32_WCE_NO_CURSOR
         wndcls.hCursor          = AfxGetApp()->LoadStandardCursor(IDC_ARROW);
 #else
         wndcls.hCursor          = 0;
 #endif
         wndcls.hbrBackground    = (HBRUSH) (COLOR_3DFACE + 1);
-        wndcls.lpszMenuName     = NULL;
+        wndcls.lpszMenuName     = nullptr;
         wndcls.lpszClassName    = GRIDCTRL_CLASSNAME;
 
         if (!AfxRegisterClass(&wndcls))
@@ -382,7 +382,7 @@ BOOL CGridCtrl::Initialise()
 	CRect rect;
 	GetWindowRect(rect);
 	CWnd* pParent = GetParent();
-	if (pParent != NULL)
+	if (pParent != nullptr)
 		pParent->ScreenToClient(rect);
 	rect.InflateRect(1,1);	MoveWindow(rect);
 	rect.DeflateRect(1,1);  MoveWindow(rect);
@@ -1992,7 +1992,7 @@ void CGridCtrl::SetSelectedRange(int nMinRow, int nMinCol, int nMaxRow, int nMax
 
 	CWaitCursor wait; // Thomas Haase 
 
-    CDC* pDC = NULL;
+    CDC* pDC = nullptr;
     if (bForceRepaint)
         pDC = GetDC();
 
@@ -2017,7 +2017,7 @@ void CGridCtrl::SetSelectedRange(int nMinRow, int nMinCol, int nMaxRow, int nMax
         POSITION pos;
 
         // Unselect all previously selected cells
-        for (pos = m_SelectedCellMap.GetStartPosition(); pos != NULL; )
+        for (pos = m_SelectedCellMap.GetStartPosition(); pos != nullptr; )
         {
             DWORD key;
             CCellID cell;
@@ -2057,7 +2057,7 @@ void CGridCtrl::SetSelectedRange(int nMinRow, int nMinCol, int nMaxRow, int nMax
         if (!GetSingleRowSelection() &&
             nMinRow >= 0 && nMinCol >= 0 && nMaxRow >= 0 && nMaxCol >= 0)
         {
-            for (pos = m_PrevSelectedCellMap.GetStartPosition(); pos != NULL; /* nothing */)
+            for (pos = m_PrevSelectedCellMap.GetStartPosition(); pos != nullptr; /* nothing */)
             {
                 DWORD key;
                 CCellID cell;
@@ -2115,7 +2115,7 @@ void CGridCtrl::SetSelectedRange(int nMinRow, int nMinCol, int nMaxRow, int nMax
     }
     //    TRACE(_T("%d cells selected.\n"), m_SelectedCellMap.GetCount());
 
-    if (pDC != NULL)
+    if (pDC != nullptr)
         ReleaseDC(pDC);
 }
 
@@ -2281,7 +2281,7 @@ void CGridCtrl::CutSelectedText()
     if (!IsEditable())
         return;
 
-    for (POSITION pos = m_SelectedCellMap.GetStartPosition(); pos != NULL; )
+    for (POSITION pos = m_SelectedCellMap.GetStartPosition(); pos != nullptr; )
     {
 		DWORD key;
         CCellID cell;
@@ -2966,7 +2966,7 @@ CCellRange CGridCtrl::GetSelectedCellRange() const
 {
     CCellRange Selection(GetRowCount(), GetColumnCount(), -1,-1);
 
-    for (POSITION pos = m_SelectedCellMap.GetStartPosition(); pos != NULL; )
+    for (POSITION pos = m_SelectedCellMap.GetStartPosition(); pos != nullptr; )
     {
         DWORD key;
         CCellID cell;
@@ -3254,7 +3254,7 @@ BOOL CGridCtrl::GetTextRect(const CCellID& cell, LPRECT pRect)
 BOOL CGridCtrl::GetTextRect(int nRow, int nCol, LPRECT pRect)
 {
     CGridCellBase* pCell = GetCell( nRow, nCol);
-    if( pCell == NULL)
+    if( pCell == nullptr)
         return FALSE;
     
     if( !GetCellRect( nRow, nCol, pRect) )
@@ -3849,7 +3849,7 @@ BOOL CGridCtrl::SetCellType(int nRow, int nCol, CRuntimeClass* pRuntimeClass)
 
 BOOL CGridCtrl::SetDefaultCellType( CRuntimeClass* pRuntimeClass)
 {
-    ASSERT( pRuntimeClass != NULL );
+    ASSERT( pRuntimeClass != nullptr);
     if (!pRuntimeClass->IsDerivedFrom(RUNTIME_CLASS(CGridCellBase)))
     {
         ASSERT( FALSE);
@@ -4176,7 +4176,7 @@ BOOL CGridCtrl::SortItems(int nCol, BOOL bAscending, LPARAM data /* = 0 */)
     ResetSelectedRange();
     SetFocusCell(-1, - 1);
 
-	if (m_pfnCompare == NULL)
+	if (m_pfnCompare == nullptr)
 		return CGridCtrl::SortItems(pfnCellTextCompare, nCol, bAscending, data);
 	else
 	    return CGridCtrl::SortItems(m_pfnCompare, nCol, bAscending, data);
@@ -5531,7 +5531,7 @@ void CGridCtrl::OnMouseMove(UINT /*nFlags*/, CPoint point)
 
         if (m_MouseMode == MOUSE_NOTHING)
         {
-            CGridCellBase* pCell = NULL;
+            CGridCellBase* pCell = nullptr;
             CCellID idCurrentCell;
             if (!GetVirtualMode() || m_bTitleTips)
             {
@@ -5744,7 +5744,7 @@ void CGridCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
         CPoint pointClickedRel;
         pointClickedRel = GetPointClicked( cell.row, cell.col, point);
 
-        CGridCellBase* pCell = NULL;
+        CGridCellBase* pCell = nullptr;
         if (IsValid(cell))
             pCell = GetCell(cell.row, cell.col);
 
@@ -6104,7 +6104,7 @@ void CGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
         m_PrevSelectedCellMap.RemoveAll();
         if (nFlags & MK_CONTROL)
         {
-            for (POSITION pos = m_SelectedCellMap.GetStartPosition(); pos != NULL; )
+            for (POSITION pos = m_SelectedCellMap.GetStartPosition(); pos != nullptr; )
             {
                 DWORD key;
                 CCellID cell;
@@ -6334,7 +6334,7 @@ void CGridCtrl::Print(CPrintDialog* pPrntDialog /*=NULL*/)
 {
     CDC dc;
 
-    if (pPrntDialog == NULL)
+    if (pPrntDialog == nullptr)
     {
         CPrintDialog printDlg(FALSE);
         if (printDlg.DoModal() != IDOK)             // Get printer settings from user

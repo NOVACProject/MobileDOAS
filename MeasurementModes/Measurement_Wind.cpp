@@ -17,6 +17,7 @@ void CMeasurement_Wind::Run(){
 	double tmpSpec[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
 	int i, fitRgn;
 
+	char* startDate;
 	long startTime,elapsedSecond;
 	clock_t cStart, cFinish;
 
@@ -65,7 +66,7 @@ void CMeasurement_Wind::Run(){
 	/* Error Check */
 	if(serialDelay >= this->m_timeResolution){
 		CString tmpStr;
-		tmpStr.Format("Error In cfg.txt: The time resolution is smaller than the serial delay. Please Change and restart. Set Time Resolution = %d [s]. Set Serial Delay = %d [s]", this->m_timeResolution, serialDelay);
+		tmpStr.Format("Error In cfg.xml: The time resolution is smaller than the serial delay. Please Change and restart. Set Time Resolution = %d [s]. Set Serial Delay = %d [s]", this->m_timeResolution, serialDelay);
 		MessageBox(pView->m_hWnd, tmpStr, "Error", MB_OK);
 
 		// we have to call this before exiting the application otherwise we'll have trouble next time we start...
@@ -171,8 +172,9 @@ void CMeasurement_Wind::Run(){
 
 		SetFileName();
 
-		/* ------------ Get the time and position --------------- */
-		startTime = ReadGPS();
+		/* ------------ Get the date, time and position --------------- */
+		startDate = ReadGpsDate();
+		startTime = ReadGpsStartTime();
 
 		/** ---------------- if the user wants to change the exposure time, 
 									calculate a new exposure time. --------------------- */
@@ -230,10 +232,10 @@ void CMeasurement_Wind::Run(){
 		if(m_spectrometerMode != MODE_VIEW){
 			if(m_skipgps == 0){
 				for(i = 0; i  < m_NChannels; ++i)
-					CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, specTime[counter], specTime[counter]+elapsedSecond, pos[counter].latitude, pos[counter].longitude, integrationTime, spectrometerName, strBaseName, totalSpecNum);
+					CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, specTime[counter], specTime[counter]+elapsedSecond, pos[counter].latitude, pos[counter].longitude, pos[counter].altitude, integrationTime, spectrometerName, strBaseName, totalSpecNum);
 			}else{
 				for(i = 0; i < m_NChannels; ++i)
-					CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startTime, startTime+elapsedSecond, 0, 0, integrationTime, spectrometerName, strBaseName, totalSpecNum);
+					CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, startTime, startTime+elapsedSecond, 0, 0, 0, integrationTime, spectrometerName, strBaseName, totalSpecNum);
 			}
 		}
 
