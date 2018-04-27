@@ -21,7 +21,7 @@ int CSpectrumIO::readSTDFile(CString filename, CSpectrum *curSpec){
 		return 1;
 	}
 
-	fscanf(f, "%s\n", tmpStr);
+	fscanf(f, "%1022s\n", tmpStr);
 	if(0 != strncmp(tmpStr, "GDBGMNUP", 8)){
 		fclose(f);
 		return 1;

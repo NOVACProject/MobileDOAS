@@ -7,6 +7,7 @@
 #include "Flux1.h"
 #include "Common.h"
 #include <math.h>
+#include <vector>
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
@@ -372,7 +373,7 @@ int CFlux::ReadSettingFile(CString filename, long fileIndex, int &nChannels, dou
 			{
 				char buffer[4096];
 				pt = strstr(txt,"=");
-				if(0 < sscanf(&pt[1],"%s",&buffer)){
+				if(0 < sscanf(&pt[1],"%4095s",&buffer)){
 					char *lastBackslash = strrchr(buffer, '\\');
 					if(lastBackslash == nullptr)
 						m_lastRefFile[m_lastRefFileNum++].Format("%s", buffer);
@@ -389,7 +390,7 @@ int CFlux::ReadSettingFile(CString filename, long fileIndex, int &nChannels, dou
 
 			if(pt=strstr(txt,"FILETYPE=")){
 				pt=strstr(txt,"=");
-				sscanf(pt+1,"%s",m_FileType);
+				sscanf(pt+1,"%99s",m_FileType);
 				result = 1; /* the file is a correct evaluation log */
 			}
 
@@ -636,19 +637,15 @@ void CFlux::InterpolateWindField(int layer){
 		return;
 
 	CTraverse *tr = m_traverse[m_curTraverse];
-	double *ws = (double *)calloc(tr->m_recordNum, sizeof(double));
-	double *wd = (double *)calloc(tr->m_recordNum, sizeof(double));
-	if(ws == nullptr || wd == nullptr)
-		return;
+	std::vector<double> ws(tr->m_recordNum, 0);
+	std::vector<double> wd(tr->m_recordNum, 0);
 
 	// do the actual interpolation
 	int nPoints = m_windField->Interpolate(tr->latitude, tr->longitude, tr->time, layer, tr->m_recordNum,
-										ws, wd, CWindField::INTERPOLATION_NEAREST);
+										ws.data(), wd.data(), CWindField::INTERPOLATION_NEAREST);
 
 	if(nPoints < tr->m_recordNum){
 		MessageBox(NULL, "Failed to interpolate all points in the traverse", "Error", MB_OK);
-		free(ws);
-		free(wd);
 		return;
 	}
 
@@ -658,7 +655,4 @@ void CFlux::InterpolateWindField(int layer){
 		tr->m_windSpeed[i]      = ws[i];
 	}
 	tr->m_useWindField = true;
-
-	free(ws);
-	free(wd);
 }

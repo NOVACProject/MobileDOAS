@@ -1049,7 +1049,7 @@ void CDMSpecView::ReadMobileLog(){
 			if(pt = strstr(txt,"BASENAME=")){
 			/* Find the last basename used */
 				pt = strstr(txt,"=");
-				sscanf(&pt[1],"%s",&baseNameTxt);
+				sscanf(&pt[1],"%255s",&baseNameTxt);
 			fFoundBaseName = true;
 		}
 

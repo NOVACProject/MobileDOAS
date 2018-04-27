@@ -104,14 +104,14 @@ double* CBasicMath::LowPassBinomial(double *fData, int iSize, int iNIterations)
 
 double* CBasicMath::HighPassBinomial(double *fData, int iSize, int iNIterations)
 {
-	double *fBuffer = new double[iSize];
+	std::vector<double> fBuffer(iSize);
 	int i;
 
 	// create copy of original data
-	memcpy(fBuffer, fData, sizeof(double) * iSize);
+	memcpy(fBuffer.data(), fData, sizeof(double) * iSize);
 
 	// create low pass filtered data
-	LowPassBinomial(fBuffer, iSize, iNIterations);
+	LowPassBinomial(fBuffer.data(), iSize, iNIterations);
 
 	// remove low pass part from data
 	for(i = 0; i < iSize; i++)
@@ -121,9 +121,6 @@ double* CBasicMath::HighPassBinomial(double *fData, int iSize, int iNIterations)
 		else
 			fData[i] = 0;
 	}
-
-	// free the buffer
-	delete(fBuffer);
 
 	return(fData);
 }
@@ -514,8 +511,8 @@ void CBasicMath::Convolute(double *fFirst, int iSize, double *fCore, int iCoreSi
 	int i, j;
 
 	// backup the original data
-	double* fBuffer = new double[iSize];
-	memcpy(fBuffer, fFirst, iSize * sizeof(double));
+	std::vector<double> fBuffer(iSize);
+	memcpy(fBuffer.data(), fFirst, iSize * sizeof(double));
 
 	// process every pixel
 	for(i = 0; i < iSize; i++)
@@ -537,7 +534,6 @@ void CBasicMath::Convolute(double *fFirst, int iSize, double *fCore, int iCoreSi
 			fFirst[i] += fBuffer[iRealIndex] * fCore[j];
 		}
 	}
-	delete(fBuffer);
 }
 
 /*void CBasicMath::Convolute(ISpectrum &dispFirst, ISpectrum &dispCore)
@@ -566,13 +562,13 @@ void CBasicMath::Convolute(double *fFirst, int iSize, double *fCore, int iCoreSi
 */
 void CBasicMath::Reverse(double *fData, int iSize)
 {
-	double* fBuffer = new double[iSize];
-	memcpy(fBuffer, fData, iSize * sizeof(double));
+	std::vector<double> fBuffer(iSize);
+	memcpy(fBuffer.data(), fData, iSize * sizeof(double));
 
 	int i;
-	for(i = 0; i < iSize; i++)
+	for(i = 0; i < iSize; i++) {
 		fData[i] = fBuffer[iSize - i - 1];
-	delete(fBuffer);
+	}
 }
 
 /*void CBasicMath::Reverse(ISpectrum &dispData)
@@ -1183,7 +1179,7 @@ bool CBasicMath::PolynomialFit(double *fXData, int iNXValues, double *fYData, do
 
 void CBasicMath::CrossCorrelate(double *fFirst, int iLengthFirst, double *fSec, int iLengthSec)
 {
-	double* fResult = new double[iLengthFirst];
+	std::vector<double> fResult(iLengthFirst);
 
 	int i;
 	for(i = 1; i <= iLengthFirst; i++)
@@ -1198,14 +1194,14 @@ void CBasicMath::CrossCorrelate(double *fFirst, int iLengthFirst, double *fSec, 
 		iStopIndexSec += iLengthSec / 2;
 
 		int iSecIndex;
-		for(iSecIndex = iStartIndexSec; iSecIndex < iStopIndexSec; iFirstIndex++, iSecIndex++)
+		for(iSecIndex = iStartIndexSec; iSecIndex < iStopIndexSec; iFirstIndex++, iSecIndex++) {
 			fSum += fFirst[iFirstIndex] * fSec[iSecIndex];
+		}
 
 		fResult[i - 1] = fSum / (double)(iStopIndexSec - iStartIndexSec);
 	}
 
-	memcpy(fFirst, fResult, sizeof(double) * iLengthFirst);
-	delete(fResult);
+	memcpy(fFirst, fResult.data(), sizeof(double) * iLengthFirst);
 }
 
 /*void CBasicMath::CrossCorrelate(ISpectrum &dispFirst, ISpectrum &dispSec)
@@ -1443,17 +1439,17 @@ void CBasicMath::DFourier(double data[], unsigned long nn, int isign)
 
 void CBasicMath::FFT(double *fData, double *fReal, double *fImaginary, int iLength)
 {
-	double* fBuffer = new double[iLength * 2];
+	std::vector<double> fBuffer(iLength * 2, 0);
 
 	memset(fReal, 0, iLength * sizeof(double));
 	memset(fImaginary, 0, iLength * sizeof(double));
-	memset(fBuffer, 0, iLength * 2 * sizeof(double));
 
 	int i;
-	for(i = 0; i < iLength; i++)
+	for(i = 0; i < iLength; i++) {
 		fBuffer[i * 2] = fData[i];
+	}
 
-	DFourier(fBuffer - 1, iLength, 1);
+	DFourier(fBuffer.data(), iLength, 1);
 
 	for(i = 0; i < iLength / 2; i++)
 	{
@@ -1465,13 +1461,11 @@ void CBasicMath::FFT(double *fData, double *fReal, double *fImaginary, int iLeng
 		fReal[i - iLength / 2] = fBuffer[i * 2];
 		fImaginary[i - iLength / 2] = fBuffer[i * 2 + 1];
 	}
-
-	delete(fBuffer);
 }
 
 void CBasicMath::InverseFFT(double* fReal, double* fImaginary, double* fData, int iLength)
 {
-	double* fBuffer = new double[iLength * 2];
+	std::vector<double> fBuffer(iLength * 2);
 
 	memset(fData, 0, sizeof(double) * iLength);
 
@@ -1487,12 +1481,11 @@ void CBasicMath::InverseFFT(double* fReal, double* fImaginary, double* fData, in
 		fBuffer[i * 2 + 1] = fImaginary[i - iLength / 2];
 	}
 
-	DFourier(fBuffer - 1, iLength, -1);
+	DFourier(fBuffer.data(), iLength, -1);
 
-	for(i = 0; i < iLength; i++)
+	for(i = 0; i < iLength; i++) {
 		fData[i] = fBuffer[i * 2] / (double)iLength;
-
-	delete(fBuffer);
+	}
 }
 
 /*void CBasicMath::InverseFFT(ISpectrum& dispReal, ISpectrum& dispImaginary, ISpectrum& dispSpec)

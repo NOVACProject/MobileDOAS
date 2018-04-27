@@ -114,7 +114,7 @@ int CSourceSelectionDlg::ReadSourceLog(){
       }
       pt = txt;
 
-      nAssigned = sscanf(pt, "%s\t%lf\t%lf\t%lf\n", tmpStr, &tmpDouble1, &tmpDouble2, &tmpDouble3);
+      nAssigned = sscanf(pt, "%1203s\t%lf\t%lf\t%lf\n", tmpStr, &tmpDouble1, &tmpDouble2, &tmpDouble3);
       if(3 <= nAssigned){
         m_siteName[m_nSites].Format(tmpStr);
         while(pt = strstr(m_siteName[m_nSites].GetBuffer(), "|")){

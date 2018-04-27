@@ -237,7 +237,7 @@ int CReEvaluator::ReadSettings(){
 			{
 				char strbuffer[4096];
 				pt=strstr(txt,"=");
-				sscanf(&pt[1],"%s",strbuffer);
+				sscanf(&pt[1],"%4095s",strbuffer);
 				this->m_spectrometerName.Format("%s", strbuffer);
 			}
 
@@ -245,7 +245,7 @@ int CReEvaluator::ReadSettings(){
 			{
 				char strbuffer[4096];
 				pt=strstr(txt,"=");
-				sscanf(&pt[1],"%s",strbuffer);
+				sscanf(&pt[1],"%4095s",strbuffer);
 				this->m_spectrometerModel.Format("%s", strbuffer);
 			}
 
