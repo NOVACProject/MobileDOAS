@@ -71,7 +71,7 @@ void CWindFieldDlg::OnBrowseWindFieldFile()
 			m_windFileCombo.SetCurSel(0);
 		}
 
-		m_windfile.Format("%s", fileName);
+		m_windfile.Format("%s", (LPCTSTR)fileName);
     m_windField->ReadWindField(fileName);
     FillCombos();
     DrawField();
@@ -305,7 +305,7 @@ void CWindFieldDlg::OnChangeWindFieldFile(){
 	FILE *f = fopen(str, "r");
 	if(0 != f){
 		// Set the wind file
-		m_windfile.Format("%s", str);
+		m_windfile.Format("%s", (LPCTSTR)str);
 		
 		m_windField->ReadWindField(m_windfile);
 		FillCombos();

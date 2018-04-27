@@ -85,7 +85,7 @@ void CPostWindDlg::OnBrowseEvallog()
 
 	// let the user browse for an evaluation log file and if one is selected, read it
 	if (Common::BrowseForFile(filter, evLog)) {
-		m_evalLog.Format("%s", evLog);
+		m_evalLog.Format("%s", (LPCTSTR)evLog);
 
 		if (ReadEvaluationLog()) {
 			// Update the text on the screen
@@ -438,7 +438,7 @@ void CPostWindDlg::SaveResult() {
 	// 2. Make a new name for the wind-speed log-file
 	CString fileName, timeNow;
 	Common::GetDateTimeTextPlainFormat(timeNow);
-	fileName.Format("%sWindCalculation_%s.txt", directory, timeNow);
+	fileName.Format("%sWindCalculation_%s.txt", (LPCTSTR)directory, (LPCTSTR)timeNow);
 
 	// 3. Open the log-file for writing
 	FILE *f = fopen(fileName, "w");

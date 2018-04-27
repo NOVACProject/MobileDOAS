@@ -190,11 +190,11 @@ void CConfigure_Spectrometer::OnOK(){
 
 	// Get the filename (and path) of the configuration-file
 	if(strlen(m_conf->m_cfgFile) == 0){
-		fileName.Format("%s\\cfg.xml", g_exePath);
+		fileName.Format("%s\\cfg.xml", (LPCTSTR)g_exePath);
 	}else{
 		int p = m_conf->m_cfgFile.Find(".txt");
 		if(p > 0){
-			fileName.Format("%s.xml", m_conf->m_cfgFile.Left(p));
+			fileName.Format("%s.xml", (LPCTSTR)m_conf->m_cfgFile.Left(p));
 		}else{
 			fileName.Format(m_conf->m_cfgFile);
 		}
@@ -204,7 +204,7 @@ void CConfigure_Spectrometer::OnOK(){
 	f = fopen(fileName, "w");
 	if(f == nullptr){
 		CString errMsg;
-		errMsg.Format("Could not open file %s for writing.", fileName);
+		errMsg.Format("Could not open file %s for writing.", (LPCTSTR)fileName);
 		MessageBox(errMsg, "Error", MB_OK);
 		return;
 	}

@@ -198,9 +198,9 @@ long CFlux::ReadLogFile(CString filePath, CString fileName, long fileIndex, int 
 		m_traverse[fileIndex + k]->m_gasFactor = m_traverse[fileIndex]->m_gasFactor;
 
 		if(strlen(m_specieName[k]) == 0){
-			m_traverse[fileIndex + k]->m_fileName.Format("%s", fileName);
+			m_traverse[fileIndex + k]->m_fileName.Format("%s", (LPCTSTR)fileName);
 		}else{
-			m_traverse[fileIndex + k]->m_fileName.Format("%s * %s", m_specieName[k], fileName);
+			m_traverse[fileIndex + k]->m_fileName.Format("%s * %s", (LPCTSTR)m_specieName[k], (LPCTSTR)fileName);
 			if(0 == _strnicmp(m_specieName[k], "SO2", 3*sizeof(char)))
 				m_traverse[fileIndex + k]->m_gasFactor = GASFACTOR_SO2;
 			if(0 == _strnicmp(m_specieName[k], "O3", 2*sizeof(char)))
@@ -208,7 +208,7 @@ long CFlux::ReadLogFile(CString filePath, CString fileName, long fileIndex, int 
 			if(0 == _strnicmp(m_specieName[k], "NO2", 3*sizeof(char)))
 				m_traverse[fileIndex + k]->m_gasFactor = GASFACTOR_NO2;
 		}
-		m_traverse[fileIndex + k]->m_filePath.Format("%s", filePath);
+		m_traverse[fileIndex + k]->m_filePath.Format("%s", (LPCTSTR)filePath);
 
 		m_traverse[fileIndex + k]->CalculateOffset();
 
@@ -443,7 +443,7 @@ int CFlux::ReadSettingFile(CString filename, long fileIndex, int &nChannels, dou
 			}
 			// Search for known species
 			for(int k = 0; k < nKnownSpecies; ++k){
-				columnLabel.Format("%s(column)", knownSpecie[k]);
+				columnLabel.Format("%s(column)", (LPCTSTR)knownSpecie[k]);
 				pt = txt;
 				while(pt = strstr(pt, columnLabel)){
 					m_specieName[species].Format(knownSpecie[k]);
@@ -624,7 +624,7 @@ long CFlux::GetCurrentFileName(CString &str){
 	else
 		pt = buffer;
 
-	str.Format("%s\\%s", m_traverse[m_curTraverse]->m_filePath, pt);
+	str.Format("%s\\%s", (LPCTSTR)m_traverse[m_curTraverse]->m_filePath, pt);
 
 	return 0;
 }

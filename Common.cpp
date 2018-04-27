@@ -62,7 +62,7 @@ void Common::WriteLogFile(CString filename, CString txt)
 
 	if(f < (FILE*)1){
 		CString tmpStr;
-		tmpStr.Format("Could not write to log file: %s. Not enough free space?", filename);
+		tmpStr.Format("Could not write to log file: %s. Not enough free space?", (LPCTSTR)filename);
 		MessageBox(NULL, tmpStr, "Big Error", MB_OK);
 		return;
 	}
@@ -197,12 +197,12 @@ void Common::GuessSpecieName(const CString &fileName, CString &specie){
 		return;
 
 	CString fil;
-	fil.Format("%s", fileName.Right((int)strlen(fileName) - index - 1));
+	fil.Format("%s", (LPCTSTR)fileName.Right((int)strlen(fileName) - index - 1));
 	fil.MakeUpper();
 
 	for(int i = 0; i < nSpecies; ++i){
 		if(strstr(fil, spc[i])){
-			specie.Format("%s", spc[i]);
+			specie.Format("%s", (LPCTSTR)spc[i]);
 			return;
 		}
 	}

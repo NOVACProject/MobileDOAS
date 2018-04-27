@@ -75,7 +75,7 @@ void CPostPlumeHeightDlg::OnBrowseEvallog()
 
 	// let the user browse for an evaluation log file and if one is selected, read it
 	if (Common::BrowseForFile(filter, evLog)) {
-		m_evalLog.Format("%s", evLog);
+		m_evalLog.Format("%s", (LPCTSTR)evLog);
 
 		// Read the newly opened evaluation-log
 		if (ReadEvaluationLog()) {
