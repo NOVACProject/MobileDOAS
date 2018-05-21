@@ -30,9 +30,9 @@ void CMeasurement_View::Run(){
 	ApplySettings();
 
 	/* Set the delays and initialize the USB-Connection */
-	if(fUseUSB){
+	if(m_connectViaUsb){
 		if(!TestUSBConnection()){
-			fRun = false;
+			m_isRunning = false;
 			return;
 		}
 	}
@@ -40,7 +40,7 @@ void CMeasurement_View::Run(){
 	/* -- Init Serial Communication -- */
 	m_statusMsg.Format("Initializing communication with spectrometer");
 	pView->PostMessage(WM_STATUSMSG);
-	if(!fUseUSB && serial.InitCommunication()){
+	if(!m_connectViaUsb && serial.InitCommunication()){
 		MessageBox(pView->m_hWnd,TEXT("Can not initialize the communication"),TEXT("Error"),MB_OK);	
 
 		// we have to call this before exiting the application otherwise we'll have trouble next time we start...
@@ -54,12 +54,12 @@ void CMeasurement_View::Run(){
 		MessageBox(pView->m_hWnd, "Please point the spectrometer to sky","Notice",MB_OK);  // tell the user to point the telescope to zenith
 		AdjustIntegrationTime();
 	}else{
-		integrationTime = (short)m_fixexptime;
+		m_integrationTime = (short)m_fixexptime;
 	}
 
 	m_sumInComputer      = 1;
 	m_sumInSpectrometer  = 1;
-	totalSpecNum         = 1;
+	m_totalSpecNum       = 1;
 	if(0 != m_fixexptime){
 		MessageBox(pView->m_hWnd,  "Suitable exposure-time set", "", MB_OK);
 	}
@@ -67,20 +67,20 @@ void CMeasurement_View::Run(){
 
 
 	/** --------------------- THE MEASUREMENT LOOP -------------------------- */
-	while(fRun){
+	while(m_isRunning){
 
 		/* ----------------  Get the spectrum --------------------  */
 
 		// Initialize the spectrometer, if using the serial-port
-		if(!fUseUSB){
-			if(InitSpectrometer(0, integrationTime, m_sumInSpectrometer)){
+		if(!m_connectViaUsb){
+			if(InitSpectrometer(0, m_integrationTime, m_sumInSpectrometer)){
 				serial.CloseAll();
 			}
 		}
 
 		// Get the next spectrum
 		if(Scan(m_sumInComputer,m_sumInSpectrometer,scanResult)){
-			if(!fUseUSB)
+			if(!m_connectViaUsb)
 				serial.CloseAll();
 
 			// we have to call this before exiting the application otherwise we'll have trouble next time we start...
@@ -92,30 +92,31 @@ void CMeasurement_View::Run(){
 		// Copy the spectrum to the local variables
 		for(i = 0; i < m_NChannels; ++i){
 			memcpy((void*)tmpSpec[i], (void*)scanResult[i], sizeof(double)*MAX_SPECTRUM_LENGTH);
-			memcpy((void*)curSpectrum[i], (void*)scanResult[i], sizeof(double)*MAX_SPECTRUM_LENGTH);// for plot
+			memcpy((void*)m_curSpectrum[i], (void*)scanResult[i], sizeof(double)*MAX_SPECTRUM_LENGTH);// for plot
 		}
 
 		/* -------------- IF THE MEASURED SPECTRUM WAS A NORMAL SPECTRUM ------------- */
 
-		for(i = 0; i < m_NChannels; ++i)
-			averageValue[i] = AverageIntens(tmpSpec[i],1);
+		for(i = 0; i < m_NChannels; ++i) {
+			m_averageSpectrumIntensity[i] = AverageIntens(tmpSpec[i],1);
+		}
 
-		if(specInfo->isDark)
-			m_statusMsg.Format("Average value around center channel %d: %d (Dark)",m_conf->m_specCenter, averageValue[0]);
+		if(m_specInfo->isDark)
+			m_statusMsg.Format("Average value around center channel %d: %d (Dark)",m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
 		else
-			m_statusMsg.Format("Average value around center channel %d: %d",m_conf->m_specCenter, averageValue[0]);
+			m_statusMsg.Format("Average value around center channel %d: %d",m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
 
 		pView->PostMessage(WM_STATUSMSG);
-		vIntensity.Append(averageValue[0]);
+		vIntensity.Append(m_averageSpectrumIntensity[0]);
 
 		pView->PostMessage(WM_DRAWSPECTRUM);
 	}
 	
-	if(counter > 1)
-		CountFlux(windSpeed,windAngle);
+	if(m_spectrumCounter > 1)
+		CountFlux(m_windSpeed, m_windAngle);
 
 	memset((void*)scanResult,0,sizeof(double)*4096);
-	scanNum++;
+	m_scanNum++;
 	
 	// we have to call this before exiting the application otherwise we'll have trouble next time we start...
 	CloseUSBConnection();

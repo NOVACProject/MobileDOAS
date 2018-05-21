@@ -79,18 +79,18 @@ public:
 
 	/* Running */
 	
-	/** fRun is TRUE as long as the measurements are running. This is set to FALSE
+	/** m_isRunning is true as long as the measurements are running. This is set to false
 		when the user wants to quit the application. All running functions will then
 		return as soon as they can. */
-	BOOL						fRun;
+	volatile bool				m_isRunning;
 
 	/** The actual measurement. This must be overridden in each sub-class */
 	virtual void				Run() = 0;
 	
-	/** Starts the measurements. Sets fRun to TRUE and calls 'Run' */
+	/** Starts the measurements. Sets m_isRunning to true and calls 'Run' */
 	int							Start();
 	
-	/** Stops the measurements. Sets fRun to FALSE */
+	/** Stops the measurements. Sets m_isRunning to false */
 	int							Stop();
 
 	/** The measurement mode */
@@ -117,15 +117,15 @@ public:
 	/** The number of channels in the spectrometer to use */
 	int     m_NChannels; 
 	
-	/** number of averaged spectra
+	/** The number of spectra to average before writing to file / updating flux.
 		This is equal to m_sumInSpectrometer * m_sumInComputer */ 
-	long    totalSpecNum;
+	long    m_totalSpecNum;
 	
 	/** number of spectra to average in spectrometer */
 	short   m_sumInSpectrometer; 
 	
 	/** Number of spectra to average in computer */
-	int     m_sumInComputer;     
+	int     m_sumInComputer;
 	
 	/** the desired time resolution of the measurement (i.e. how often a spectrum 
 			should) be stored to file. In milli seconds */
@@ -133,7 +133,7 @@ public:
 	
 	/** Contains the name of the spectrometer, if USB-Connection 
 		is used this is the serial number of the spectrometer */
-	CString spectrometerName;
+	CString m_spectrometerName;
 	
 	/** The number of pixels on the spectrometer's detector.
 		To keep track of how long spectra we should receive */
@@ -195,15 +195,11 @@ public:
 	long GetInttime(long pSky,long pDark, int intT = 100);   
 
 	/** The integration time that is used by the program. In milli seconds*/
-	short    integrationTime;                    
+	short    m_integrationTime;
 
 	/** The desired intensity of the measured spectra, 
 	    in fractions of the maximum value */
 	double  m_percent;
-
-	/** Average intensity (at the specified pixel) 
-		of the last spectrum that we measured */
-	long    averageValue[MAX_N_CHANNELS]; 
 
 	/** if m_fixexptime > 0 the integration time will be set to
 	      m_fixexptime, else it will be judged automatically. */
@@ -211,37 +207,6 @@ public:
 
 	/** True if the user wants us to update the integration time. */
 	BOOL  m_adjustIntegrationTime;
-
-	/* Spectrum number, only used to judge if this is dark, sky or measurement spectrum */
-	long    scanNum;
-
-	/* Spectrum number, pointer into 'pos' and 'specTime' */
-	long    counter;
-
-	// ---------------------------------------------------------------------------------------
-	// --------------------- Keeping track of the offset-level of the spectra... -------------
-	// ---------------------------------------------------------------------------------------
-	
-	/** A SpectrumInfo struct is used to keep track of the properties
-		of collected spectra. So far this only contains the 
-		(electronic)offset of the spectrum and whether a given spectrum
-		is dark or not.
-	*/
-	typedef struct SpectrumInfo{
-		/** The electronic offset of the spectrum, measured in channel 2 - 24 */
-		double offset;
-		/** True if the program judges that the spectrum is dark */ 
-		bool   isDark;
-	}SpectrumInfo;
-	
-	/** Information about the last spectrum collected */
-	SpectrumInfo specInfo[MAX_N_CHANNELS];
-
-	/** The offset of the last dark-spectrum collected. This is used
-		to keep track of wheter we should warn the user about the fact
-		that the offset level might have dropped (or increased) since
-		the collection of the last dark */
-	double lastDarkOffset[MAX_N_CHANNELS];
 
 	/** fills up the 'specInfo' structure with information from the supplied spectrum */
 	void GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]);
@@ -251,40 +216,12 @@ public:
 
 	/* -------  The spectra ----------- */
 	
-	/** The last dark-spectrum measured */
-	double dark[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
-
-	/** The last dark-current measured (only used for adaptive integration times) */
-	double darkCur[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
-
-	/** The last offset-spectrum measured (only used for adaptive integration times) */
-	double offset[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
-
-	/** The measured sky-spectrum that we're using to evaluate the spectra */
-	double sky[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
-
-	/** This is a temporary copy of the dark-spectrum */
-	double tmpDark[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
-
-	/** This is a temporary copy of the sky-spectrum */
-	double tmpSky[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
-
-	/** a copy of the last measured spectrum, used for plotting on the screen */
-	double curSpectrum[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
-
-	/** The wavelengths for each pixel in the measured spectrum */
-	double wavelength[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
-
 	/** The exposure time that we should use to collect the dark current spectrum */
 	static const int DARK_CURRENT_EXPTIME = 10000;
 
 	/** The scaled (and possibly shifted) references that were fitted
 		to the measured spectrum. This is used for plotting mostly */
 	double  m_fitResult[MAX_FIT_WINDOWS][MAX_SPECTRUM_LENGTH];
-
-	/** The highpass filtered measured spectrum. 
-		This is used for plotting mostly */
-	double  m_spectrum[MAX_FIT_WINDOWS][MAX_SPECTRUM_LENGTH];
 
 	/** Called to calculate the flux in real-time (during the scope of the measurement) 
 		@return the accumulated flux so far */
@@ -295,20 +232,15 @@ public:
 	
 	/** The wind direction used to calculate the flux.
 		Set by the user at startup */
-	double  windAngle;
+	double  m_windAngle;
 
 	/** The wind speed used to calculate the flux.
 		Set by the user at startup */
-	double  windSpeed;
+	double  m_windSpeed;
 
 	/** The gas factor used to calculate the flux.
 		Set to 2.66 (SO2) */
 	double  m_gasFactor;
-
-	/** Used by 'CountFlux' to calculate the flux */
-	long    posFlag;
-	/** Used by 'CountFlux' to calculate the flux */
-	long    zeroPosNum;
 
 	/** Evaluates the given spectrum using the given dark and sky spectra 
 		@param pSky - the sky spectrum(-a) to use. Should already be dark-corrected!
@@ -381,10 +313,6 @@ public:
 		to the specified file-name */
 	void    WriteEvFile(CString filename, FitRegion *fitRegion);
 	
-	/** The base name of the measurement.
-		This is given by the user at startup */
-	char*   m_Base;
-	
 	/** The directory that we're currently writing to.
 		Set by 'CreateDirectories' */
 	CString m_subFolder;
@@ -398,32 +326,37 @@ public:
 	// ----------------------- The GPS -------------------------------
 	// ---------------------------------------------------------------
 	
-	/** Reads the last position from the GPS - thread to the member variables
-		'specTime' and 'pos' */
-	int     GetGPS();
+	/** Updates the member variables 'specTime' and 'pos' with the last read 
+		data from the GPS-thread 
+		This will NOT call the Gps itself, nor cause any block.
+		@return true if the updated data is valid (i.e. if the GPS can retrieve lat/long).
+		@return false if the data is not valid or the GPS isn't used. */
+	bool UpdateGpsData();
 	
 	/** Retrieves the last GPS position */
-	int     GetGPSPos(double* data);
+	int GetGpsPos(gpsData& data) const;
 	
-	/** Reads the GPS... 
-		What's the difference between this and GetGPS ? */
-	long    ReadGpsStartTime();
+	/** Retrieves the current time, either from the GPS or the system time */
+	long GetCurrentTime();
 
-	char*   ReadGpsDate();
+	/** Retrieves the current date, either from the GPS or the system time.
+		The date is a string formatted as: mmddyy (6 characters) */
+	std::string GetCurrentDate();
 	
 	/** Pointer to the gps reading thread */
-	CGPS*   m_gps;
+	CGPS*   m_gps = nullptr;
 	
-	/** This is zero if we should use the GPS receiver. Otherwise non-zero */
-	int     m_skipgps;
+	/** This is true if we should use the GPS receiver (default behavior).
+		Set to false if the gps is missing or nor working. */
+	bool	m_useGps = true;
 	
 	/** The Serial-port that we should read the GPS data from 
 		This is something like 'COM4' */
-	char    GPSPort[20];
+	char    m_GPSPort[20];
 	
 	/** The baudrate that we should use to communicate with the GPS 
-		reveiver, typicallly 4800 */
-	long    GPSBaud;
+		reveiver, typicallly 9600 */
+	long    m_GPSBaudRate = 9600;
 
 
 	// ----------------------------- Handling the serial communication -----------------
@@ -439,15 +372,6 @@ public:
 	*/
 	int InitSpectrometer(short channel,short inttime,short sumSpec);
 
-	/** This is the object through which we will access all of Omnidriver's capabilities 
-		This is used to control the OceanOptics Spectrometers through USB.
-		There can be only one Wrapper object in the application!!!		*/
-	Wrapper				m_wrapper;
-	
-	/** The wrapper extensions is used to get additional functionality when
-		handling the OceanOptics spectrometers using the USB-port */
-	WrapperExtensions	m_wrapperExt;
-
 	// ------------------- Handling the USB-Connection  --------------------
 	
 	/** Called to test the USB-connection. 
@@ -458,14 +382,7 @@ public:
 		when we're about to stop collecting spectra */
 	int		CloseUSBConnection();
 	
-	/** This is 'true' if we should use the USB-port, if 'false'
-		then we should use the serial port */
-	bool    fUseUSB;
-
 	// ------------------------ Setup ------------------------
-
-	/** The settings, read in from the cfg.txt - file */
-	Configuration::CMobileConfiguration *m_conf;
 	
 	/** Applies the settings found in m_conf to the rest 
 		of the parameters */
@@ -485,10 +402,6 @@ public:
 		The volume will be somewhere between 0 and 1 depending on
 			if the last column is <=0 and >= m_maxColumn */
 	void    Sing(double factor);
-	
-	/** The column value that causes 'Sing' to sing at the	
-		highest available volume */
-	double  m_maxColumn;
 	
 	/** Updates the mobile-log... This is used to store the
 		users preferences between runs */
@@ -557,43 +470,20 @@ public:
 	long    GetColumnNumber();
 	
 	/** @return the currently used integration time, in milli seconds */
-	long    RequestIntTime(){ return (long)integrationTime; }
+	long    RequestIntTime(){ return (long)m_integrationTime; }
 	
 	/** This is the text to show in the status bar of the program*/
 	CString m_statusMsg;
-	
-	/** The 'position' struct is used to save the position for each 
-		measurement */
-	struct position{
-		double latitude;
-		double longitude;
-		double altitude;
-		/** The number of satellites that we had connection with
-			at the collection time of this spectrum. */
-		int    nSat;
-	};
-
-	/** pos[i] holds the position that we had when collecting 
-		spectrum number 'i' */
-	struct position pos[65536];
-
-	/** specDate[i] holds the date at which spectrum number 'i'
-	was collected */
-	char*    specDate[65536];
-
-	/** specTime[i] holds the time at which spectrum number 'i' 
-		was collected */
-	long    specTime[65536];
 
 	/** Retrieves the lower range for the fit region for 
 		fit window number 'region' */
-	inline int GetFitLow(int region = 0){
+	inline int GetFitLow(int region = 0) const {
 		return m_fitRegion[region].window.fitLow;
 	}
 
 	/** Retrieves the upper range for the fit region for 
 		fit window number 'region' */
-	inline int GetFitHigh(int region = 0){
+	inline int GetFitHigh(int region = 0) const {
 		return m_fitRegion[region].window.fitHigh;
 	}
 
@@ -608,11 +498,92 @@ public:
 		return m_fitRegion[windowNum].window.name;
 	}
 
+	long GetNumberOfSpectraAcquired() const {
+		return m_scanNum;
+	}
+
+	/** Copies out the last read and processed (high-pass filtered) spectrum. Useful for plotting.
+		@return number of copied data points. */
+	unsigned int GetProcessedSpectrum(double* dst, unsigned int maxNofElements, int chn = 0) const;
+
 protected:
 
+	/** This is 'true' if we should use the USB-port, if 'false'
+		then we should use the serial port */
+	bool m_connectViaUsb;
 
-	/** The time difference in seconds between UMT and local time */
-	long timeDiff; 
+	/** The settings, read in from the cfg.txt - file */
+	Configuration::CMobileConfiguration *m_conf;
+
+	/* -------  The spectra ----------- */
+
+	/** The last dark-spectrum measured */
+	double m_dark[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
+
+	/** The last dark-current measured (only used for adaptive integration times) */
+	double m_darkCur[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
+
+	/** The last offset-spectrum measured (only used for adaptive integration times) */
+	double m_offset[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
+
+	/** The measured sky-spectrum that we're using to evaluate the spectra */
+	double m_sky[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
+
+	/** This is a temporary copy of the dark-spectrum */
+	double m_tmpDark[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
+
+	/** This is a temporary copy of the sky-spectrum */
+	double m_tmpSky[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
+
+	/** a copy of the last measured spectrum, used for plotting on the screen */
+	double m_curSpectrum[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
+
+	/** The wavelengths for each pixel in the measured spectrum */
+	double m_wavelength[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
+
+	/** The highpass filtered measured spectrum.
+	This is used for plotting mostly */
+	double  m_spectrum[MAX_FIT_WINDOWS][MAX_SPECTRUM_LENGTH];
+
+
+	// ---------------------------------------------------------------------------------------
+	// --------------------- Keeping track of the route... -------------
+	// ---------------------------------------------------------------------------------------
+
+	/** m_spectrumGpsData[i] holds the Gps information associated with spectrum number 'i' */
+	struct gpsData m_spectrumGpsData[65536];
+
+
+	// ---------------------------------------------------------------------------------------
+	// --------------------- Keeping track of the offset-level of the spectra... -------------
+	// ---------------------------------------------------------------------------------------
+
+	/** A SpectrumInfo struct is used to keep track of the properties
+		of collected spectra. So far this only contains the
+		(electronic)offset of the spectrum and whether a given spectrum
+		is dark or not. */
+	typedef struct SpectrumInfo {
+		/** The electronic offset of the spectrum, measured in channel 2 - 24 */
+		double offset;
+		/** True if the program judges that the spectrum is dark */
+		bool   isDark;
+	}SpectrumInfo;
+
+	/** Information about the last spectrum collected */
+	SpectrumInfo m_specInfo[MAX_N_CHANNELS];
+
+	/** Average intensity (at the specified pixel) of the last spectrum that we measured */
+	long    m_averageSpectrumIntensity[MAX_N_CHANNELS];
+	
+	/** The column value that causes 'Sing' to sing at the highest available volume */
+	double  m_maxColumn;
+
+	/* Spectrum number, only used to judge if this is dark, sky or measurement spectrum */
+	long m_scanNum;
+
+	/* Spectrum number, pointer into 'pos' and 'specTime'. Counts how many spectra we have acquired so far. 
+		(this differs from m_scanNum but it's not exactly clear how...) */
+	long m_spectrumCounter;
 
 	// ----------- Evaluation ------------------
 
@@ -620,15 +591,45 @@ protected:
 		each spectrum in. We can store at most 'MAX_FIT_WINDOWS' windows */
 	FitRegion m_fitRegion[MAX_FIT_WINDOWS];
 	
-	/** This is how many fit windows we should evaluate each fit window in. 
+	/** This is how many fit windows we should evaluate each fit window in
+		(i.e. the number of useful elements in 'm_fitRegion').
 		Must be >= 0 and <= MAX_FIT_WINDOWS */
-	long      m_fitRegionNum;
+	long m_fitRegionNum;
+
+	/** The base-name of the measurement. As set by the user */
+	CString m_measurementBaseName;
+
+private:
+
+
+	/** Used by 'CountFlux' to calculate the flux.
+		TODO: Is this really necessary?? */
+	long    m_posFlag;
+
+	/** Used by 'CountFlux' to calculate the flux
+		TODO: Is this really necessary?? */
+	long    m_zeroPosNum;
+
+	/** The offset of the last dark-spectrum collected. This is used
+		to keep track of wheter we should warn the user about the fact
+		that the offset level might have dropped (or increased) since
+		the collection of the last dark */
+	double m_lastDarkOffset[MAX_N_CHANNELS];
+
+	/** The time difference, in seconds, between UTC and local time */
+	long m_timeDiffToUtc = 0U;
 
 	/** The date and time of when the measurement started */
-	CString strDateTime;
-	
-	/** The base-name of the measurement. As set by the user */
-	CString strBaseName;
+	CString m_measurementStartTimeStr;
+
+	/** This is the object through which we will access all of Omnidriver's capabilities
+		This is used to control the OceanOptics Spectrometers through USB.
+		There can be only one Wrapper object in the application!!!		*/
+	Wrapper m_wrapper;
+
+	/** The wrapper extensions is used to get additional functionality when
+		handling the OceanOptics spectrometers using the USB-port */
+	WrapperExtensions	m_wrapperExt;
 };
 
 #endif // !defined(AFX_COMMUNICATION_H__7C04DDEA_2314_405E_A09D_02B403AC7762__INCLUDED_)

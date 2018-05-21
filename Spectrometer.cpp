@@ -30,26 +30,24 @@ static char THIS_FILE[] = __FILE__;
 CFormView* pView;
 
 CSpectrometer::CSpectrometer()
-	: m_skipgps(0) {
-	fUseUSB = true;
+	: m_useGps(true), m_connectViaUsb(true), m_scanNum(0), m_spectrumCounter(0){
 
-	fRun = TRUE;
+	sprintf(m_GPSPort, "COM5");
+
+	m_isRunning = true;
 	m_spectrometerMode = MODE_TRAVERSE; // default mode
-	counter = 0;
-	scanNum = 0;
-	posFlag = 1;
-	zeroPosNum = 0;
+	m_posFlag = 1;
+	m_zeroPosNum = 0;
 	m_timeResolution = 0;
-	windSpeed = 1.0;
-	windAngle = 0;
-	m_Base = "base1";
+	m_windSpeed = 1.0;
+	m_windAngle = 0;
 	m_detectorSize = 2048;
 	m_spectrometerDynRange = 4095;
 	m_spectrometerModel.Format("Unknown");
 	m_flux = 0;	//initiate flux value in this variable
 	m_maxColumn = 100;
-	integrationTime = 100;
-	totalSpecNum = 1;
+	m_integrationTime = 100;
+	m_totalSpecNum = 1;
 	m_adjustIntegrationTime = FALSE;
 	m_gasFactor = GASFACTOR_SO2;
 
@@ -61,18 +59,19 @@ CSpectrometer::CSpectrometer()
 		m_fitRegion[k].eval[1] = nullptr;
 	}
 
-	spectrometerName = TEXT("..........");
+	m_spectrometerName = TEXT("..........");
 
 	m_NChannels = 1;
 	m_spectrometerChannel = 0;
 
-	lastDarkOffset[0] = 0;
-	lastDarkOffset[1] = 0;
+	m_lastDarkOffset[0] = 0;
+	m_lastDarkOffset[1] = 0;
 
-	if (!fUseUSB)
-		serial.fRun = &fRun;
+	if (!m_connectViaUsb) {
+		serial.isRunning = &m_isRunning;
+	}
 
-	timeDiff = 0;
+	m_timeDiffToUtc = 0;
 
 	m_fitRegion[0].window.nRef = 0;
 	m_fitRegion[0].window.specLength = MAX_SPECTRUM_LENGTH;
@@ -81,8 +80,8 @@ CSpectrometer::CSpectrometer()
 
 	// Make an initial guess of the spectrometer wavelengths
 	for (int k = 0; k < MAX_SPECTRUM_LENGTH; ++k) {
-		wavelength[0][k] = k;
-		wavelength[1][k] = k;
+		m_wavelength[0][k] = k;
+		m_wavelength[1][k] = k;
 	}
 
 }
@@ -92,8 +91,9 @@ CSpectrometer::~CSpectrometer()
 	delete this->m_fitRegion[0].eval[0];
 	delete this->m_fitRegion[0].eval[1];
 
-	if (m_gps != nullptr)
+	if (m_gps != nullptr) {
 		delete m_gps;
+	}
 }
 
 
@@ -110,7 +110,7 @@ long CSpectrometer::GetTimeValue_UMT()
 		We now need to adjust it to UMT using the time difference between the
 		GPS-time and computer time that we (should have) retrieved
 		at the first GPS-reading */
-	long tid = timeDiff + 3600 * tim->tm_hour + 60 * tim->tm_min + tim->tm_sec;
+	long tid = m_timeDiffToUtc + 3600 * tim->tm_hour + 60 * tim->tm_min + tim->tm_sec;
 	int hr = (int)tid / 3600;
 	int mi = (int)(tid / 60 - 60 * hr);
 	int se = (int)(tid - 3600 * hr - 60 * mi);
@@ -122,7 +122,7 @@ long CSpectrometer::GetTimeValue_UMT()
 //-----------------------------------------------------------------
 int CSpectrometer::InitSpectrometer(short channel, short inttime, short sumSpec) {
 
-	if (fUseUSB) {
+	if (m_connectViaUsb) {
 		return 0;
 	}
 	else {
@@ -169,8 +169,9 @@ int CSpectrometer::InitSpectrometer(short channel, short inttime, short sumSpec)
 */
 int CSpectrometer::Scan(long sumInComputer, long sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]) {
 
-	if (fUseUSB)
+	if (m_connectViaUsb) {
 		return ScanUSB(sumInComputer, sumInSpectrometer, pResult);
+	}
 
 	unsigned short sbuf[8192];
 	char txt[256];
@@ -210,7 +211,7 @@ int CSpectrometer::Scan(long sumInComputer, long sumInSpectrometer, double pResu
 		}
 
 		//wait first byte to come
-		long waitTime = sumInSpectrometer*integrationTime + SERIALDELAY;
+		long waitTime = sumInSpectrometer*m_integrationTime + SERIALDELAY;
 
 		serial.Check(waitTime);
 
@@ -228,7 +229,7 @@ int CSpectrometer::Scan(long sumInComputer, long sumInSpectrometer, double pResu
 			MessageBox(pView->m_hWnd, TEXT("Timeout"), TEXT("SERROR"), MB_OK);
 			return 1;
 		}
-		if ((sbuf[0] != 0xffff) && fRun)
+		if ((sbuf[0] != 0xffff) && m_isRunning)
 		{
 
 			free(smem1);
@@ -274,7 +275,7 @@ int CSpectrometer::ScanUSB(long sumInComputer, long sumInSpectrometer, double pR
 	// Set the parameters for acquiring the spectrum
 	if (m_NChannels == 1) {
 		// Set the exposure time to use (this function takes exp-time in micro-seconds)
-		m_wrapper.setIntegrationTime(m_spectrometerIndex, m_spectrometerChannel, integrationTime * 1000);
+		m_wrapper.setIntegrationTime(m_spectrometerIndex, m_spectrometerChannel, m_integrationTime * 1000);
 
 		// Set the number of co-adds
 		m_wrapper.setScansToAverage(m_spectrometerIndex, m_spectrometerChannel, sumInSpectrometer);
@@ -282,7 +283,7 @@ int CSpectrometer::ScanUSB(long sumInComputer, long sumInSpectrometer, double pR
 	else {
 		for (int chn = 0; chn < m_NChannels; ++chn) {
 			// Set the exposure time to use (this function takes exp-time in micro-seconds)
-			m_wrapper.setIntegrationTime(m_spectrometerIndex, chn, integrationTime * 1000);
+			m_wrapper.setIntegrationTime(m_spectrometerIndex, chn, m_integrationTime * 1000);
 
 			// Set the number of co-adds
 			m_wrapper.setScansToAverage(m_spectrometerIndex, chn, sumInSpectrometer);
@@ -294,15 +295,15 @@ int CSpectrometer::ScanUSB(long sumInComputer, long sumInSpectrometer, double pR
 	if (m_NChannels == 1) {
 		// Get the spectrum
 		for (int k = 0; k < sumInComputer; ++k) {
-			if (!fRun)
+			if (!m_isRunning)
 				return 0;
 
 			// Retreives the spectrum from the spectrometer
 			DoubleArray spectrumArray = m_wrapper.getSpectrum(m_spectrometerIndex, m_spectrometerChannel);
 
 			// copies the spectrum-values to the output array
-			double *spectrum = spectrumArray.getDoubleValues();	// Sets a pointer to the values of the Spectrum array 
-			for (int i = 0; i < m_detectorSize; i++) {				// Loop to print the spectral data to the screen
+			const double* spectrum = spectrumArray.getDoubleValues();	// Sets a pointer to the values of the Spectrum array 
+			for (int i = 0; i < spectrumArray.getLength(); i++) {				// Loop to print the spectral data to the screen
 				pResult[0][i] += spectrum[i];
 			}
 		}
@@ -373,10 +374,13 @@ int CSpectrometer::ScanUSB(long sumInComputer, long sumInSpectrometer, double pR
 
 //-----------------------------------------------------------------
 void CSpectrometer::SetUserParameters(double windspeed, double winddirection, char *baseName) {
-	m_Base = new char[100];
-	windSpeed = windspeed;
-	windAngle = winddirection;
-	sprintf(m_Base, "%s", baseName);
+
+	m_windSpeed = windspeed;
+	m_windAngle = winddirection;
+
+	m_measurementBaseName.Format("%s", baseName);
+	m_measurementBaseName.TrimLeft(' ');
+	m_measurementBaseName.TrimRight(' ');
 }
 
 void CSpectrometer::ApplySettings() {
@@ -385,7 +389,7 @@ void CSpectrometer::ApplySettings() {
 	// The settings for the serial-port
 	serial.baudrate = m_conf->m_baudrate;
 	sprintf(serial.serialPort, m_conf->m_serialPort);
-	fUseUSB = (m_conf->m_spectrometerConnection == Configuration::CMobileConfiguration::CONNECTION_USB);
+	m_connectViaUsb = (m_conf->m_spectrometerConnection == Configuration::CMobileConfiguration::CONNECTION_USB);
 	m_NChannels = m_conf->m_nChannels;
 	bool error = false;
 	if (m_NChannels > MAX_N_CHANNELS) {
@@ -409,12 +413,9 @@ void CSpectrometer::ApplySettings() {
 	}
 
 	// The GPS-settings
-	GPSBaud = m_conf->m_gpsBaudrate;
-	sprintf(GPSPort, "%s", (LPCTSTR)m_conf->m_gpsPort);
-	if (m_conf->m_useGPS)
-		m_skipgps = 0;
-	else
-		m_skipgps = 1;
+	m_GPSBaudRate = m_conf->m_gpsBaudrate;
+	sprintf(m_GPSPort, "%s", (LPCTSTR)m_conf->m_gpsPort);
+	m_useGps = (m_conf->m_useGPS != 0);
 
 	// The exposure-time settings
 	if (m_conf->m_expTimeMode == Configuration::CMobileConfiguration::EXPOSURETIME_FIXED) {
@@ -526,28 +527,27 @@ void CSpectrometer::WriteEvFile(CString filename, FitRegion *fitRegion) {
 	double *result = NULL;
 
 	FILE *f;
-	CString wholePath = m_subFolder + "\\" + strBaseName + "_" + strDateTime + filename;
+	CString wholePath = m_subFolder + "\\" + m_measurementBaseName + "_" + m_measurementStartTimeStr + filename;
 	f = fopen(wholePath, "a+");
 	if (f < (FILE*)1) {
 		MessageBox(pView->m_hWnd, "Could not open evaluation log file. No data was written!", "Error", MB_OK);
 		return;
 	}
 
-	int hr = specTime[counter] / 10000;
-	int min = (specTime[counter] - hr * 10000) / 100;
-	int sec = specTime[counter] % 100;
+	int hr, min, sec;
+	ExtractTime(m_spectrumGpsData[m_spectrumCounter], hr, min, sec);
 
 	// 1. Write the time of the spectrum
 	fprintf(f, "%02d:%02d:%02d\t", hr, min, sec);
 
 	// 2. Write the GPS-information about the spectrum
-	fprintf(f, "%f\t%f\t%.1f\t", pos[counter].latitude, pos[counter].longitude, pos[counter].altitude);
+	fprintf(f, "%f\t%f\t%.1f\t", m_spectrumGpsData[m_spectrumCounter].latitude, m_spectrumGpsData[m_spectrumCounter].longitude, m_spectrumGpsData[m_spectrumCounter].altitude);
 
 	// 3. The number of spectra averaged and the exposure-time
-	fprintf(f, "%d\t%d\t", totalSpecNum, integrationTime);
+	fprintf(f, "%ld\t%d\t", m_totalSpecNum, m_integrationTime);
 
 	// 4. The intensity
-	fprintf(f, "%ld\t", averageValue[0]);
+	fprintf(f, "%ld\t", m_averageSpectrumIntensity[0]);
 
 	// 5. The evaluated column values
 	for (int k = 0; k < fitRegion->window.nRef; ++k) {
@@ -613,9 +613,9 @@ double CSpectrometer::CountFlux(double windSpeed, double windAngle)
 	double column, windFactor, distance, lat1, lat2, lon1, lon2;
 	long   columnSize;
 	double  accColumn = 0;	//total column when gps position is 0
-	if (posFlag == 0)		// when the gps coordinate is (0,0)
+	if (m_posFlag == 0)		// when the gps coordinate is (0,0)
 	{
-		zeroPosNum++;
+		m_zeroPosNum++;
 		columnSize = m_fitRegion[0].vColumn[0].GetSize();
 		accColumn += 1E-6*(m_fitRegion[0].vColumn[0].GetAt(columnSize - 1))*m_gasFactor;
 		flux = 0;
@@ -626,16 +626,16 @@ double CSpectrometer::CountFlux(double windSpeed, double windAngle)
 	else
 	{
 		columnSize = m_fitRegion[0].vColumn[0].GetSize();
-		lat1 = pos[counter - 1].latitude;
-		lat2 = pos[counter - 2].latitude;
-		lon1 = pos[counter - 1].longitude;
-		lon2 = pos[counter - 2].longitude;
+		lat1 = m_spectrumGpsData[m_spectrumCounter - 1].latitude;
+		lat2 = m_spectrumGpsData[m_spectrumCounter - 2].latitude;
+		lon1 = m_spectrumGpsData[m_spectrumCounter - 1].longitude;
+		lon2 = m_spectrumGpsData[m_spectrumCounter - 2].longitude;
 
 		if ((lat2 == 0) && (lon2 == 0)) // when the gps coordinate just become not equal to (0,0)
 		{
-			lat2 = pos[counter - 2 - zeroPosNum].latitude;
-			lon2 = pos[counter - 2 - zeroPosNum].longitude;
-			distance = GPSDistance(lat1, lon1, lat2, lon2) / (zeroPosNum + 1);
+			lat2 = m_spectrumGpsData[m_spectrumCounter - 2 - m_zeroPosNum].latitude;
+			lon2 = m_spectrumGpsData[m_spectrumCounter - 2 - m_zeroPosNum].longitude;
+			distance = GPSDistance(lat1, lon1, lat2, lon2) / (m_zeroPosNum + 1);
 			column = 1E-6*(m_fitRegion[0].vColumn[0].GetAt(columnSize - 1))*m_gasFactor + accColumn;
 		}
 		else					// the gps coordinate is not (0,0)
@@ -644,7 +644,7 @@ double CSpectrometer::CountFlux(double windSpeed, double windAngle)
 			column = 1E-6*(m_fitRegion[0].vColumn[0].GetAt(columnSize - 1))*m_gasFactor;
 		}
 		accColumn = 0;
-		zeroPosNum = 0;
+		m_zeroPosNum = 0;
 		windFactor = GetWindFactor(lat1, lon1, lat2, lon2, windAngle);
 		flux = column * distance * windSpeed * windFactor;
 
@@ -674,7 +674,7 @@ void CSpectrometer::GetDark() {
 		// fixed exposure-time throughout the traverse
 		for (int j = 0; j < m_NChannels; ++j) {
 			for (int i = 0; i < MAX_SPECTRUM_LENGTH; ++i) {
-				tmpDark[j][i] = dark[j][i];
+				m_tmpDark[j][i] = m_dark[j][i];
 			}
 		}
 	}
@@ -682,7 +682,7 @@ void CSpectrometer::GetDark() {
 		// Adaptive exposure-time
 		for (int j = 0; j < m_NChannels; ++j) {
 			for (int i = 0; i < MAX_SPECTRUM_LENGTH; ++i) {
-				tmpDark[j][i] = offset[j][i] + darkCur[j][i] * (integrationTime / DARK_CURRENT_EXPTIME);
+				m_tmpDark[j][i] = m_offset[j][i] + m_darkCur[j][i] * (m_integrationTime / DARK_CURRENT_EXPTIME);
 			}
 		}
 	}
@@ -694,19 +694,21 @@ void CSpectrometer::GetSky() {
 
 	for (int j = 0; j < m_NChannels; ++j) {
 		for (int i = 0; i < MAX_SPECTRUM_LENGTH; ++i) {
-			tmpSky[j][i] = sky[j][i];
+			m_tmpSky[j][i] = m_sky[j][i];
 		}
 	}
 }
 
 int CSpectrometer::Stop()
 {
+	this->m_wrapper.stopAveraging(this->m_spectrometerIndex);
+
 	// Stop this thread
-	fRun = FALSE;
+	m_isRunning = false;
 
 	// Also stop the GPS-reading thread
 	if (m_gps != nullptr) {
-		m_gps->fRun = false;
+		m_gps->Stop();
 	}
 
 	return 1;
@@ -714,7 +716,7 @@ int CSpectrometer::Stop()
 
 int CSpectrometer::Start()
 {
-	fRun = TRUE;
+	m_isRunning = true;
 	return 1;
 }
 
@@ -809,12 +811,11 @@ void CSpectrometer::DoEvaluation(double pSky[][MAX_SPECTRUM_LENGTH], double pDar
 	Sing(curColumn[0] / m_maxColumn);
 	pView->PostMessage(WM_DRAWCOLUMN);
 
-	++counter;
-	if (counter == 65535) {
-		memset((void*)pos, 0, sizeof(struct position) * 65536);
-		memset((void*)specTime, 0, sizeof(long) * 65536);
-		counter = 0;
-		zeroPosNum = 0;
+	++m_spectrumCounter;
+	if (m_spectrumCounter == 65535) {
+		memset((void*)m_spectrumGpsData, 0, sizeof(struct gpsData) * 65536);
+		m_spectrumCounter = 0;
+		m_zeroPosNum = 0;
 	}
 }
 
@@ -827,16 +828,13 @@ void CSpectrometer::CreateDirectories()
 {
 	char dateText[11];
 	char cDateTime[14];
-	int strLength;
 	struct tm *tim;
 	time_t t;
 
-	strBaseName.Format(m_Base);
-	strBaseName.TrimLeft(' ');
-	strBaseName.TrimRight(' ');
-	strLength = strBaseName.GetLength();
-	if (strLength == 0)
-		strBaseName = TEXT("base1");
+	int strLength = m_measurementBaseName.GetLength();
+	if (strLength == 0) {
+		m_measurementBaseName = TEXT("base1");
+	}
 
 	time(&t);
 	tim = localtime(&t);
@@ -861,8 +859,8 @@ void CSpectrometer::CreateDirectories()
 		}
 	}
 
-	strDateTime = TEXT(cDateTime);
-	m_subFolder = folderName + TEXT("\\") + strBaseName + TEXT("_") + TEXT(cDateTime);
+	m_measurementStartTimeStr = TEXT(cDateTime);
+	m_subFolder = folderName + TEXT("\\") + m_measurementBaseName + TEXT("_") + TEXT(cDateTime);
 
 	if (0 == CreateDirectory(m_subFolder, NULL)) {
 		DWORD errorCode = GetLastError();
@@ -892,9 +890,9 @@ void CSpectrometer::SetFileName()
 		for (j = 0; j < m_NChannels; ++j) {
 			i = lastidx;
 			do {
-				if (scanNum == 1)
+				if (m_scanNum == 1)
 					m_stdfileName[j].Format("\\dark_%d.STD", j);
-				else if (scanNum == 2)
+				else if (m_scanNum == 2)
 					m_stdfileName[j].Format("\\sky_%d.STD", j);
 				else
 					m_stdfileName[j].Format("\\%05d_%d.STD", i, j);
@@ -909,11 +907,11 @@ void CSpectrometer::SetFileName()
 		for (j = 0; j < m_NChannels; ++j) {
 			i = lastidx;
 			do {
-				if (scanNum == 1)
+				if (m_scanNum == 1)
 					m_stdfileName[j].Format("\\offset_%d.STD", j);
-				else if (scanNum == 2)
+				else if (m_scanNum == 2)
 					m_stdfileName[j].Format("\\darkcur_%d.STD", j);
-				else if (scanNum == 3)
+				else if (m_scanNum == 3)
 					m_stdfileName[j].Format("\\sky_%d.STD", j);
 				else
 					m_stdfileName[j].Format("\\%05d_%d.STD", i, j);
@@ -983,11 +981,11 @@ long CSpectrometer::GetLatLongAlt(double *la, double *lo, double *al, long sum) 
 
 		for (i = 0; i < sum; i++) {
 			if (la != 0)
-				la[i] = pos[i].latitude;
+				la[i] = m_spectrumGpsData[i].latitude;
 			if (lo != 0)
-				lo[i] = pos[i].longitude;
+				lo[i] = m_spectrumGpsData[i].longitude;
 			if (al != 0)
-				al[i] = pos[i].altitude;
+				al[i] = m_spectrumGpsData[i].altitude;
 		}
 	}
 
@@ -999,17 +997,17 @@ void CSpectrometer::GetCurrentPos(double *la, double *lo, double *al) {
 	long nColumns = m_fitRegion[0].vColumn[0].GetSize();
 
 	if (la != 0)
-		la[0] = pos[nColumns - 1].latitude;
+		la[0] = m_spectrumGpsData[nColumns - 1].latitude;
 	if (lo != 0)
-		lo[0] = pos[nColumns - 1].longitude;
+		lo[0] = m_spectrumGpsData[nColumns - 1].longitude;
 	if (al != 0)
-		al[0] = pos[nColumns - 1].altitude;
+		al[0] = m_spectrumGpsData[nColumns - 1].altitude;
 }
 
 long CSpectrometer::GetCurrentGPSTime() {
 	long nColumns = m_fitRegion[0].vColumn[0].GetSize();
 
-	return this->specTime[nColumns];
+	return this->m_spectrumGpsData[nColumns].time;
 }
 
 long CSpectrometer::GetIntensity(double *list, long sum)
@@ -1049,7 +1047,7 @@ void CSpectrometer::GetNSpecAverage(int N[]) {
 void CSpectrometer::WriteFluxLog()
 {
 	FILE *f;
-	CString fileName = m_subFolder + "\\" + strBaseName + "_" + strDateTime + TEXT("FluxLog.txt");
+	CString fileName = m_subFolder + "\\" + m_measurementBaseName + "_" + m_measurementStartTimeStr + TEXT("FluxLog.txt");
 	f = fopen(fileName, "a+");
 
 	if (f < (FILE*)1)
@@ -1062,15 +1060,13 @@ void CSpectrometer::WriteFluxLog()
 
 
 
-int CSpectrometer::GetGPSPos(double *data)
+int CSpectrometer::GetGpsPos(gpsData& data) const
 {
-	data[0] = pos[counter].latitude;
-	data[1] = pos[counter].longitude;
-	data[2] = specTime[counter];
-	data[3] = pos[counter].altitude;
-	data[4] = pos[counter].nSat;
+	const int c = this->m_spectrumCounter; // local buffer, to avoid race conditions
 
-	return counter;
+	data = m_spectrumGpsData[c];
+
+	return c;
 }
 
 void CSpectrometer::Sing(double factor)
@@ -1122,26 +1118,27 @@ long CSpectrometer::AverageIntens(double *pSpectrum, long ptotalNum) {
 	return (long)sum;
 }
 
-int CSpectrometer::GetGPS() {
-	int validValue = 1;
-
-	specDate[counter] = m_gps->GetDate();
-	specTime[counter] = m_gps->GetTime();
-	pos[counter].latitude = m_gps->GetLatitude();
-	pos[counter].longitude = m_gps->GetLongitude();
-	pos[counter].altitude = m_gps->GetAltitude();
-	pos[counter].nSat = m_gps->gpsInfo.nSatellites;
-
-	if ((pos[counter].latitude == 0.0) && (pos[counter].longitude == 0.0)) {
-		validValue = 0;
+bool CSpectrometer::UpdateGpsData() {
+	if (nullptr == m_gps) {
+		return false;
 	}
-	else if (pos[counter].nSat == 0) {
-		validValue = 0;
+
+	bool gpsDataIsValid = true;
+
+	m_gps->Get(m_spectrumGpsData[m_spectrumCounter]);
+
+	if ((m_spectrumGpsData[m_spectrumCounter].latitude == 0.0) && (m_spectrumGpsData[m_spectrumCounter].longitude == 0.0)) {
+		// Invalid data, no latitude / longitude could be retrieved
+		gpsDataIsValid = false;
+	}
+	else if (m_spectrumGpsData[m_spectrumCounter].nSatellites == 0) {
+		// Invalid data, the receiver couldn't connect to any satellite
+		gpsDataIsValid = false;
 	}
 
 	pView->PostMessage(WM_READGPS);
 
-	return validValue;
+	return gpsDataIsValid;
 }
 
 
@@ -1164,18 +1161,18 @@ void CSpectrometer::WriteLogFile(CString filename, CString txt) {
 void CSpectrometer::WriteBeginEvFile(int fitRegion) {
 
 	// Write a copy of the old cfg-file into the evaluation-log
-	CString evPath = m_subFolder + "\\" + strBaseName + "_" + strDateTime + TEXT("evaluationLog_" + m_fitRegion[fitRegion].window.name + ".txt");
+	CString evPath = m_subFolder + "\\" + m_measurementBaseName + "_" + m_measurementStartTimeStr + TEXT("evaluationLog_" + m_fitRegion[fitRegion].window.name + ".txt");
 	CString str1, str2, str3, str4, str5, str6, str7, channelName;
 	str1.Format("***Desktop Mobile Program***\nVERSION=%1d.%1d\nFILETYPE=evaluationlog\n", CVersion::majorNumber, CVersion::minorNumber);
-	str2.Format("BASENAME=%s\nWINDSPEED=%f\nWINDDIRECTION=%f\n", m_Base, windSpeed, windAngle);
+	str2.Format("BASENAME=%s\nWINDSPEED=%f\nWINDDIRECTION=%f\n", (LPCSTR)m_measurementBaseName, m_windSpeed, m_windAngle);
 	str3 = TEXT("***copy of related configuration file ***\n");
 
-	if (!fUseUSB)
+	if (!m_connectViaUsb)
 		str4.Format("SPEC_BAUD=%d\nSERIALPORT=%s\nGPSBAUD=%d\nGPSPORT=%s\nTIMERESOLUTION=%d\n",
-			serial.baudrate, serial.serialPort, GPSBaud, GPSPort, m_timeResolution);
+			serial.baudrate, serial.serialPort, m_GPSBaudRate, m_GPSPort, m_timeResolution);
 	else
 		str4.Format("SERIALPORT=USB\nGPSBAUD=%d\nGPSPORT=%s\nTIMERESOLUTION=%d\n",
-			GPSBaud, GPSPort, m_timeResolution);
+			m_GPSBaudRate, m_GPSPort, m_timeResolution);
 
 	str5.Format("FIXEXPTIME=%d\nFITFROM=%d\nFITTO=%d\nPOLYNOM=%d\n",
 		m_fixexptime, m_fitRegion[fitRegion].window.fitLow, m_fitRegion[fitRegion].window.fitHigh, m_fitRegion[fitRegion].window.polyOrder);
@@ -1190,7 +1187,7 @@ void CSpectrometer::WriteBeginEvFile(int fitRegion) {
 
 	// Write some additional information about the spectrometer
 	str1.Format("***Spectrometer Information***\n");
-	str1.AppendFormat("SERIAL=%s\n", spectrometerName);
+	str1.AppendFormat("SERIAL=%s\n", m_spectrometerName);
 	str1.AppendFormat("DETECTORSIZE=%d\n", m_detectorSize);
 	str1.AppendFormat("DYNAMICRANGE=%d\n", m_spectrometerDynRange);
 	str1.AppendFormat("MODEL=%s\n", m_spectrometerModel);
@@ -1232,14 +1229,14 @@ int CSpectrometer::CountRound(long timeResolution, long serialDelay, long gpsDel
 		//	in the computer
 		nRound = 1;
 
-		sumOne = (int)(timeResolution / (1.1 * integrationTime));
+		sumOne = (int)(timeResolution / (1.1 * m_integrationTime));
 	}
 	else {
 
 		for (sumOne = 1; sumOne <= 15; sumOne++) {
-			nRound = (timeResolution - gpsDelay) / (sumOne*integrationTime + serialDelay);
+			nRound = (timeResolution - gpsDelay) / (sumOne*m_integrationTime + serialDelay);
 			rounds[sumOne - 1] = nRound;
-			totalTime = (sumOne*integrationTime + serialDelay)*nRound + gpsDelay;
+			totalTime = (sumOne*m_integrationTime + serialDelay)*nRound + gpsDelay;
 			results[sumOne - 1] = totalTime;
 			nSpec[sumOne - 1] = (double)(sumOne*nRound);
 		}
@@ -1254,7 +1251,7 @@ int CSpectrometer::CountRound(long timeResolution, long serialDelay, long gpsDel
 			}
 		}
 		sumOne = index + 1;
-		nRound = (timeResolution - gpsDelay) / (sumOne*integrationTime + serialDelay);
+		nRound = (timeResolution - gpsDelay) / (sumOne*m_integrationTime + serialDelay);
 		if (nRound <= 0) {
 			sumOne = 1;
 			nRound = 1;
@@ -1266,11 +1263,11 @@ int CSpectrometer::CountRound(long timeResolution, long serialDelay, long gpsDel
 }
 
 double* CSpectrometer::GetSpectrum(int channel) {
-	return curSpectrum[channel];
+	return m_curSpectrum[channel];
 }
 
 double* CSpectrometer::GetWavelengths(int channel) {
-	return wavelength[channel];
+	return m_wavelength[channel];
 }
 
 /** This retrieves a list of all spectrometers that are connected to this computer */
@@ -1323,13 +1320,13 @@ int CSpectrometer::TestUSBConnection() {
 				m_spectrometerIndex = k;
 			}
 		}
-		spectrometerName.Format(selectedSerial);
+		m_spectrometerName.Format(selectedSerial);
 	}
 	else {
-		spectrometerName.Format(m_wrapper.getSerialNumber(0).getASCII());
+		m_spectrometerName.Format(m_wrapper.getSerialNumber(0).getASCII());
 	}
 
-	m_statusMsg.Format("Will use spectrometer %s.", spectrometerName); pView->PostMessage(WM_STATUSMSG);
+	m_statusMsg.Format("Will use spectrometer %s.", m_spectrometerName); pView->PostMessage(WM_STATUSMSG);
 
 
 	// Change the selected spectrometer. This will also fill in the parameters about the spectrometer
@@ -1407,7 +1404,7 @@ int CSpectrometer::ChangeSpectrometer(int selectedspec, int channel) {
 
 
 	// Get a spectrum
-	m_statusMsg.Format("Attempting to retrieve a spectrum from %s", spectrometerName); pView->PostMessage(WM_STATUSMSG);
+	m_statusMsg.Format("Attempting to retrieve a spectrum from %s", m_spectrometerName); pView->PostMessage(WM_STATUSMSG);
 
 	m_wrapper.setIntegrationTime(m_spectrometerIndex, m_spectrometerChannel, 3000); // use 3 ms exp-time
 	m_wrapper.setScansToAverage(m_spectrometerIndex, m_spectrometerChannel, 1);		// only retrieve one single spectrum
@@ -1418,7 +1415,7 @@ int CSpectrometer::ChangeSpectrometer(int selectedspec, int channel) {
 	// Get the wavelength calibration from the spectrometer
 	double *wavelengths = wavelengthArray.getDoubleValues();	// Sets a pointer to the values of the wavelength array 
 	for (int k = 0; k < m_detectorSize; ++k) {
-		wavelength[m_spectrometerChannel][k] = wavelengths[k];
+		m_wavelength[m_spectrometerChannel][k] = wavelengths[k];
 	}
 
 	m_statusMsg.Format("Detector size is %d", m_detectorSize); pView->PostMessage(WM_STATUSMSG);
@@ -1463,30 +1460,31 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 
   /* The offset is judged as the average intensity in pixels 6 - 18 */
 	for (int n = 0; n < m_NChannels; ++n) {
-		specInfo[n].offset = GetOffset(spectrum[n]);
+		m_specInfo[n].offset = GetOffset(spectrum[n]);
 
 		// Check if this spectrum is dark
 		bool isDark = false;
-		if (fabs(averageValue[n] - specInfo[n].offset) < 4.0)
+		if (fabs(m_averageSpectrumIntensity[n] - m_specInfo[n].offset) < 4.0) {
 			isDark = true;
+		}
 
 
 		if (isDark) {
-			specInfo[n].isDark = true;
-			lastDarkOffset[n] = specInfo[n].offset;
+			m_specInfo[n].isDark = true;
+			m_lastDarkOffset[n] = m_specInfo[n].offset;
 			nagFlag = false;
 
 			// use the new spectrum as dark spectrum
-			memcpy((void*)dark, (void*)spectrum, sizeof(double) * 4096);
+			memcpy((void*)m_dark, (void*)spectrum, sizeof(double) * 4096);
 
 		}
 		else {
-			specInfo[n].isDark = false;
+			m_specInfo[n].isDark = false;
 
 			/* If the offset level has changed alot since the last dark, encourage the user to take a new dark spectrum */
-			if (lastDarkOffset[n] > 10) {/* Make sure this test is not run on the first spectrum collected */
+			if (m_lastDarkOffset[n] > 10) {/* Make sure this test is not run on the first spectrum collected */
 				if (!nagFlag) {
-					if (fabs(lastDarkOffset[n] - specInfo[n].offset) > 20.0) {
+					if (fabs(m_lastDarkOffset[n] - m_specInfo[n].offset) > 20.0) {
 						pView->PostMessage(WM_SHOWDIALOG, DARK_DIALOG);
 						nagFlag = true;
 					}
@@ -1503,7 +1501,7 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 	}
 
 	/* Print the information to a file */
-	CString fileName = m_subFolder + "\\" + strBaseName + "_" + strDateTime + "AdditionalLog.txt";
+	CString fileName = m_subFolder + "\\" + m_measurementBaseName + "_" + m_measurementStartTimeStr + "AdditionalLog.txt";
 	FILE *f = nullptr;
 
 	if (!IsExistingFile(fileName)) {
@@ -1530,15 +1528,15 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 	}
 	else {
 		// Spectrum number
-		fprintf(f, "%d\t", counter);
+		fprintf(f, "%ld\t", m_spectrumCounter);
 		// The board temperature (?)
 		if (temperature != NOT_A_NUMBER)
 			fprintf(f, "%.3lf\t", temperature);
 
 		// The master-channel
-		fprintf(f, "%lf\t%d\t%d", specInfo[0].offset, averageValue[0], specInfo[0].isDark);
+		fprintf(f, "%lf\t%ld\t%d", m_specInfo[0].offset, m_averageSpectrumIntensity[0], m_specInfo[0].isDark);
 		if (m_NChannels > 1)
-			fprintf(f, "%lf\t%d\t%d", specInfo[1].offset, averageValue[1], specInfo[1].isDark);
+			fprintf(f, "%lf\t%ld\t%d", m_specInfo[1].offset, m_averageSpectrumIntensity[1], m_specInfo[1].isDark);
 
 		fprintf(f, "\n");
 
@@ -1570,9 +1568,9 @@ void CSpectrometer::UpdateMobileLog() {
 			return;
 		}
 		else {
-			fprintf(f, "BASENAME=%s\n", m_Base);
-			fprintf(f, "WINDSPEED=%.2lf\n", windSpeed);
-			fprintf(f, "WINDDIRECTION=%.2lf\n", windAngle);
+			fprintf(f, "BASENAME=%s\n", (LPCSTR)m_measurementBaseName);
+			fprintf(f, "WINDSPEED=%.2lf\n", m_windSpeed);
+			fprintf(f, "WINDDIRECTION=%.2lf\n", m_windAngle);
 			fclose(f);
 			return;
 		}
@@ -1588,9 +1586,9 @@ void CSpectrometer::UpdateMobileLog() {
 		fclose(f);
 		f = fopen(g_exePath + "MobileLog.txt", "w");
 		fprintf(f, "%s", (LPCTSTR)tmpStr);
-		fprintf(f, "BASENAME=%s\n", m_Base);
-		fprintf(f, "WINDSPEED=%.2lf\n", windSpeed);
-		fprintf(f, "WINDDIRECTION=%.2lf\n", windAngle);
+		fprintf(f, "BASENAME=%s\n", (LPCSTR)m_measurementBaseName);
+		fprintf(f, "WINDSPEED=%.2lf\n", m_windSpeed);
+		fprintf(f, "WINDDIRECTION=%.2lf\n", m_windAngle);
 
 		fclose(f);
 	}
@@ -1602,29 +1600,29 @@ short CSpectrometer::AdjustIntegrationTime() {
 	m_sumInComputer = 1;
 	int darkInt = 0;
 	int skyInt = 0;
-	int oldIntTime = integrationTime;
+	int oldIntTime = m_integrationTime;
 
 	int highLimit = MAX_EXPOSURETIME; // maximum exposure time
 	int lowLimit = MIN_EXPOSURETIME; // minimum exposure time
 
 	// if the exposure time is set by the user, don't even bother to calculate it
 	if (m_fixexptime > 0) {
-		integrationTime = (short)m_fixexptime;
-		return integrationTime;
+		m_integrationTime = (short)m_fixexptime;
+		return m_integrationTime;
 	}
 
 	// First make a try at setting the integration time by collecting one 
 	//	spectrum at 10 ms exposure-time and one at 50 ms exposure-time
 	if (-1 != AdjustIntegrationTime_Calculate(10, 50)) {
-		return integrationTime;
+		return m_integrationTime;
 	}
 
 	// The clever setting failed... revert to simple trial and error...
-	integrationTime = 100;
+	m_integrationTime = 100;
 	while (1) {
 		// if necessary, initialize the spectrometer
-		if (!fUseUSB) {
-			if (InitSpectrometer(0, integrationTime, m_sumInSpectrometer)) {
+		if (!m_connectViaUsb) {
+			if (InitSpectrometer(0, m_integrationTime, m_sumInSpectrometer)) {
 				serial.CloseAll();
 				MessageBox(pView->m_hWnd, "Failed to initialize spectrometer", "Error", MB_OK);
 				return -1;
@@ -1636,8 +1634,9 @@ short CSpectrometer::AdjustIntegrationTime() {
 
 		// measure the intensity
 		if (Scan(1, m_sumInSpectrometer, skySpec)) {
-			if (!fUseUSB)
+			if (!m_connectViaUsb) {
 				serial.CloseAll();
+			}
 			return -1;
 		}
 
@@ -1647,7 +1646,7 @@ short CSpectrometer::AdjustIntegrationTime() {
 
 		// Draw the measured sky spectrum on the screen.
 		for (int i = 0; i < m_NChannels; ++i) {
-			memcpy((void*)curSpectrum[i], skySpec[i], sizeof(double)*MAX_SPECTRUM_LENGTH);
+			memcpy((void*)m_curSpectrum[i], skySpec[i], sizeof(double)*MAX_SPECTRUM_LENGTH);
 		}
 		if (m_fixexptime >= 0)
 			pView->PostMessage(WM_DRAWSPECTRUM);
@@ -1655,29 +1654,29 @@ short CSpectrometer::AdjustIntegrationTime() {
 
 		// Check if we have reached our goal
 		if (fabs(skyInt - m_spectrometerDynRange*m_percent) < 200)
-			return integrationTime;
+			return m_integrationTime;
 
 		// Adjust the exposure time so that we come closer to the desired value
 		if (skyInt - m_spectrometerDynRange*m_percent > 0)
-			highLimit = integrationTime;
+			highLimit = m_integrationTime;
 		else
-			lowLimit = integrationTime;
+			lowLimit = m_integrationTime;
 
 		// calculate the neccessary exposure time
-		oldIntTime = integrationTime;
-		integrationTime = (short)GetInttime(skyInt, darkInt, integrationTime);
+		oldIntTime = m_integrationTime;
+		m_integrationTime = (short)GetInttime(skyInt, darkInt, m_integrationTime);
 
 		// if we don't change the exposure time, just quit.
-		if (fabs(oldIntTime - integrationTime) < 0.1*integrationTime)
-			return integrationTime;
+		if (fabs(oldIntTime - m_integrationTime) < 0.1*m_integrationTime)
+			return m_integrationTime;
 
 		// check if we can reach the desired level at all
-		if ((integrationTime == MAX_EXPOSURETIME) || (integrationTime == MIN_EXPOSURETIME)) {
-			return integrationTime;
+		if ((m_integrationTime == MAX_EXPOSURETIME) || (m_integrationTime == MIN_EXPOSURETIME)) {
+			return m_integrationTime;
 		}
 	}
 
-	return integrationTime;
+	return m_integrationTime;
 }
 
 short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxExpTime) {
@@ -1686,12 +1685,13 @@ short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxEx
 	m_sumInComputer = 1;
 
 	// Sanity check
-	if (maxExpTime < minExpTime || (maxExpTime - minExpTime) < 2)
+	if (maxExpTime < minExpTime || (maxExpTime - minExpTime) < 2) {
 		return -1;
+	}
 
-	integrationTime = (short)minExpTime;
-	if (!fUseUSB) {
-		if (InitSpectrometer(0, integrationTime, m_sumInSpectrometer)) {
+	m_integrationTime = (short)minExpTime;
+	if (!m_connectViaUsb) {
+		if (InitSpectrometer(0, m_integrationTime, m_sumInSpectrometer)) {
 			serial.CloseAll();
 			MessageBox(pView->m_hWnd, "Failed to initialize spectrometer", "Error", MB_OK);
 			return -1;
@@ -1699,15 +1699,16 @@ short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxEx
 	}
 	// measure the intensity
 	if (Scan(1, m_sumInSpectrometer, skySpec)) {
-		if (!fUseUSB)
+		if (!m_connectViaUsb) {
 			serial.CloseAll();
+		}
 		return -1;
 	}
 	int int_short = AverageIntens(skySpec[0], 1);
 
-	integrationTime = (short)maxExpTime;
-	if (!fUseUSB) {
-		if (InitSpectrometer(0, integrationTime, m_sumInSpectrometer)) {
+	m_integrationTime = (short)maxExpTime;
+	if (!m_connectViaUsb) {
+		if (InitSpectrometer(0, m_integrationTime, m_sumInSpectrometer)) {
 			serial.CloseAll();
 			MessageBox(pView->m_hWnd, "Failed to initialize spectrometer", "Error", MB_OK);
 			return -1;
@@ -1715,8 +1716,9 @@ short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxEx
 	}
 	// measure the intensity
 	if (Scan(1, m_sumInSpectrometer, skySpec)) {
-		if (!fUseUSB)
+		if (!m_connectViaUsb) {
 			serial.CloseAll();
+		}
 		return -1;
 	}
 	int int_long = AverageIntens(skySpec[0], 1);
@@ -1727,24 +1729,25 @@ short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxEx
 	}
 
 	// Calculate the exposure-time
-	integrationTime = (short)((m_spectrometerDynRange - int_short) * (maxExpTime - minExpTime) * m_percent / (int_long - int_short));
+	m_integrationTime = (short)((m_spectrometerDynRange - int_short) * (maxExpTime - minExpTime) * m_percent / (int_long - int_short));
 
-	if (integrationTime > MAX_EXPOSURETIME)
-		integrationTime = MAX_EXPOSURETIME;
-	if (integrationTime < MIN_EXPOSURETIME)
-		integrationTime = MIN_EXPOSURETIME;
+	if (m_integrationTime > MAX_EXPOSURETIME)
+		m_integrationTime = MAX_EXPOSURETIME;
+	if (m_integrationTime < MIN_EXPOSURETIME)
+		m_integrationTime = MIN_EXPOSURETIME;
 
 	// Try out the calculated intensity to see if it works...
-	if (!fUseUSB) {
-		if (InitSpectrometer(0, integrationTime, m_sumInSpectrometer)) {
+	if (!m_connectViaUsb) {
+		if (InitSpectrometer(0, m_integrationTime, m_sumInSpectrometer)) {
 			serial.CloseAll();
 			MessageBox(pView->m_hWnd, "Failed to initialize spectrometer", "Error", MB_OK);
 			return -1;
 		}
 	}
 	if (Scan(1, m_sumInSpectrometer, skySpec)) {
-		if (!fUseUSB)
+		if (!m_connectViaUsb) {
 			serial.CloseAll();
+		}
 		return -1;
 	}
 	int finalInt = AverageIntens(skySpec[0], 1);
@@ -1756,26 +1759,23 @@ short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxEx
 	else {
 		// Draw the measured sky spectrum on the screen.
 		for (int i = 0; i < m_NChannels; ++i) {
-			memcpy((void*)curSpectrum[i], skySpec[i], sizeof(double)*MAX_SPECTRUM_LENGTH);
+			memcpy((void*)m_curSpectrum[i], skySpec[i], sizeof(double)*MAX_SPECTRUM_LENGTH);
 		}
 		if (m_fixexptime >= 0)
 			pView->PostMessage(WM_DRAWSPECTRUM);
 		pView->PostMessage(WM_SHOWINTTIME);
 
-		return integrationTime;
+		return m_integrationTime;
 	}
 }
 
-char* CSpectrometer::ReadGpsDate() {
+std::string CSpectrometer::GetCurrentDate() {
 
-	int validGPS = 0;
-	char* startDate = new char[6];
+	const bool couldReadValidGPSData = (m_useGps) ? UpdateGpsData() : false;
 
-	if (!m_skipgps)
-		validGPS = GetGPS(); /* GetGPS returns 0 if no satellite connection */
+	if (!couldReadValidGPSData) {
+		char startDate[7];
 
-	if (!validGPS) {
-		// date
 		struct tm *tim;
 		time_t t;
 		time(&t);
@@ -1784,41 +1784,51 @@ char* CSpectrometer::ReadGpsDate() {
 		int day = tim->tm_mday;
 		int year = tim->tm_year - 100; // only good for 21st century
 		sprintf(startDate, "%02d%02d%02d", mon, day, year);
+
+		return std::string(startDate, 6);
 	}
 	else {
-		sprintf(startDate, m_gps->GetDate());
+		const int c = this->m_spectrumCounter; // local buffer, to avoid race conditions...
+		m_gps->Get(m_spectrumGpsData[c]);
+		return std::string(m_spectrumGpsData[c].date, 6);
 	}
-
-	return startDate;
 }
 
-long CSpectrometer::ReadGpsStartTime() {
-	int validGPS = 0;
+long CSpectrometer::GetCurrentTime() {
 	long startTime = 0;
 
-	if (!m_skipgps)
-		validGPS = GetGPS(); /* GetGPS returns 0 if no satellite connection */
+	const bool couldReadValidGPSData = (m_useGps) ? UpdateGpsData() : false;
 
-	if (!validGPS) {
+	const int currentSpectrumCounter = this->m_spectrumCounter; // local copy to prevent race conditions
+
+	if (!couldReadValidGPSData) {
 		startTime = GetTimeValue_UMT();
-		specTime[counter] = startTime;
-		pos[counter].altitude = pos[counter].latitude = pos[counter].longitude = pos[counter].nSat = 0;
-		/*   if(!m_skipgps)
-			pView->PostMessage(WM_SHOWDIALOG, INVALID_GPS);*/
+		m_spectrumGpsData[currentSpectrumCounter].time = startTime;
+		m_spectrumGpsData[currentSpectrumCounter].altitude = 0.0;
+		m_spectrumGpsData[currentSpectrumCounter].latitude = 0.0;
+		m_spectrumGpsData[currentSpectrumCounter].longitude = 0.0;
+		m_spectrumGpsData[currentSpectrumCounter].nSatellites = 0;
 	}
-	else if (timeDiff == 0) {
+	else if (m_timeDiffToUtc == 0) {
 		time_t t;
 		time(&t);
 		struct tm *localTime = localtime(&t);
 
-		long gpstime = m_gps->GetTime();
-		long hr = (long)gpstime / 10000;
-		long mi = ((long)gpstime - hr * 10000) / 100;
-		long se = ((long)gpstime) % 100;
+		m_gps->Get(m_spectrumGpsData[currentSpectrumCounter]);
+
+		int hr, min, sec;
+		ExtractTime(m_spectrumGpsData[currentSpectrumCounter], hr, min, sec);
 
 		/* get the difference between the local time and the GPS-time */
-		timeDiff = 3600 * (hr - localTime->tm_hour) + 60 * (mi - localTime->tm_min) + (se - localTime->tm_sec);
+		m_timeDiffToUtc = 3600 * (hr - localTime->tm_hour) + 60 * (min - localTime->tm_min) + (sec - localTime->tm_sec);
 	}
 
 	return startTime;
+}
+
+unsigned int CSpectrometer::GetProcessedSpectrum(double* dst, unsigned int maxNofElements, int chn) const
+{
+	const unsigned int length = std::min(maxNofElements, (unsigned int)MAX_SPECTRUM_LENGTH);
+	memcpy(dst, this->m_spectrum[chn], MAX_SPECTRUM_LENGTH * sizeof(double));
+	return length;
 }

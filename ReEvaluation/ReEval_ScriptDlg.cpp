@@ -298,7 +298,7 @@ void ScanDirectoryForEvalLogs(const CString &folderName, CList <CString, CString
 		}
 		
 		// Get the name of the file that we've just found...
-		fileName.Format("%s\\%s", folderName, FindFileData.cFileName);
+		fileName.Format("%s\\%s", (LPCTSTR)folderName, FindFileData.cFileName);
 
 		if(FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY){
 			// This is a directory that we've found. Enter it..
@@ -322,7 +322,7 @@ void ScanDirectoryForEvalLogs(const CString &folderName, CList <CString, CString
 			continue;
 	
 		// Get the name of the file that we've just found...
-		fileName.Format("%s\\%s", folderName, FindFileData.cFileName);
+		fileName.Format("%s\\%s", (LPCTSTR)folderName, FindFileData.cFileName);
 
 		fileList.AddTail(fileName);
 

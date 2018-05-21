@@ -75,7 +75,7 @@ void CPostPlumeHeightDlg::OnBrowseEvallog()
 
 	// let the user browse for an evaluation log file and if one is selected, read it
 	if (Common::BrowseForFile(filter, evLog)) {
-		m_evalLog.Format("%s", evLog);
+		m_evalLog.Format("%s", (LPCTSTR)evLog);
 
 		// Read the newly opened evaluation-log
 		if (ReadEvaluationLog()) {
@@ -136,7 +136,6 @@ bool CPostPlumeHeightDlg::ReadEvaluationLog() {
 	}
 
 	// Read the data from the file
-	int oldNumberOfFilesOpened = m_flux->m_traverseNum;
 	if (0 == m_flux->ReadLogFile("", m_evalLog, m_nChannels, fileVersion)) {
 		MessageBox(TEXT("That file is empty"));
 		return FAIL;
@@ -208,7 +207,7 @@ BOOL CPostPlumeHeightDlg::OnInitDialog()
 	// Setup the colors to use for the different time-series
 	m_colorSeries[0] = RGB(255, 0, 0);
 	m_colorSeries[1] = RGB(0, 0, 255);
-	m_colorSeries[2] = RGB(0, 255, 0);
+	// m_colorSeries[2] = RGB(0, 255, 0);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // EXCEPTION: OCX Property Pages should return FALSE

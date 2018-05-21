@@ -237,7 +237,7 @@ int CReEvaluator::ReadSettings(){
 			{
 				char strbuffer[4096];
 				pt=strstr(txt,"=");
-				sscanf(&pt[1],"%s",strbuffer);
+				sscanf(&pt[1],"%4095s",strbuffer);
 				this->m_spectrometerName.Format("%s", strbuffer);
 			}
 
@@ -245,7 +245,7 @@ int CReEvaluator::ReadSettings(){
 			{
 				char strbuffer[4096];
 				pt=strstr(txt,"=");
-				sscanf(&pt[1],"%s",strbuffer);
+				sscanf(&pt[1],"%4095s",strbuffer);
 				this->m_spectrometerModel.Format("%s", strbuffer);
 			}
 
@@ -265,7 +265,7 @@ int CReEvaluator::ReadSettings(){
 			
 			if(pt =strstr(txt, "nSpecies=")){
 				pt=strstr(txt,"=");
-				sscanf(&pt[1],"%ld",&m_nSpecies);
+				sscanf(&pt[1],"%d",&m_nSpecies);
 			}
 			
 			if(pt = strstr(txt, "REFFILE=")){
@@ -858,7 +858,7 @@ bool CReEvaluator::WriteEvaluationLogHeader(int channel){
 	fprintf(f, "Original EvaluationLog=%s\n", (LPCTSTR)m_evalLogFileName);
 	fprintf(f, "***Settings Used in the Evaluation***\n");
 	fprintf(f, "FitFrom=%d\nFitTo=%d\nPolynom=%d\n", m_settings.m_window.fitLow, m_settings.m_window.fitHigh, m_settings.m_window.polyOrder);
-	fprintf(f, "Number of averaged spectra=%d\n", m_settings.m_nAverageSpectra);
+	fprintf(f, "Number of averaged spectra=%ld\n", m_settings.m_nAverageSpectra);
 	switch(m_settings.m_ignoreDark.selection){
 		case IGNORE_DARK:  fprintf(f, "Ignore Dark Spectra=1\n"); break;
 		case IGNORE_LIMIT: fprintf(f, "Ignore Spectra with intensity below=%.1lf @ channel %d\n", m_settings.m_ignoreDark.intensity, m_settings.m_ignoreDark.channel); break;
@@ -911,8 +911,8 @@ bool CReEvaluator::WriteEvaluationLogHeader(int channel){
 	// Write the information about the spectrometer
 	fprintf(f, "***Spectrometer Information***\n");
 	fprintf(f, "SERIAL=%s\n", (LPCTSTR)m_spectrometerName);
-	fprintf(f, "DETECTORSIZE=%d\n",	m_detectorSize);
-	fprintf(f, "DYNAMICRANGE=%d\n",	m_spectrometerDynRange);
+	fprintf(f, "DETECTORSIZE=%ld\n",	m_detectorSize);
+	fprintf(f, "DYNAMICRANGE=%ld\n",	m_spectrometerDynRange);
 	fprintf(f, "MODEL=%s\n", (LPCTSTR)m_spectrometerModel);
 
 	fclose(f);

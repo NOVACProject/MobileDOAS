@@ -85,7 +85,7 @@ void CPostWindDlg::OnBrowseEvallog()
 
 	// let the user browse for an evaluation log file and if one is selected, read it
 	if (Common::BrowseForFile(filter, evLog)) {
-		m_evalLog.Format("%s", evLog);
+		m_evalLog.Format("%s", (LPCTSTR)evLog);
 
 		if (ReadEvaluationLog()) {
 			// Update the text on the screen
@@ -141,7 +141,6 @@ bool CPostWindDlg::ReadEvaluationLog() {
 	}
 
 	// Read the data from the file
-	int oldNumberOfFilesOpened = m_flux->m_traverseNum;
 	if (0 == m_flux->ReadLogFile("", m_evalLog, nChannels, fileVersion)) {
 		MessageBox(TEXT("That file is empty"));
 		return FAIL;
@@ -215,7 +214,7 @@ BOOL CPostWindDlg::OnInitDialog()
 	// Setup the colors to use for the different time-series
 	m_colorSeries[0] = RGB(255, 0, 0);
 	m_colorSeries[1] = RGB(0, 0, 255);
-	m_colorSeries[2] = RGB(0, 255, 0);
+	// m_colorSeries[2] = RGB(0, 255, 0);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // EXCEPTION: OCX Property Pages should return FALSE
@@ -439,7 +438,7 @@ void CPostWindDlg::SaveResult() {
 	// 2. Make a new name for the wind-speed log-file
 	CString fileName, timeNow;
 	Common::GetDateTimeTextPlainFormat(timeNow);
-	fileName.Format("%sWindCalculation_%s.txt", directory, timeNow);
+	fileName.Format("%sWindCalculation_%s.txt", (LPCTSTR)directory, (LPCTSTR)timeNow);
 
 	// 3. Open the log-file for writing
 	FILE *f = fopen(fileName, "w");
@@ -452,9 +451,9 @@ void CPostWindDlg::SaveResult() {
 	// 4. Write the header, containing the settings for the calculation
 	fprintf(f, "PlumeHeight [m]\t%lf\n", m_settings.plumeHeight);
 	fprintf(f, "AngleSeparation [deg]\t%lf\n", m_settings.angleSeparation);
-	fprintf(f, "LowPassFilterAverage\t%d\n", m_settings.lowPassFilterAverage);
-	fprintf(f, "MaxShift [s]\t%d\n", m_settings.shiftMax);
-	fprintf(f, "TestLength [s]\t%d\n", m_settings.testLength);
+	fprintf(f, "LowPassFilterAverage\t%ud\n", m_settings.lowPassFilterAverage);
+	fprintf(f, "MaxShift [s]\t%ud\n", m_settings.shiftMax);
+	fprintf(f, "TestLength [s]\t%ud\n", m_settings.testLength);
 
 	// 5. Write the result
 	double distance = m_settings.plumeHeight * tan(DEGREETORAD * m_settings.angleSeparation);

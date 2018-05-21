@@ -57,7 +57,7 @@ void CQueryStringDialog::OnOK()
   if(this->m_inputString != nullptr){
     CString tmpStr;
     this->GetDlgItemText(IDC_STRING_EDIT, tmpStr);
-    m_inputString->Format("%s", tmpStr);
+    m_inputString->Format("%s", (LPCTSTR)tmpStr);
   }
 
   CDialog::OnOK();

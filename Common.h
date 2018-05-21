@@ -73,7 +73,7 @@
 #define SUCCESS true
 #define FAIL false
 
-struct plotRange{	
+struct plotRange{
 	double maxLat;
 	double maxLon;
 	double minLat;
@@ -81,15 +81,43 @@ struct plotRange{
 };
 
 typedef struct gpsPosition{
-	double latitude;
-	double longitude;
-	double altitude;
+	double latitude = 0.0;
+	double longitude = 0.0;
+	double altitude = 0.0;
 }gpsPosition;
 
+struct gpsData {
+	gpsData();
+	gpsData(const gpsData& other);
+
+	gpsData& operator=(gpsData other);
+
+	/* Latitude in (decimal) degrees. */
+	double latitude = 0.0;
+
+	/* Longitude in (decimal) degrees. */
+	double longitude = 0.0;
+
+	/* Altitude above sea level in meters. */
+	double altitude = 0.0;
+
+	/* The time stamp from the Gps */
+	long time = 0;
+
+	/* Number of satellites seen by the receiver. */
+	long nSatellites = 0;
+
+	/** Date, formatted as mmddyy */
+	char date[6];
+};
+
+/** Extracts the time from the provided gpsData and separates it into hour-minute-second */
+void ExtractTime(const gpsData& gpsData, int& hours, int& minutes, int& seconds);
+
 typedef struct Time{
-	char hour;
-	char minute;
-	char second;
+	char hour = 0;
+	char minute = 0;
+	char second = 0;
 }Time;
 
 // ---------------------------------------------------------------

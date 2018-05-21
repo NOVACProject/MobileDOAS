@@ -272,7 +272,7 @@ void CSpectrumInspectionDlg::DrawSpectrum(){
 		fileName.Format("%05d_0.STD", m_selectedSpectrum);
 	}
 	fullFileName.AppendFormat(fileName);
-	userMessage.Format("Showing spectrum: %s (out of %d spectra)", fileName, m_totalSpecNum);
+	userMessage.Format("Showing spectrum: %s (out of %d spectra)", (LPCTSTR)fileName, m_totalSpecNum);
 
 	// Tell the user which spectrum he's seeing 
 	SetDlgItemText(IDC_LABEL_SPECTRUMNUMBER, userMessage);
@@ -286,9 +286,9 @@ void CSpectrumInspectionDlg::DrawSpectrum(){
 		double ymin = (range.maxIntens - range.minIntens) * 0.333;
 		double ymax = (range.maxIntens - range.minIntens) * 0.667;
 
-		userMessage.Format("Cannot read spectrum %s", fileName);
+		userMessage.Format("Cannot read spectrum %s", (LPCTSTR)fileName);
 
-		m_spectrumGraph.DrawTextBox(xmin, xmax, ymin, ymax, userMessage);		
+		m_spectrumGraph.DrawTextBox(xmin, xmax, ymin, ymax, userMessage);
 	}else{
 		GetPlotRange(range, &spectrum);
 
@@ -367,7 +367,7 @@ void CSpectrumInspectionDlg::FillInSpectrumPropertiesList(const CSpectrum *spec)
 
 	if(spec != nullptr){
 		// ---- Show the information to the user... ----
-		str.Format("%s", spec->spectrometer);
+		str.Format("%s", (LPCTSTR)spec->spectrometer);
 		m_propertyList.SetItemText(index++, 1,		str);
 
 		str.Format("%d", spec->length);

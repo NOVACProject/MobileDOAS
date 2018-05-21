@@ -15,6 +15,7 @@
 #undef min
 
 #include <algorithm>
+#include <vector>
 
 namespace MathFit
 {
@@ -1151,12 +1152,9 @@ namespace MathFit
 			if(iRows != mBeta.GetNoRows())
 				throw(EXCEPTION(CVectorSizeMismatchException));
 
-			int* iIndexCol = new int[iCols];
-			memset(iIndexCol, 0, sizeof(int) * iCols);
-			int* iIndexRow = new int[iRows];
-			memset(iIndexRow, 0, sizeof(int) * iRows);
-			int* iPivotDone = new int[iCols];
-			memset(iPivotDone, 0, sizeof(int) * iCols);
+			std::vector<int> iIndexCol(iCols, 0);
+			std::vector<int> iIndexRow(iRows, 0);
+			std::vector<int> iPivotDone(iCols, 0);
 			int iR, iC;
 
 			int i, j;
@@ -1184,9 +1182,6 @@ namespace MathFit
 							else if(iPivotDone[k] > 1)
 							{
 								// this pivot was selected more than once. Shit!!
-								delete(iPivotDone);
-								delete(iIndexRow);
-								delete(iIndexCol);
 
 								throw(EXCEPTION(CMatrixSolveFailedException));
 							}
@@ -1213,10 +1208,6 @@ namespace MathFit
 				if(fMag == 0)
 				{
 					// zero pivot => not a singular matrix
-					delete(iPivotDone);
-					delete(iIndexRow);
-					delete(iIndexCol);
-
 					throw(EXCEPTION(CMatrixSolveFailedException));
 				}
 
@@ -1244,10 +1235,6 @@ namespace MathFit
 			for(l = iRows - 1; l >= 0; l--)
 				if(iIndexRow[l] != iIndexCol[l])
 					ExchangeCols(iIndexRow[l], iIndexCol[l]);
-
-			delete(iPivotDone);
-			delete(iIndexRow);
-			delete(iIndexCol);
 
 			return mBeta;
 		}

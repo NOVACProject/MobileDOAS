@@ -381,13 +381,14 @@ int CWindField::Interpolate(const double *lat, const double *lon, const Time *ti
   // 3. Interpolate
   int nPointsInterpolated = 0;
   for(k = 0; k < nPoints; ++k){
-    Wind *w1 = nullptr, *w2 = nullptr;
+    Wind *w1 = nullptr;
+    Wind *w2 = nullptr;
     if(mode == INTERPOLATION_NEAREST){
-			// w1 is the wind field just before the measurement
+      // w1 is the wind field just before the measurement
       w1 = NearestNeighbour(m_wind[layer][times[k].hour - m_timeShift], lat[k], lon[k], true);
 
-			// w2 is the wind field just after the measurement
-			if(times[k].minute >= 30)
+	  // w2 is the wind field just after the measurement
+	  if(times[k].minute >= 30)
         w2 = NearestNeighbour(m_wind[layer][times[k].hour + 1 - m_timeShift], lat[k], lon[k], true);
       else
         w2 = NearestNeighbour(m_wind[layer][times[k].hour - 1 - m_timeShift], lat[k], lon[k], true);
