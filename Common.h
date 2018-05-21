@@ -90,7 +90,7 @@ struct gpsData {
 	gpsData();
 	gpsData(const gpsData& other);
 
-	gpsData& operator=(gpsData other);
+	//gpsData& operator=(gpsData other);
 
 	/* Latitude in (decimal) degrees. */
 	double latitude = 0.0;

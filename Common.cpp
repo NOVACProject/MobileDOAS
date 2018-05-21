@@ -61,11 +61,11 @@ gpsData::gpsData(const gpsData& other) {
 	this->date[4] = other.date[4];
 	this->date[5] = other.date[5];
 }
-gpsData& gpsData::operator=(gpsData other)
-{
-	std::swap(*this, other);
-	return *this;
-}
+//gpsData& gpsData::operator=(gpsData other)
+//{
+//	std::swap(*this, other);
+//	return *this;
+//}
 
 
 
