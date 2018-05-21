@@ -141,7 +141,7 @@ void CShowFitDlg::DrawFit1(){
   static double oldMinV = 1e16, oldMaxV = -1e16;
 
   // copy the high pass filtered spectrum to the local variable
-  memcpy(spectrum, m_spectrometer->m_spectrum[0], MAX_SPECTRUM_LENGTH*sizeof(double));
+  m_spectrometer->GetProcessedSpectrum(spectrum, MAX_SPECTRUM_LENGTH, 0);
 
   // copy the fitted result to the local variable
   memcpy(fitResult, &m_spectrometer->m_fitResult[0], MAX_SPECTRUM_LENGTH*sizeof(double));
@@ -198,7 +198,7 @@ void CShowFitDlg::DrawFit2(){
   static double oldMinV = 1e16, oldMaxV = -1e16;
 
   // copy the high pass filtered spectrum to the local variable
-  memcpy(spectrum, m_spectrometer->m_spectrum[1], MAX_SPECTRUM_LENGTH*sizeof(double));
+  m_spectrometer->GetProcessedSpectrum(spectrum, MAX_SPECTRUM_LENGTH, 1);
 
   // copy the fitted result to the local variable
   memcpy(fitResult, &m_spectrometer->m_fitResult[1], MAX_SPECTRUM_LENGTH*sizeof(double));

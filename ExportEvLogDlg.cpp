@@ -78,7 +78,6 @@ BOOL CExportEvLogDlg::OnInitDialog()
 	int	margin	= 20;
 	int	space		= 5;
 	int Nx			=	(int)max(5, ceil(sqrt(MAX_N_EXPORT_COLUMNS)));
-	int Ny			= (int)ceil(MAX_N_EXPORT_COLUMNS / (double)Nx);
 
 	// Get the size of the main rect
 	CRect totalRect, smallRect, labelRect, comboRect;

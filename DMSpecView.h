@@ -98,9 +98,6 @@ public:
 		performing a wavelength calibration. */
 	CWavelengthCalibration		*m_calibration;
 
-	/** The GPS object. Contains the GPS-information. */
-	CGPS*						m_GPS;
-
 	/** The option whether we shall show the column-error bars or not */
 	BOOL						m_showErrorBar;
 
@@ -252,10 +249,7 @@ protected:
 	Dialogs::CSpectrumCalibrationDlg m_specCalibrationDlg;
 
 	/** The spectrometer thread */
-	CWinThread* pSpecThread;
-
-	/** The GPS-reading thread */
-	CWinThread* pGPSThread;
+	CWinThread* pSpecThread = nullptr;
 
 	DECLARE_MESSAGE_MAP()
 

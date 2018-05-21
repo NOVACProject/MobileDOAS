@@ -27,7 +27,7 @@ int CReEvalScriptFileHandler::WriteToFile(const CString &fileName, const ReEvalu
 	fprintf(f, "<MobileDOAS_BatchReEvaluation>\n");
 	
 	// Write the general things...
-	fprintf(f, "\t<MaxThreads>%d</MaxThreads>\n", script.m_maxThreadNum);
+	fprintf(f, "\t<MaxThreads>%ld</MaxThreads>\n", script.m_maxThreadNum);
 	
 	// Write each of the jobs that is to be processed
 	POSITION pos = script.m_jobs.GetHeadPosition();

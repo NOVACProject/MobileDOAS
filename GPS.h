@@ -11,71 +11,56 @@
 
 #include "SerialConnection.h"
 #include "Common.h"
+#include <string>
 
 class CGPS {
-	//implementations
 public:
 	CGPS();
 	CGPS(char* pCOMPort, long pBaudrate);
 	virtual ~CGPS();
 
-	/* try to parse the text read from the GPS. 
-	    Returns 1 if all is ok, otherwise 0 */
-	int Parse(char *string);
+	/** Set to true when the gps-collecting thread is running. */
+	volatile bool fRun;
 
-	/* Communication with other parts of the program */
-	long    GetTime();
-	double  GetAltitude();
-	double  GetLatitude();
-	double  GetLongitude();
-	char*   GetDate();
-	void    GetDirection(int* flags);
+	/* Tries to parse the text read from the GPS.
+		The parsed information will be filled into the provided 'data.
+		@return true if the parsing suceeded, otherwise false. */
+	static bool Parse(char* string, gpsData& data);
 
-	/* convert the raw GPS data into the format DD.DDDDDDD
-			from being in the raw format DDMM.MMMMM */
-	double  DoubleToAngle(double degreesAndMinutes);
+	/* Convert an angle from the raw format of the GPS data DDMM.MMMMM
+		into the format DD.DDDDDDD */
+	static double ConvertToDecimalDegrees(double degreesAndMinutes);
+
+	/** Retrieving the read out data (this will not communicate with 
+		the device, only copy out the last read piece of data. */
+	void    Get(gpsData& dst) const;
 
 	/* WriteGPSLog and WriteLog are currently not used */
-	void    WriteGPSLog(char *pFile,double *pPos,double pTime);
-	void    WriteLog(char *pFile,char* txt);
+	// void    WriteGPSLog(char *pFile,double *pPos,double pTime);
+	// void    WriteLog(char *pFile,char* txt);
 
 	/* Running the GPS collection */
 	void    Run();
 	void    Stop();
-	void	CloseSerial();
-	int     ReadGPS();
-	bool    IsRunning(); // <-- returns true if the gps-collecting thread is running.
+	void    CloseSerial();
 
-//variables 
-public:
+	/** Reads data from the gps, this will use and block the serial port. 
+		@return SUCCESS if the reading succeeded */
+	bool ReadGPS();
+
+private:
 
 	/** true if the serial connection and the GPS seems to work */
-	bool gotContact;
-
-	/** Set to true when the gps-collecting thread is running. */
-	bool fRun;
+	bool m_gotContact = false;
 
 	/** The gps-logfile*/
 	CString m_logFile;
 
-	struct gpsInformation{
-		struct		gpsPosition gpsPos;
-		long		  gpsTime;
-		long      nSatellites;
-		char      gpsDate[6];
-	};
-
 	/* The actual information */
-	struct gpsInformation gpsInfo;
+	struct gpsData gpsInfo;
 
-protected:
 	/* Serial communication */
 	CSerialConnection serial;
-	long    m_Baudrate;
-	char    m_serialPort[6];
-	char    serbuf[10];
-	int     bufFlag;
-	HANDLE	hComm;
 
 	/** The gps-reading thread. */
 	CWinThread *m_gpsThread;

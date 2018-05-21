@@ -101,18 +101,19 @@ void CReferenceFileControl::ParseShiftOption(Evaluation::SHIFT_TYPE &option, dou
 	// 1. Shift Fixed 
 	if((pt = strstr(txt, "fix to")) || (pt = strstr(txt, "fixed to")) || (pt = strstr(txt, "set to"))){
 		option = SHIFT_FIX;
-		if(0 == sscanf(pt, "%s to %lf", &tmpStr, &value))
-		value = 0;
+		if(0 == sscanf(pt, "%511s to %lf", &tmpStr, &value)) {
+			value = 0;
+		}
 		return;
 	}
 
 	// 2. Shift Linked
 	if ((pt = strstr(txt, "link to")) || (pt = strstr(txt, "linked to"))) {
 		option = SHIFT_LINK;
-		int n = sscanf(pt, "%s to %lf", &tmpStr, &value);
+		int n = sscanf(pt, "%511s to %lf", &tmpStr, &value);
 		if (n == 0) {
 			char name[512];
-			n = sscanf(pt, "%s to %s", &tmpStr, &name);
+			n = sscanf(pt, "%511s to %511s", &tmpStr, &name);
 			if (n != 0) {
 				for (int k = 0; k < m_window->nRef; ++k) {
 					if (0 == _strnicmp(m_window->ref[k].m_specieName, name, std::min(strlen(name), strlen(m_window->ref[k].m_specieName)))) {

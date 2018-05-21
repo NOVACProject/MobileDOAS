@@ -313,7 +313,7 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam){
 	
 	// Get the last value and the total number of values
 	result = m_Spectrometer->GetLastColumn();
-	scanNo = m_Spectrometer->scanNum - 2;
+	scanNo = m_Spectrometer->GetNumberOfSpectraAcquired() - 2;
 
 	// Get the number of channels used and the number of fit-regions used
 	int nChannels		= m_Spectrometer->m_NChannels;
@@ -535,7 +535,7 @@ LRESULT CDMSpecView::OnShowStatus(WPARAM wParam, LPARAM lParam)
 
 LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 {
-	double data[5];
+	gpsData data;
 	static int latNSat = 10;
 	
 	// if the program is no longer running, then don't try to draw anything more...
@@ -543,23 +543,21 @@ LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 		return 0;
 	}
 	
-	m_Spectrometer->GetGPSPos(data);
+	m_Spectrometer->GetGpsPos(data);
 
 	CString lat,lon,tim,strHr,strMin,strSec, nSat;
-	int hr,min,sec;
-	hr = (long)data[2]/10000;
-	min = ((long)data[2] - hr*10000)/100;
-	sec = (long)data[2]%100;
+	int hr, min, sec;
+	ExtractTime(data, hr, min, sec);
 
-	if(data[0]>=0.0)
-		lat.Format("%f  degree N",data[0]);
+	if(data.latitude >= 0.0)
+		lat.Format("%f  degree N",data.latitude);
 	else 
-		lat.Format("%f  degree S",-1.0*data[0]);
+		lat.Format("%f  degree S",-1.0*data.latitude);
 
-	if(data[1] >= 0.0)
-		lon.Format("%f  degree E",data[1]);
+	if(data.longitude >= 0.0)
+		lon.Format("%f  degree E", data.longitude);
 	else
-		lon.Format("%f  degree W",-1.0*data[1]);
+		lon.Format("%f  degree W",-1.0 * data.longitude);
 
 	if(hr<10)
 		strHr.Format("0%d:",hr);
@@ -576,7 +574,7 @@ LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 	else
 		strSec.Format("%d",sec);
 
-	nSat.Format("%d", (long)data[4]);
+	nSat.Format("%d", (long)data.nSatellites);
 
 	tim = strHr + strMin + strSec;
 	this->SetDlgItemText(IDC_GPSTIME, tim);
@@ -584,7 +582,7 @@ LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 	this->SetDlgItemText(IDC_LON, lon);
 	this->SetDlgItemText(IDC_NGPSSAT, nSat);
 
-	if(latNSat == 0 && data[4] != 0){
+	if(latNSat == 0 && data.nSatellites != 0){
 		COLORREF normal = RGB(236, 233, 216);
 
 		// Set the background color to normal
@@ -593,7 +591,7 @@ LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 		m_gpsTimeLabel.SetBackgroundColor(normal);
 		m_gpsNSatLabel.SetBackgroundColor(normal);
 
-	}else if(latNSat != 0 && data[4] == 0){
+	}else if(latNSat != 0 && data.nSatellites == 0){
 		COLORREF warning = RGB(255, 75, 75);
 
 		// Set the background color to red
@@ -604,7 +602,7 @@ LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 	}
 
 	// Remember the number of satelites
-	latNSat = (int)data[4];
+	latNSat = (int)data.nSatellites;
 
 	return 0;
 }
@@ -624,17 +622,19 @@ void CDMSpecView::ShowStatusMsg(CString &str)
 
 
 void CDMSpecView::OnControlCountflux() {
-	double flux;
-	CString str;
 	if(fRunSpec){
-		flux = m_Spectrometer->GetFlux();
+		double flux = m_Spectrometer->GetFlux();
 		m_Spectrometer->WriteFluxLog();
+
+		CString str;
 		str.Format("By now the flux is %f",flux);
+
 		MessageBox(str,"Flux",MB_OK);
 	}
-	else
+	else {
 		MessageBox(TEXT("The spectrometer hasn't been started.\nStart it first,\nthen you can use this function")
 		,"Notice",MB_OK);
+	}
 }
 
 void CDMSpecView::OnConfigurationPlotChangebackground(){
@@ -671,7 +671,6 @@ void CDMSpecView::OnConfigurationPlotChangeplotcolor_Slave(){
 
 void CDMSpecView::OnControlStart() 
 {
-	char text[100];
 	CString tmpStr;
 
 	if(!fRunSpec){
@@ -688,6 +687,7 @@ void CDMSpecView::OnControlStart()
 		m_Spectrometer = new CMeasurement_Traverse();
 
 		// Copy the settings that the user typed in the dialog
+		char text[100];
 		memset(text,0,(size_t)100);
 		if(UpdateData(TRUE)){
 			m_BaseEdit.GetWindowText(text,255);
@@ -882,7 +882,6 @@ void CDMSpecView::OnControlStop()
 		if(hThread != nullptr && GetExitCodeThread(hThread, &dwExitCode) && dwExitCode ==STILL_ACTIVE)
 		{
 			AfxGetApp()->BeginWaitCursor();
-			m_Spectrometer->m_wrapper.stopAveraging(m_Spectrometer->m_spectrometerIndex);
 			m_Spectrometer->Stop();
 			Sleep(500);			
 			WaitForSingleObject(hThread,INFINITE);
@@ -1049,7 +1048,7 @@ void CDMSpecView::ReadMobileLog(){
 			if(pt = strstr(txt,"BASENAME=")){
 			/* Find the last basename used */
 				pt = strstr(txt,"=");
-				sscanf(&pt[1],"%s",&baseNameTxt);
+				sscanf(&pt[1],"%255s",&baseNameTxt);
 			fFoundBaseName = true;
 		}
 
@@ -1068,6 +1067,7 @@ void CDMSpecView::ReadMobileLog(){
 	}else{
 		return;
 	}
+    fclose(f);    
 
 	if(fFoundBaseName){
 		i = L = strlen(baseNameTxt);
@@ -1078,16 +1078,16 @@ void CDMSpecView::ReadMobileLog(){
 		if(i == L){
 			sprintf(m_Base, "%s%02d", baseNameTxt, 1);
 		}else{
-			sscanf(baseNameTxt + i, "%d", &d);
+			sscanf(baseNameTxt + i, "%zu", &d);
 			baseNameTxt[i] = 0;
 			switch(L - i){
-				case 1: sprintf(m_Base, "%s%01d", baseNameTxt, ++d); break;
-				case 2: sprintf(m_Base, "%s%02d", baseNameTxt, ++d); break;
-				case 3: sprintf(m_Base, "%s%03d", baseNameTxt, ++d); break;
-				case 4: sprintf(m_Base, "%s%04d", baseNameTxt, ++d); break;
-				case 5: sprintf(m_Base, "%s%05d", baseNameTxt, ++d); break;
-				case 6: sprintf(m_Base, "%s%06d", baseNameTxt, ++d); break;
-				case 7: sprintf(m_Base, "%s%07d", baseNameTxt, ++d); break;
+				case 1: sprintf(m_Base, "%s%01zu", baseNameTxt, ++d); break;
+				case 2: sprintf(m_Base, "%s%02zu", baseNameTxt, ++d); break;
+				case 3: sprintf(m_Base, "%s%03zu", baseNameTxt, ++d); break;
+				case 4: sprintf(m_Base, "%s%04zu", baseNameTxt, ++d); break;
+				case 5: sprintf(m_Base, "%s%05zu", baseNameTxt, ++d); break;
+				case 6: sprintf(m_Base, "%s%06zu", baseNameTxt, ++d); break;
+				case 7: sprintf(m_Base, "%s%07zu", baseNameTxt, ++d); break;
 			}
 		}
 		m_BaseEdit.SetWindowText(m_Base);
@@ -1246,20 +1246,18 @@ void CDMSpecView::OnMenuControlTestTheGPS()
 			// it was possible to open the serial-port, test if there is a gps on this port
 			serial.Close();
 
-			CGPS *gps = new CGPS(serial.serialPort, serial.baudrate);
+			CGPS gps{serial.serialPort, serial.baudrate};
 			for (int i = 0; i < 10; ++i) {
-				if (1 == gps->ReadGPS()) {
+				if (SUCCESS == gps.ReadGPS()) {
 					status.Format("Found GPS on serialPort: %s using baud rate %d", serial.serialPort, serial.baudrate);
 					ShowStatusMsg(status); 
 					MessageBox(status, "Found GPS reciever");
 
-					delete gps;
 					return;
 				}
 
 				Sleep(10);
 			}
-			delete gps;
 		}
 	}
 	status = "No GPS reciever could be found";
@@ -1332,7 +1330,7 @@ void CDMSpecView::OnViewColumnError(){
 }
 
 void CDMSpecView::OnUpdate_EnableOnRun(CCmdUI *pCmdUI){
-	if(m_Spectrometer != nullptr && m_Spectrometer->fRun){
+	if(m_Spectrometer != nullptr && m_Spectrometer->m_isRunning){
 		// enable
 		pCmdUI->Enable(TRUE);
 	}else{
@@ -1342,7 +1340,7 @@ void CDMSpecView::OnUpdate_EnableOnRun(CCmdUI *pCmdUI){
 }
 
 void CDMSpecView::OnUpdate_DisableOnRun(CCmdUI *pCmdUI){
-	if(m_Spectrometer != nullptr && m_Spectrometer->fRun){
+	if(m_Spectrometer != nullptr && m_Spectrometer->m_isRunning){
 		// disable
 		pCmdUI->Enable(FALSE);
 	}else{

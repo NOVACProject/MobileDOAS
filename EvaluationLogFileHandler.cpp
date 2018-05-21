@@ -15,7 +15,6 @@ CEvaluationLogFileHandler::~CEvaluationLogFileHandler(void)
 bool CEvaluationLogFileHandler::ReadEvaluationLogFile(const CString &logFileName){
 	double fileVersion = 0.0; // the version number of the program that generated this file. Fileversions < 4.0 does not have a header-line
 	char buf[4096];
-	int spectrumNum = 0; // how many spectra there are in this log-file
 
 	// 1. Try to open the file, if it's not possible to open it then return
 	FILE *f = fopen(logFileName, "r");

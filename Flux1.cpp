@@ -7,6 +7,7 @@
 #include "Flux1.h"
 #include "Common.h"
 #include <math.h>
+#include <vector>
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
@@ -129,7 +130,6 @@ long CFlux::ReadLogFile(CString filePath, CString fileName, int nChannels, doubl
 /* called when re-reading an old evaluation log */
 long CFlux::ReadLogFile(CString filePath, CString fileName, long fileIndex, int nChannels, double fileVersion){
 	char buf[4096];
-	int iFalseCount = 0;
 	int n = 0;
 
 	FILE *f = fopen(fileName, "r");
@@ -198,9 +198,9 @@ long CFlux::ReadLogFile(CString filePath, CString fileName, long fileIndex, int 
 		m_traverse[fileIndex + k]->m_gasFactor = m_traverse[fileIndex]->m_gasFactor;
 
 		if(strlen(m_specieName[k]) == 0){
-			m_traverse[fileIndex + k]->m_fileName.Format("%s", fileName);
+			m_traverse[fileIndex + k]->m_fileName.Format("%s", (LPCTSTR)fileName);
 		}else{
-			m_traverse[fileIndex + k]->m_fileName.Format("%s * %s", m_specieName[k], fileName);
+			m_traverse[fileIndex + k]->m_fileName.Format("%s * %s", (LPCTSTR)m_specieName[k], (LPCTSTR)fileName);
 			if(0 == _strnicmp(m_specieName[k], "SO2", 3*sizeof(char)))
 				m_traverse[fileIndex + k]->m_gasFactor = GASFACTOR_SO2;
 			if(0 == _strnicmp(m_specieName[k], "O3", 2*sizeof(char)))
@@ -208,7 +208,7 @@ long CFlux::ReadLogFile(CString filePath, CString fileName, long fileIndex, int 
 			if(0 == _strnicmp(m_specieName[k], "NO2", 3*sizeof(char)))
 				m_traverse[fileIndex + k]->m_gasFactor = GASFACTOR_NO2;
 		}
-		m_traverse[fileIndex + k]->m_filePath.Format("%s", filePath);
+		m_traverse[fileIndex + k]->m_filePath.Format("%s", (LPCTSTR)filePath);
 
 		m_traverse[fileIndex + k]->CalculateOffset();
 
@@ -372,7 +372,7 @@ int CFlux::ReadSettingFile(CString filename, long fileIndex, int &nChannels, dou
 			{
 				char buffer[4096];
 				pt = strstr(txt,"=");
-				if(0 < sscanf(&pt[1],"%s",&buffer)){
+				if(0 < sscanf(&pt[1],"%4095s",&buffer)){
 					char *lastBackslash = strrchr(buffer, '\\');
 					if(lastBackslash == nullptr)
 						m_lastRefFile[m_lastRefFileNum++].Format("%s", buffer);
@@ -389,7 +389,7 @@ int CFlux::ReadSettingFile(CString filename, long fileIndex, int &nChannels, dou
 
 			if(pt=strstr(txt,"FILETYPE=")){
 				pt=strstr(txt,"=");
-				sscanf(pt+1,"%s",m_FileType);
+				sscanf(pt+1,"%99s",m_FileType);
 				result = 1; /* the file is a correct evaluation log */
 			}
 
@@ -443,7 +443,7 @@ int CFlux::ReadSettingFile(CString filename, long fileIndex, int &nChannels, dou
 			}
 			// Search for known species
 			for(int k = 0; k < nKnownSpecies; ++k){
-				columnLabel.Format("%s(column)", knownSpecie[k]);
+				columnLabel.Format("%s(column)", (LPCTSTR)knownSpecie[k]);
 				pt = txt;
 				while(pt = strstr(pt, columnLabel)){
 					m_specieName[species].Format(knownSpecie[k]);
@@ -624,7 +624,7 @@ long CFlux::GetCurrentFileName(CString &str){
 	else
 		pt = buffer;
 
-	str.Format("%s\\%s", m_traverse[m_curTraverse]->m_filePath, pt);
+	str.Format("%s\\%s", (LPCTSTR)m_traverse[m_curTraverse]->m_filePath, pt);
 
 	return 0;
 }
@@ -636,19 +636,15 @@ void CFlux::InterpolateWindField(int layer){
 		return;
 
 	CTraverse *tr = m_traverse[m_curTraverse];
-	double *ws = (double *)calloc(tr->m_recordNum, sizeof(double));
-	double *wd = (double *)calloc(tr->m_recordNum, sizeof(double));
-	if(ws == nullptr || wd == nullptr)
-		return;
+	std::vector<double> ws(tr->m_recordNum, 0);
+	std::vector<double> wd(tr->m_recordNum, 0);
 
 	// do the actual interpolation
 	int nPoints = m_windField->Interpolate(tr->latitude, tr->longitude, tr->time, layer, tr->m_recordNum,
-										ws, wd, CWindField::INTERPOLATION_NEAREST);
+										ws.data(), wd.data(), CWindField::INTERPOLATION_NEAREST);
 
 	if(nPoints < tr->m_recordNum){
 		MessageBox(NULL, "Failed to interpolate all points in the traverse", "Error", MB_OK);
-		free(ws);
-		free(wd);
 		return;
 	}
 
@@ -658,7 +654,4 @@ void CFlux::InterpolateWindField(int layer){
 		tr->m_windSpeed[i]      = ws[i];
 	}
 	tr->m_useWindField = true;
-
-	free(ws);
-	free(wd);
 }

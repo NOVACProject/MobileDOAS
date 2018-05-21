@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "SpectrumIO.h"
+#include <vector>
 
 CSpectrumIO::CSpectrumIO(void)
 {
@@ -20,7 +21,7 @@ int CSpectrumIO::readSTDFile(CString filename, CSpectrum *curSpec){
 		return 1;
 	}
 
-	fscanf(f, "%s\n", tmpStr);
+	fscanf(f, "%1022s\n", tmpStr);
 	if(0 != strncmp(tmpStr, "GDBGMNUP", 8)){
 		fclose(f);
 		return 1;
@@ -185,7 +186,7 @@ int CSpectrumIO::readTextFile(CString filename, CSpectrum *curSpec){
 
 }
 
-bool CSpectrumIO::WriteStdFile(const CString &fileName, const double *spectrum, long specLength, char* startdate, long starttime, long stoptime, double lat, double lon, double alt, long integrationTime, const CString &spectrometer, const CString &measName, long exposureNum){
+bool CSpectrumIO::WriteStdFile(const CString &fileName, const double *spectrum, long specLength, const std::string& startdate, long starttime, long stoptime, double lat, double lon, double alt, long integrationTime, const CString &spectrometer, const CString &measName, long exposureNum){
 	int extendedFormat = 1;
 	long i;
 	FILE *f;
@@ -203,7 +204,7 @@ bool CSpectrumIO::WriteStdFile(const CString &fileName, const double *spectrum, 
 
 	fprintf(f,"GDBGMNUP\n");
 	fprintf(f,"1\n");
-	fprintf(f,"%d\n",specLength);
+	fprintf(f,"%ld\n",specLength);
 
 	for(i=0;i<specLength;i++)
 	{
@@ -216,8 +217,8 @@ bool CSpectrumIO::WriteStdFile(const CString &fileName, const double *spectrum, 
 	std::string m = dmy.substr(2, 2);
 	std::string y = dmy.substr(4, 2);
 	dmy = d + '.' + m + '.' + y;
-	char *datetxt = new char[dmy.length()+1];
-	std::strcpy(datetxt, dmy.c_str());
+	std::vector<char> datetxt(dmy.length()+1);
+	std::strcpy(datetxt.data(), dmy.c_str());
 
 	// Find the name of the file itself (removing the path)
 	CString name;
@@ -228,13 +229,13 @@ bool CSpectrumIO::WriteStdFile(const CString &fileName, const double *spectrum, 
 	fprintf(f,"%s\n", (LPCTSTR)spectrometer);  /* The name of the spectrometer */
 	fprintf(f,"%s\n", (LPCTSTR)spectrometer); // why is there a second output of spectrometer name?
 	
-	fprintf(f,"%s\n",datetxt);
+	fprintf(f,"%s\n", datetxt.data());
 	fprintf(f,"%02d:%02d:%02d\n",hr,min,sec);
 	fprintf(f,"%02d:%02d:%02d\n",hr2,min2,sec2);
 	fprintf(f,"0.0\n");
 	fprintf(f,"0.0\n");
 	fprintf(f,"SCANS %ld\n",		exposureNum);
-	fprintf(f,"INT_TIME %d\n",	integrationTime);
+	fprintf(f,"INT_TIME %ld\n",	integrationTime);
 	fprintf(f,"SITE %s\n",	(LPCTSTR)measName);
 	fprintf(f,"LONGITUDE %f\n",	lon);
 	fprintf(f,"LATITUDE %f\n",	lat);
@@ -249,7 +250,7 @@ bool CSpectrumIO::WriteStdFile(const CString &fileName, const double *spectrum, 
 		fprintf(f, "Deviation = 0\n");
 		fprintf(f, "Device = \"\"\n");
 		fprintf(f, "ElevationAngle = 90\n");
-		fprintf(f, "ExposureTime = %d\n",				integrationTime);
+		fprintf(f, "ExposureTime = %ld\n",				integrationTime);
 		fprintf(f, "FileName = %s\n", (LPCTSTR)fileName);
 		fprintf(f, "FitHigh = 0\n");
 		fprintf(f, "FitLow = 0\n");
@@ -258,20 +259,20 @@ bool CSpectrumIO::WriteStdFile(const CString &fileName, const double *spectrum, 
 		fprintf(f, "LightPath = 0\n");
 		fprintf(f, "LightSource = \"\"\n");
 		fprintf(f, "Longitude = %.6lf\n",				lon);
-		fprintf(f, "Marker = %d\n",							specLength / 2);
-		fprintf(f, "MathHigh = %d\n",						specLength - 1);
+		fprintf(f, "Marker = %ld\n",							specLength / 2);
+		fprintf(f, "MathHigh = %ld\n",						specLength - 1);
 		fprintf(f, "MathLow = 0\n");
 		fprintf(f, "Max = 0\n");
-		fprintf(f, "MaxChannel = %d\n",					specLength);
+		fprintf(f, "MaxChannel = %ld\n",					specLength);
 		fprintf(f, "Min = 0\n");
 		fprintf(f, "MinChannel = 0\n");
 		fprintf(f, "MultiChannelCounter = 0\n");
 		fprintf(f, "Name = \"%s\"\n", (LPCTSTR)measName);
-		fprintf(f, "NumScans = %d\n",						exposureNum);
+		fprintf(f, "NumScans = %ld\n",						exposureNum);
 		fprintf(f, "OpticalDensity = 0\n");
-		fprintf(f, "OpticalDensityCenter = %d\n",	specLength / 2);
+		fprintf(f, "OpticalDensityCenter = %ld\n",	specLength / 2);
 		fprintf(f, "OpticalDensityLeft = 0\n");
-		fprintf(f, "OpticalDensityRight = %d\n",	specLength - 1);
+		fprintf(f, "OpticalDensityRight = %ld\n",	specLength - 1);
 		fprintf(f, "Pressure = 0\n");
 		fprintf(f, "Remark = \"\"\n");
 		fprintf(f, "ScanGeometry = 0\n"); //(DoasCore.Math.ScanGeometry)SAZ: 137.41237083135 SZA: 31.5085943481828 LAZ: 298.523110145623 LAZ: 129.285101310559 Date: 1/5/2007 10:35:07 Lat.: 0 Lon.: 0\n");

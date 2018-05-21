@@ -100,7 +100,7 @@ void CFitWindowListBox::OnInsertFitWindow(){
 		return;
 
 	// insert an empty fit window.
-	m_conf->m_fitWindow[m_conf->m_nFitWindows].name.Format("%s", name);
+	m_conf->m_fitWindow[m_conf->m_nFitWindows].name.Format("%s", (LPCTSTR)name);
 	m_conf->m_nFitWindows += 1;
 
 	// Update the list
@@ -211,7 +211,7 @@ void CFitWindowListBox::OnRenameWindow(){
 		return;
 
 	// Change the name 
-	m_conf->m_fitWindow[curSel].name.Format("%s", name);
+	m_conf->m_fitWindow[curSel].name.Format("%s", (LPCTSTR)name);
 
 	// Update hte list
 	PopulateList();

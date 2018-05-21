@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "DMSpec.h"
 #include "Common.h"
+#include <utility>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -36,6 +37,46 @@ int IsExistingFile(const CString &fileName){
 }
 
 //////////////////////////////////////////////////////////////////////
+// gpsData
+//////////////////////////////////////////////////////////////////////
+
+gpsData::gpsData() {
+	date[0] = 0;
+	date[1] = 0;
+	date[2] = 0;
+	date[3] = 0;
+	date[4] = 0;
+	date[5] = 0;
+}
+gpsData::gpsData(const gpsData& other) {
+	this->latitude = other.latitude;
+	this->longitude = other.longitude;
+	this->altitude = other.altitude;
+	this->time = other.time;
+	this->nSatellites = other.nSatellites;
+	this->date[0] = other.date[0];
+	this->date[1] = other.date[1];
+	this->date[2] = other.date[2];
+	this->date[3] = other.date[3];
+	this->date[4] = other.date[4];
+	this->date[5] = other.date[5];
+}
+gpsData& gpsData::operator=(gpsData other)
+{
+	std::swap(*this, other);
+	return *this;
+}
+
+
+
+void ExtractTime(const gpsData& gpsData, int& hours, int& minutes, int& seconds)
+{
+	hours   = gpsData.time / 10000;
+	minutes = (gpsData.time - hours * 10000) / 100;
+	seconds = gpsData.time % 100;
+}
+
+//////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
@@ -55,7 +96,7 @@ void Common::WriteLogFile(CString filename, CString txt)
 
 	if(f < (FILE*)1){
 		CString tmpStr;
-		tmpStr.Format("Could not write to log file: %s. Not enough free space?", filename);
+		tmpStr.Format("Could not write to log file: %s. Not enough free space?", (LPCTSTR)filename);
 		MessageBox(NULL, tmpStr, "Big Error", MB_OK);
 		return;
 	}
@@ -190,12 +231,12 @@ void Common::GuessSpecieName(const CString &fileName, CString &specie){
 		return;
 
 	CString fil;
-	fil.Format("%s", fileName.Right((int)strlen(fileName) - index - 1));
+	fil.Format("%s", (LPCTSTR)fileName.Right((int)strlen(fileName) - index - 1));
 	fil.MakeUpper();
 
 	for(int i = 0; i < nSpecies; ++i){
 		if(strstr(fil, spc[i])){
-			specie.Format("%s", spc[i]);
+			specie.Format("%s", (LPCTSTR)spc[i]);
 			return;
 		}
 	}

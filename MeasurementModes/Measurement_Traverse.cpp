@@ -16,7 +16,7 @@ void CMeasurement_Traverse::Run(){
 	double scanResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
 	double tmpSpec[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
 
-	char* startDate;
+	std::string startDate;
 	long startTime,elapsedSecond;
 	clock_t cStart, cFinish;
 
@@ -51,10 +51,10 @@ void CMeasurement_Traverse::Run(){
 	UpdateMobileLog();
 
 	/* Set the delays and initialize the USB-Connection */
-	if(fUseUSB){
+	if(m_connectViaUsb){
 		serialDelay = 10;
 		if(!TestUSBConnection()){
-			fRun = false;
+			m_isRunning = false;
 			return;
 		}
 	}else{
@@ -98,7 +98,7 @@ void CMeasurement_Traverse::Run(){
 	/* -- Init Serial Communication -- */
 	m_statusMsg.Format("Initializing communication with spectrometer");
 	pView->PostMessage(WM_STATUSMSG);
-	if(!fUseUSB && serial.InitCommunication()){
+	if(!m_connectViaUsb && serial.InitCommunication()){
 		MessageBox(pView->m_hWnd,TEXT("Can not initialize the communication"),TEXT("Error"),MB_OK);	
 
 		// we have to call this before exiting the application otherwise we'll have trouble next time we start...
@@ -114,8 +114,8 @@ void CMeasurement_Traverse::Run(){
 	}
 
 	/* Start the GPS collection thread */
-	if(m_skipgps == 0){
-		m_gps	= new CGPS(GPSPort, GPSBaud);
+	if(m_useGps){
+		m_gps	= new CGPS(m_GPSPort, m_GPSBaudRate);
 		m_gps->Run(); /* start the gps-reading thread */
 	}
 
@@ -133,14 +133,14 @@ void CMeasurement_Traverse::Run(){
 		MessageBox(pView->m_hWnd, "Please point the spectrometer to sky","Notice",MB_OK);  // tell the user to point the telescope to zenith
 		AdjustIntegrationTime();
 	}else{
-		integrationTime = (short)m_fixexptime;
+		m_integrationTime = (short)m_fixexptime;
 	}
 
 	/* Calculate the number of spectra to integrate in spectrometer and in computer */
-	scanNum++;
+	m_scanNum++;
 	m_sumInComputer     = CountRound(m_timeResolution, serialDelay, gpsDelay, roundResult);
 	m_sumInSpectrometer = roundResult[0];
-	totalSpecNum        = m_sumInComputer*m_sumInSpectrometer;
+	m_totalSpecNum      = m_sumInComputer*m_sumInSpectrometer;
 	pView->PostMessage(WM_SHOWINTTIME);
 
 	/*  -- Collect the dark spectrum -- */
@@ -150,7 +150,7 @@ void CMeasurement_Traverse::Run(){
 
 
 	/** --------------------- THE MEASUREMENT LOOP -------------------------- */
-	while(fRun){
+	while(m_isRunning){
 
 		#ifdef _DEBUG
 		cStart = clock();
@@ -159,18 +159,18 @@ void CMeasurement_Traverse::Run(){
 		SetFileName();
 
 		/* ------------ Get the date, time and position --------------- */
-		startDate = ReadGpsDate();
-		startTime = ReadGpsStartTime();
+		startDate = GetCurrentDate();
+		startTime = GetCurrentTime();
 
 		/** ---------------- if the user wants to change the exposure time, 
 									calculate a new exposure time. --------------------- */
 		if(m_adjustIntegrationTime && m_fixexptime >= 0){
-			integrationTime         = AdjustIntegrationTime();
+			m_integrationTime       = AdjustIntegrationTime();
 			pView->PostMessage(WM_SHOWDIALOG, CHANGED_EXPOSURETIME);
 			m_adjustIntegrationTime = FALSE;
 			m_sumInComputer         = CountRound(m_timeResolution, serialDelay, gpsDelay, roundResult);
 			m_sumInSpectrometer     = roundResult[0];
-			totalSpecNum            = m_sumInComputer*m_sumInSpectrometer;
+			m_totalSpecNum          = m_sumInComputer*m_sumInSpectrometer;
 			pView->PostMessage(WM_SHOWINTTIME);
 		}
 
@@ -183,17 +183,18 @@ void CMeasurement_Traverse::Run(){
 		cStart = clock();
 
 		// Initialize the spectrometer, if using the serial-port
-		if(!fUseUSB){
-			if(InitSpectrometer(0, integrationTime, m_sumInSpectrometer)){
+		if(!m_connectViaUsb){
+			if(InitSpectrometer(0, m_integrationTime, m_sumInSpectrometer)){
 				serial.CloseAll();
 			}
 		}
 
 		// Get the next spectrum
 		if(Scan(m_sumInComputer,m_sumInSpectrometer,scanResult)){
-			if(!fUseUSB)
+			if(!m_connectViaUsb) {
 				serial.CloseAll();
-				
+			}
+
 			// we have to call this before exiting the application otherwise we'll have trouble next time we start...
 			CloseUSBConnection();
 			
@@ -211,16 +212,16 @@ void CMeasurement_Traverse::Run(){
 		// Copy the spectrum to the local variables
 		for(int i = 0; i < m_NChannels; ++i){
 			memcpy((void*)tmpSpec[i], (void*)scanResult[i], sizeof(double)*MAX_SPECTRUM_LENGTH);
-			memcpy((void*)curSpectrum[i], (void*)scanResult[i], sizeof(double)*MAX_SPECTRUM_LENGTH);// for plot
+			memcpy((void*)m_curSpectrum[i], (void*)scanResult[i], sizeof(double)*MAX_SPECTRUM_LENGTH);// for plot
 		}
 
 		/* ----------------- Save the spectrum(-a) -------------------- */
-		if(m_skipgps == 0){
+		if(m_useGps){
 			for(int i = 0; i  < m_NChannels; ++i)
-				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, specTime[counter], specTime[counter]+elapsedSecond, pos[counter].latitude, pos[counter].longitude, pos[counter].altitude, integrationTime, spectrometerName, strBaseName, totalSpecNum);
+				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, m_spectrumGpsData[m_spectrumCounter].time, m_spectrumGpsData[m_spectrumCounter].time + elapsedSecond, m_spectrumGpsData[m_spectrumCounter].latitude, m_spectrumGpsData[m_spectrumCounter].longitude, m_spectrumGpsData[m_spectrumCounter].altitude, m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);
 		}else{
 			for(int i = 0; i < m_NChannels; ++i)
-				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, startTime, startTime+elapsedSecond, 0, 0, 0, integrationTime, spectrometerName, strBaseName, totalSpecNum);
+				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, startTime, startTime+elapsedSecond, 0, 0, 0, m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);
 		}
 
 		#ifdef _DEBUG
@@ -229,14 +230,15 @@ void CMeasurement_Traverse::Run(){
 			cStart = clock();
 		#endif
 
-		if(scanNum == DARK_SPECTRUM){
+		if(m_scanNum == DARK_SPECTRUM){
 			/* -------------- IF THE MEASURED SPECTRUM WAS THE DARK SPECTRUM ------------- */
-			memcpy((void*)dark, (void*)scanResult, sizeof(double)*MAX_N_CHANNELS*MAX_SPECTRUM_LENGTH);
+			memcpy((void*)m_dark, (void*)scanResult, sizeof(double)*MAX_N_CHANNELS*MAX_SPECTRUM_LENGTH);
 
 			pView->PostMessage(WM_DRAWSPECTRUM);//draw dark spectrum
-			for(int i = 0; i < m_NChannels; ++i)
-				averageValue[i] = AverageIntens(scanResult[i],1);
-			m_statusMsg.Format("Average value around center channel(dark) %d: %d", m_conf->m_specCenter, averageValue[0]);
+			for(int i = 0; i < m_NChannels; ++i) {
+				m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i],1);
+			}
+			m_statusMsg.Format("Average value around center channel(dark) %d: %d", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
 			pView->PostMessage(WM_STATUSMSG);
 
 			/* Get the information about the spectrum */
@@ -251,19 +253,19 @@ void CMeasurement_Traverse::Run(){
 			m_statusMsg.Format("Measuring the sky spectrum");
 			pView->PostMessage(WM_STATUSMSG);
 
-		}else if(scanNum == SKY_SPECTRUM){
+		}else if(m_scanNum == SKY_SPECTRUM){
 			/* -------------- IF THE MEASURED SPECTRUM WAS THE SKY SPECTRUM ------------- */
 
-			memcpy((void*)sky, (void*)scanResult, sizeof(double)*MAX_N_CHANNELS*MAX_SPECTRUM_LENGTH);
+			memcpy((void*)m_sky, (void*)scanResult, sizeof(double)*MAX_N_CHANNELS*MAX_SPECTRUM_LENGTH);
 
 			pView->PostMessage(WM_DRAWSPECTRUM);//draw sky spectrum
 
 			for(int i = 0; i < m_NChannels; ++i){
-				averageValue[i] = AverageIntens(scanResult[i],1);
+				m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i],1);
 
 				// remove the dark spectrum
 				for(int iterator = 0; iterator < MAX_SPECTRUM_LENGTH; ++iterator)
-					sky[i][iterator] -= dark[i][iterator];
+					m_sky[i][iterator] -= m_dark[i][iterator];
 
 				// Tell the evaluator(s) that the dark-spectrum does not need to be subtracted from the sky-spectrum
 				for(int fitRgn = 0; fitRgn < m_fitRegionNum; ++fitRgn){
@@ -271,7 +273,7 @@ void CMeasurement_Traverse::Run(){
 				}
 			}
 
-			m_statusMsg.Format("Average value around center channel(sky) %d: %d",m_conf->m_specCenter, averageValue[0]);
+			m_statusMsg.Format("Average value around center channel(sky) %d: %d",m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
 			pView->PostMessage(WM_STATUSMSG);
 
 			/* Get the information about the spectrum */
@@ -281,46 +283,47 @@ void CMeasurement_Traverse::Run(){
 				MessageBox(pView->m_hWnd,  "It seems like the sky spectrum is dark, consider restarting the program", "Error", MB_OK);
 			#endif
 
-		}else if(scanNum > SKY_SPECTRUM){
+		}else if(m_scanNum > SKY_SPECTRUM){
 			/* -------------- IF THE MEASURED SPECTRUM WAS A NORMAL SPECTRUM ------------- */
 
-			for(int i = 0; i < m_NChannels; ++i)
-				averageValue[i] = AverageIntens(tmpSpec[i],1);
+			for(int i = 0; i < m_NChannels; ++i) {
+				m_averageSpectrumIntensity[i] = AverageIntens(tmpSpec[i],1);
+			}
 
 			/* Get the information about the spectrum */
 			GetSpectrumInfo(scanResult);
 
-			if(specInfo->isDark)
-				m_statusMsg.Format("Average value around center channel %d: %d (Dark)",m_conf->m_specCenter, averageValue[0]);
+			if(m_specInfo->isDark)
+				m_statusMsg.Format("Average value around center channel %d: %d (Dark)",m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
 			else
-				m_statusMsg.Format("Average value around center channel %d: %d",m_conf->m_specCenter, averageValue[0]);
+				m_statusMsg.Format("Average value around center channel %d: %d",m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
 
 			pView->PostMessage(WM_STATUSMSG);
-			vIntensity.Append(averageValue[0]);
+			vIntensity.Append(m_averageSpectrumIntensity[0]);
 
 			/* Evaluate */
 			GetDark();
 			GetSky();
-			DoEvaluation(tmpSky, tmpDark, scanResult);
+			DoEvaluation(m_tmpSky, m_tmpDark, scanResult);
 		}
 		
-		if(counter > 1)
-			CountFlux(windSpeed,windAngle);
+		if(m_spectrumCounter > 1)
+			CountFlux(m_windSpeed, m_windAngle);
 
 		#ifdef _DEBUG
-		cFinish = clock();
-		evSecond = ((double)(cFinish - cStart) / (double)CLOCKS_PER_SEC);
+			cFinish = clock();
+			evSecond = ((double)(cFinish - cStart) / (double)CLOCKS_PER_SEC);
 
-		/* aggressive timing */
-		tmpString.Format("GPS-Reading took: %lf [s] \t Scanning took %lf [s] \t Evaluation took %lf [s] \t Writing to file took: %lf [s]\n", gpsSecond, scanSecond, evSecond, writeSecond);
-		timerFile = fopen("times.txt", "a");
-		fprintf(timerFile, tmpString);
-		fclose(timerFile);
-		timerFile = 0;
+			/* aggressive timing */
+			tmpString.Format("GPS-Reading took: %lf [s] \t Scanning took %lf [s] \t Evaluation took %lf [s] \t Writing to file took: %lf [s]\n", gpsSecond, scanSecond, evSecond, writeSecond);
+			timerFile = fopen("times.txt", "a");
+			fprintf(timerFile, tmpString);
+			fclose(timerFile);
+			timerFile = 0;
 		#endif
 
 		memset((void*)scanResult,0,sizeof(double)*4096);
-		scanNum++;
+		m_scanNum++;
 	}
 	
 	// we have to call this before exiting the application otherwise we'll have trouble next time we start...
@@ -337,12 +340,12 @@ void CMeasurement_Traverse::Run_Adaptive(){
 	int roundResult[MAX_N_CHANNELS];
 	long serialDelay,gpsDelay;
 
-	char* startDate;
+	std::string startDate;
 	long startTime,elapsedSecond;
 	clock_t cStart, cFinish;
 
 	/* Set the delays and initialize the USB-Connection */
-	if(fUseUSB){
+	if(m_connectViaUsb){
 		serialDelay = 10;
 	}else{
 		serialDelay = 2300;
@@ -354,13 +357,13 @@ void CMeasurement_Traverse::Run_Adaptive(){
 	int DARKCURRENT_SPECTRUM  = 2;
 	int SKY_SPECTRUM          = 3;
 
-	scanNum   = OFFSET_SPECTRUM;
+	m_scanNum = OFFSET_SPECTRUM;
 
 	// 1. Start collecting the offset spectrum.
-	integrationTime       = 3;
+	m_integrationTime     = 3;
 	m_sumInComputer       = 400;
 	m_sumInSpectrometer   = 15;
-	totalSpecNum          = m_sumInSpectrometer * m_sumInComputer;
+	m_totalSpecNum        = m_sumInSpectrometer * m_sumInComputer;
 	pView->PostMessage(WM_SHOWINTTIME);
 
 	/*  -- Collect the dark spectrum -- */
@@ -369,27 +372,28 @@ void CMeasurement_Traverse::Run_Adaptive(){
 	pView->PostMessage(WM_STATUSMSG);
 
 	/** --------------------- THE MEASUREMENT LOOP -------------------------- */
-	while(fRun){
+	while(m_isRunning){
 
 		cStart = clock();
 
 		SetFileName();
 
 		/* ------------ Get the date, time and position --------------- */
-		startDate = ReadGpsDate();
-		startTime = ReadGpsStartTime();
+		startDate = GetCurrentDate();
+		startTime = GetCurrentTime();
 	
 		// Initialize the spectrometer, if using the serial-port
-		if(!fUseUSB){
-			if(InitSpectrometer(0, integrationTime, m_sumInSpectrometer)){
+		if(!m_connectViaUsb){
+			if(InitSpectrometer(0, m_integrationTime, m_sumInSpectrometer)){
 				serial.CloseAll();
 			}
 		}
 
 		// Get the next spectrum
 		if(Scan(m_sumInComputer,m_sumInSpectrometer,scanResult)){
-			if(!fUseUSB)
+			if(!m_connectViaUsb) {
 				serial.CloseAll();
+			}
 
 			// we have to call this before exiting the application otherwise we'll have trouble next time we start...
 			CloseUSBConnection();
@@ -403,26 +407,31 @@ void CMeasurement_Traverse::Run_Adaptive(){
 		// Copy the spectrum to the local variables
 		for(int i = 0; i < m_NChannels; ++i){
 			memcpy((void*)tmpSpec[i], (void*)scanResult[i], sizeof(double)*MAX_SPECTRUM_LENGTH);
-			memcpy((void*)curSpectrum[i], (void*)scanResult[i], sizeof(double)*MAX_SPECTRUM_LENGTH);// for plot
+			memcpy((void*)m_curSpectrum[i], (void*)scanResult[i], sizeof(double)*MAX_SPECTRUM_LENGTH);// for plot
 		}
 
 		/* ----------------- Save the spectrum(-a) -------------------- */
-		if(m_skipgps == 0){
-			for(int i = 0; i  < m_NChannels; ++i)
-				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, specTime[counter], specTime[counter]+elapsedSecond, pos[counter].latitude, pos[counter].longitude, pos[counter].altitude, integrationTime, spectrometerName, strBaseName, totalSpecNum);
+		if(m_useGps){
+			const gpsData& spectrumGpsData = m_spectrumGpsData[m_spectrumCounter];
+			for(int i = 0; i  < m_NChannels; ++i) {
+				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, spectrumGpsData.time, spectrumGpsData.time + elapsedSecond, 
+					spectrumGpsData.latitude, spectrumGpsData.longitude, spectrumGpsData.altitude, m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);
+			}
 		}else{
-			for(int i = 0; i < m_NChannels; ++i)
-				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, startTime, startTime+elapsedSecond, 0, 0, 0, integrationTime, spectrometerName, strBaseName, totalSpecNum);
+			for(int i = 0; i < m_NChannels; ++i) {
+				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, startTime, startTime+elapsedSecond, 0, 0, 0, m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);
+			}
 		}
 
-		if(scanNum == OFFSET_SPECTRUM){
+		if(m_scanNum == OFFSET_SPECTRUM){
 			/* -------------- IF THE MEASURED SPECTRUM WAS THE OFFSET SPECTRUM ------------- */
-			memcpy((void*)offset, (void*)scanResult, sizeof(double)*4096);
+			memcpy((void*)m_offset, (void*)scanResult, sizeof(double)*4096);
 
 			pView->PostMessage(WM_DRAWSPECTRUM);//draw offset spectrum
-			for(int i = 0; i < m_NChannels; ++i)
-				averageValue[i] = AverageIntens(scanResult[i],1);
-			m_statusMsg.Format("Average value around center channel(offset) %d: %d", m_conf->m_specCenter, averageValue[0]);
+			for(int i = 0; i < m_NChannels; ++i) {
+				m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i],1);
+			}
+			m_statusMsg.Format("Average value around center channel(offset) %d: %d", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
 			pView->PostMessage(WM_STATUSMSG);
 
 			/* Get the information about the spectrum */
@@ -436,26 +445,27 @@ void CMeasurement_Traverse::Run_Adaptive(){
 			pView->PostMessage(WM_STATUSMSG);
 
 			// Set the exposure-time and the number of spectra to co-add...
-			integrationTime						= DARK_CURRENT_EXPTIME;
-			m_sumInComputer						= 1;
-			m_sumInSpectrometer				= 1;
-			totalSpecNum							= m_sumInSpectrometer * m_sumInComputer;
+			m_integrationTime      = DARK_CURRENT_EXPTIME;
+			m_sumInComputer        = 1;
+			m_sumInSpectrometer    = 1;
+			m_totalSpecNum         = m_sumInSpectrometer * m_sumInComputer;
 			pView->PostMessage(WM_SHOWINTTIME);
-		}else if(scanNum == DARKCURRENT_SPECTRUM){
+		}else if(m_scanNum == DARKCURRENT_SPECTRUM){
 
 			/* -------------- IF THE MEASURED SPECTRUM WAS THE DARK-CURRENT SPECTRUM ------------- */
 			for(int j = 0; j < m_NChannels; ++j){
 				for(int i = 0; i < MAX_SPECTRUM_LENGTH; ++i){
-					scanResult[j][i] = scanResult[j][i] - offset[j][i];
+					scanResult[j][i] = scanResult[j][i] - m_offset[j][i];
 				}
 			}
-			memcpy((void*)darkCur, (void*)scanResult, sizeof(double)*4096);
+			memcpy((void*)m_darkCur, (void*)scanResult, sizeof(double)*4096);
 
 			pView->PostMessage(WM_DRAWSPECTRUM);//draw dark spectrum
-			for(int i = 0; i < m_NChannels; ++i)  
-				averageValue[i] = AverageIntens(scanResult[i],1);
-				m_statusMsg.Format("Average value around center channel(dark current) %d: %d", m_conf->m_specCenter, averageValue[0]);
-				pView->PostMessage(WM_STATUSMSG);
+			for(int i = 0; i < m_NChannels; ++i) {
+				m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i],1);
+			}
+			m_statusMsg.Format("Average value around center channel(dark current) %d: %d", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
+			pView->PostMessage(WM_STATUSMSG);
 
 			/* Get the information about the spectrum */
 			GetSpectrumInfo(scanResult);
@@ -466,25 +476,25 @@ void CMeasurement_Traverse::Run_Adaptive(){
 			pView->PostMessage(WM_STATUSMSG);
 
 			// Set the exposure-time
-			integrationTime					= AdjustIntegrationTime();
-			m_sumInComputer					= CountRound(m_timeResolution, serialDelay, gpsDelay, roundResult);
-			m_sumInSpectrometer				= roundResult[0];
-			totalSpecNum					= m_sumInComputer*m_sumInSpectrometer;
+			m_integrationTime     = AdjustIntegrationTime();
+			m_sumInComputer       = CountRound(m_timeResolution, serialDelay, gpsDelay, roundResult);
+			m_sumInSpectrometer   = roundResult[0];
+			m_totalSpecNum        = m_sumInComputer*m_sumInSpectrometer;
 			pView->PostMessage(WM_SHOWINTTIME);
-		}else if(scanNum == SKY_SPECTRUM){
+		}else if(m_scanNum == SKY_SPECTRUM){
 			/* -------------- IF THE MEASURED SPECTRUM WAS THE SKY SPECTRUM ------------- */
 
-			memcpy((void*)sky, (void*)scanResult, sizeof(double)*4096);
+			memcpy((void*)m_sky, (void*)scanResult, sizeof(double)*4096);
 
 			pView->PostMessage(WM_DRAWSPECTRUM);//draw sky spectrum
 
 			for(int i = 0; i < m_NChannels; ++i){
-				averageValue[i] = AverageIntens(scanResult[i],1);
+				m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i],1);
 
 				// remove the dark spectrum
 				GetDark();
 				for(int iterator = 0; iterator < MAX_SPECTRUM_LENGTH; ++iterator)
-					sky[i][iterator] -= tmpDark[i][iterator];
+					m_sky[i][iterator] -= m_tmpDark[i][iterator];
 
 				// Tell the evaluator(s) that the dark-spectrum does not need to be subtracted from the sky-spectrum
 				for(int fitRgn = 0; fitRgn < m_fitRegionNum; ++fitRgn){
@@ -492,7 +502,7 @@ void CMeasurement_Traverse::Run_Adaptive(){
 				}
 			}
 
-			m_statusMsg.Format("Average value around center channel(sky) %d: %d",m_conf->m_specCenter, averageValue[0]);
+			m_statusMsg.Format("Average value around center channel(sky) %d: %d",m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
 			pView->PostMessage(WM_STATUSMSG);
 
 			/* Get the information about the spectrum */
@@ -503,50 +513,51 @@ void CMeasurement_Traverse::Run_Adaptive(){
 			#endif
 
 			// Set the exposure-time
-			integrationTime				= AdjustIntegrationTime();
+			m_integrationTime			= AdjustIntegrationTime();
 			m_sumInComputer				= CountRound(m_timeResolution, serialDelay, gpsDelay, roundResult);
 			m_sumInSpectrometer			= roundResult[0];
-			totalSpecNum				= m_sumInComputer*m_sumInSpectrometer;
+			m_totalSpecNum				= m_sumInComputer*m_sumInSpectrometer;
 			pView->PostMessage(WM_SHOWINTTIME);
 
-		}else if(scanNum > SKY_SPECTRUM){
+		}else if(m_scanNum > SKY_SPECTRUM){
 			/* -------------- IF THE MEASURED SPECTRUM WAS A NORMAL SPECTRUM ------------- */
-			for(int i = 0; i < m_NChannels; ++i)  
-				averageValue[i] = AverageIntens(tmpSpec[i],1);
+			for(int i = 0; i < m_NChannels; ++i) {
+				m_averageSpectrumIntensity[i] = AverageIntens(tmpSpec[i],1);
+			}
 	
 			/* Get the information about the spectrum */
 			GetSpectrumInfo(scanResult);
 
-			if(specInfo->isDark)
-				m_statusMsg.Format("Average value around center channel %d: %d (Dark)",m_conf->m_specCenter, averageValue[0]);
+			if(m_specInfo->isDark)
+				m_statusMsg.Format("Average value around center channel %d: %d (Dark)",m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
 			else
-				m_statusMsg.Format("Average value around center channel %d: %d",m_conf->m_specCenter, averageValue[0]);
+				m_statusMsg.Format("Average value around center channel %d: %d",m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
 
 			pView->PostMessage(WM_STATUSMSG);
-			vIntensity.Append(averageValue[0]);
+			vIntensity.Append(m_averageSpectrumIntensity[0]);
 
 			/* Evaluate */
 			GetDark();
 			GetSky();
-			DoEvaluation(tmpSky, tmpDark, scanResult);
+			DoEvaluation(m_tmpSky, m_tmpDark, scanResult);
 
 			// Update the exposure-time
 			//if(averageValue[0] >= 4000){
-			integrationTime					= AdjustIntegrationTime();
+			m_integrationTime = AdjustIntegrationTime();
 			//}else{
 			//	integrationTime					= GetInttime(averageValue[0], GetOffset(scanResult[0]), integrationTime);
 			//}
 			m_sumInComputer				= CountRound(m_timeResolution, serialDelay, gpsDelay, roundResult);
 			m_sumInSpectrometer			= roundResult[0];
-			totalSpecNum				= m_sumInComputer*m_sumInSpectrometer;
+			m_totalSpecNum				= m_sumInComputer*m_sumInSpectrometer;
 			pView->PostMessage(WM_SHOWINTTIME);
 		}
 		
-		if(counter > 1)
-			CountFlux(windSpeed,windAngle);
+		if(m_spectrumCounter > 1)
+			CountFlux(m_windSpeed, m_windAngle);
 
 		memset((void*)scanResult,0,sizeof(double)*4096);
-		scanNum++;
+		m_scanNum++;
 	}
 	
 	// we have to call this before exiting the application otherwise we'll have trouble next time we start...

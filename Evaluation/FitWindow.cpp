@@ -37,7 +37,7 @@ CFitWindow &CFitWindow::operator =(const CFitWindow &w2){
 	this->fitType     = w2.fitType;
 	this->channel     = w2.channel;
 	this->interlaced  = w2.interlaced;
-	this->name.Format("%s", w2.name);
+	this->name.Format("%s", (LPCTSTR)w2.name);
 	this->nRef        = w2.nRef;
 	this->polyOrder   = w2.polyOrder;
 	this->offsetFrom  = w2.offsetFrom;

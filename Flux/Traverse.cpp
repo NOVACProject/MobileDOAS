@@ -123,7 +123,7 @@ double CTraverse::GetTotalFlux(double windSpeed, double windDirection){
 	if(m_fCreateAdditionalLog != nullptr && m_fCreateAdditionalLog && m_additionalLogName != nullptr){
 		FILE *f = fopen(*m_additionalLogName, "w");
 		if(0 == f){
-			m_fCreateAdditionalLog = false;
+			(*m_fCreateAdditionalLog) = false;
 		}else{
 			fprintf(f, "Lat [dd.ddd]\tLong [dd.ddd]\tAvgColumn [ppmm]\tDistance [m]\tGeom. corrected distance [m]\tWind Direction [deg]\tWind Speed[m/s]\tPartial Flux [kg/s]\n");
 			fclose(f);
