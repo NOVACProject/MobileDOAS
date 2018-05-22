@@ -237,7 +237,7 @@ void CMobileConfiguration::Clear(){
 	m_fitWindow[0].fitLow				= 320;
 	m_fitWindow[0].fitHigh			= 460;
 	m_fitWindow[0].fitType			= Evaluation::FIT_HP_DIV;
-	m_fitWindow[0].name.Format("SO2");
+	m_fitWindow[0].name.Format("NEW");
 	m_fitWindow[0].nRef					= 0;
 	m_fitWindow[0].ref[0].m_path.Format("");
 	m_fitWindow[0].ref[0].m_specieName.Format("SO2");
