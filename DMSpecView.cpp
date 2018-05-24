@@ -78,8 +78,9 @@ BEGIN_MESSAGE_MAP(CDMSpecView, CFormView)
 	ON_COMMAND(ID_CONFIGURATION_PLOT_CHANGEPLOTCOLOR,			OnConfigurationPlotChangeplotcolor)
 	ON_COMMAND(ID_CONFIGURATION_PLOT_CHANGEPLOTCOLOR_SLAVE,		OnConfigurationPlotChangeplotcolor_Slave)
 
-	//ON_COMMAND(ID_ANALYSIS_WINDSPEEDMEASUREMENT, OnMenuAnalysisWindSpeedMeasurement)
-
+	// dual-beam
+	ON_COMMAND(ID_ANALYSIS_PLUMEHEIGHTMEASUREMENT, OnMenuAnalysisPlumeheightmeasurement)
+	ON_COMMAND(ID_ANALYSIS_WINDSPEEDMEASUREMENT, OnMenuAnalysisWindSpeedMeasurement)
 
 	ON_COMMAND(ID_CONFIGURATION_OPERATION,			OnConfigurationOperation)
 	ON_MESSAGE(WM_DRAWCOLUMN,						OnDrawColumn)
@@ -99,7 +100,6 @@ BEGIN_MESSAGE_MAP(CDMSpecView, CFormView)
 	ON_UPDATE_COMMAND_UI(ID_CONTROL_REEVALUATE,		OnUpdateControlReevaluate)
 	ON_COMMAND(ID_CONFIGURATION_CHANGEEXPOSURETIME,	OnConfigurationChangeexposuretime)
 	ON_WM_HELPINFO()
-	//ON_COMMAND(ID_ANALYSIS_PLUMEHEIGHTMEASUREMENT,	OnMenuAnalysisPlumeheightmeasurement)
 	ON_COMMAND(ID_CONTROL_TESTTHEGPS,				OnMenuControlTestTheGPS)
 
 	ON_COMMAND(ID_VIEW_COLUMNERROR,					OnViewColumnError)
@@ -341,8 +341,9 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam){
 	}
 
 	// -- Convert the intensity to saturation ratio
-	for(int k = 0; k < size; ++k)
+	for (int k = 0; k < size; ++k) {
 		intensity[0][k] = intensity[0][k] * 100.0 / dynRange;
+	}
 
 	maxColumn = 0.0;
 	minColumn = 0.0;
@@ -671,10 +672,10 @@ void CDMSpecView::OnConfigurationPlotChangeplotcolor_Slave(){
 
 void CDMSpecView::OnControlStart() 
 {
-	CString tmpStr;
 
 	if(!fRunSpec){
 		/* Check that the base name does not contain any illegal characters */
+		CString tmpStr;
 		this->GetDlgItemText(IDC_BASEEDIT, tmpStr);
 		if(-1 != tmpStr.FindOneOf("\\/:*?\"<>|")){
 			tmpStr.Format("The base name is not allowed to contain any of the following characters: \\ / : * ? \" < > | Please choose another basename and try again.");
@@ -1160,10 +1161,11 @@ void CDMSpecView::OnViewSpectrumFit(){
 		/* create the real time route graph */
 		m_showFitDlg.Create(IDD_VIEW_FIT_DLG, NULL);
 
-		if(fRunSpec){
-		m_showFitDlg.m_spectrometer = this->m_Spectrometer;
-		}else{
-		m_showFitDlg.m_spectrometer = nullptr;
+		if (fRunSpec) {
+			m_showFitDlg.m_spectrometer = this->m_Spectrometer;
+		}
+		else {
+			m_showFitDlg.m_spectrometer = nullptr;
 		}
 		m_showFitDlg.ShowWindow(SW_SHOW);
 	}
@@ -1279,6 +1281,7 @@ void CDMSpecView::UpdateLegend(){
 	}else{
 		if(m_spectrometerMode == MODE_TRAVERSE){
 			m_colorLabelSpectrum1.SetBackgroundColor(this->m_Spectrum0Color);
+			m_colorLabelSpectrum2.SetBackgroundColor(this->m_Spectrum1Color);
 			m_colorLabelSeries1.SetBackgroundColor(this->m_PlotColor[0]);
 			m_colorLabelSeries2.SetBackgroundColor(this->m_PlotColor[1]);
 
@@ -1300,12 +1303,16 @@ void CDMSpecView::UpdateLegend(){
 		}
 
 		if(m_Spectrometer->GetFitRegionNum() == 1){
+			m_legendSpectrum2.ShowWindow(SW_HIDE);
+			m_colorLabelSpectrum2.ShowWindow(SW_HIDE);
 			m_colorLabelSeries1.ShowWindow(SW_SHOW);
 			m_colorLabelSeries2.ShowWindow(SW_HIDE);
 			m_legendSeries1.ShowWindow(SW_SHOW);
 			m_legendSeries2.ShowWindow(SW_HIDE);
 			m_legendSeries1.SetWindowText(m_Spectrometer->GetFitWindowName(0));
 		}else{
+			m_legendSpectrum2.ShowWindow(SW_SHOW);
+			m_colorLabelSpectrum2.ShowWindow(SW_SHOW);
 			m_colorLabelSeries1.ShowWindow(SW_SHOW);
 			m_colorLabelSeries2.ShowWindow(SW_SHOW);
 			m_legendSeries1.ShowWindow(SW_SHOW);
