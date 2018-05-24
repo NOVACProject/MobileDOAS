@@ -52,7 +52,7 @@ void CSpectrumSettingsDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CSpectrumSettingsDlg, CDialog)
 	ON_MESSAGE(WM_SHOWINTTIME,						UpdateFromSpectrometer)
 	ON_MESSAGE(WM_CHANGEDSPEC,						OnChangeSpectrometer)
-	ON_COMMAND(IDC_BUTTON_SAVESPEC,					SaveSpectrum)
+	ON_BN_CLICKED(IDC_BUTTON_SAVESPEC, SaveSpectrum)
 	
 	ON_EN_CHANGE(IDC_EDIT_EXPOSURETIME,				SaveToSpectrometer)
 	ON_EN_CHANGE(IDC_EDIT_NAVERAGE,					SaveToSpectrometer)
@@ -155,7 +155,7 @@ void CSpectrumSettingsDlg::SaveSpectrum(){
 	filter[n + 2] = 0;
 		
 	// let the user browse for a place where to store the spectrum
-	if(!Common::BrowseForFile_SaveAs(filter, stdFileName))
+	if(!Common::BrowseForFile_SaveAs("*.std", stdFileName))
 		return;
 
 	// add the file-ending .std if the user hasn't done so
@@ -163,8 +163,7 @@ void CSpectrumSettingsDlg::SaveSpectrum(){
 		stdFileName.AppendFormat(".std");
 
 	// copy the data from the spectrometer
-	static double *spectrum1 = new double[MAX_SPECTRUM_LENGTH];
-	static double *spectrum2 = new double[MAX_SPECTRUM_LENGTH];
+	static double *spectrum = new double[MAX_SPECTRUM_LENGTH];
 
 	int spectrumLength       = m_Spectrometer->m_detectorSize;
 	double lat = 0.0;	// <-- this we don't know anything about
@@ -175,13 +174,15 @@ void CSpectrumSettingsDlg::SaveSpectrum(){
 	long stoptime  = 0; // <-- this we don't know anything about
 
 	// Copy the spectrum(-a)
-	memcpy(spectrum1, m_Spectrometer->GetSpectrum(0), sizeof(double)*spectrumLength);
-	if(m_Spectrometer->m_NChannels > 1){
-		memcpy(spectrum2, m_Spectrometer->GetSpectrum(1), sizeof(double)*spectrumLength);
+	if(m_Spectrometer->m_spectrometerChannel == 0){
+		memcpy(spectrum, m_Spectrometer->GetSpectrum(0), sizeof(double)*spectrumLength);
+	}
+	else {
+		memcpy(spectrum, m_Spectrometer->GetSpectrum(1), sizeof(double)*spectrumLength);
 	}
 
 	// write the file
-	CSpectrumIO::WriteStdFile(stdFileName, spectrum1, spectrumLength, startdate, starttime, stoptime, lat, lon, alt, m_Spectrometer->m_integrationTime, m_Spectrometer->m_spectrometerName, "...", m_Spectrometer->m_totalSpecNum);
+	CSpectrumIO::WriteStdFile(stdFileName, spectrum, spectrumLength, startdate, starttime, stoptime, lat, lon, alt, m_Spectrometer->m_integrationTime, m_Spectrometer->m_spectrometerName, "...", m_Spectrometer->m_totalSpecNum);
 }
 
 // Called when the user has pressed the spin button that controlls the exposure-time

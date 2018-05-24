@@ -12,15 +12,13 @@ CMeasurement_View::~CMeasurement_View(void)
 }
 
 void CMeasurement_View::Run(){
-	CString cfgFile;
 	double scanResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
 	double tmpSpec[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
-	int i;
 
 	MessageBox(pView->m_hWnd, TEXT("START "),TEXT("NOTICE"),MB_OK);
 
 	// Read configuration file
-	cfgFile = g_exePath + TEXT("cfg.xml");
+	CString cfgFile = g_exePath + TEXT("cfg.xml");
 	if(!IsExistingFile(cfgFile)){
 		cfgFile = g_exePath + TEXT("cfg.txt");
 	}
@@ -90,14 +88,14 @@ void CMeasurement_View::Run(){
 		}
 
 		// Copy the spectrum to the local variables
-		for(i = 0; i < m_NChannels; ++i){
+		for(int i = 0; i < m_NChannels; ++i){
 			memcpy((void*)tmpSpec[i], (void*)scanResult[i], sizeof(double)*MAX_SPECTRUM_LENGTH);
 			memcpy((void*)m_curSpectrum[i], (void*)scanResult[i], sizeof(double)*MAX_SPECTRUM_LENGTH);// for plot
 		}
 
 		/* -------------- IF THE MEASURED SPECTRUM WAS A NORMAL SPECTRUM ------------- */
 
-		for(i = 0; i < m_NChannels; ++i) {
+		for(int i = 0; i < m_NChannels; ++i) {
 			m_averageSpectrumIntensity[i] = AverageIntens(tmpSpec[i],1);
 		}
 
