@@ -1,5 +1,18 @@
 MobileDOAS Release Notes
 -----------------------------------------------------
+Version 6.1 (TBD)
+
+Critical changes
+* Enable configuration and evaluation of second channel for spectrometers that support it (#8)
+
+New features
+* Multiple reference files can be addeded or removed simultaneously through evaluation configuration dialogs
+
+Bug fixes
+* Fix spectra collection feature that did not work when second channel is enabled for a spectrometer (#74)
+* Ensure evaluation configuration dialog updates properly when adding/removing a new fit window
+
+-----------------------------------------------------
 Version 6.0 (April 2018)
 
 Critical changes
