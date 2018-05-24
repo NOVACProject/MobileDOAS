@@ -288,7 +288,7 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam){
 	double column[2][5000];		// the evaluated columns in each of the fit-regions
 	double columnErr[2][5000];	// the error bars of the evaluated columns in each of the fit-regions
 	double intensity[2][5000];
-	long i, size;
+	long size;
 	double maxColumn,minColumn,lowLimit;
 	CString cCon;		// the concentration str
 	CString cShift;		//shift str
@@ -349,7 +349,7 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam){
 	minColumn = 0.0;
 
 	// -- Get the limits for the data ---
-	for(i = 0; i < size; i++){
+	for(int i = 0; i < size; i++){
 		if(intensity[0][i] > intensityLimit){
 			maxColumn = std::max(maxColumn, fabs(column[0][i]));
 			minColumn = std::min(minColumn, column[0][i]);
@@ -734,11 +734,15 @@ void CDMSpecView::OnControlViewSpectra(){
 
 		// Show the window that makes it possible to change the exposure time
 		m_specSettingsDlg.m_Spectrometer = spec;
-		m_specSettingsDlg.Create(IDD_SPECTRUM_SETTINGS_DLG, this);
+		if (!IsWindow(m_specSettingsDlg)) {
+			m_specSettingsDlg.Create(IDD_SPECTRUM_SETTINGS_DLG, this);
+		}
 		m_specSettingsDlg.ShowWindow(SW_SHOW);
 
 		// Show the window that makes it possible to change the spectrum-scale 
-		m_specScaleDlg.Create(IDD_SPECTRUM_SCALE_DLG, this);
+		if (!IsWindow(m_specScaleDlg)) {
+			m_specScaleDlg.Create(IDD_SPECTRUM_SCALE_DLG, this);
+		}
 		m_specScaleDlg.ShowWindow(SW_SHOW);
 		m_specScaleDlg.GetWindowRect(rect);
 		int width = rect.Width();
@@ -913,15 +917,17 @@ void CDMSpecView::DrawSpectrum()
 	// If the length of the 'number2' - parameter does not 
 	//	agree with the size of the spectrometer - detector
 	if(spectrumLength != number2Length){
-		for(int i = 0; i < spectrumLength; i++)
-			number2[i] =  (200.0 * i) / spectrumLength;
+		for (int i = 0; i < spectrumLength; i++) {
+			number2[i] = (200.0 * i) / spectrumLength;
+		}
 		number2Length = spectrumLength;
 	}
 
 	// Copy the spectrum and transform it into saturation-ratio
 	memcpy(spectrum1, m_Spectrometer->GetSpectrum(0), sizeof(double)*spectrumLength);
-	for(int k = 0; k < spectrumLength; ++k)
+	for (int k = 0; k < spectrumLength; ++k) {
 		spectrum1[k] *= dynRange_inv;
+	}
 
 	// if we're using a normal measurement mode...
 	if(m_spectrometerMode == MODE_TRAVERSE || m_spectrometerMode == MODE_WIND){
@@ -945,19 +951,17 @@ void CDMSpecView::DrawSpectrum()
 		
 		return;
 	}else if(m_spectrometerMode == MODE_VIEW){
-		// Plot the spectrum
-		m_ColumnPlot.SetPlotColor(m_Spectrum0Color);
-		m_ColumnPlot.XYPlot(NULL, spectrum1, spectrumLength, Graph::CGraphCtrl::PLOT_CONNECTED);
-
-		// If a second channel is used, then do the same thing with the slave-spectrum
-		if(m_Spectrometer->m_NChannels == 1){
-			return;
-		}else{
-			// Get the second spectrum
+		if(m_Spectrometer->m_spectrometerChannel == 0){
+			// Plot master spectrum
+			m_ColumnPlot.SetPlotColor(m_Spectrum0Color);
+			m_ColumnPlot.XYPlot(NULL, spectrum1, spectrumLength, Graph::CGraphCtrl::PLOT_CONNECTED);
+		}
+		else {
+			// Plot slave spectrum
 			memcpy(spectrum2, m_Spectrometer->GetSpectrum(1), sizeof(double)*spectrumLength);
-			for(int k = 0; k < spectrumLength; ++k)
+			for (int k = 0; k < spectrumLength; ++k) {
 				spectrum2[k] *= dynRange_inv;
-
+			}
 			m_ColumnPlot.SetPlotColor(m_Spectrum1Color);
 			m_ColumnPlot.SetLineWidth(2);
 			m_ColumnPlot.XYPlot(NULL, spectrum2, spectrumLength, Graph::CGraphCtrl::PLOT_CONNECTED);
@@ -1281,12 +1285,22 @@ void CDMSpecView::UpdateLegend(){
 	}else{
 		if(m_spectrometerMode == MODE_TRAVERSE){
 			m_colorLabelSpectrum1.SetBackgroundColor(this->m_Spectrum0Color);
-			m_colorLabelSpectrum2.SetBackgroundColor(this->m_Spectrum1Color);
 			m_colorLabelSeries1.SetBackgroundColor(this->m_PlotColor[0]);
-			m_colorLabelSeries2.SetBackgroundColor(this->m_PlotColor[1]);
-
+			m_colorLabelSeries1.ShowWindow(SW_SHOW);
+			m_legendSeries1.SetWindowText(m_Spectrometer->GetFitWindowName(0));
+			m_legendSeries1.ShowWindow(SW_SHOW);
 			m_legendSpectrum1.ShowWindow(SW_SHOW);
 			m_colorLabelSpectrum1.ShowWindow(SW_SHOW);
+			
+			if (m_Spectrometer->m_NChannels > 1) {
+				m_legendSpectrum2.ShowWindow(SW_SHOW);
+				m_colorLabelSpectrum2.SetBackgroundColor(this->m_Spectrum1Color);
+				m_colorLabelSpectrum2.ShowWindow(SW_SHOW);
+				m_colorLabelSeries2.SetBackgroundColor(this->m_PlotColor[1]);
+				m_colorLabelSeries2.ShowWindow(SW_SHOW);
+				m_legendSeries2.ShowWindow(SW_SHOW);
+				m_legendSeries2.SetWindowText(m_Spectrometer->GetFitWindowName(1));
+			}
 		}
 		if(m_spectrometerMode == MODE_WIND){
 			m_colorLabelSpectrum1.SetBackgroundColor(this->m_Spectrum0Color);
@@ -1301,25 +1315,28 @@ void CDMSpecView::UpdateLegend(){
 			m_colorLabelSpectrum1.ShowWindow(SW_SHOW);
 			m_colorLabelSpectrum2.ShowWindow(SW_SHOW);
 		}
+		if (m_spectrometerMode == MODE_VIEW) {
 
-		if(m_Spectrometer->GetFitRegionNum() == 1){
-			m_legendSpectrum2.ShowWindow(SW_HIDE);
-			m_colorLabelSpectrum2.ShowWindow(SW_HIDE);
-			m_colorLabelSeries1.ShowWindow(SW_SHOW);
-			m_colorLabelSeries2.ShowWindow(SW_HIDE);
-			m_legendSeries1.ShowWindow(SW_SHOW);
-			m_legendSeries2.ShowWindow(SW_HIDE);
-			m_legendSeries1.SetWindowText(m_Spectrometer->GetFitWindowName(0));
-		}else{
-			m_legendSpectrum2.ShowWindow(SW_SHOW);
-			m_colorLabelSpectrum2.ShowWindow(SW_SHOW);
-			m_colorLabelSeries1.ShowWindow(SW_SHOW);
-			m_colorLabelSeries2.ShowWindow(SW_SHOW);
-			m_legendSeries1.ShowWindow(SW_SHOW);
-			m_legendSeries2.ShowWindow(SW_SHOW);
-			m_legendSeries1.SetWindowText(m_Spectrometer->GetFitWindowName(0));
-			m_legendSeries2.SetWindowText(m_Spectrometer->GetFitWindowName(1));
+			if (m_Spectrometer->m_spectrometerChannel == 0) {
+				m_colorLabelSpectrum1.SetBackgroundColor(this->m_Spectrum0Color);
+				m_colorLabelSeries1.SetBackgroundColor(this->m_PlotColor[0]);
+				SetDlgItemText(IDC_LABEL_SPECTRUM, "Spectrum (Master)");
+				m_legendSpectrum2.ShowWindow(SW_HIDE);
+				m_colorLabelSpectrum2.ShowWindow(SW_HIDE);
+				m_legendSpectrum1.ShowWindow(SW_SHOW);
+				m_colorLabelSpectrum1.ShowWindow(SW_SHOW);
+			}
+			else {
+				m_colorLabelSpectrum2.SetBackgroundColor(this->m_Spectrum1Color);
+				m_colorLabelSeries2.SetBackgroundColor(this->m_PlotColor[1]);
+				SetDlgItemText(IDC_LABEL_SPECTRUM2, "Spectrum (Slave)");
+				m_legendSpectrum1.ShowWindow(SW_HIDE);
+				m_colorLabelSpectrum1.ShowWindow(SW_HIDE);
+				m_legendSpectrum2.ShowWindow(SW_SHOW);
+				m_colorLabelSpectrum2.ShowWindow(SW_SHOW);
+			}
 		}
+
 	}
 }
 
