@@ -105,7 +105,7 @@ BOOL CReferencePlotDlg::OnInitDialog()
 		rect.top    = k * (plotHeight + margin) + margin + plotHeight/2;
 		rect.bottom = rect.top + plotHeight/3;
 
-		specieName.Format("%s", m_window->ref[k].m_specieName);
+		specieName.Format("%s", (LPCTSTR)m_window->ref[k].m_specieName);
 		m_label[k].Create(specieName, WS_VISIBLE | WS_CHILD, rect, this);
 		m_label[k].SetFont(font);
 	}
@@ -130,7 +130,6 @@ void CReferencePlotDlg::ReadReferences(){
 	CStdioFile fileRef[100];
 	CString szLine;
 	CString fileName;
-	long valuesReadNum = 0;
 	double tmpDouble;
 	int nColumns;
 	int i = 0;
@@ -148,7 +147,7 @@ void CReferencePlotDlg::ReadReferences(){
 		if(IsExistingFile(m_window->ref[i].m_path)){
 			fileName.Format(m_window->ref[i].m_path);
 		}else{
-			fileName.Format("%s%s", g_exePath, m_window->ref[i].m_path);
+			fileName.Format("%s%s", (LPCTSTR)g_exePath, (LPCTSTR)m_window->ref[i].m_path);
 		}
 
 		if(!fileRef[i].Open(fileName, CFile::modeRead | CFile::typeText, &exceFile))
@@ -206,7 +205,6 @@ void Dialogs::CReferencePlotDlg::OnSize(UINT nType, int cx, int cy)
 	int margin = 5;				// the space between each plot
 	int leftMargin = 25;		// the space to the left, for specie names
 	int labelWidth = 10;		// the width of the labels
-	int titleBarHeight = 30;	// the height of the title bar...
 	int plotHeight = (cy - nReferences * margin) / nReferences; // the height of each graph
 	
 	// The width of each graph

@@ -141,7 +141,7 @@ void CShowFitDlg::DrawFit1(){
   static double oldMinV = 1e16, oldMaxV = -1e16;
 
   // copy the high pass filtered spectrum to the local variable
-  memcpy(spectrum, m_spectrometer->m_spectrum[0], MAX_SPECTRUM_LENGTH*sizeof(double));
+  m_spectrometer->GetProcessedSpectrum(spectrum, MAX_SPECTRUM_LENGTH, 0);
 
   // copy the fitted result to the local variable
   memcpy(fitResult, &m_spectrometer->m_fitResult[0], MAX_SPECTRUM_LENGTH*sizeof(double));
@@ -153,19 +153,20 @@ void CShowFitDlg::DrawFit1(){
     maxV = std::max(maxV, spectrum[i]);
     maxV = std::max(maxV, fitResult[i]);
   }
-  if((maxV - minV) < 0.25 * (oldMaxV - oldMinV)){
-    oldMaxV = maxV;
-    oldMinV = minV;
-  }else{
-    if(minV < oldMinV)
-      oldMinV = minV;
-    else
-      minV = oldMinV;
+  if ((maxV - minV) < 0.25 * (oldMaxV - oldMinV)) {
+	  oldMaxV = maxV;
+	  oldMinV = minV;
+  }
+  else {
+	  if (minV < oldMinV)
+		  oldMinV = minV;
+	  else
+		  minV = oldMinV;
 
-    if(maxV > oldMaxV)
-      oldMaxV = maxV;
-    else
-      maxV = oldMaxV;
+	  if (maxV > oldMaxV)
+		  oldMaxV = maxV;
+	  else
+		  maxV = oldMaxV;
   }
 
   // set the range for the fit
@@ -198,7 +199,7 @@ void CShowFitDlg::DrawFit2(){
   static double oldMinV = 1e16, oldMaxV = -1e16;
 
   // copy the high pass filtered spectrum to the local variable
-  memcpy(spectrum, m_spectrometer->m_spectrum[1], MAX_SPECTRUM_LENGTH*sizeof(double));
+  m_spectrometer->GetProcessedSpectrum(spectrum, MAX_SPECTRUM_LENGTH, 1);
 
   // copy the fitted result to the local variable
   memcpy(fitResult, &m_spectrometer->m_fitResult[1], MAX_SPECTRUM_LENGTH*sizeof(double));
@@ -210,19 +211,20 @@ void CShowFitDlg::DrawFit2(){
     maxV = std::max(maxV, spectrum[i]);
     maxV = std::max(maxV, fitResult[i]);
   }
-  if((maxV - minV) < 0.25 * (oldMaxV - oldMinV)){
-    oldMaxV = maxV;
-    oldMinV = minV;
-  }else{
-    if(minV < oldMinV)
-      oldMinV = minV;
-    else
-      minV = oldMinV;
+  if ((maxV - minV) < 0.25 * (oldMaxV - oldMinV)) {
+	  oldMaxV = maxV;
+	  oldMinV = minV;
+  }
+  else {
+	  if (minV < oldMinV)
+		  oldMinV = minV;
+	  else
+		  minV = oldMinV;
 
-    if(maxV > oldMaxV)
-      oldMaxV = maxV;
-    else
-      maxV = oldMaxV;
+	  if (maxV > oldMaxV)
+		  oldMaxV = maxV;
+	  else
+		  maxV = oldMaxV;
   }
 
   // set the range for the fit
@@ -233,7 +235,6 @@ void CShowFitDlg::DrawFit2(){
   m_fitPlot2.XYPlot(pixel + fitLow, spectrum + fitLow, (int)fitWidth, Graph::CGraphCtrl::PLOT_CONNECTED); 
 
   // draw the fitted result
-  //m_fitPlot2.SetPlotColor(RGB(0,0,255));
-  m_fitPlot2.SetPlotColor(RGB(0, 255, 0));
+  m_fitPlot2.SetPlotColor(RGB(0, 255, 255));
   m_fitPlot2.XYPlot(pixel + fitLow, fitResult + fitLow, (int)fitWidth, Graph::CGraphCtrl::PLOT_CONNECTED | Graph::CGraphCtrl::PLOT_FIXED_AXIS); 
 }

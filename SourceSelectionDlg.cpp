@@ -65,7 +65,7 @@ BOOL CSourceSelectionDlg::OnInitDialog(){
 
   m_grid.SetRowCount(m_nSites+3);
   for(int i = 0; i < m_nSites; ++i){
-    m_grid.SetItemTextFmt(i+1, 0, "%s", m_siteName[i]);
+    m_grid.SetItemTextFmt(i+1, 0, "%s", (LPCTSTR)m_siteName[i]);
     m_grid.SetItemTextFmt(i+1, 1, "%.5lf", m_lat[i]);
     m_grid.SetItemTextFmt(i+1, 2, "%.5lf", m_lon[i]);
     m_grid.SetItemTextFmt(i+1, 3, "%.0lf", m_alt[i]);
@@ -93,7 +93,7 @@ int CSourceSelectionDlg::ReadSourceLog(){
   FILE *f = fopen(g_exePath + "Sources.txt", "r");
   if(f == 0){
     CString tmpStr;
-    tmpStr.Format("Could not find file: %s", g_exePath + "Sources.txt");
+    tmpStr.Format("Could not find file: %s", (LPCTSTR)(g_exePath + "Sources.txt"));
     MessageBox(tmpStr);
     return 1;
   }
@@ -114,7 +114,7 @@ int CSourceSelectionDlg::ReadSourceLog(){
       }
       pt = txt;
 
-      nAssigned = sscanf(pt, "%s\t%lf\t%lf\t%lf\n", tmpStr, &tmpDouble1, &tmpDouble2, &tmpDouble3);
+      nAssigned = sscanf(pt, "%1203s\t%lf\t%lf\t%lf\n", tmpStr, &tmpDouble1, &tmpDouble2, &tmpDouble3);
       if(3 <= nAssigned){
         m_siteName[m_nSites].Format(tmpStr);
         while(pt = strstr(m_siteName[m_nSites].GetBuffer(), "|")){

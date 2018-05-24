@@ -39,9 +39,9 @@ void CMeasurement_Calibrate::Run(){
 	ApplySettings();
 
 	/* Set the delays and initialize the USB-Connection */
-	if(fUseUSB){
+	if(m_connectViaUsb){
 		if(!TestUSBConnection()){
-			fRun = false;
+			m_isRunning = false;
 			return;
 		}
 	}
@@ -49,33 +49,33 @@ void CMeasurement_Calibrate::Run(){
 	/* -- Init Serial Communication -- */
 	m_statusMsg.Format("Initializing communication with spectrometer");
 	pView->PostMessage(WM_STATUSMSG);
-	if(!fUseUSB && serial.InitCommunication()){
+	if(!m_connectViaUsb && serial.InitCommunication()){
 		MessageBox(pView->m_hWnd,TEXT("Can not initialize the communication"),TEXT("Error"),MB_OK);	
 		return;
 	}
 
 	// Set the integration time to 3 ms initially
-	integrationTime		 = 3;
+	m_integrationTime    = 3;
 	m_sumInComputer      = 10;
 	m_sumInSpectrometer  = 15;
-	totalSpecNum         = 150;
+	m_totalSpecNum       = 150;
 	pView->PostMessage(WM_SHOWINTTIME);
 
 
 	/** --------------------- THE MEASUREMENT LOOP -------------------------- */
-	while(fRun){
+	while(m_isRunning){
 
 		/* ----------------  Get the spectrum --------------------  */
 		// Initialize the spectrometer, if using the serial-port
-		if(!fUseUSB){
-			if(InitSpectrometer(0, integrationTime, m_sumInSpectrometer)){
+		if(!m_connectViaUsb){
+			if(InitSpectrometer(0, m_integrationTime, m_sumInSpectrometer)){
 				serial.CloseAll();
 			}
 		}
 
 		// Get the next spectrum
 		if(Scan(m_sumInComputer,m_sumInSpectrometer,scanResult)){
-			if(!fUseUSB)
+			if(!m_connectViaUsb)
 				serial.CloseAll();
 			else
 				CloseUSBConnection();
@@ -84,7 +84,7 @@ void CMeasurement_Calibrate::Run(){
 
 		// Copy the spectrum to the local variables
 		memcpy((void*)m_lastSpectrum,	(void*)scanResult[0], sizeof(double)*m_detectorSize);
-		memcpy((void*)curSpectrum[0],	(void*)scanResult[0], sizeof(double)*m_detectorSize);// for plot
+		memcpy((void*)m_curSpectrum[0],	(void*)scanResult[0], sizeof(double)*m_detectorSize);// for plot
 
 		// Assign a number of mercury lines to the measured spectrum
 		AssignLines();
@@ -93,7 +93,7 @@ void CMeasurement_Calibrate::Run(){
 	}
 	
 	memset((void*)scanResult,0,sizeof(double)*4096);
-	scanNum++;
+	m_scanNum++;
 	
 	// we have to call this before exiting the application otherwise we'll have trouble next time we start...
 	CloseUSBConnection();
@@ -172,7 +172,7 @@ void CMeasurement_Calibrate::AssignLines(){
 		double centreOfMass = sumWeights / sumPixels;
 		
 		// what wavelength does this correspond to?
-		double approximateWavelength = wavelength[0][(int)(round(centreOfMass))];
+		double approximateWavelength = m_wavelength[0][(int)(round(centreOfMass))];
 		
 		// Get the HgLine that is closest to this wavelength
 		double hgLine = CWavelengthCalibration::GetNearestHgLine(approximateWavelength, isDoubleLine);

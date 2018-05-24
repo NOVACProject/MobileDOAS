@@ -54,12 +54,12 @@ void CMobileConfiguration::ReadCfgTxt(const CString &fileName){
 			if(pt=strstr(txt,"SPEC_BAUD="))
 			{
 				pt=strstr(txt,"=");
-				sscanf(&pt[1],"%ld",&m_baudrate);
+				sscanf(&pt[1],"%d",&m_baudrate);
 			}
 			if(pt=strstr(txt,"SERIALPORT="))
 			{
 				pt=strstr(txt,"=");
-				sscanf(pt+1,"%s",serialPort);
+				sscanf(pt+1,"%10s",serialPort);
 				m_serialPort.Format(serialPort);
 
 				// If the serial-port begins with 'COM' then we're using the RS232-port
@@ -103,7 +103,7 @@ void CMobileConfiguration::ReadCfgTxt(const CString &fileName){
 			if(pt=strstr(txt,"TIMERESOLUTION="))
 			{
 				pt=strstr(txt,"=");
-				sscanf(&pt[1],"%d",&m_timeResolution);
+				sscanf(&pt[1],"%ld",&m_timeResolution);
 			}	
 
 			// ---------------- The GPS ------------------
@@ -125,7 +125,7 @@ void CMobileConfiguration::ReadCfgTxt(const CString &fileName){
 			if(pt=strstr(txt,"GPSPORT="))
 			{
 				pt=strstr(txt,"=");
-				sscanf(pt+1,"%s", gpsPort);
+				sscanf(pt+1,"%9s", gpsPort);
 				m_gpsPort.Format(gpsPort);
 			}
 
@@ -177,7 +177,7 @@ void CMobileConfiguration::ReadCfgTxt(const CString &fileName){
 			if(pt=strstr(txt,"REFFILE="))
 			{
 				pt=strstr(txt,"=");
-				sscanf(pt+1,"%s",refFile);
+				sscanf(pt+1,"%498s",refFile);
 				m_fitWindow[0].ref[0].m_path.Format(refFile);
 				m_nFitWindows = 1;
 			}
@@ -237,7 +237,7 @@ void CMobileConfiguration::Clear(){
 	m_fitWindow[0].fitLow				= 320;
 	m_fitWindow[0].fitHigh			= 460;
 	m_fitWindow[0].fitType			= Evaluation::FIT_HP_DIV;
-	m_fitWindow[0].name.Format("SO2");
+	m_fitWindow[0].name.Format("NEW");
 	m_fitWindow[0].nRef					= 0;
 	m_fitWindow[0].ref[0].m_path.Format("");
 	m_fitWindow[0].ref[0].m_specieName.Format("SO2");

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "math.h"
 #include <atlimage.h>
+#include <vector>
 
 #include "GraphCtrl.h"
 
@@ -1047,12 +1048,12 @@ void CGraphCtrl::BarChart2(double *xPosition, double *yValues1, double *yValues2
 
 	// Pick out the extreme-values (the ones to draw first and the ones
 	//	to scale the graph after)
-	double *extreme			= new double[pointSum];
-	double *extremeErr		= new double[pointSum];
-	COLORREF *extremeCol	= new COLORREF[pointSum];
-	double *smallV			= new double[pointSum];
-	double *smallVErr		= new double[pointSum];
-	COLORREF *smallCol		= new COLORREF[pointSum];
+	std::vector<double> extreme(pointSum);
+	std::vector<double> extremeErr(pointSum);
+	std::vector<COLORREF> extremeCol(pointSum);
+	std::vector<double> smallV(pointSum);
+	std::vector<double> smallVErr(pointSum);
+	std::vector<COLORREF> smallCol(pointSum);
 	for(int i = 0; i < pointSum; ++i){
 		if(fabs(yValues1[i]) > fabs(yValues2[i])){
 			extreme[i]		= yValues1[i];
@@ -1075,10 +1076,10 @@ void CGraphCtrl::BarChart2(double *xPosition, double *yValues1, double *yValues2
 	if((plotOption & PLOT_SECOND_AXIS) || (plotOption & PLOT_FIXED_AXIS)){
 		// For plotting on the second axis, or for fixed axes, we don't want to 
 		//	change the scale of the axes, it's enough just to know the range of the data
-		GetDataRange(xPosition, extreme, pointSum, maxX, minX, maxY, minY);		
+		GetDataRange(xPosition, extreme.data(), pointSum, maxX, minX, maxY, minY);		
 	}else{
 		// Get the ranges for the data and scale the axes accordingly
-		PreparePlot(xPosition, extreme, pointSum, maxX, minX, maxY, minY);
+		PreparePlot(xPosition, extreme.data(), pointSum, maxX, minX, maxY, minY);
 	}
 
 	// Get the current axis
@@ -1169,12 +1170,6 @@ void CGraphCtrl::BarChart2(double *xPosition, double *yValues1, double *yValues2
 	}
 
 	FinishPlot();
-
-	// Remember to clean up
-	delete extreme;
-	delete extremeErr;
-	delete smallV;
-	delete smallVErr;
 }
 
 
