@@ -84,7 +84,8 @@ void CFitWindowListBox::OnInsertFitWindow(){
 		return;
 
 	// Make sure that there's enough space to store one more window 
-	if(m_conf->m_nFitWindows == MAX_FIT_WINDOWS)
+	int numFitWindows = m_conf->m_nFitWindows;
+	if(numFitWindows == MAX_FIT_WINDOWS)
 		return;
 
 	// Ask the user for the name of the window
@@ -97,7 +98,17 @@ void CFitWindowListBox::OnInsertFitWindow(){
 		return;
 
 	// insert an empty fit window.
-	m_conf->m_fitWindow[m_conf->m_nFitWindows].name.Format("%s", (LPCTSTR)name);
+	m_conf->m_fitWindow[numFitWindows].Clear();
+	m_conf->m_fitWindow[numFitWindows].name.Format("%s", (LPCTSTR)name);
+	if (numFitWindows == 1) {
+		int existChannel = m_conf->m_fitWindow[numFitWindows - 1].channel;
+		if (existChannel == 0) {
+			m_conf->m_fitWindow[numFitWindows].channel = 1;
+		}
+		else {
+			m_conf->m_fitWindow[numFitWindows].channel = 0;
+		}
+	}
 	m_conf->m_nFitWindows += 1;
 
 	PopulateList();
@@ -106,8 +117,9 @@ void CFitWindowListBox::OnInsertFitWindow(){
 	SetCurSel(m_conf->m_nFitWindows - 1);
 	
 	CWnd *pWnd = GetParent();
-	if(pWnd)
+	if (pWnd) {
 		pWnd->SendMessage(WM_COMMAND, MAKEWPARAM(GetDlgCtrlID(), LBN_SELCHANGE), (LPARAM)m_hWnd);
+	}
 }
 
 /** Called to rename a fit window */
@@ -146,28 +158,34 @@ void CFitWindowListBox::OnRemoveFitWindow(){
 		return;
 
 	// make sure that there's always at least one window defined
-	if(m_conf->m_nFitWindows <= 1)
+	if (m_conf->m_nFitWindows <= 1) {
 		return;
+	}
 
 	int curSel = this->GetCurSel();
-	if(curSel < 0 || curSel > MAX_FIT_WINDOWS)
+	if (curSel < 0 || curSel > MAX_FIT_WINDOWS) {
 		return;
+	}
 
 	// Are you sure?
 	int ret = MessageBox("Are you sure you want to remove this fit window?", "Remove fit window", MB_YESNO);
-	if(IDNO == ret)
+	if (IDNO == ret) {
 		return;
+	}
 
 	// Remove the window
 
 	// Shift down all the other windows.
-	int i;
-	for(i = curSel; i < MAX_FIT_WINDOWS-2; ++i){
-		m_conf->m_fitWindow[i] = m_conf->m_fitWindow[i+1];		
+	if (curSel == 0 && m_conf->m_nFitWindows > 1) {
+		m_conf->m_fitWindow[0] = m_conf->m_fitWindow[1];
 	}
-	m_conf->m_fitWindow[i].Clear();
 	m_conf->m_nFitWindows -= 1;
 
 	// Update the window and the list
 	PopulateList();
+
+	CWnd *pWnd = GetParent();
+	if (pWnd) {
+		pWnd->SendMessage(WM_COMMAND, MAKEWPARAM(GetDlgCtrlID(), LBN_SELCHANGE), (LPARAM)m_hWnd);
+	}
 }
