@@ -8,5 +8,5 @@ public:
 
 	static const int majorNumber = 6;
 
-	static const int minorNumber = 0;
+	static const int minorNumber = 1;
 };

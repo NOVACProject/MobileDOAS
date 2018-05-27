@@ -6,6 +6,7 @@
 #include "ReEval_FitWindows.h"
 #include "../Dialogs/ReferencePropertiesDlg.h"
 #include "../Dialogs/ReferencePlotDlg.h"
+#include <vector>
 
 // CReEval_FitWindowsDlg dialog
 
@@ -193,16 +194,13 @@ void CReEval_FitWindowsDlg::OnRemoveReference(){
 	int minRow = cellRange.GetMinRow() - 1;
 	int nRows = cellRange.GetRowSpan();
 
-	if(nRows <= 0 || nRows > 1) /* nothing selected or several lines selected */
-		return;
-
 	// move every reference file in the list down one step
-	for(int i = minRow; i < window.nRef - 1; ++i){
-		window.ref[i] = window.ref[i+1];
+	for (int i = 0; i < nRows; i++) {
+		window.ref[minRow] = window.ref[minRow + 1];
 	}
 
-	// reduce the number of references by one
-	window.nRef -= 1;
+	// reduce the number of references by number deleted
+	window.nRef -= nRows;
 
 	// Update the reference grid
 	PopulateReferenceFileControl();
@@ -210,12 +208,6 @@ void CReEval_FitWindowsDlg::OnRemoveReference(){
 
 /** Called when the user wants to insert a new reference file */
 void CReEval_FitWindowsDlg::OnInsertReference(){
-	CString fileName, errorMessage;
-	Common common;
-	TCHAR filter[512];
-	int n = _stprintf(filter, "Reference files\0");
-	n += _stprintf(filter + n + 1, "*.txt;*.xs\0");
-	filter[n + 2] = 0;
 
 	// save the data in the dialog
 	UpdateData(TRUE);
@@ -228,54 +220,61 @@ void CReEval_FitWindowsDlg::OnInsertReference(){
 
 	// Check so that there is space for more references in this fit window
 	if(window.nRef == MAX_N_REFERENCES){
+		CString errorMessage;
 		errorMessage.Format("Cannot insert more references. The maximum number of references in a fit window is %d", MAX_N_REFERENCES);
 		MessageBox(errorMessage, "Cannot insert");
 		return;
 	}
 
-	// Let the user browse for the reference file
-	if(!common.BrowseForFile(filter, fileName))
-		return;
+	// Let the user browse for the reference files
+	Common common;
+	std::vector<CString> filenames = common.BrowseForFiles();
+	for (int i = 0; i < filenames.size(); i++) {
+		const CString fileName = filenames[i];
 
-	// The user has selected a new reference file, insert it into the list
+		// The user has selected a new reference file, insert it into the list
 
-	// 1. Set the path
-	window.ref[window.nRef].m_path.Format("%s", fileName);
+		// 1. Set the path
+		window.ref[window.nRef].m_path.Format("%s", fileName);
 
-	// 2. make a guess of the specie name
-	CString specie;
-	Common::GuessSpecieName(fileName, specie);
-	if(strlen(specie) != 0){
-		window.ref[window.nRef].m_specieName.Format("%s", specie);
-		
-		if(Equals(specie, "NO2")){
-			window.ref[window.nRef].m_gasFactor = GASFACTOR_NO2;
-		}else if(Equals(specie, "O3")){
-			window.ref[window.nRef].m_gasFactor = GASFACTOR_O3;
-		}else if(Equals(specie, "HCHO")){
-			window.ref[window.nRef].m_gasFactor = GASFACTOR_HCHO;
+		// 2. make a guess of the specie name
+		CString specie;
+		Common::GuessSpecieName(fileName, specie);
+		if (strlen(specie) != 0) {
+			window.ref[window.nRef].m_specieName.Format("%s", specie);
+
+			if (Equals(specie, "NO2")) {
+				window.ref[window.nRef].m_gasFactor = GASFACTOR_NO2;
+			}
+			else if (Equals(specie, "O3")) {
+				window.ref[window.nRef].m_gasFactor = GASFACTOR_O3;
+			}
+			else if (Equals(specie, "HCHO")) {
+				window.ref[window.nRef].m_gasFactor = GASFACTOR_HCHO;
+			}
 		}
-	}
 
-	// 3. Set the shift and squeeze options for this reference
-	if(window.nRef == 0){
-		// If it is the first one, select 'optimal' 
-		window.ref[window.nRef].m_shiftOption   = Evaluation::SHIFT_OPTIMAL;
-		window.ref[window.nRef].m_squeezeOption = Evaluation::SHIFT_OPTIMAL;
-	}else{
-		window.ref[window.nRef].m_shiftOption   = Evaluation::SHIFT_LINK;
-		window.ref[window.nRef].m_shiftValue    = 0;
-		window.ref[window.nRef].m_squeezeOption = Evaluation::SHIFT_LINK;
-		window.ref[window.nRef].m_squeezeValue  = 0;
-	}
+		// 3. Set the shift and squeeze options for this reference
+		if (window.nRef == 0) {
+			// If it is the first one, select 'optimal' 
+			window.ref[window.nRef].m_shiftOption = Evaluation::SHIFT_FIX;
+			window.ref[window.nRef].m_squeezeOption = Evaluation::SHIFT_FIX;
+		}
+		else {
+			window.ref[window.nRef].m_shiftOption = Evaluation::SHIFT_LINK;
+			window.ref[window.nRef].m_shiftValue = 0;
+			window.ref[window.nRef].m_squeezeOption = Evaluation::SHIFT_LINK;
+			window.ref[window.nRef].m_squeezeValue = 1;
+		}
 
-	// 4. update the number of references
-	window.nRef += 1;
+		// 4. update the number of references
+		window.nRef += 1;
 
-	// If this is the first reference inserted, also make a guess for the window name
-	if(window.nRef == 1 && strlen(specie) != 0){
-		window.name.Format("%s", specie);
-		PopulateWindowList();
+		// If this is the first reference inserted, also make a guess for the window name; if there isn't already a window name
+		if (window.nRef == 1 && strlen(specie) != 0 && window.name == "NEW") {
+			window.name.Format("%s", specie);
+			PopulateWindowList();
+		}
 	}
 
 	// Update the grid

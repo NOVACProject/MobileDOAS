@@ -5,6 +5,7 @@
 #include "DMSpec.h"
 #include "Common.h"
 #include <utility>
+#include <vector>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -61,11 +62,11 @@ gpsData::gpsData(const gpsData& other) {
 	this->date[4] = other.date[4];
 	this->date[5] = other.date[5];
 }
-gpsData& gpsData::operator=(gpsData other)
-{
-	std::swap(*this, other);
-	return *this;
-}
+//gpsData& gpsData::operator=(gpsData other)
+//{
+//	std::swap(*this, other);
+//	return *this;
+//}
 
 
 
@@ -384,6 +385,77 @@ double GetWindFactor(double lat1,double lon1,double lat2,double lon2, double win
 	windFactor = cos(difAngle);
 	
 	return windFactor;
+}
+
+std::vector<CString> Common::BrowseForFiles()
+{
+
+	std::vector<CString> filenames;
+	IFileOpenDialog *pfd;
+	// CoCreate the dialog object.
+	HRESULT hr = CoCreateInstance(CLSID_FileOpenDialog,
+		NULL,
+		CLSCTX_INPROC_SERVER,
+		IID_PPV_ARGS(&pfd));
+
+	if (SUCCEEDED(hr))
+	{
+		DWORD dwOptions;
+		// Specify multiselect.
+		hr = pfd->GetOptions(&dwOptions);
+
+		if (SUCCEEDED(hr))
+		{
+			hr = pfd->SetOptions(dwOptions | FOS_ALLOWMULTISELECT);
+		}
+
+		if (SUCCEEDED(hr))
+		{
+			
+			COMDLG_FILTERSPEC aFileTypes[] = {
+				{ L"Text files", L"*.txt" }
+			};
+			hr = pfd->SetFileTypes(ARRAYSIZE(aFileTypes), aFileTypes);
+		}
+
+		if (SUCCEEDED(hr))
+		{
+			// Show the Open dialog.
+			hr = pfd->Show(NULL);
+
+			if (SUCCEEDED(hr))
+			{
+				// Obtain the result of the user interaction.
+				IShellItemArray *results;
+				hr = pfd->GetResults(&results);
+
+				if (SUCCEEDED(hr))
+				{	
+					DWORD numFiles;
+					hr = results->GetCount(&numFiles);
+					filenames.reserve(numFiles);
+					if (SUCCEEDED(hr)) {
+						for (DWORD j = 0; j < numFiles; j++) {
+							IShellItem *file;
+							results->GetItemAt(j, &file);
+							LPWSTR dn;
+							file->GetDisplayName(SIGDN_FILESYSPATH, &dn);
+							CString name(dn);
+							filenames.push_back(name);
+							CoTaskMemFree(dn);
+						}
+						return filenames;
+					}
+					//
+					// You can add your own code here to handle the results.
+					//
+						results->Release();
+				}
+			}
+		}
+		pfd->Release();
+	}
+	return filenames;
 }
 
 // open a browser window and let the user search for a file

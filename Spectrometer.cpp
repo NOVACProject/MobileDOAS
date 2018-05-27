@@ -273,100 +273,38 @@ int CSpectrometer::ScanUSB(long sumInComputer, long sumInSpectrometer, double pR
 	memset(pResult, 0, MAX_N_CHANNELS * MAX_SPECTRUM_LENGTH * sizeof(double));
 
 	// Set the parameters for acquiring the spectrum
-	if (m_NChannels == 1) {
+	for (int chn = 0; chn < m_NChannels; ++chn) {
 		// Set the exposure time to use (this function takes exp-time in micro-seconds)
-		m_wrapper.setIntegrationTime(m_spectrometerIndex, m_spectrometerChannel, m_integrationTime * 1000);
+		m_wrapper.setIntegrationTime(m_spectrometerIndex, chn, m_integrationTime * 1000);
 
 		// Set the number of co-adds
-		m_wrapper.setScansToAverage(m_spectrometerIndex, m_spectrometerChannel, sumInSpectrometer);
-	}
-	else {
-		for (int chn = 0; chn < m_NChannels; ++chn) {
-			// Set the exposure time to use (this function takes exp-time in micro-seconds)
-			m_wrapper.setIntegrationTime(m_spectrometerIndex, chn, m_integrationTime * 1000);
-
-			// Set the number of co-adds
-			m_wrapper.setScansToAverage(m_spectrometerIndex, chn, sumInSpectrometer);
-		}
+		m_wrapper.setScansToAverage(m_spectrometerIndex, chn, sumInSpectrometer);
 	}
 
 
 	// if we only use one channel
-	if (m_NChannels == 1) {
+	for (int chn = 0; chn < m_NChannels; ++chn) {
 		// Get the spectrum
 		for (int k = 0; k < sumInComputer; ++k) {
 			if (!m_isRunning)
 				return 0;
 
 			// Retreives the spectrum from the spectrometer
-			DoubleArray spectrumArray = m_wrapper.getSpectrum(m_spectrometerIndex, m_spectrometerChannel);
+			DoubleArray spectrumArray = m_wrapper.getSpectrum(m_spectrometerIndex, chn);
 
 			// copies the spectrum-values to the output array
 			const double* spectrum = spectrumArray.getDoubleValues();	// Sets a pointer to the values of the Spectrum array 
 			for (int i = 0; i < spectrumArray.getLength(); i++) {				// Loop to print the spectral data to the screen
-				pResult[0][i] += spectrum[i];
+				pResult[chn][i] += spectrum[i];
 			}
 		}
 
 		// make the spectrum an average 
 		if (sumInComputer > 0) {
 			for (int i = 0; i < m_detectorSize; i++) {
-				pResult[0][i] /= sumInComputer;
+				pResult[chn][i] /= sumInComputer;
 			}
 		}
-
-		return 0;
-	}
-	else if (m_NChannels == 2) {
-
-		//// create a new ADC1000-USB spectrometer
-		//ADC1000USB doubleSpec; = ADC1000USB(m_spectrometerIndex);
-		//
-		//// Make sure that this spectrometer has enough available channels
-		//if(m_NChannels > doubleSpec.getNumberOfEnabledChannels()){
-		//	MessageBox(pView->m_hWnd, "Error: present spectrometer does not have enough channels. Exiting spectrum collection", "Error", MB_OK);
-		//	return 0;
-		//}
-		//
-		//doubleSpec.setIntegrationTime(5000 * 1000);
-
-		// enable the collection of two spectra at once
-		// doubleSpec.setRotatorEnabled(1);
-
-//		a = doubleSpec.getNumberOfChannels();
-//		a = doubleSpec.getNumberOfEnabledChannels();
-//		a = doubleSpec.isRotatorEnabled();
-//	
-//		ADC1000Channel master = ADC1000Channel(doubleSpec, doubleSpec.getNewCoefficients(0), 0);
-//		ADC1000Channel slave  = ADC1000Channel(doubleSpec, doubleSpec.getNewCoefficients(1), 1);
-//
-//		// Get the spectrum
-//		for(int k = 0; k < sumInComputer; ++k){
-//			if(!fRun)
-//				return 0;
-//
-//			unsigned char ism, ise;
-//			ism = master.isMaster();
-//			ism = slave.isMaster();
-//			ise = master.isEnabled();
-//			ise = slave.isEnabled();
-//
-//			// Retreives the spectrum from the spectrometer
-////			DoubleArray spectrumArray0 = m_wrapper.getSpectrum(m_spectrometerIndex, 0);
-//			Spectrum s0 = master.getSpectrum();
-//			Spectrum s1 = slave.getSpectrum();
-//
-//			DoubleArray spectrumArray0 = s0.getSpectrum();
-//			DoubleArray spectrumArray1 = s1.getSpectrum();
-//
-//			// copies the spectrum-values to the output array
-//			double *spectrum0	= spectrumArray0.getDoubleValues();	// Sets a pointer to the values of the Spectrum array 
-//			double *spectrum1	= spectrumArray1.getDoubleValues();	// Sets a pointer to the values of the Spectrum array 
-//			for(int i = 0; i < m_detectorSize; i++){				// Loop to print the spectral data to the screen
-//				pResult[0][i] += spectrum0[i];
-//				pResult[1][i] += spectrum1[i];
-//			}
-//		}
 	}
 
 	return 0;
@@ -525,6 +463,7 @@ int CSpectrometer::CheckSettings() {
 
 void CSpectrometer::WriteEvFile(CString filename, FitRegion *fitRegion) {
 	double *result = NULL;
+	int channel = fitRegion->window.channel;
 
 	FILE *f;
 	CString wholePath = m_subFolder + "\\" + m_measurementBaseName + "_" + m_measurementStartTimeStr + filename;
@@ -547,16 +486,16 @@ void CSpectrometer::WriteEvFile(CString filename, FitRegion *fitRegion) {
 	fprintf(f, "%ld\t%d\t", m_totalSpecNum, m_integrationTime);
 
 	// 4. The intensity
-	fprintf(f, "%ld\t", m_averageSpectrumIntensity[0]);
+	fprintf(f, "%ld\t", m_averageSpectrumIntensity[channel]);
 
 	// 5. The evaluated column values
 	for (int k = 0; k < fitRegion->window.nRef; ++k) {
-		result = fitRegion->eval[0]->GetResult(k);
+		result = fitRegion->eval[channel]->GetResult(k);
 		fprintf(f, "%lf\t%lf\t", result[0], result[1]);
 	}
 
 	// 6. The std-file
-	fprintf(f, "%s\n", (LPCTSTR)m_stdfileName[0]);
+	fprintf(f, "%s\n", (LPCTSTR)m_stdfileName[channel]);
 
 	fclose(f);
 }
@@ -793,9 +732,7 @@ void CSpectrometer::DoEvaluation(double pSky[][MAX_SPECTRUM_LENGTH], double pDar
 		}
 
 		// copy the high pass filtered spectrum
-		for (int i = 0; i < m_fitRegionNum; ++i) {
-			memcpy(m_spectrum[i], m_fitRegion[i].eval[chn]->m_filteredSpectrum, MAX_SPECTRUM_LENGTH * sizeof(double));
-		}
+		memcpy(m_spectrum[chn], m_fitRegion[j].eval[chn]->m_filteredSpectrum, MAX_SPECTRUM_LENGTH * sizeof(double));
 
 		// copy the fitted reference
 		for (int r = 0; r < m_fitRegion[j].window.nRef + 1; ++r) {

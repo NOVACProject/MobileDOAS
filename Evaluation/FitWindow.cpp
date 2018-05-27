@@ -20,7 +20,7 @@ void CFitWindow::Clear(){
 	specLength = MAX_SPECTRUM_LENGTH;
 	fitType = FIT_HP_DIV;
 	interlaced = false;
-	name.Format("SO2");
+	name.Format("NEW");
 	nRef = 0;
 	polyOrder = 5;
 	offsetFrom	= 50;

@@ -10,6 +10,7 @@
 #endif // _MSC_VER > 1000
 
 #include <math.h>
+#include <vector>
 
 #define MAX_TRAVERSE_SHOWN 4096
 
@@ -90,7 +91,7 @@ struct gpsData {
 	gpsData();
 	gpsData(const gpsData& other);
 
-	gpsData& operator=(gpsData other);
+	//gpsData& operator=(gpsData other);
 
 	/* Latitude in (decimal) degrees. */
 	double latitude = 0.0;
@@ -169,6 +170,8 @@ public:
 	static void GetDirectory(CString &fileName);
 
 	/** Opens a browser window and lets the user select a file */
+
+	static std::vector<CString> BrowseForFiles();
 	static bool BrowseForFile(char *filter, CString &fileName);
 
 	/** Opens a dialog window and lets the user browse for a filename to save to */
