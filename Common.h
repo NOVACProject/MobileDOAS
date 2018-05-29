@@ -91,7 +91,9 @@ struct gpsData {
 	gpsData();
 	gpsData(const gpsData& other);
 
-	//gpsData& operator=(gpsData other);
+	gpsData& operator=(gpsData other);
+
+	friend void swap(gpsData& first, gpsData& second);
 
 	/* Latitude in (decimal) degrees. */
 	double latitude = 0.0;
