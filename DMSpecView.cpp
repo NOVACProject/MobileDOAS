@@ -596,15 +596,6 @@ LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 
 		SoundAlarm();
 
-	}else if(latNSat == 0 && data.nSatellites != 0){
-		COLORREF normal = RGB(236, 233, 216);
-
-		// Set the background color to normal
-		m_gpsLatLabel.SetBackgroundColor(normal);
-		m_gpsLonLabel.SetBackgroundColor(normal);
-		m_gpsTimeLabel.SetBackgroundColor(normal);
-		m_gpsNSatLabel.SetBackgroundColor(normal);
-
 	}else if(latNSat != 0 && data.nSatellites == 0){
 		COLORREF warning = RGB(255, 75, 75);
 
@@ -613,6 +604,16 @@ LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 		m_gpsLonLabel.SetBackgroundColor(warning);
 		m_gpsTimeLabel.SetBackgroundColor(warning);
 		m_gpsNSatLabel.SetBackgroundColor(warning);
+	}
+	else {
+
+		COLORREF normal = RGB(236, 233, 216);
+
+		// Set the background color to normal
+		m_gpsLatLabel.SetBackgroundColor(normal);
+		m_gpsLonLabel.SetBackgroundColor(normal);
+		m_gpsTimeLabel.SetBackgroundColor(normal);
+		m_gpsNSatLabel.SetBackgroundColor(normal);
 	}
 	
 	// Remember the number of satelites
