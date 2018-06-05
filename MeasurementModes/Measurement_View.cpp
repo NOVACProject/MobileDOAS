@@ -110,8 +110,9 @@ void CMeasurement_View::Run(){
 		pView->PostMessage(WM_DRAWSPECTRUM);
 	}
 	
-	if(m_spectrumCounter > 1)
+	if(m_spectrumCounter > 1){
 		CountFlux(m_windSpeed, m_windAngle);
+	}
 
 	memset((void*)scanResult,0,sizeof(double)*4096);
 	m_scanNum++;

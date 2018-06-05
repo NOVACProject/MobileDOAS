@@ -163,7 +163,6 @@ void CRouteGraph::DrawShadedRect(double lat1, double lon1, double lat2, double l
 	double left		= (double)m_rectPlot.left;
 	double bottom	= (double)m_rectPlot.bottom;
 	AxisOptions::FloatRect curAxis; // The current axis (either first or second axis)
-	int i;
 
 	// Copy the current pen
 	LOGPEN logpen;
@@ -176,7 +175,7 @@ void CRouteGraph::DrawShadedRect(double lat1, double lon1, double lat2, double l
 	COLORREF complement = RGB(R, G, B);
 
 	// Make a new pen with this color
-  m_penPlot.DeleteObject() ;
+	m_penPlot.DeleteObject() ;
 	m_penPlot.CreatePen(PS_DOT, 1, complement);
 
 	// Draw the rectangle
@@ -203,7 +202,7 @@ void CRouteGraph::DrawShadedRect(double lat1, double lon1, double lat2, double l
 	prevX = (int)(left + (x[0] - offsLeft)*xFactor);
 	prevY = (int)(bottom - (y[0] - offsBottom) * yFactor);
 
-	for(i = 0; i < 5; ++i){
+	for(int i = 0; i < 5; ++i){
 		// Calculate the next point...
 		curX = (int)(left + xFactor * (x[i] - offsLeft) );
 		curY = (int)(bottom - (y[i] - offsBottom) * yFactor);
@@ -217,7 +216,7 @@ void CRouteGraph::DrawShadedRect(double lat1, double lon1, double lat2, double l
 	}
 
 	// Restore the pen
-  m_penPlot.DeleteObject() ;
+	m_penPlot.DeleteObject() ;
 	m_penPlot.CreatePenIndirect(&logpen);	
 
 	FinishPlot();
