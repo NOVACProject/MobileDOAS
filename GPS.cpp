@@ -42,7 +42,7 @@ CGPS::CGPS(char* pCOMPort, long pBaudrate)
 CGPS::~CGPS(){
 
 	m_gpsThread = nullptr;
-	serial.Close();
+	//serial.Close();
 }
 
 bool CGPS::Connect() {
@@ -324,7 +324,6 @@ UINT CollectGPSData(LPVOID pParam){
 	CGPS *gps = (CGPS *)pParam;
 	gps->fRun = true;
 
-	int retryCount = 0;
 	while(gps->fRun){
 		bool ret=gps->ReadGPS();
 		if (ret) {
@@ -335,17 +334,12 @@ UINT CollectGPSData(LPVOID pParam){
 			// Error reading GPS.  Sleep longer and try again.
 			gps->CloseSerial();
 			Sleep(1000);
-			if (!gps->Connect()) {
-				retryCount++;
-			}
-			if (retryCount > 10) {
-				MessageBox(nullptr, "GPS Signal Lost.", "Error", MB_OK | MB_SYSTEMMODAL);
-				gps->fRun = false;
-			}
+			gps->Connect();
 		}
 	}
 
 	gps->CloseSerial();
+	gps->fRun = false;
 
 	return 0;
 }
