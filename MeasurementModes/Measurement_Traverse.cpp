@@ -216,12 +216,15 @@ void CMeasurement_Traverse::Run(){
 		}
 
 		/* ----------------- Save the spectrum(-a) -------------------- */
-		if(m_useGps){
-			for(int i = 0; i  < m_NChannels; ++i)
+		if (m_useGps) {
+			for (int i = 0; i < m_NChannels; ++i) {
 				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, m_spectrumGpsData[m_spectrumCounter].time, m_spectrumGpsData[m_spectrumCounter].time + elapsedSecond, m_spectrumGpsData[m_spectrumCounter].latitude, m_spectrumGpsData[m_spectrumCounter].longitude, m_spectrumGpsData[m_spectrumCounter].altitude, m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);
-		}else{
-			for(int i = 0; i < m_NChannels; ++i)
-				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, startTime, startTime+elapsedSecond, 0, 0, 0, m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);
+			}
+		}
+		else {
+			for (int i = 0; i < m_NChannels; ++i) {
+				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, startTime, startTime + elapsedSecond, 0, 0, 0, m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);
+			}
 		}
 
 		#ifdef _DEBUG
@@ -264,8 +267,9 @@ void CMeasurement_Traverse::Run(){
 				m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i],1);
 
 				// remove the dark spectrum
-				for(int iterator = 0; iterator < MAX_SPECTRUM_LENGTH; ++iterator)
+				for (int iterator = 0; iterator < MAX_SPECTRUM_LENGTH; ++iterator) {
 					m_sky[i][iterator] -= m_dark[i][iterator];
+				}
 
 				// Tell the evaluator(s) that the dark-spectrum does not need to be subtracted from the sky-spectrum
 				for(int fitRgn = 0; fitRgn < m_fitRegionNum; ++fitRgn){
@@ -293,10 +297,12 @@ void CMeasurement_Traverse::Run(){
 			/* Get the information about the spectrum */
 			GetSpectrumInfo(scanResult);
 
-			if(m_specInfo->isDark)
-				m_statusMsg.Format("Average value around center channel %d: %d (Dark)",m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
-			else
-				m_statusMsg.Format("Average value around center channel %d: %d",m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
+			if (m_specInfo->isDark) {
+				m_statusMsg.Format("Average value around center channel %d: %d (Dark)", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
+			}
+			else {
+				m_statusMsg.Format("Average value around center channel %d: %d", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
+			}
 
 			pView->PostMessage(WM_STATUSMSG);
 			vIntensity.Append(m_averageSpectrumIntensity[0]);
@@ -307,8 +313,9 @@ void CMeasurement_Traverse::Run(){
 			DoEvaluation(m_tmpSky, m_tmpDark, scanResult);
 		}
 		
-		if(m_spectrumCounter > 1)
+		if (m_spectrumCounter > 1) {
 			CountFlux(m_windSpeed, m_windAngle);
+		}
 
 		#ifdef _DEBUG
 			cFinish = clock();
@@ -493,8 +500,9 @@ void CMeasurement_Traverse::Run_Adaptive(){
 
 				// remove the dark spectrum
 				GetDark();
-				for(int iterator = 0; iterator < MAX_SPECTRUM_LENGTH; ++iterator)
+				for(int iterator = 0; iterator < MAX_SPECTRUM_LENGTH; ++iterator){
 					m_sky[i][iterator] -= m_tmpDark[i][iterator];
+				}
 
 				// Tell the evaluator(s) that the dark-spectrum does not need to be subtracted from the sky-spectrum
 				for(int fitRgn = 0; fitRgn < m_fitRegionNum; ++fitRgn){
@@ -528,10 +536,12 @@ void CMeasurement_Traverse::Run_Adaptive(){
 			/* Get the information about the spectrum */
 			GetSpectrumInfo(scanResult);
 
-			if(m_specInfo->isDark)
+			if(m_specInfo->isDark){
 				m_statusMsg.Format("Average value around center channel %d: %d (Dark)",m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
-			else
+			}
+			else{
 				m_statusMsg.Format("Average value around center channel %d: %d",m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
+			}
 
 			pView->PostMessage(WM_STATUSMSG);
 			vIntensity.Append(m_averageSpectrumIntensity[0]);
@@ -553,8 +563,9 @@ void CMeasurement_Traverse::Run_Adaptive(){
 			pView->PostMessage(WM_SHOWINTTIME);
 		}
 		
-		if(m_spectrumCounter > 1)
+		if(m_spectrumCounter > 1){
 			CountFlux(m_windSpeed, m_windAngle);
+		}
 
 		memset((void*)scanResult,0,sizeof(double)*4096);
 		m_scanNum++;

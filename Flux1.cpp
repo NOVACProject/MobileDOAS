@@ -560,37 +560,37 @@ bool CFlux::AssignValueToColumn_ReEvaluationLog(long fileIndex, int column, int 
 
 	/* if any of the common columns */
 	switch(column){
-		case 0:
-			for(int k = 0; k < nChannels; ++k){
-				m_traverse[fileIndex + k]->time[row].hour   = (char)value[0];
-				m_traverse[fileIndex + k]->time[row].minute = (char)value[1];
-				m_traverse[fileIndex + k]->time[row].second = (char)value[2];
-			}
-			return true;
-		case 1:
-			for(int k = 0; k < nChannels; ++k)
-				m_traverse[fileIndex + k]->latitude[row] = value[0];
-			return true;
-		case 2:
-			for(int k = 0; k < nChannels; ++k)
-				m_traverse[fileIndex + k]->longitude[row] = value[0];
-			return true;
-		case 3:
-			for(int k = 0; k < nChannels; ++k)
-				m_traverse[fileIndex + k]->altitude[row] = value[0];
-			return true;
-		case 4:
-			for(int k = 0; k < nChannels; ++k)
-				m_traverse[fileIndex + k]->m_nSpectra = (long)value[0];
-			return true;
-		case 5:
-			for(int k = 0; k < nChannels; ++k)
-				m_traverse[fileIndex + k]->m_expTime = (long)value[0];
-			return true;
-		case 6:
-			for(int k = 0; k < nChannels; ++k)
-				m_traverse[fileIndex + k]->intensArray[row] = value[0];
-			return true;
+	case 0:
+		for (int k = 0; k < nChannels; ++k) {
+			m_traverse[fileIndex + k]->time[row].hour = (char)value[0];
+			m_traverse[fileIndex + k]->time[row].minute = (char)value[1];
+			m_traverse[fileIndex + k]->time[row].second = (char)value[2];
+		}
+		return true;
+	case 1:
+		for (int k = 0; k < nChannels; ++k)
+			m_traverse[fileIndex + k]->latitude[row] = value[0];
+		return true;
+	case 2:
+		for (int k = 0; k < nChannels; ++k)
+			m_traverse[fileIndex + k]->longitude[row] = value[0];
+		return true;
+	case 3:
+		for (int k = 0; k < nChannels; ++k)
+			m_traverse[fileIndex + k]->altitude[row] = value[0];
+		return true;
+	case 4:
+		for (int k = 0; k < nChannels; ++k)
+			m_traverse[fileIndex + k]->m_nSpectra = (long)value[0];
+		return true;
+	case 5:
+		for (int k = 0; k < nChannels; ++k)
+			m_traverse[fileIndex + k]->m_expTime = (long)value[0];
+		return true;
+	case 6:
+		for (int k = 0; k < nChannels; ++k)
+			m_traverse[fileIndex + k]->intensArray[row] = value[0];
+		return true;
 	}
 	/* this column is a description of one specie. 
 		There are six columns for every specie; COLUMN, COLUMN_ERRROR, SHIFT, SHIFT_ERROR, SQUEEZE, SQUEEZE_ERROR */
@@ -598,19 +598,18 @@ bool CFlux::AssignValueToColumn_ReEvaluationLog(long fileIndex, int column, int 
 	int columnType    = (column - nCommonColumns) % nColumnsPerSpecie;
 
 	switch(columnType){
-		case 0: m_traverse[fileIndex + specieNumber]->columnArray[row] = value[0];
+	case 0: m_traverse[fileIndex + specieNumber]->columnArray[row] = value[0];
 		return true;
-		case 1:	m_traverse[fileIndex + specieNumber]->columnError[row] = value[0];
+	case 1:	m_traverse[fileIndex + specieNumber]->columnError[row] = value[0];
 		return true;
-		case 2:
+	case 2:
 		return true;
-		case 3:
+	case 3:
 		return true;
-		case 4:
+	case 4:
 		return true;
-		case 5:
+	case 5:
 		return true;
-
 	}
 	return false;
 }

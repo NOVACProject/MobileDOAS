@@ -19,8 +19,13 @@ public:
 	CGPS(char* pCOMPort, long pBaudrate);
 	virtual ~CGPS();
 
+	bool Connect();
+
 	/** Set to true when the gps-collecting thread is running. */
 	volatile bool fRun;
+
+	/** true if the serial connection and the GPS seems to work */
+	bool m_gotContact = false;
 
 	/* Tries to parse the text read from the GPS.
 		The parsed information will be filled into the provided 'data.
@@ -49,9 +54,6 @@ public:
 	bool ReadGPS();
 
 private:
-
-	/** true if the serial connection and the GPS seems to work */
-	bool m_gotContact = false;
 
 	/** The gps-logfile*/
 	CString m_logFile;

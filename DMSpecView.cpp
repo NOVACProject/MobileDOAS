@@ -32,6 +32,7 @@
 #include "MeasurementModes/Measurement_View.h"
 #include "MeasurementModes/Measurement_Calibrate.h"
 #include <algorithm>
+#include <Mmsystem.h>	// used for PlaySound
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -583,14 +584,17 @@ LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 	this->SetDlgItemText(IDC_LON, lon);
 	this->SetDlgItemText(IDC_NGPSSAT, nSat);
 
-	if(latNSat == 0 && data.nSatellites != 0){
-		COLORREF normal = RGB(236, 233, 216);
 
-		// Set the background color to normal
-		m_gpsLatLabel.SetBackgroundColor(normal);
-		m_gpsLonLabel.SetBackgroundColor(normal);
-		m_gpsTimeLabel.SetBackgroundColor(normal);
-		m_gpsNSatLabel.SetBackgroundColor(normal);
+	if (!m_Spectrometer->m_gps->m_gotContact) { // If GPS signal is lost
+		COLORREF warning = RGB(255, 75, 75);
+
+		// Set the background color to red
+		m_gpsLatLabel.SetBackgroundColor(warning);
+		m_gpsLonLabel.SetBackgroundColor(warning);
+		m_gpsTimeLabel.SetBackgroundColor(warning);
+		m_gpsNSatLabel.SetBackgroundColor(warning);
+
+		SoundAlarm();
 
 	}else if(latNSat != 0 && data.nSatellites == 0){
 		COLORREF warning = RGB(255, 75, 75);
@@ -601,7 +605,17 @@ LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 		m_gpsTimeLabel.SetBackgroundColor(warning);
 		m_gpsNSatLabel.SetBackgroundColor(warning);
 	}
+	else {
 
+		COLORREF normal = RGB(236, 233, 216);
+
+		// Set the background color to normal
+		m_gpsLatLabel.SetBackgroundColor(normal);
+		m_gpsLonLabel.SetBackgroundColor(normal);
+		m_gpsTimeLabel.SetBackgroundColor(normal);
+		m_gpsNSatLabel.SetBackgroundColor(normal);
+	}
+	
 	// Remember the number of satelites
 	latNSat = (int)data.nSatellites;
 
@@ -1402,4 +1416,18 @@ void CDMSpecView::OnDestroy()
 
 	// Terminate the collection of spectra
 	this->OnControlStop();
+}
+
+
+void CDMSpecView::SoundAlarm()
+{
+	CString fileToPlay;
+	TCHAR windowsDir[MAX_PATH + 1];
+	GetWindowsDirectory(windowsDir, MAX_PATH + 1);
+
+	DWORD volume = (DWORD)(0xFFFF);
+	MMRESULT res = waveOutSetVolume(0, volume);
+	fileToPlay.Format("%s\\Media\\Windows Error.wav", windowsDir);
+
+	PlaySound(fileToPlay, 0, SND_SYNC);
 }

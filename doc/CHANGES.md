@@ -7,10 +7,12 @@ Critical changes
 
 New features
 * Multiple reference files can be addeded or removed simultaneously through evaluation configuration dialogs
+* Warn user (audio and visual) when GPS connection is lost (#78)
 
 Bug fixes
 * Fix spectra collection feature that did not work when second channel is enabled for a spectrometer (#74)
 * Ensure evaluation configuration dialog updates properly when adding/removing a new fit window
+* Attempt to reconnect when GPS connection is lost (#77)
 
 -----------------------------------------------------
 Version 6.0 (April 2018)

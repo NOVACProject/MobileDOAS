@@ -22,7 +22,7 @@ extern CString g_exePath;  // <-- This is the path to the executable. This is a 
 
 CGPS::CGPS()
 	: gpsInfo() {
-	m_gotContact = false;
+	//m_gotContact = false;
 
 	m_gpsThread = nullptr;
 	fRun = false;
@@ -30,26 +30,31 @@ CGPS::CGPS()
 
 CGPS::CGPS(char* pCOMPort, long pBaudrate)
 	: CGPS() {
+
 	serial.baudrate = pBaudrate;
 	strcpy(serial.serialPort, pCOMPort);
-	if (!serial.Init(pBaudrate)) {
+
+	if (!Connect()) {
 		MessageBox(nullptr, "Could not communicate with GPS. No GPS-data can be retrieved!", "Error", MB_OK | MB_SYSTEMMODAL);
 	}
-	m_gotContact = true;
 }
 
 CGPS::~CGPS(){
 
 	m_gpsThread = nullptr;
-	serial.Close();
+	//serial.Close();
 }
 
+bool CGPS::Connect() {
+	if (!serial.Init(this->serial.baudrate)) {
+		return false;
+	}
+	return true;
+}
 
 /**Get position information - latitude and longitude
 *
 */
-
-
 void CGPS::Get(gpsData& dst) const
 {
 	dst = this->gpsInfo;
@@ -273,10 +278,7 @@ void CGPS::Run(){
 
 void CGPS::Stop(){
 	this->fRun = false;
-	if(m_gpsThread != nullptr){
-	}
 }
-
 
 bool CGPS::ReadGPS(){
 	char gpstxt[256];
@@ -291,11 +293,12 @@ bool CGPS::ReadGPS(){
 				serial.Read(gpstxt+cnt,1);
 				cnt++;
 			}
+			m_gotContact = true;
 		}else{
 			printf("timeout in getting gps\n");
 			serial.FlushSerialPort(1);
 			m_gotContact = false;
-			return(0);
+			return false;
 		}
 	}while(!Parse(gpstxt, this->gpsInfo));
 
@@ -310,9 +313,6 @@ bool CGPS::ReadGPS(){
 	}
 	#endif
 
-	// we've got contact with the gps again
-	m_gotContact = true;
-
 	return SUCCESS;
 }
 
@@ -325,13 +325,21 @@ UINT CollectGPSData(LPVOID pParam){
 	gps->fRun = true;
 
 	while(gps->fRun){
-		gps->ReadGPS();
-
-		/* make a small pause */
-		Sleep(100);
+		bool ret=gps->ReadGPS();
+		if (ret) {
+			/* make a small pause */
+			Sleep(100);
+		}
+		else {
+			// Error reading GPS.  Sleep longer and try again.
+			gps->CloseSerial();
+			Sleep(1000);
+			gps->Connect();
+		}
 	}
 
 	gps->CloseSerial();
+	gps->fRun = false;
 
 	return 0;
 }
