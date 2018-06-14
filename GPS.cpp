@@ -103,7 +103,13 @@ bool CGPS::Parse(char *string, gpsData& data){
 				return false;
 			}
 			else {
-				data.latitude = ConvertToDecimalDegrees(strtod(token, &stopStr));
+				double lat = ConvertToDecimalDegrees(strtod(token, &stopStr));
+				if (lat >= -90.0 && lat <= 90.0) {
+					data.latitude = lat;
+				}
+				else {
+					return false;
+				}
 			}
 
 			/* 4: north/south hemisphere */
@@ -111,8 +117,15 @@ bool CGPS::Parse(char *string, gpsData& data){
 				return false;
 			}
 			else {
-				if (0 == strncmp(token, "S", 1))
+				if (0 == strncmp(token, "S", 1)) {
 					data.latitude = -data.latitude;
+				}
+				else if (0 == strncmp(token, "N", 1)) {
+					// this is ok too
+				}
+				else {
+					return false; // some issue here
+				}
 			}
 
 			/* 5: the longitude  */
@@ -120,7 +133,13 @@ bool CGPS::Parse(char *string, gpsData& data){
 				return false;
 			}
 			else {
-				data.longitude = ConvertToDecimalDegrees(strtod(token, &stopStr));
+				double lon = ConvertToDecimalDegrees(strtod(token, &stopStr));
+				if (lon >= -180.0 && lon <= 180.0) {
+					data.longitude = lon;
+				}
+				else {
+					return false;
+				}
 			}
 
 			/* 6: east/west hemisphere */
@@ -128,8 +147,15 @@ bool CGPS::Parse(char *string, gpsData& data){
 				return false;
 			}
 			else {
-				if (0 == strncmp(token, "W", 1))
+				if (0 == strncmp(token, "W", 1)) {
 					data.longitude = -data.longitude;
+				}
+				else if (0 == strncmp(token, "E", 1)) {
+					// this is ok too
+				}
+				else {
+					return false; // some issue here
+				}
 			}
 
 			/* 7: the speed [knots] (ignore) */
@@ -188,7 +214,13 @@ bool CGPS::Parse(char *string, gpsData& data){
 				return false;
 			}
 			else {
-				data.latitude = ConvertToDecimalDegrees(strtod(token, &stopStr));
+				double lat = ConvertToDecimalDegrees(strtod(token, &stopStr));
+				if (lat >= -90.0 && lat <= 90.0) {
+					data.latitude = lat;
+				}
+				else {
+					return false;
+				}
 			}
 
 			/* 3: north/south hemisphere */
@@ -196,8 +228,15 @@ bool CGPS::Parse(char *string, gpsData& data){
 				return false;
 			}
 			else {
-				if (0 == strncmp(token, "S", 1))
+				if (0 == strncmp(token, "S", 1)) {
 					data.latitude = -data.latitude;
+				}
+				else if (0 == strncmp(token, "N", 1)) {
+					// this is ok too
+				}
+				else {
+					return false; // some issue here
+				}
 			}
 
 			/* 4: longitude */
@@ -205,7 +244,13 @@ bool CGPS::Parse(char *string, gpsData& data){
 				return false;
 			}
 			else {
-				data.longitude = ConvertToDecimalDegrees(strtod(token, &stopStr));
+				double lon = ConvertToDecimalDegrees(strtod(token, &stopStr));
+				if (lon >= -180.0 && lon <= 180.0) {
+					data.longitude = lon;
+				}
+				else {
+					return false;
+				}
 			}
 
 			/* 5: east/west hemisphere */
@@ -213,8 +258,15 @@ bool CGPS::Parse(char *string, gpsData& data){
 				return false;
 			}
 			else {
-				if (0 == strncmp(token, "W", 1))
+				if (0 == strncmp(token, "W", 1)) {
 					data.longitude = -data.longitude;
+				}
+				else if (0 == strncmp(token, "E", 1)) {
+					// this is ok too
+				}
+				else {
+					return false; // some issue here
+				}
 			}
 
 			/* 6: quality of fix (ignore) */
