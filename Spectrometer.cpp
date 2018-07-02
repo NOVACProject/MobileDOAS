@@ -1032,13 +1032,12 @@ void CSpectrometer::Sing(double factor)
 long CSpectrometer::AverageIntens(double *pSpectrum, long ptotalNum) {
 	double sum = 0.0;
 	long num;
-	int j;
 	if (m_conf->m_specCenter <= OFFSET)
 		m_conf->m_specCenter = OFFSET;
 	if (m_conf->m_specCenter >= MAX_SPECTRUM_LENGTH - OFFSET)
 		m_conf->m_specCenter = MAX_SPECTRUM_LENGTH - 2 * OFFSET;
 
-	for (j = m_conf->m_specCenter - OFFSET; j < m_conf->m_specCenter + OFFSET; j++) {
+	for (int j = m_conf->m_specCenter - OFFSET; j < m_conf->m_specCenter + OFFSET; j++) {
 		sum += pSpectrum[j];
 	}
 
