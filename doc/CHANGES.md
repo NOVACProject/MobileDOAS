@@ -13,6 +13,8 @@ Bug fixes
 * Fix spectra collection feature that did not work when second channel is enabled for a spectrometer (#74)
 * Ensure evaluation configuration dialog updates properly when adding/removing a new fit window
 * Attempt to reconnect when GPS connection is lost (#77)
+* Added GPS lat/lon validation (#81)
+
 
 -----------------------------------------------------
 Version 6.0 (April 2018)
