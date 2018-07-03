@@ -208,10 +208,13 @@ void CConfigure_Evaluation::OnRemoveReference(){
 
 	int minRow = cellRange.GetMinRow() - 1;
 	int nRows = cellRange.GetRowSpan();
-
+	
+	if (nRows <= 0) {
+		return;
+	}
 	// move every reference file in the list down one step
-	for(int i = 0; i < nRows; i++){
-		window.ref[minRow] = window.ref[minRow+1];
+	for(int i = minRow; i < window.nRef; i++){
+		window.ref[i] = window.ref[i+nRows];
 	}
 
 	// reduce the number of references by number deleted
