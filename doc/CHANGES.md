@@ -14,6 +14,7 @@ Bug fixes
 * Ensure evaluation configuration dialog updates properly when adding/removing a new fit window
 * Attempt to reconnect when GPS connection is lost (#77)
 * Added GPS lat/lon validation (#81)
+* Fix improperly working 'Remove Reference' button in Eval dialogs (#84)
 
 
 -----------------------------------------------------
