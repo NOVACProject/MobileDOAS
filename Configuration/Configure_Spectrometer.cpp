@@ -332,8 +332,3 @@ BOOL CConfigure_Spectrometer::PreTranslateMessage(MSG* pMsg){
   return CPropertyPage::PreTranslateMessage(pMsg);
 }
 
-
-void Configuration::CConfigure_Spectrometer::OnBnClickedCheckUsegps()
-{
-	// TODO: Add your control notification handler code here
-}
