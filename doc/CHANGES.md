@@ -4,10 +4,15 @@ Version 6.1 (TBD)
 
 Critical changes
 * Enable configuration and evaluation of second channel for spectrometers that support it (#8)
+* Removed support for text format configuration file.
 
 New features
 * Multiple reference files can be addeded or removed simultaneously through evaluation configuration dialogs
 * Warn user (audio and visual) when GPS connection is lost (#78)
+* Option to disable audio in spectrometer configuration (#88)
+* Alter pitch based on column density, instead of volume, if supported by audio device (#88)
+* Use same tone for negative column values (#88)
+* Play audio for second channel when enabled.
 
 Bug fixes
 * Fix spectra collection feature that did not work when second channel is enabled for a spectrometer (#74)

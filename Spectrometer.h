@@ -575,6 +575,9 @@ protected:
 	/** Average intensity (at the specified pixel) of the last spectrum that we measured */
 	long    m_averageSpectrumIntensity[MAX_N_CHANNELS];
 	
+	/** Audio option **/
+	int m_useAudio = 1;
+
 	/** The column value that causes 'Sing' to sing at the highest available volume */
 	double  m_maxColumn;
 

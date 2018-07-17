@@ -449,6 +449,7 @@
 #define IDC_BUTTON_FIT_POLYNOMIAL       1271
 #define IDC_LABEL_POLYNOMIAL            1272
 #define IDC_LABEL_POLYNOMIAL_0          1272
+#define IDC_CHECK_USEAUDIO              1273
 #define ID_ANALYSIS_POSTFLUX            32771
 #define ID_CONTROL_STOP                 32772
 #define ID_CONTROL_START                32772
@@ -467,9 +468,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        266
+#define _APS_NEXT_RESOURCE_VALUE        268
 #define _APS_NEXT_COMMAND_VALUE         32799
-#define _APS_NEXT_CONTROL_VALUE         1273
+#define _APS_NEXT_CONTROL_VALUE         1274
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

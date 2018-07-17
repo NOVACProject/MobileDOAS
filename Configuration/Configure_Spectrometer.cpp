@@ -45,7 +45,8 @@ void CConfigure_Spectrometer::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX,IDC_EDIT_PERCENT,				m_editPercent);
 	DDX_Control(pDX,IDC_EDIT_FIXEXPTIME,		m_editFixExpTime);
 
-	// Misc. settings
+	// Audio settings
+	DDX_Check(pDX, IDC_CHECK_USEAUDIO, m_conf->m_useAudio);
 	DDX_Text(pDX,		IDC_EDIT_MAXCOLUMN,			m_conf->m_maxColumn);
 
 	// The time resolution
@@ -85,6 +86,9 @@ BEGIN_MESSAGE_MAP(CConfigure_Spectrometer, CPropertyPage)
 	ON_EN_CHANGE(IDC_EDIT_TIMERESOLUTION,				SaveSettings)
 	ON_EN_CHANGE(IDC_EDIT_OFFSETFROM,						SaveSettings)
 	ON_EN_CHANGE(IDC_EDIT_OFFSETTO,							SaveSettings)
+
+	// Changing wheather we should use the audio or not
+	ON_BN_CLICKED(IDC_CHECK_USEAUDIO, SaveSettings)
 END_MESSAGE_MAP()
 
 
@@ -216,7 +220,7 @@ void CConfigure_Spectrometer::OnOK(){
 
 	// ------------ Spectrometer Settings ------------------
 	if(m_conf->m_spectrometerConnection == CMobileConfiguration::CONNECTION_RS232){
-		fprintf(f, "\t<serialPort>%s</serialPort>\n", (LPCTSTR)m_conf->m_serialPort);
+		fprintf(f, "\t<serialPort>%s</serialPort>\n", (LPCTSTR)(m_conf->m_serialPort));
 		fprintf(f, "\t<serialBaudrate>%d</serialBaudrate>\n",	m_conf->m_baudrate);
 	}else{
 		fprintf(f, "\t<serialPort>USB</serialPort>\n");
@@ -225,11 +229,8 @@ void CConfigure_Spectrometer::OnOK(){
 
 	fprintf(f, "\t<nchannels>%d</nchannels>\n",					m_conf->m_nChannels);
 
+	fprintf(f, "\t<useAudio>%d</useAudio>\n", m_conf->m_useAudio);
 	fprintf(f, "\t<maxColumn>%.2lf</maxColumn>\n",			m_conf->m_maxColumn);
-
-	//if(m_conf->m_nChannels > 1){
-	//	fprintf(f,	"NCHANNELS=%d\n",	m_conf->m_nChannels);
-	//}
 
 	// ------------ Settings for the Exposure-time -------------
 	fprintf(f, "\t<Intensity>\n");
@@ -329,4 +330,10 @@ BOOL CConfigure_Spectrometer::PreTranslateMessage(MSG* pMsg){
   m_toolTip.RelayEvent(pMsg);
 
   return CPropertyPage::PreTranslateMessage(pMsg);
+}
+
+
+void Configuration::CConfigure_Spectrometer::OnBnClickedCheckUsegps()
+{
+	// TODO: Add your control notification handler code here
 }
