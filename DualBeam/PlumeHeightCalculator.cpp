@@ -50,10 +50,10 @@ double CPlumeHeightCalculator::GetPlumeHeight_CentreOfMass(const CMeasurementSer
 	// Iterate until we find a suitable wind-direction
 	while(fabs(windDirection - oldWindDirection) > 5){
 
-    // get the mass center of the plume
-	massIndexF = GetCentreOfMass(col1.data(), distances.data(), length);
+		// get the mass center of the plume
+		massIndexF = GetCentreOfMass(col1.data(), distances.data(), length);
    
-    oldWindDirection = windDirection;
+		oldWindDirection = windDirection;
 
 		// the wind direction
 		windDirection		= GPSBearing(lat[massIndexF], lon[massIndexF], sourceLat, sourceLon);
@@ -112,13 +112,13 @@ int CPlumeHeightCalculator::GetCentreOfMass(const double *columns, const double 
 	}
 
 	// 2. Half of the total mass
-	double midMass = totalMass * 0.5;
+	double midMass = std::abs(totalMass * 0.5);
 
 	// 3. Find the index of the half centre of mass
 	double totalMassSoFar = 0.0;
 	for(int k = 0; k < length - 1; ++k){
 		totalMassSoFar += columns[k] * distances[k];
-		if(totalMassSoFar > midMass){
+		if(std::abs(totalMassSoFar) > midMass){
 			return (k-1);
 		}
 	}

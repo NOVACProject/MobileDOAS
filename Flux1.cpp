@@ -317,8 +317,9 @@ int CFlux::ReadSettingFile(CString filename, long fileIndex, int &nChannels, dou
 	CString columnLabel;
 
 	// reset the 'm_specieName' buffer
-	for(int i = 0; i < 20; ++i)
+	for (int i = 0; i < 20; ++i) {
 		m_specieName[i].Format("");
+	}
 
 	char msg[200];
 	nChannels = 1;
@@ -431,10 +432,11 @@ int CFlux::ReadSettingFile(CString filename, long fileIndex, int &nChannels, dou
 				++pt;
 			}
 
-			if(nullptr != (pt = strstr(txt, "Column(Slave1)")) || nullptr != (pt = strstr(txt, "Slave1_Column"))){
+			if(nullptr != (pt = strstr(txt, "Column(Slave)")) || nullptr != (pt = strstr(txt, "Slave_Column"))){
 				nChannels = 2; /* if there are several channels */
 				m_specieName[0].Format("Master");
 				m_specieName[1].Format("Slave");
+				m_traverse.SetAtGrow(1, new CTraverse());
 			}
 
 			if(pt = strstr(txt, "nSpecies=")){
