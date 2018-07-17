@@ -744,11 +744,11 @@ void CSpectrometer::DoEvaluation(double pSky[][MAX_SPECTRUM_LENGTH], double pDar
 
 		fileName.Format("evaluationLog_%s.txt", m_fitRegion[j].window.name);
 		WriteEvFile(fileName, &m_fitRegion[j]);
-		if (m_useAudio) {
-			Sing(curColumn[chn] / m_maxColumn);
-		}
-	}
 
+	}
+	if (m_useAudio) {
+		Sing(curColumn[0] / m_maxColumn);
+	}
 	pView->PostMessage(WM_DRAWCOLUMN);
 
 	++m_spectrumCounter;
