@@ -87,8 +87,11 @@ namespace Configuration{
 		/** How many fit-windows have been defined */
 		int						m_nFitWindows;
 
-		// ------------------ MISC -------------------
+		// ------------------ Audio -------------------
 		
+		/** use audio or not (1=true, 0=false)*/
+		int m_useAudio = 1;
+
 		/** The expected maximum column value, used for the sound */
 		double		m_maxColumn;
 

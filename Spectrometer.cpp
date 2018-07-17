@@ -381,7 +381,8 @@ void CSpectrometer::ApplySettings() {
 	}
 	this->m_fitRegionNum = m_conf->m_nFitWindows;
 
-	// Misc. Settings
+	// Audio Settings
+	this->m_useAudio = m_conf->m_useAudio;
 	this->m_maxColumn = m_conf->m_maxColumn;
 }
 
@@ -743,9 +744,11 @@ void CSpectrometer::DoEvaluation(double pSky[][MAX_SPECTRUM_LENGTH], double pDar
 
 		fileName.Format("evaluationLog_%s.txt", m_fitRegion[j].window.name);
 		WriteEvFile(fileName, &m_fitRegion[j]);
+		if (m_useAudio) {
+			Sing(curColumn[chn] / m_maxColumn);
+		}
 	}
 
-	Sing(curColumn[0] / m_maxColumn);
 	pView->PostMessage(WM_DRAWCOLUMN);
 
 	++m_spectrumCounter;
@@ -1011,20 +1014,27 @@ void CSpectrometer::Sing(double factor)
 	CString fileToPlay;
 	TCHAR windowsDir[MAX_PATH + 1];
 	GetWindowsDirectory(windowsDir, MAX_PATH + 1);
-	DWORD volume;
-
+	DWORD multiplier = (DWORD)(0xFFFF);
 	if (factor > 0)
 	{
-		volume = (DWORD)(0xFFFF * factor);
-		MMRESULT res = waveOutSetVolume(0, volume);
-		fileToPlay.Format("%s\\Media\\ringout.wav", windowsDir);
+		multiplier = (DWORD)(0xFFFF * factor);
 	}
 	else
 	{
-		volume = (DWORD)(0xFFFF * (fabs(factor) + 0.0000001));
-		MMRESULT res = waveOutSetVolume(0, volume);
-		fileToPlay.Format("%s\\Media\\start.wav", windowsDir);
+		multiplier = (DWORD)(0xFFFF * (fabs(factor) + 0.0000001));
 	}
+
+	WAVEOUTCAPS pwoc;
+	waveOutGetDevCaps(0, &pwoc, sizeof(WAVEOUTCAPS));
+	if (pwoc.dwSupport & WAVECAPS_PITCH)  // check if device can set pitch
+	{		
+		// See https://msdn.microsoft.com/en-us/library/Dd743872(v=VS.85).aspx
+		MMRESULT res = waveOutSetPitch(0, multiplier);
+	}
+	else {
+		MMRESULT res = waveOutSetVolume(0, multiplier); // nope, change volume instead
+	}
+	fileToPlay.Format("%s\\Media\\ringout.wav", windowsDir);
 
 	PlaySound(fileToPlay, 0, SND_SYNC);
 }
