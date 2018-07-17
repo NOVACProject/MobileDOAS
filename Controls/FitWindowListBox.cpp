@@ -53,14 +53,14 @@ void CFitWindowListBox::OnLButtonDown(UINT nFlags, CPoint point){
 void CFitWindowListBox::OnContextMenu(CWnd *pWnd, CPoint pos){
 	OnLButtonDown(MK_LBUTTON, pos); // make the current menu item marked
 
-  CMenu menu;
-  VERIFY(menu.LoadMenu(IDR_FITWINDOWLIST_MENU));
-  CMenu* pPopup = menu.GetSubMenu(0);
-  ASSERT(pPopup != nullptr);
+	CMenu menu;
+	VERIFY(menu.LoadMenu(IDR_FITWINDOWLIST_MENU));
+	CMenu* pPopup = menu.GetSubMenu(0);
+	ASSERT(pPopup != nullptr);
 
 	// There has to be at least one fit window defined at all times
 	//	if there are too few, don't allow the user to remove any
-	if(m_conf->m_nFitWindows <= 1){
+	if(m_conf->m_nFitWindows < 1){
 		pPopup->EnableMenuItem(ID__REMOVEWINDOW, MF_DISABLED | MF_GRAYED);
 	}
 
