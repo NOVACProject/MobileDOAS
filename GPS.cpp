@@ -179,7 +179,7 @@ bool CGPS::Parse(char *string, gpsData& data){
 				return false;
 			}
 			else {
-				sprintf(data.date, "%s", token);
+				data.date = strtol(token, &stopStr, 10);
 			}
 
 			/* 10: magnetic variation(ignore) */
@@ -358,7 +358,7 @@ bool CGPS::ReadGPS(){
 	m_logFile.Format("gps.log"); // for testing only
 	if(strlen(m_logFile) > 0){
 		FILE *f = fopen(g_exePath + m_logFile, "a+");
-		fprintf(f, "%s\t%ld\t", gpsInfo.date, gpsInfo.time);
+		fprintf(f, "%1d\t%ld\t", gpsInfo.date, gpsInfo.time);
 		fprintf(f, "%lf\t%lf\t%lf\t", gpsInfo.latitude, gpsInfo.longitude, gpsInfo.altitude);
 		fprintf(f, "%ld\n", gpsInfo.nSatellites);
 		fclose(f);

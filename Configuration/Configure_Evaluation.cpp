@@ -233,14 +233,12 @@ void CConfigure_Evaluation::OnInsertReference(){
 	// Get the currently selected fit window
 	int curSel = m_windowList.GetCurSel();
 	if(curSel < 0){
-		if(m_windowList.GetCount() > 0){
-			curSel = 0;
-		}else{
+		curSel = 0;
+		if(m_windowList.GetCount() == 0){
 			// insert a new fit-window (this makes the interface much more intuitive...)
 			m_conf->m_fitWindow[0].name.Format("NEW");
 			m_conf->m_fitWindow[0].nRef = 0;
 			m_conf->m_nFitWindows = 1;
-			curSel = 0;
 		}
 	}
 

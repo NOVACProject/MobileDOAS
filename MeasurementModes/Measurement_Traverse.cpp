@@ -34,9 +34,6 @@ void CMeasurement_Traverse::Run(){
 
 	// Read configuration file
 	cfgFile = g_exePath + TEXT("cfg.xml");
-	if(!IsExistingFile(cfgFile)){
-		cfgFile = g_exePath + TEXT("cfg.txt");
-	}
 	m_conf = new Configuration::CMobileConfiguration(cfgFile);
 
 	// Convert the settings from the CMobileConfiuration-format to the internal CSpectrometer-format
@@ -368,8 +365,8 @@ void CMeasurement_Traverse::Run_Adaptive(){
 
 	// 1. Start collecting the offset spectrum.
 	m_integrationTime     = 3;
-	m_sumInComputer       = 400;
-	m_sumInSpectrometer   = 15;
+	m_sumInComputer = 100;
+	m_sumInSpectrometer = 15;
 	m_totalSpecNum        = m_sumInSpectrometer * m_sumInComputer;
 	pView->PostMessage(WM_SHOWINTTIME);
 
@@ -477,7 +474,7 @@ void CMeasurement_Traverse::Run_Adaptive(){
 			/* Get the information about the spectrum */
 			GetSpectrumInfo(scanResult);
 
-				MessageBox(pView->m_hWnd, "Point the spectrometer to sky","Notice",MB_OK);
+			MessageBox(pView->m_hWnd, "Point the spectrometer to sky","Notice",MB_OK);
 
 			m_statusMsg.Format("Measuring the sky spectrum");
 			pView->PostMessage(WM_STATUSMSG);

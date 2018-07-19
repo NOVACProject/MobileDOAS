@@ -9,6 +9,7 @@ Critical changes
 New features
 * Multiple reference files can be addeded or removed simultaneously through evaluation configuration dialogs
 * Warn user (audio and visual) when GPS connection is lost (#78)
+* Reduce number of spectra collected for characterization of the offset in adaptive mode (#87)
 * Option to disable audio in spectrometer configuration (#88)
 * Alter pitch based on column density, instead of volume, if supported by audio device (#88)
 * Use same tone for negative column values (#88)
