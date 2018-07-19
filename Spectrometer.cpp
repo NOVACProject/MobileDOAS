@@ -1759,7 +1759,7 @@ std::string CSpectrometer::GetCurrentDate() {
 	else {
 		const int c = this->m_spectrumCounter; // local buffer, to avoid race conditions...
 		m_gps->Get(m_spectrumGpsData[c]);
-		return std::string(m_spectrumGpsData[c].date, 6);
+		return std::to_string(m_spectrumGpsData[c].date);
 	}
 }
 
@@ -1773,10 +1773,6 @@ long CSpectrometer::GetCurrentTime() {
 	if (!couldReadValidGPSData) {
 		startTime = GetTimeValue_UMT();
 		m_spectrumGpsData[currentSpectrumCounter].time = startTime;
-//		m_spectrumGpsData[currentSpectrumCounter].altitude = 0.0;
-//		m_spectrumGpsData[currentSpectrumCounter].latitude = 0.0;
-//		m_spectrumGpsData[currentSpectrumCounter].longitude = 0.0;
-//		m_spectrumGpsData[currentSpectrumCounter].nSatellites = 0;
 	}
 	else if (m_timeDiffToUtc == 0) {
 		time_t t;
