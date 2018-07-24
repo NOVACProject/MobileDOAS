@@ -429,7 +429,7 @@ void CMeasurement_Traverse::Run_Adaptive(){
 
 		if(m_scanNum == OFFSET_SPECTRUM){
 			/* -------------- IF THE MEASURED SPECTRUM WAS THE OFFSET SPECTRUM ------------- */
-			memcpy((void*)m_offset, (void*)scanResult, sizeof(double)*4096);
+			memcpy((void*)m_offset, (void*)scanResult, sizeof(double) * MAX_N_CHANNELS*MAX_SPECTRUM_LENGTH);
 
 			pView->PostMessage(WM_DRAWSPECTRUM);//draw offset spectrum
 			for(int i = 0; i < m_NChannels; ++i) {
@@ -462,7 +462,7 @@ void CMeasurement_Traverse::Run_Adaptive(){
 					scanResult[j][i] = scanResult[j][i] - m_offset[j][i];
 				}
 			}
-			memcpy((void*)m_darkCur, (void*)scanResult, sizeof(double)*4096);
+			memcpy((void*)m_darkCur, (void*)scanResult, sizeof(double) * MAX_N_CHANNELS*MAX_SPECTRUM_LENGTH);
 
 			pView->PostMessage(WM_DRAWSPECTRUM);//draw dark spectrum
 			for(int i = 0; i < m_NChannels; ++i) {
@@ -488,7 +488,7 @@ void CMeasurement_Traverse::Run_Adaptive(){
 		}else if(m_scanNum == SKY_SPECTRUM){
 			/* -------------- IF THE MEASURED SPECTRUM WAS THE SKY SPECTRUM ------------- */
 
-			memcpy((void*)m_sky, (void*)scanResult, sizeof(double)*4096);
+			memcpy((void*)m_sky, (void*)scanResult, sizeof(double) * MAX_N_CHANNELS*MAX_SPECTRUM_LENGTH);
 
 			pView->PostMessage(WM_DRAWSPECTRUM);//draw sky spectrum
 
