@@ -1497,7 +1497,7 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 		// The master-channel
 		fprintf(f, "%lf\t%ld\t%d", m_specInfo[0].offset, m_averageSpectrumIntensity[0], m_specInfo[0].isDark);
 		if (m_NChannels > 1){
-			fprintf(f, "%lf\t%ld\t%d", m_specInfo[1].offset, m_averageSpectrumIntensity[1], m_specInfo[1].isDark);
+			fprintf(f, "\t%lf\t%ld\t%d", m_specInfo[1].offset, m_averageSpectrumIntensity[1], m_specInfo[1].isDark);
 		}
 		fprintf(f, "\n");
 
