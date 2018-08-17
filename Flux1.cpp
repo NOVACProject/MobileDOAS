@@ -307,11 +307,11 @@ int CFlux::ReadSettingFile(CString filename,int &nChannels, double &fileVersion)
 
 int CFlux::ReadSettingFile(CString filename, long fileIndex, int &nChannels, double &fileVersion){
 	char *pt;
-	FILE *fil;
 	char txt[256];
 	char nl[2]={ 0x0a, 0 };
 	char lf[2]={ 0x0d, 0 };
-	int  species = 0;
+	int  nofSpecies = 0;
+	bool hasMasterChannelData = false;
 	CString knownSpecie[] = {"SO2", "NO2", "O3", "O4", "HCHO", "RING", "H2O", "CLO", "BRO", "CHOCHO", "Glyoxal", "Formaldehyde", "FraunhoferRef"};
 	int nKnownSpecies = 13;
 	CString columnLabel;
@@ -326,7 +326,7 @@ int CFlux::ReadSettingFile(CString filename, long fileIndex, int &nChannels, dou
 	m_lastRefFileNum = 0;
 
 	int result=0;
-	fil = fopen(filename, "r");
+	FILE* fil = fopen(filename, "r");
 	if(fil<(FILE *)1)
 	{
 		sprintf(msg,"Could not open file %s",(LPCTSTR)filename);
@@ -397,42 +397,46 @@ int CFlux::ReadSettingFile(CString filename, long fileIndex, int &nChannels, dou
 			pt = txt;
 			while(pt = strstr(pt, "Master_Column_")){
 				if(Equals(pt+14, "SO2", 3)){
-					m_specieName[species].Format("Master_SO2");
+					m_specieName[nofSpecies].Format("Master_SO2");
 				}else if(Equals(pt+14, "NO2", 3)){
-					m_specieName[species].Format("Master_NO2");
+					m_specieName[nofSpecies].Format("Master_NO2");
 				}else if(Equals(pt+14, "O3", 2)){
-					m_specieName[species].Format("Master_O3");
+					m_specieName[nofSpecies].Format("Master_O3");
 				}else if(Equals(pt+14, "RING", 4)){
-					m_specieName[species].Format("Master_Ring");
+					m_specieName[nofSpecies].Format("Master_Ring");
 				}else if(Equals(pt+14, "O4", 2)){
-					m_specieName[species].Format("Master_O4");
+					m_specieName[nofSpecies].Format("Master_O4");
 				}else if(Equals(pt+14, "HCHO", 4)){
-					m_specieName[species].Format("Master_HCHO");
+					m_specieName[nofSpecies].Format("Master_HCHO");
 				}
-				++species;
+				++nofSpecies;
 				++pt;
 			}
 
 			pt = txt;
 			while(pt = strstr(pt, "Slave_Column_")){
 				if(Equals(pt+14, "SO2", 3)){
-					m_specieName[species].Format("Slave_SO2");
+					m_specieName[nofSpecies].Format("Slave_SO2");
 				}else if(Equals(pt+14, "NO2", 3)){
-					m_specieName[species].Format("Slave_NO2");
+					m_specieName[nofSpecies].Format("Slave_NO2");
 				}else if(Equals(pt+14, "O3", 2)){
-					m_specieName[species].Format("Slave_O3");
+					m_specieName[nofSpecies].Format("Slave_O3");
 				}else if(Equals(pt+14, "RING", 4)){
-					m_specieName[species].Format("Slave_Ring");
+					m_specieName[nofSpecies].Format("Slave_Ring");
 				}else if(Equals(pt+14, "O4", 2)){
-					m_specieName[species].Format("Slave_O4");
+					m_specieName[nofSpecies].Format("Slave_O4");
 				}else if(Equals(pt+14, "HCHO", 4)){
-					m_specieName[species].Format("Slave_HCHO");
+					m_specieName[nofSpecies].Format("Slave_HCHO");
 				}
-				++species;
+				++nofSpecies;
 				++pt;
 			}
 
-			if(nullptr != (pt = strstr(txt, "Column(Slave)")) || nullptr != (pt = strstr(txt, "Slave_Column"))){
+			if (nullptr != (pt = strstr(txt, "Column(Master)")) || nullptr != (pt = strstr(txt, "Master_Column"))) {
+				hasMasterChannelData = true;
+			}
+
+			if(hasMasterChannelData && (nullptr != (pt = strstr(txt, "Column(Slave)")) || nullptr != (pt = strstr(txt, "Slave_Column")))) {
 				nChannels = 2; /* if there are several channels */
 				m_specieName[0].Format("Master");
 				m_specieName[1].Format("Slave");
@@ -448,14 +452,22 @@ int CFlux::ReadSettingFile(CString filename, long fileIndex, int &nChannels, dou
 				columnLabel.Format("%s(column)", (LPCTSTR)knownSpecie[k]);
 				pt = txt;
 				while(pt = strstr(pt, columnLabel)){
-					m_specieName[species].Format(knownSpecie[k]);
-					++species;
+					m_specieName[nofSpecies].Format(knownSpecie[k]);
+					++nofSpecies;
 					++pt;
 				}
 			}
 		}
 	}
 	fclose(fil);
+
+	if (nofSpecies > 1)
+	{
+		for (int ii = 1; ii < nofSpecies; ++ii)
+		{
+			m_traverse.SetAtGrow(ii, new CTraverse());
+		}
+	}
 
 	return result;
 }

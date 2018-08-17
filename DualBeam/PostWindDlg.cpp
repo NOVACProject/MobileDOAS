@@ -10,7 +10,6 @@ IMPLEMENT_DYNAMIC(CPostWindDlg, CDialog)
 CPostWindDlg::CPostWindDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CPostWindDlg::IDD, pParent)
 {
-	m_flux = nullptr;
 	m_showOption = 0;
 
 	for (int k = 0; k < MAX_N_SERIES; ++k) {
@@ -23,10 +22,6 @@ CPostWindDlg::CPostWindDlg(CWnd* pParent /*=NULL*/)
 
 CPostWindDlg::~CPostWindDlg()
 {
-	if (m_flux != nullptr) {
-		delete m_flux;
-		m_flux = nullptr;
-	}
 	for (int k = 0; k < MAX_N_SERIES; ++k) {
 		delete m_OriginalSeries[k];
 		delete m_PreparedSeries[k];
@@ -56,9 +51,9 @@ void CPostWindDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CPostWindDlg, CDialog)
 	// Actions to perform
-	ON_BN_CLICKED(IDC_BTN_BROWSE_EVALLOG, OnBrowseEvallog)
+	ON_BN_CLICKED(IDC_BTN_BROWSE_EVALLOG_SERIES1, OnBrowseEvallogSeries1)
+	ON_BN_CLICKED(IDC_BTN_BROWSE_EVALLOG_SERIES2, OnBrowseEvallogSeries2)
 	ON_BN_CLICKED(IDC_BUTTON_CALCULATE_CORRELATION, OnCalculateWindspeed)
-	//ON_EN_CHANGE(IDC_EDIT_EVALLOG,									OnChangeEvalLog)
 
 	// Changing the settings
 	ON_EN_KILLFOCUS(IDC_EDIT_LPITERATIONS, OnChangeLPIterations)
@@ -74,7 +69,39 @@ END_MESSAGE_MAP()
 
 // CPostWindDlg message handlers
 
-void CPostWindDlg::OnBrowseEvallog()
+void CPostWindDlg::OnBrowseEvallogSeries1()
+{
+	CString selectedLogFile = BrowseForEvalLog();
+
+	if(!selectedLogFile.IsEmpty()) {
+		m_evalLog.Format("%s", (LPCTSTR)selectedLogFile);
+
+		if (ReadEvaluationLog(0)) {
+			// Update the text on the screen
+			SetDlgItemText(IDC_EDIT_EVALLOG_SERIES1, m_evalLog);
+			// Redraw the screen
+			DrawColumn();
+		}
+	}
+}
+
+void CPostWindDlg::OnBrowseEvallogSeries2()
+{
+	CString selectedLogFile = BrowseForEvalLog();
+
+	if (!selectedLogFile.IsEmpty()) {
+		m_evalLog.Format("%s", (LPCTSTR)selectedLogFile);
+
+		if (ReadEvaluationLog(1)) {
+			// Update the text on the screen
+			SetDlgItemText(IDC_EDIT_EVALLOG_SERIES2, m_evalLog);
+			// Redraw the screen
+			DrawColumn();
+		}
+	}
+}
+
+CString CPostWindDlg::BrowseForEvalLog()
 {
 	CString evLog;
 	evLog.Format("");
@@ -85,94 +112,65 @@ void CPostWindDlg::OnBrowseEvallog()
 
 	// let the user browse for an evaluation log file and if one is selected, read it
 	if (Common::BrowseForFile(filter, evLog)) {
-		m_evalLog.Format("%s", (LPCTSTR)evLog);
-
-		if (ReadEvaluationLog()) {
-			// Update the text on the screen
-			SetDlgItemText(IDC_EDIT_EVALLOG, m_evalLog);
-			// Redraw the screen
-			DrawColumn();
-		}
+		return evLog;
 	}
-
+	else {
+		return "";
+	}
 }
 
-void CPostWindDlg::OnChangeEvalLog() {
-	CString evalLog;
-	// Get the name of the eval-log
-	GetDlgItemText(IDC_EDIT_EVALLOG, evalLog);
+bool CPostWindDlg::ReadEvaluationLog(int channelIndex) {
+	if(channelIndex < 0 || channelIndex > 1) { throw std::invalid_argument("Invalid channel index passed to ReadEvaluationLog!"); }
 
-	// Check if the file exists
-	if (strlen(evalLog) <= 3 || !Equals(evalLog.Right(4), ".txt"))
-		return;
+	// the index in the traverse which we should read. Setting this to zero always assumes that we will always use
+	//	the first species in the traverse to evaluate the windspeed...
+	const int specieIndex = 0;
+	Flux::CFlux flux;		// The CFlux object helps with reading the data from the eval-log
+	int nChannels = 1;		// the number of channels in the data-file
+	double fileVersion = 0;	// the file-version of the evalution-log file
 
-	FILE *f = fopen(evalLog, "r");
-	if (f == nullptr)
-		return;
-	fclose(f);
-
-	// Read the evaluation - log
-	m_evalLog.Format(evalLog);
-	ReadEvaluationLog();
-
-	// Redraw the screen
-	DrawColumn();
-}
-
-bool CPostWindDlg::ReadEvaluationLog() {
-	// Completely reset the old data
-	if (m_flux != nullptr)
-		delete m_flux;
-	m_flux = new Flux::CFlux();
-
-	int nChannels;			// the number of channels in the data-file
-	double fileVersion;	// the file-version of the evalution-log file
-
-						// Read the header of the log file and see if it is an ok file
-	int fileType = m_flux->ReadSettingFile(m_evalLog, nChannels, fileVersion);
+	// Read the header of the log file and see if it is an ok file
+	int fileType = flux.ReadSettingFile(m_evalLog, nChannels, fileVersion);
 	if (fileType != 1) {
 		MessageBox(TEXT("The file is not evaluation log file with right format.\nPlease choose a right file"), NULL, MB_OK);
 		return FAIL;
 	}
 
-	if (nChannels < 2) {
-		MessageBox(TEXT("The evaluation log does not contain 2 channels."), NULL, MB_OK);
+	if (nChannels != 1) {
+		MessageBox(TEXT("The evaluation log does not contain evaluation data from one single channel. Please select another file in a correct format."), NULL, MB_OK);
 		return FAIL;
 	}
 
 	// Read the data from the file
-	if (0 == m_flux->ReadLogFile("", m_evalLog, nChannels, fileVersion)) {
+	if (0 == flux.ReadLogFile("", m_evalLog, nChannels, fileVersion)) {
 		MessageBox(TEXT("That file is empty"));
 		return FAIL;
 	}
 
 	// Copy the data to the local variables 'm_originalSeries'
-	for (int chnIndex = 0; chnIndex < nChannels; ++chnIndex) {
-		// to get less dereferencing
-		Flux::CTraverse *traverse = m_flux->m_traverse[chnIndex];
+	const Flux::CTraverse *traverse = flux.m_traverse[specieIndex];
+	const long traverseLength		= traverse->m_recordNum;
 
-		long length = traverse->m_recordNum; // the length of the traverse
+	// create a new data series
+	m_OriginalSeries[channelIndex] = new DualBeamMeasurement::CDualBeamCalculator::CMeasurementSeries(traverseLength);
+	if (m_OriginalSeries[channelIndex] == nullptr) {
+		return FAIL; // <-- failed to allocate enough memory
+	}
 
-											 // create a new data series
-		m_OriginalSeries[chnIndex] = new DualBeamMeasurement::CDualBeamCalculator::CMeasurementSeries(length);
-		if (m_OriginalSeries[chnIndex] == nullptr)
-			return FAIL; // <-- failed to allocate enough memory
+	Time startTime = traverse->time[0];
+	for (int spectrumIndex = 0; spectrumIndex < traverseLength; ++spectrumIndex) {
 
-		Time &startTime = traverse->time[0];
-		for (int specIndex = 0; specIndex < length; ++specIndex) {
+		// Get the column of this spectrum
+		m_OriginalSeries[channelIndex]->column[spectrumIndex] = traverse->columnArray[spectrumIndex];
 
-			// Get the column of this spectrum
-			m_OriginalSeries[chnIndex]->column[specIndex] = traverse->columnArray[specIndex];
+		// Get the start time of this spectrum
+		Time t = traverse->time[spectrumIndex];
 
-			// Get the start time of this spectrum
-			Time &t = traverse->time[specIndex];
-
-			// Save the time difference
-			m_OriginalSeries[chnIndex]->time[specIndex] =
-				3600 * (t.hour - startTime.hour) +
-				60 * (t.minute - startTime.minute) +
-				(t.second - startTime.second);
-		}
+		// Save the time difference
+		m_OriginalSeries[channelIndex]->time[spectrumIndex] =
+			3600 * (t.hour - startTime.hour) +
+			60 * (t.minute - startTime.minute) +
+			(t.second - startTime.second);
 	}
 
 	return SUCCESS;

@@ -40,11 +40,11 @@ public:
 	Graph::CGraphCtrl	m_resultGraph;
 
 	// ---------------------- EVENT HANDLERS ----------------------
-	/** Called when the user browses for a new evaluation-log */
-	afx_msg void OnBrowseEvallog();
+	/** Called when the user browses for a new evaluation-log for Master */
+	afx_msg void OnBrowseEvallogSeries1();
 
-	/** The user has changed the file in the Eval-log edit-box*/
-	afx_msg void OnChangeEvalLog();
+	/** Called when the user browses for a new evaluation-log for Slave*/
+	afx_msg void OnBrowseEvallogSeries2();
 
 	/** Intitializes the dialog */
 	virtual BOOL OnInitDialog();
@@ -60,8 +60,10 @@ public:
 	afx_msg void OnCalculateWindspeed();
 
 	// --------------------- PUBLIC METHODS -----------------------
-	/** Reads the evaluation log */
-	bool ReadEvaluationLog();
+	/** Reads one of the evaluation logs.
+		@param channelIndex set to zero for the master or 1 for the slave channel.
+		@return SUCCESS if all went well. */
+	bool ReadEvaluationLog(int channelIndex);
 
 	/** Draws the column graph */
 	void DrawColumn();
@@ -81,10 +83,8 @@ public:
 	// ---------------------- PUBLIC DATA -------------------------
 
 	/** The currently opened evaluation - log */
+	// TODO: Split into two!
 	CString	m_evalLog;
-
-	/** A flux-object, used to read the evaluation data */
-	Flux::CFlux	*m_flux;
 
 	/** Original measurement series, as they are in the file */
 	DualBeamMeasurement::CDualBeamCalculator::CMeasurementSeries		*m_OriginalSeries[MAX_N_SERIES];
@@ -109,5 +109,9 @@ protected:
 
 	/** The colors for the time-series */
 	COLORREF	m_colorSeries[MAX_N_SERIES];
+
+	/** Lets the user browse for an evaluation log file. 
+		@return the name of the selected log file, or an empty string if none was selected */
+	CString BrowseForEvalLog();
 
 };

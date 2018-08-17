@@ -159,6 +159,8 @@
 #define IDC_EDIT_SPECSCALE_MAX          1002
 #define IDC_SETBUTTON                   1003
 #define IDC_EDIT_RING                   1003
+#define IDC_EDIT_EVALLOG2               1003
+#define IDC_EDIT_EVALLOG_SERIES2        1003
 #define IDC_BASEEDIT                    1004
 #define IDC_EDIT_SKY                    1004
 #define IDC_EDIT_TESTLENGTH             1004
@@ -239,6 +241,7 @@
 #define IDC_BUTTON_BROWSE_DARK          1063
 #define IDC_BTN_SOURCE_LON              1063
 #define IDC_BUTTON_BROWSE_REFERENCE     1063
+#define IDC_BTN_BROWSE_EVALLOG_SERIES2  1063
 #define IDC_GPSCOM                      1064
 #define IDC_BROWSE_NO2                  1064
 #define IDC_REFERENCE_PROPERTIES        1064
@@ -450,6 +453,10 @@
 #define IDC_LABEL_POLYNOMIAL            1272
 #define IDC_LABEL_POLYNOMIAL_0          1272
 #define IDC_CHECK_USEAUDIO              1273
+#define IDC_LABEL_MASTER                1274
+#define IDC_LABEL_SLAVE                 1275
+#define IDC_BTN_BROWSE_EVALLOG_SERIES1  1276
+#define IDC_EDIT_EVALLOG_SERIES1        1277
 #define ID_ANALYSIS_POSTFLUX            32771
 #define ID_CONTROL_STOP                 32772
 #define ID_CONTROL_START                32772
@@ -468,9 +475,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        268
+#define _APS_NEXT_RESOURCE_VALUE        269
 #define _APS_NEXT_COMMAND_VALUE         32799
-#define _APS_NEXT_CONTROL_VALUE         1274
+#define _APS_NEXT_CONTROL_VALUE         1278
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif
