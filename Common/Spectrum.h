@@ -5,22 +5,31 @@
 class CSpectrum
 {
 public:
-	CSpectrum(void);
-	~CSpectrum(void);
+	CSpectrum();
+	~CSpectrum();
 
-	double  I[MAX_SPECTRUM_LENGTH];
-	int     length;
-	long    scans;
+	// -------- Copying CSpectrum objects --------
+	CSpectrum(const CSpectrum& other);
+	CSpectrum& operator=(CSpectrum other);
+	friend void swap(CSpectrum& first, CSpectrum& second);
+
+	double  I[MAX_SPECTRUM_LENGTH];	//< The spectral data itself.
+	int     length;			// The length of the spectrum
+	long    scans;			// The number of co-added spectra (exposures)
 	long    exposureTime;	// The exposure-time in milliseconds
-	double  lat;
-	double  lon;
-	int     date[3];
-	int     startTime[3];
-	int     stopTime[3];
-	bool    isDark;
-	CString	spectrometer;
+	double  lat;			// Latitude, in decimal degrees
+	double  lon;			// Longitude, in decimal degrees
+	double  altitude;		// Altitude, in meters above sea-level
+	int     date[3];		// The date the spectrum acquisition started. date[0] is the year, date[1] is the month and date[2] is the day
+	int     startTime[3];	// The local time-of-day when the spectrum acquisition started. [0] is hour, [1] is minute, [2] is seconds.
+	int     stopTime[3];	// The local time-of-day when the spectrum acquisition stopped. [0] is hour, [1] is minute, [2] is seconds.
+	bool    isDark;			// Set to true if this spectrum is dark.
+	CString spectrometerSerial;	// Serial number of the spectrometer
+	CString spectrometerModel;  // Model of the spectrometer
+	CString name;			// name of the spectrum
 
 	// statistics
+	void    GetMinMax(double& minValue, double&maxValue) const;
 	double  GetMax() const;
 	double  GetAverage() const;
 	double  GetAverage(int low, int high) const; // gets the average value between the indexes 'low' and 'high' (inclusive)
@@ -38,9 +47,6 @@ public:
 	bool    Sub(double value);
 	bool    Mult(double value);
 
-	// copying a spectrum
-	bool    Copy(const CSpectrum &spec2);
-
 	// clearing out the information in the spectrum
-	void		Clear();
+	void    Clear();
 };

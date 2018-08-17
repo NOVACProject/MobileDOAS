@@ -367,7 +367,7 @@ void CSpectrumInspectionDlg::FillInSpectrumPropertiesList(const CSpectrum *spec)
 
 	if(spec != nullptr){
 		// ---- Show the information to the user... ----
-		str.Format("%s", (LPCTSTR)spec->spectrometer);
+		str.Format("%s", (LPCTSTR)spec->spectrometerSerial);
 		m_propertyList.SetItemText(index++, 1,		str);
 
 		str.Format("%d", spec->length);

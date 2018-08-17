@@ -1400,9 +1400,6 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 		nagFlag = true;
 	}
 
-	// The board-temperature, if one could be retrieved
-	double temperature = NOT_A_NUMBER;
-
 	/* Cut from the S2000 manual:
 		pixel   Description
 			0-1     Not usable
@@ -1456,8 +1453,18 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 	/** If possible, get the temperature of the spectrometer */
 	if (m_wrapper.isFeatureSupportedBoardTemperature(m_spectrometerIndex) == 1) {
 		// Board temperature feature is supported by this spectrometer
-		BoardTemperature boardTemperature = m_wrapper.getFeatureControllerBoardTemperature(m_spectrometerIndex);
-		temperature = boardTemperature.getBoardTemperatureCelsius();
+		BoardTemperature boardTemperature	= m_wrapper.getFeatureControllerBoardTemperature(m_spectrometerIndex);
+		const double temperature			= boardTemperature.getBoardTemperatureCelsius();
+
+		for (int n = 0; n < m_NChannels; ++n) {
+			m_specInfo[n].temperature = temperature;
+		}
+	}
+	else
+	{
+		for (int n = 0; n < m_NChannels; ++n) {
+			m_specInfo[n].temperature = std::numeric_limits<double>::quiet_NaN();
+		}
 	}
 
 	/* Print the information to a file */
@@ -1469,7 +1476,7 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 		fprintf(f, "#--Additional log file to the Mobile DOAS program---\n");
 		fprintf(f, "#This file has only use as test file for further development of the Mobile DOAS program\n\n");
 		fprintf(f, "#SpectrumNumber\t");
-		if (temperature != NOT_A_NUMBER) {
+		if (!std::isnan(m_specInfo[0].temperature)) {
 			fprintf(f, "BoardTemperature\t");
 		}
 		if (m_NChannels == 1) {
@@ -1490,8 +1497,8 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 		// Spectrum number
 		fprintf(f, "%ld\t", m_spectrumCounter);
 		// The board temperature (?)
-		if (temperature != NOT_A_NUMBER){
-			fprintf(f, "%.3lf\t", temperature);
+		if (!std::isnan(m_specInfo[0].temperature)) {
+			fprintf(f, "%.3lf\t", m_specInfo[0].temperature);
 		}
 
 		// The master-channel

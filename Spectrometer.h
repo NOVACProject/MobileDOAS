@@ -9,6 +9,8 @@
 #include "Version.h"
 #include "Common/SpectrumIO.h"
 
+#include <limits>
+
 #include <ArrayTypes.h> // located in %OMNIDRIVER_HOME%\include
 #include <Wrapper.h>
 //#include <ADC1000USB.h>
@@ -564,9 +566,14 @@ protected:
 		is dark or not. */
 	typedef struct SpectrumInfo {
 		/** The electronic offset of the spectrum, measured in channel 2 - 24 */
-		double offset;
+		double offset = 0.0;
+
 		/** True if the program judges that the spectrum is dark */
-		bool   isDark;
+		bool   isDark = false;
+
+		/** The temperature, as reported by the spectrometer, in degrees Celsius. 
+			Set to NaN if this could not be read. */
+		double temperature = std::numeric_limits<double>::quiet_NaN();
 	}SpectrumInfo;
 
 	/** Information about the last spectrum collected */

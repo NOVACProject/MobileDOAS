@@ -215,12 +215,13 @@ void CMeasurement_Traverse::Run(){
 		/* ----------------- Save the spectrum(-a) -------------------- */
 		if (m_useGps) {
 			for (int i = 0; i < m_NChannels; ++i) {
-				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, m_spectrumGpsData[m_spectrumCounter].time, m_spectrumGpsData[m_spectrumCounter].time + elapsedSecond, m_spectrumGpsData[m_spectrumCounter].latitude, m_spectrumGpsData[m_spectrumCounter].longitude, m_spectrumGpsData[m_spectrumCounter].altitude, m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);
+				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, m_spectrumGpsData[m_spectrumCounter].time, m_spectrumGpsData[m_spectrumCounter].time + elapsedSecond, m_spectrumGpsData[m_spectrumCounter], m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);
 			}
 		}
 		else {
 			for (int i = 0; i < m_NChannels; ++i) {
-				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, startTime, startTime + elapsedSecond, 0, 0, 0, m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);
+				gpsData pos;
+				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, startTime, startTime + elapsedSecond, pos, m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);
 			}
 		}
 
@@ -419,11 +420,12 @@ void CMeasurement_Traverse::Run_Adaptive(){
 			const gpsData& spectrumGpsData = m_spectrumGpsData[m_spectrumCounter];
 			for(int i = 0; i  < m_NChannels; ++i) {
 				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, spectrumGpsData.time, spectrumGpsData.time + elapsedSecond, 
-					spectrumGpsData.latitude, spectrumGpsData.longitude, spectrumGpsData.altitude, m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);
+					spectrumGpsData, m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);
 			}
 		}else{
+			gpsData spectrumGpsData;
 			for(int i = 0; i < m_NChannels; ++i) {
-				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, startTime, startTime+elapsedSecond, 0, 0, 0, m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);
+				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, startTime, startTime+elapsedSecond, spectrumGpsData, m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);
 			}
 		}
 

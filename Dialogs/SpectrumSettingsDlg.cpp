@@ -166,9 +166,7 @@ void CSpectrumSettingsDlg::SaveSpectrum(){
 	static double *spectrum = new double[MAX_SPECTRUM_LENGTH];
 
 	int spectrumLength       = m_Spectrometer->m_detectorSize;
-	double lat = 0.0;	// <-- this we don't know anything about
-	double lon = 0.0;	// <-- this we don't know anything about
-	double alt = 0.0;
+	gpsData gps;
 	char* startdate = "000000";
 	long starttime = 0; // <-- this we don't know anything about
 	long stoptime  = 0; // <-- this we don't know anything about
@@ -182,7 +180,7 @@ void CSpectrumSettingsDlg::SaveSpectrum(){
 	}
 
 	// write the file
-	CSpectrumIO::WriteStdFile(stdFileName, spectrum, spectrumLength, startdate, starttime, stoptime, lat, lon, alt, m_Spectrometer->m_integrationTime, m_Spectrometer->m_spectrometerName, "...", m_Spectrometer->m_totalSpecNum);
+	CSpectrumIO::WriteStdFile(stdFileName, spectrum, spectrumLength, startdate, starttime, stoptime, gps, m_Spectrometer->m_integrationTime, m_Spectrometer->m_spectrometerName, "...", m_Spectrometer->m_totalSpecNum);
 }
 
 // Called when the user has pressed the spin button that controlls the exposure-time
