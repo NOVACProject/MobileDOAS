@@ -172,29 +172,29 @@ public:
 	/** Counts how many spectra should be averaged inside the computer and
 	    how many should be averaged inside the spectrometer get the desired
 	    timeresolution with the set exposure time. */
-	int     CountRound(long timeResolution, long serialDelay,long gpsDelay,int* pResults);
+	int CountRound(long timeResolution, long serialDelay,long gpsDelay,int* pResults);
 
 	/** Returns the average intensity of the supplied spectrum. */
-	long    AverageIntens(double* pSpectrum,long totalNum);
+	long AverageIntens(double* pSpectrum,long totalNum);
 
 	/** Makes the initial adjustments and sets the 
-	  parameter 'integrationTime' so that intensity of 
-	  the spectra are at the desired percent of max. */
-	short    AdjustIntegrationTime();
+		parameter 'm_integrationTime' so that intensity of 
+		the spectra are at the desired percent of max. 
+		@return the set integration time (in milli seconds) */
+	short AdjustIntegrationTime();
 
-	/** Makes a more clever adjustment of the parameter 
-			'integrationTime' so that intensity of 
-		  the spectra are at the desired percent of max. 
-			
-			NB: Called from the function 'AdjustIntegrationTime' !!! */
-	short		 AdjustIntegrationTime_Calculate(long minExpTime, long maxExpTime);
+	/** Makes adjustments to the integration time (m_integrationTime) so that the
+		intensity of the spectra are at the desired percent of max.
+		@return the set integration time (in milli seconds) */
+	short AdjustIntegrationTimeToLastIntensity(long maximumIntensity);
 
 	/** Calculates the integration time, 
 	  given the intensity of the dark and the sky spectra 
 	  and the exposure time they were collected with*/
-	long GetInttime(long pSky,long pDark, int intT = 100);   
+	long GetInttime(long pSky,long pDark, int intT = 100);
 
-	/** The integration time that is used by the program. In milli seconds*/
+	/** The integration time that is used by the program. In milli seconds.
+		Maximum value is 65 seconds (from the type). */
 	short    m_integrationTime;
 
 	/** The desired intensity of the measured spectra, 
@@ -604,6 +604,7 @@ protected:
 
 private:
 
+	// -------------------- PRIVATE DATA --------------------
 
 	/** Used by 'CountFlux' to calculate the flux.
 		TODO: Is this really necessary?? */
@@ -633,6 +634,15 @@ private:
 	/** The wrapper extensions is used to get additional functionality when
 		handling the OceanOptics spectrometers using the USB-port */
 	WrapperExtensions	m_wrapperExt;
+
+	// -------------------- PRIVATE METHODS --------------------
+
+	/** Makes a more clever adjustment of the parameter
+		'integrationTime' so that intensity of
+		the spectra are at the desired percent of max.
+		NB: Called from the function 'AdjustIntegrationTime' !!! */
+	short	AdjustIntegrationTime_Calculate(long minExpTime, long maxExpTime);
+
 };
 
 #endif // !defined(AFX_COMMUNICATION_H__7C04DDEA_2314_405E_A09D_02B403AC7762__INCLUDED_)

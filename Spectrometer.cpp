@@ -1564,7 +1564,7 @@ short CSpectrometer::AdjustIntegrationTime() {
 	int oldIntTime = m_integrationTime;
 
 	int highLimit = MAX_EXPOSURETIME; // maximum exposure time
-	int lowLimit = MIN_EXPOSURETIME; // minimum exposure time
+	int lowLimit  = MIN_EXPOSURETIME; // minimum exposure time
 
 	// if the exposure time is set by the user, don't even bother to calculate it
 	if (m_fixexptime > 0) {
@@ -1641,6 +1641,29 @@ short CSpectrometer::AdjustIntegrationTime() {
 			return m_integrationTime;
 		}
 	}
+
+	return m_integrationTime;
+}
+
+short CSpectrometer::AdjustIntegrationTimeToLastIntensity(long maximumIntensity)
+{
+	const double ratioTolerance     = 0.2;
+	const double minTolerableRatio  = std::max(0.0, m_percent - ratioTolerance);
+	const double maxTolerableRatio  = std::min(1.0, m_percent + ratioTolerance);
+
+	const double curSaturationRatio = maximumIntensity / (double)m_spectrometerDynRange;
+	if (curSaturationRatio >= minTolerableRatio && curSaturationRatio <= maxTolerableRatio)
+	{
+		// nothing needs to be done...
+		return m_integrationTime;
+	}
+
+	// Adjust the integration time
+	long desiredIntegrationTime = (curSaturationRatio < minTolerableRatio) ? 
+		(long)(m_integrationTime * (1.0 + ratioTolerance)) : 
+		(long)(m_integrationTime / (1.0 + ratioTolerance));
+
+	m_integrationTime = std::max((long)MIN_EXPOSURETIME, std::min(m_timeResolution, desiredIntegrationTime));
 
 	return m_integrationTime;
 }

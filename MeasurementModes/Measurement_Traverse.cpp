@@ -549,11 +549,8 @@ void CMeasurement_Traverse::Run_Adaptive(){
 			DoEvaluation(m_tmpSky, m_tmpDark, scanResult);
 
 			// Update the exposure-time
-			//if(averageValue[0] >= 4000){
-			m_integrationTime = AdjustIntegrationTime();
-			//}else{
-			//	integrationTime					= GetInttime(averageValue[0], GetOffset(scanResult[0]), integrationTime);
-			//}
+			m_integrationTime = AdjustIntegrationTimeToLastIntensity(m_averageSpectrumIntensity[0]);
+
 			m_sumInComputer				= CountRound(m_timeResolution, serialDelay, gpsDelay, roundResult);
 			m_sumInSpectrometer			= roundResult[0];
 			m_totalSpecNum				= m_sumInComputer*m_sumInSpectrometer;
