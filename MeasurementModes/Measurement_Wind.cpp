@@ -263,7 +263,7 @@ void CMeasurement_Wind::Run(){
 			/* Get the information about the spectrum */
 			GetSpectrumInfo(scanResult);
 			#ifndef _DEBUG
-				if(!specInfo->isDark)
+				if(!m_specInfo->isDark)
 					MessageBox(pView->m_hWnd,  "It seems like the dark spectrum is not completely dark, consider restarting the program", "Error", MB_OK);
 			#endif
 
@@ -299,7 +299,7 @@ void CMeasurement_Wind::Run(){
 			/* Get the information about the spectrum */
 			GetSpectrumInfo(scanResult);
 			#ifndef _DEBUG
-				if(specInfo->isDark)
+				if(m_specInfo->isDark)
 				MessageBox(pView->m_hWnd,  "It seems like the sky spectrum is dark, consider restarting the program", "Error", MB_OK);
 			#endif
 

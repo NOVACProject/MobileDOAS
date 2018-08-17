@@ -1,3 +1,9 @@
 /x64
 Debug/
 Release/
+/InstallAware
+/times.txt
+/gps.log
+/fluxCalculation.txt
+/install
+/.vs/DMSpec/v15

@@ -32,6 +32,7 @@
 #include "MeasurementModes/Measurement_View.h"
 #include "MeasurementModes/Measurement_Calibrate.h"
 #include <algorithm>
+#include <Mmsystem.h>	// used for PlaySound
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -79,8 +80,8 @@ BEGIN_MESSAGE_MAP(CDMSpecView, CFormView)
 	ON_COMMAND(ID_CONFIGURATION_PLOT_CHANGEPLOTCOLOR_SLAVE,		OnConfigurationPlotChangeplotcolor_Slave)
 
 	// dual-beam
-	//ON_COMMAND(ID_ANALYSIS_PLUMEHEIGHTMEASUREMENT, OnMenuAnalysisPlumeheightmeasurement)
-	//ON_COMMAND(ID_ANALYSIS_WINDSPEEDMEASUREMENT, OnMenuAnalysisWindSpeedMeasurement)
+	ON_COMMAND(ID_ANALYSIS_PLUMEHEIGHTMEASUREMENT, OnMenuAnalysisPlumeheightmeasurement)
+	ON_COMMAND(ID_ANALYSIS_WINDSPEEDMEASUREMENT, OnMenuAnalysisWindSpeedMeasurement)
 
 	ON_COMMAND(ID_CONFIGURATION_OPERATION,			OnConfigurationOperation)
 	ON_MESSAGE(WM_DRAWCOLUMN,						OnDrawColumn)
@@ -362,8 +363,9 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam){
 	lowLimit     = (-1.25)*fabs(minColumn);
 	m_columnLimit = 1.25*maxColumn;
 
-	if(m_columnLimit == 0)
+	if(m_columnLimit == 0){
 		m_columnLimit = 0.1;
+	}
 
 	// Set the range for the plot
 	m_ColumnPlot.SetRange(0.0, 199.0, 0,  lowLimit, m_columnLimit, 1);
@@ -373,16 +375,20 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam){
 	if(m_spectrometerMode == MODE_TRAVERSE){
 		if(fitRegionNum == 1){
 			m_ColumnPlot.SetPlotColor(m_PlotColor[0]);
-			if(m_showErrorBar)
+			if(m_showErrorBar){
 				m_ColumnPlot.BarChart(number, column[0], columnErr[0], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
-			else
+			}
+			else {
 				m_ColumnPlot.BarChart(number, column[0], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+			}
 		}else{
 			m_ColumnPlot.SetPlotColor(m_PlotColor[0]);
-			if(m_showErrorBar)
+			if(m_showErrorBar) {
 				m_ColumnPlot.BarChart2(number, column[0], column[1], columnErr[0], columnErr[1], m_PlotColor[1], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
-			else
+			}
+			else {
 				m_ColumnPlot.BarChart2(number, column[0], column[1], m_PlotColor[1], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+			}
 		}
 	}else if(m_spectrometerMode == MODE_WIND){
 		if(m_showErrorBar){
@@ -550,30 +556,40 @@ LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 	int hr, min, sec;
 	ExtractTime(data, hr, min, sec);
 
-	if(data.latitude >= 0.0)
+	if(data.latitude >= 0.0){
 		lat.Format("%f  degree N",data.latitude);
-	else 
+	}
+	else {
 		lat.Format("%f  degree S",-1.0*data.latitude);
+	}
 
-	if(data.longitude >= 0.0)
+	if(data.longitude >= 0.0) {
 		lon.Format("%f  degree E", data.longitude);
-	else
+	}
+	else {
 		lon.Format("%f  degree W",-1.0 * data.longitude);
+	}
 
-	if(hr<10)
+	if(hr<10) {
 		strHr.Format("0%d:",hr);
-	else
+	}
+	else {
 		strHr.Format("%d:",hr);
+	}
 
-	if(min<10)
+	if(min<10) {
 		strMin.Format("0%d:",min);
-	else
+	}
+	else {
 		strMin.Format("%d:",min);
+	}
 
-	if(sec<10)
+	if(sec<10) {
 		strSec.Format("0%d",sec);
-	else
+	}
+	else {
 		strSec.Format("%d",sec);
+	}
 
 	nSat.Format("%d", (long)data.nSatellites);
 
@@ -583,14 +599,17 @@ LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 	this->SetDlgItemText(IDC_LON, lon);
 	this->SetDlgItemText(IDC_NGPSSAT, nSat);
 
-	if(latNSat == 0 && data.nSatellites != 0){
-		COLORREF normal = RGB(236, 233, 216);
 
-		// Set the background color to normal
-		m_gpsLatLabel.SetBackgroundColor(normal);
-		m_gpsLonLabel.SetBackgroundColor(normal);
-		m_gpsTimeLabel.SetBackgroundColor(normal);
-		m_gpsNSatLabel.SetBackgroundColor(normal);
+	if (!m_Spectrometer->m_gps->m_gotContact) { // If GPS signal is lost
+		COLORREF warning = RGB(255, 75, 75);
+
+		// Set the background color to red
+		m_gpsLatLabel.SetBackgroundColor(warning);
+		m_gpsLonLabel.SetBackgroundColor(warning);
+		m_gpsTimeLabel.SetBackgroundColor(warning);
+		m_gpsNSatLabel.SetBackgroundColor(warning);
+
+		SoundAlarm();
 
 	}else if(latNSat != 0 && data.nSatellites == 0){
 		COLORREF warning = RGB(255, 75, 75);
@@ -601,7 +620,17 @@ LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 		m_gpsTimeLabel.SetBackgroundColor(warning);
 		m_gpsNSatLabel.SetBackgroundColor(warning);
 	}
+	else {
 
+		COLORREF normal = RGB(236, 233, 216);
+
+		// Set the background color to normal
+		m_gpsLatLabel.SetBackgroundColor(normal);
+		m_gpsLonLabel.SetBackgroundColor(normal);
+		m_gpsTimeLabel.SetBackgroundColor(normal);
+		m_gpsNSatLabel.SetBackgroundColor(normal);
+	}
+	
 	// Remember the number of satelites
 	latNSat = (int)data.nSatellites;
 
@@ -1402,4 +1431,18 @@ void CDMSpecView::OnDestroy()
 
 	// Terminate the collection of spectra
 	this->OnControlStop();
+}
+
+
+void CDMSpecView::SoundAlarm()
+{
+	CString fileToPlay;
+	TCHAR windowsDir[MAX_PATH + 1];
+	GetWindowsDirectory(windowsDir, MAX_PATH + 1);
+
+	DWORD volume = (DWORD)(0xFFFF);
+	MMRESULT res = waveOutSetVolume(0, volume);
+	fileToPlay.Format("%s\\Media\\Windows Error.wav", windowsDir);
+
+	PlaySound(fileToPlay, 0, SND_SYNC);
 }

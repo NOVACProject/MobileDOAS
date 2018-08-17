@@ -53,14 +53,14 @@ void CFitWindowListBox::OnLButtonDown(UINT nFlags, CPoint point){
 void CFitWindowListBox::OnContextMenu(CWnd *pWnd, CPoint pos){
 	OnLButtonDown(MK_LBUTTON, pos); // make the current menu item marked
 
-  CMenu menu;
-  VERIFY(menu.LoadMenu(IDR_FITWINDOWLIST_MENU));
-  CMenu* pPopup = menu.GetSubMenu(0);
-  ASSERT(pPopup != nullptr);
+	CMenu menu;
+	VERIFY(menu.LoadMenu(IDR_FITWINDOWLIST_MENU));
+	CMenu* pPopup = menu.GetSubMenu(0);
+	ASSERT(pPopup != nullptr);
 
 	// There has to be at least one fit window defined at all times
 	//	if there are too few, don't allow the user to remove any
-	if(m_conf->m_nFitWindows <= 1){
+	if(m_conf->m_nFitWindows < 1){
 		pPopup->EnableMenuItem(ID__REMOVEWINDOW, MF_DISABLED | MF_GRAYED);
 	}
 
@@ -76,16 +76,16 @@ void CFitWindowListBox::OnContextMenu(CWnd *pWnd, CPoint pos){
 }
 
 /** Called to insert a fit window into the list */
-void CFitWindowListBox::OnInsertFitWindow(){
+void CFitWindowListBox::OnInsertFitWindow() {
 	CString name;
 
 	// Make sure the list box is initialized ok.
-	if(m_conf == nullptr)
+	if (m_conf == nullptr)
 		return;
 
 	// Make sure that there's enough space to store one more window 
 	int numFitWindows = m_conf->m_nFitWindows;
-	if(numFitWindows == MAX_FIT_WINDOWS)
+	if (numFitWindows == MAX_FIT_WINDOWS)
 		return;
 
 	// Ask the user for the name of the window
@@ -94,12 +94,11 @@ void CFitWindowListBox::OnInsertFitWindow(){
 	nameDialog.m_inputString = &name;
 	INT_PTR ret = nameDialog.DoModal();
 
-	if(IDCANCEL == ret)
+	if (IDCANCEL == ret)
 		return;
 
 	// insert an empty fit window.
 	m_conf->m_fitWindow[numFitWindows].Clear();
-	m_conf->m_fitWindow[numFitWindows].name.Format("%s", (LPCTSTR)name);
 	if (numFitWindows == 1) {
 		int existChannel = m_conf->m_fitWindow[numFitWindows - 1].channel;
 		if (existChannel == 0) {
@@ -108,6 +107,12 @@ void CFitWindowListBox::OnInsertFitWindow(){
 		else {
 			m_conf->m_fitWindow[numFitWindows].channel = 0;
 		}
+	}
+	if (m_conf->m_fitWindow[numFitWindows].channel == 0) {
+		m_conf->m_fitWindow[numFitWindows].name.Format("%s (Master)", (LPCTSTR)name);
+	}
+	else {
+		m_conf->m_fitWindow[numFitWindows].name.Format("%s (Slave)", (LPCTSTR)name);
 	}
 	m_conf->m_nFitWindows += 1;
 
@@ -145,7 +150,13 @@ void CFitWindowListBox::OnRenameWindow(){
 	if(IDCANCEL == ret)
 		return;
 
-	// Change the name 
+	// Change the name (must be different from the other fit window name though)
+	int otherCur = (curSel == 0);
+	if (strcmp(name, m_conf->m_fitWindow[otherCur].name) == 0) {
+		MessageBox("Fit window name is already in use.  Please choose another name.", "Rename fit window");
+		OnRenameWindow();
+		return;
+	}
 	m_conf->m_fitWindow[curSel].name.Format("%s", (LPCTSTR)name);
 
 	// Update hte list
@@ -159,6 +170,7 @@ void CFitWindowListBox::OnRemoveFitWindow(){
 
 	// make sure that there's always at least one window defined
 	if (m_conf->m_nFitWindows <= 1) {
+		MessageBox("At least one fit window must be defined.", "Remove fit window");
 		return;
 	}
 

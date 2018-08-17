@@ -854,7 +854,12 @@ bool CReEvaluator::WriteEvaluationLogHeader(int channel){
 	if(f == 0)
 		return false;
 
-	fprintf(f, "***Desktop Mobile Program***\nVERSION=%1d.%1d\nFILETYPE=ReEvaluationlog\n", CVersion::majorNumber, CVersion::minorNumber);
+	if (CVersion::draft) {
+		fprintf(f, "***Desktop Mobile Program***\nVERSION=%1d.%1d DRAFT\nFILETYPE=ReEvaluationlog\n", CVersion::majorNumber, CVersion::minorNumber);
+	}
+	else {
+		fprintf(f, "***Desktop Mobile Program***\nVERSION=%1d.%1d\nFILETYPE=ReEvaluationlog\n", CVersion::majorNumber, CVersion::minorNumber);
+	}
 	fprintf(f, "Original EvaluationLog=%s\n", (LPCTSTR)m_evalLogFileName);
 	fprintf(f, "***Settings Used in the Evaluation***\n");
 	fprintf(f, "FitFrom=%d\nFitTo=%d\nPolynom=%d\n", m_settings.m_window.fitLow, m_settings.m_window.fitHigh, m_settings.m_window.polyOrder);

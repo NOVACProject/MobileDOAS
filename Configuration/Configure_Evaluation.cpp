@@ -52,8 +52,8 @@ BEGIN_MESSAGE_MAP(CConfigure_Evaluation, CPropertyPage)
 	ON_BN_CLICKED(IDC_REFERENCE_PROPERTIES,		OnShowProperties)
 	ON_BN_CLICKED(IDC_REFERENCE_VIEW,			OnShowReferenceGraph)
 
-	ON_EN_KILLFOCUS(IDC_REEVAL_WINDOW_FITFROM,	SaveData)
-	ON_EN_KILLFOCUS(IDC_REEVAL_WINDOW_FITTO,	SaveData)
+	ON_EN_KILLFOCUS(IDC_EDIT_FITFROM,	SaveData)
+	ON_EN_KILLFOCUS(IDC_EDIT_FITTO,	SaveData)
 	ON_EN_KILLFOCUS(IDC_REEVAL_WINDOW_POLYNOM2,	SaveData)
 	ON_LBN_SELCHANGE(IDC_COMBO_CHANNEL,			SaveData)
 END_MESSAGE_MAP()
@@ -208,10 +208,13 @@ void CConfigure_Evaluation::OnRemoveReference(){
 
 	int minRow = cellRange.GetMinRow() - 1;
 	int nRows = cellRange.GetRowSpan();
-
+	
+	if (nRows <= 0) {
+		return;
+	}
 	// move every reference file in the list down one step
-	for(int i = 0; i < nRows; i++){
-		window.ref[minRow] = window.ref[minRow+1];
+	for(int i = minRow; i < window.nRef; i++){
+		window.ref[i] = window.ref[i+nRows];
 	}
 
 	// reduce the number of references by number deleted
@@ -230,14 +233,12 @@ void CConfigure_Evaluation::OnInsertReference(){
 	// Get the currently selected fit window
 	int curSel = m_windowList.GetCurSel();
 	if(curSel < 0){
-		if(m_windowList.GetCount() > 0){
-			curSel = 0;
-		}else{
+		curSel = 0;
+		if(m_windowList.GetCount() == 0){
 			// insert a new fit-window (this makes the interface much more intuitive...)
 			m_conf->m_fitWindow[0].name.Format("NEW");
 			m_conf->m_fitWindow[0].nRef = 0;
 			m_conf->m_nFitWindows = 1;
-			curSel = 0;
 		}
 	}
 

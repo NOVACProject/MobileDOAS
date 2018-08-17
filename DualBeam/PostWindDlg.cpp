@@ -61,8 +61,8 @@ BEGIN_MESSAGE_MAP(CPostWindDlg, CDialog)
 	//ON_EN_CHANGE(IDC_EDIT_EVALLOG,									OnChangeEvalLog)
 
 	// Changing the settings
-	ON_EN_CHANGE(IDC_EDIT_LPITERATIONS, OnChangeLPIterations)
-	ON_EN_CHANGE(IDC_EDIT_PLUMEHEIGHT, OnChangePlumeHeight)
+	ON_EN_KILLFOCUS(IDC_EDIT_LPITERATIONS, OnChangeLPIterations)
+	ON_EN_KILLFOCUS(IDC_EDIT_PLUMEHEIGHT, OnChangePlumeHeight)
 
 	// Changing what to show
 	ON_BN_CLICKED(IDC_RADIO_SHOW_CORR, DrawResult)

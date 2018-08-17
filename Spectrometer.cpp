@@ -381,7 +381,8 @@ void CSpectrometer::ApplySettings() {
 	}
 	this->m_fitRegionNum = m_conf->m_nFitWindows;
 
-	// Misc. Settings
+	// Audio Settings
+	this->m_useAudio = m_conf->m_useAudio;
 	this->m_maxColumn = m_conf->m_maxColumn;
 }
 
@@ -743,9 +744,11 @@ void CSpectrometer::DoEvaluation(double pSky[][MAX_SPECTRUM_LENGTH], double pDar
 
 		fileName.Format("evaluationLog_%s.txt", m_fitRegion[j].window.name);
 		WriteEvFile(fileName, &m_fitRegion[j]);
-	}
 
-	Sing(curColumn[0] / m_maxColumn);
+	}
+	if (m_useAudio) {
+		Sing(curColumn[0] / m_maxColumn);
+	}
 	pView->PostMessage(WM_DRAWCOLUMN);
 
 	++m_spectrumCounter;
@@ -1011,20 +1014,27 @@ void CSpectrometer::Sing(double factor)
 	CString fileToPlay;
 	TCHAR windowsDir[MAX_PATH + 1];
 	GetWindowsDirectory(windowsDir, MAX_PATH + 1);
-	DWORD volume;
-
+	DWORD multiplier = (DWORD)(0xFFFF);
 	if (factor > 0)
 	{
-		volume = (DWORD)(0xFFFF * factor);
-		MMRESULT res = waveOutSetVolume(0, volume);
-		fileToPlay.Format("%s\\Media\\ringout.wav", windowsDir);
+		multiplier = (DWORD)(0xFFFF * factor);
 	}
 	else
 	{
-		volume = (DWORD)(0xFFFF * (fabs(factor) + 0.0000001));
-		MMRESULT res = waveOutSetVolume(0, volume);
-		fileToPlay.Format("%s\\Media\\start.wav", windowsDir);
+		multiplier = (DWORD)(0xFFFF * (fabs(factor) + 0.0000001));
 	}
+
+	WAVEOUTCAPS pwoc;
+	waveOutGetDevCaps(0, &pwoc, sizeof(WAVEOUTCAPS));
+	if (pwoc.dwSupport & WAVECAPS_PITCH)  // check if device can set pitch
+	{		
+		// See https://msdn.microsoft.com/en-us/library/Dd743872(v=VS.85).aspx
+		MMRESULT res = waveOutSetPitch(0, multiplier);
+	}
+	else {
+		MMRESULT res = waveOutSetVolume(0, multiplier); // nope, change volume instead
+	}
+	fileToPlay.Format("%s\\Media\\ringout.wav", windowsDir);
 
 	PlaySound(fileToPlay, 0, SND_SYNC);
 }
@@ -1032,13 +1042,12 @@ void CSpectrometer::Sing(double factor)
 long CSpectrometer::AverageIntens(double *pSpectrum, long ptotalNum) {
 	double sum = 0.0;
 	long num;
-	int j;
 	if (m_conf->m_specCenter <= OFFSET)
 		m_conf->m_specCenter = OFFSET;
 	if (m_conf->m_specCenter >= MAX_SPECTRUM_LENGTH - OFFSET)
 		m_conf->m_specCenter = MAX_SPECTRUM_LENGTH - 2 * OFFSET;
 
-	for (j = m_conf->m_specCenter - OFFSET; j < m_conf->m_specCenter + OFFSET; j++) {
+	for (int j = m_conf->m_specCenter - OFFSET; j < m_conf->m_specCenter + OFFSET; j++) {
 		sum += pSpectrum[j];
 	}
 
@@ -1056,6 +1065,7 @@ long CSpectrometer::AverageIntens(double *pSpectrum, long ptotalNum) {
 }
 
 bool CSpectrometer::UpdateGpsData() {
+	// If GPS thread does not exist or is not running
 	if (nullptr == m_gps) {
 		return false;
 	}
@@ -1064,15 +1074,23 @@ bool CSpectrometer::UpdateGpsData() {
 
 	m_gps->Get(m_spectrumGpsData[m_spectrumCounter]);
 
+	// check for valid lat/lon
 	if ((m_spectrumGpsData[m_spectrumCounter].latitude == 0.0) && (m_spectrumGpsData[m_spectrumCounter].longitude == 0.0)) {
 		// Invalid data, no latitude / longitude could be retrieved
 		gpsDataIsValid = false;
 	}
-	else if (m_spectrumGpsData[m_spectrumCounter].nSatellites == 0) {
+	// check for valid number of satellites
+	if (m_spectrumGpsData[m_spectrumCounter].nSatellites == 0) {
 		// Invalid data, the receiver couldn't connect to any satellite
 		gpsDataIsValid = false;
 	}
-
+	if (!m_gps->m_gotContact) {
+		gpsDataIsValid = false;
+	}
+	if (m_spectrumCounter > 0 && (m_spectrumGpsData[m_spectrumCounter].time == m_spectrumGpsData[m_spectrumCounter-1].time)) {
+		gpsDataIsValid = false;
+	}
+	
 	pView->PostMessage(WM_READGPS);
 
 	return gpsDataIsValid;
@@ -1100,16 +1118,23 @@ void CSpectrometer::WriteBeginEvFile(int fitRegion) {
 	// Write a copy of the old cfg-file into the evaluation-log
 	CString evPath = m_subFolder + "\\" + m_measurementBaseName + "_" + m_measurementStartTimeStr + TEXT("evaluationLog_" + m_fitRegion[fitRegion].window.name + ".txt");
 	CString str1, str2, str3, str4, str5, str6, str7, channelName;
-	str1.Format("***Desktop Mobile Program***\nVERSION=%1d.%1d\nFILETYPE=evaluationlog\n", CVersion::majorNumber, CVersion::minorNumber);
+	if (CVersion::draft) {
+		str1.Format("***Desktop Mobile Program***\nVERSION=%1d.%1d DRAFT\nFILETYPE=evaluationlog\n", CVersion::majorNumber, CVersion::minorNumber);
+	}
+	else {
+		str1.Format("***Desktop Mobile Program***\nVERSION=%1d.%1d\nFILETYPE=evaluationlog\n", CVersion::majorNumber, CVersion::minorNumber);
+	}
 	str2.Format("BASENAME=%s\nWINDSPEED=%f\nWINDDIRECTION=%f\n", (LPCSTR)m_measurementBaseName, m_windSpeed, m_windAngle);
 	str3 = TEXT("***copy of related configuration file ***\n");
 
-	if (!m_connectViaUsb)
+	if (!m_connectViaUsb) {
 		str4.Format("SPEC_BAUD=%d\nSERIALPORT=%s\nGPSBAUD=%d\nGPSPORT=%s\nTIMERESOLUTION=%d\n",
 			serial.baudrate, serial.serialPort, m_GPSBaudRate, m_GPSPort, m_timeResolution);
-	else
+	}
+	else {
 		str4.Format("SERIALPORT=USB\nGPSBAUD=%d\nGPSPORT=%s\nTIMERESOLUTION=%d\n",
 			m_GPSBaudRate, m_GPSPort, m_timeResolution);
+	}
 
 	str5.Format("FIXEXPTIME=%d\nFITFROM=%d\nFITTO=%d\nPOLYNOM=%d\n",
 		m_fixexptime, m_fitRegion[fitRegion].window.fitLow, m_fitRegion[fitRegion].window.fitHigh, m_fitRegion[fitRegion].window.polyOrder);
@@ -1144,14 +1169,13 @@ void CSpectrometer::WriteBeginEvFile(int fitRegion) {
 			channelName, m_fitRegion[fitRegion].window.ref[k].m_specieName, channelName, m_fitRegion[fitRegion].window.ref[k].m_specieName);
 	}
 	str7.AppendFormat("STD-File(%s)\n", channelName);
-
-
+	
 	WriteLogFile(evPath, str7);
 }
 
 int CSpectrometer::CountRound(long timeResolution, long serialDelay, long gpsDelay, int* pResults)
 {
-	int i, index, sumOne, nRound;
+	int index, sumOne, nRound;
 	long results[15], rounds[15];
 	double nSpec[15];
 	long totalTime;
@@ -1179,7 +1203,7 @@ int CSpectrometer::CountRound(long timeResolution, long serialDelay, long gpsDel
 		}
 		maxSpecPerTime = nSpec[0] / (double)results[0];
 
-		for (i = 1; i < 15; ++i) {
+		for (int i = 1; i < 15; ++i) {
 			if (rounds[i - 1] > 0) {
 				if (results[i] <= 1.1*timeResolution && nSpec[i] / (double)results[i] >= maxSpecPerTime) {
 					maxSpecPerTime = nSpec[i] / (double)results[i];
@@ -1276,8 +1300,9 @@ int CSpectrometer::TestUSBConnection() {
 	given spectrometerIndex. If no spectrometer exist with the given
 	index then no changes will be made */
 int CSpectrometer::ChangeSpectrometer(int selectedspec, int channel) {
-	if (selectedspec < 0)
+	if (selectedspec < 0){
 		return m_spectrometerIndex;
+	}
 
 	// Check the number of spectrometers attached
 	if (m_numberOfSpectrometersAttached == 0) {
@@ -1318,8 +1343,7 @@ int CSpectrometer::ChangeSpectrometer(int selectedspec, int channel) {
 	WrapperExtensions ext = m_wrapper.getWrapperExtensions();
 	m_spectrometerDynRange = ext.getSaturationIntensity(m_spectrometerIndex);
 	const int nofChannelsAvailable = ext.getNumberOfEnabledChannels(m_spectrometerIndex);
-
-
+	
 	if (m_NChannels > nofChannelsAvailable) {
 		CString msg;
 		msg.Format("Cfg.txt specifies %d channels to be used but spectrometer can only handle %d. Changing configuration to handle only %d channel(s)", m_NChannels, nofChannelsAvailable, nofChannelsAvailable);
@@ -1338,8 +1362,7 @@ int CSpectrometer::ChangeSpectrometer(int selectedspec, int channel) {
 	}
 
 	m_statusMsg.Format("Will use spectrometer #%d (%s).", m_spectrometerIndex, m_spectrometerModel); pView->PostMessage(WM_STATUSMSG);
-
-
+	
 	// Get a spectrum
 	m_statusMsg.Format("Attempting to retrieve a spectrum from %s", m_spectrometerName); pView->PostMessage(WM_STATUSMSG);
 
@@ -1373,8 +1396,9 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 		spectrum too many times in a row. */
 	static bool nagFlag = false;
 
-	if (m_fixexptime < 0)
+	if (m_fixexptime < 0){
 		nagFlag = true;
+	}
 
 	// The board-temperature, if one could be retrieved
 	double temperature = NOT_A_NUMBER;
@@ -1404,8 +1428,7 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 		if (fabs(m_averageSpectrumIntensity[n] - m_specInfo[n].offset) < 4.0) {
 			isDark = true;
 		}
-
-
+		
 		if (isDark) {
 			m_specInfo[n].isDark = true;
 			m_lastDarkOffset[n] = m_specInfo[n].offset;
@@ -1467,14 +1490,15 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 		// Spectrum number
 		fprintf(f, "%ld\t", m_spectrumCounter);
 		// The board temperature (?)
-		if (temperature != NOT_A_NUMBER)
+		if (temperature != NOT_A_NUMBER){
 			fprintf(f, "%.3lf\t", temperature);
+		}
 
 		// The master-channel
 		fprintf(f, "%lf\t%ld\t%d", m_specInfo[0].offset, m_averageSpectrumIntensity[0], m_specInfo[0].isDark);
-		if (m_NChannels > 1)
-			fprintf(f, "%lf\t%ld\t%d", m_specInfo[1].offset, m_averageSpectrumIntensity[1], m_specInfo[1].isDark);
-
+		if (m_NChannels > 1){
+			fprintf(f, "\t%lf\t%ld\t%d", m_specInfo[1].offset, m_averageSpectrumIntensity[1], m_specInfo[1].isDark);
+		}
 		fprintf(f, "\n");
 
 		fclose(f);
@@ -1585,27 +1609,32 @@ short CSpectrometer::AdjustIntegrationTime() {
 		for (int i = 0; i < m_NChannels; ++i) {
 			memcpy((void*)m_curSpectrum[i], skySpec[i], sizeof(double)*MAX_SPECTRUM_LENGTH);
 		}
-		if (m_fixexptime >= 0)
+		if (m_fixexptime >= 0){
 			pView->PostMessage(WM_DRAWSPECTRUM);
+		}
 		pView->PostMessage(WM_SHOWINTTIME);
 
 		// Check if we have reached our goal
-		if (fabs(skyInt - m_spectrometerDynRange*m_percent) < 200)
+		if (fabs(skyInt - m_spectrometerDynRange*m_percent) < 200){
 			return m_integrationTime;
+		}
 
 		// Adjust the exposure time so that we come closer to the desired value
-		if (skyInt - m_spectrometerDynRange*m_percent > 0)
+		if (skyInt - m_spectrometerDynRange*m_percent > 0){
 			highLimit = m_integrationTime;
-		else
+		}
+		else{
 			lowLimit = m_integrationTime;
+		}
 
 		// calculate the neccessary exposure time
 		oldIntTime = m_integrationTime;
 		m_integrationTime = (short)GetInttime(skyInt, darkInt, m_integrationTime);
 
 		// if we don't change the exposure time, just quit.
-		if (fabs(oldIntTime - m_integrationTime) < 0.1*m_integrationTime)
+		if (fabs(oldIntTime - m_integrationTime) < 0.1*m_integrationTime){
 			return m_integrationTime;
+		}
 
 		// check if we can reach the desired level at all
 		if ((m_integrationTime == MAX_EXPOSURETIME) || (m_integrationTime == MIN_EXPOSURETIME)) {
@@ -1668,10 +1697,12 @@ short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxEx
 	// Calculate the exposure-time
 	m_integrationTime = (short)((m_spectrometerDynRange - int_short) * (maxExpTime - minExpTime) * m_percent / (int_long - int_short));
 
-	if (m_integrationTime > MAX_EXPOSURETIME)
+	if (m_integrationTime > MAX_EXPOSURETIME){
 		m_integrationTime = MAX_EXPOSURETIME;
-	if (m_integrationTime < MIN_EXPOSURETIME)
+	}
+	if (m_integrationTime < MIN_EXPOSURETIME){
 		m_integrationTime = MIN_EXPOSURETIME;
+	}
 
 	// Try out the calculated intensity to see if it works...
 	if (!m_connectViaUsb) {
@@ -1698,8 +1729,9 @@ short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxEx
 		for (int i = 0; i < m_NChannels; ++i) {
 			memcpy((void*)m_curSpectrum[i], skySpec[i], sizeof(double)*MAX_SPECTRUM_LENGTH);
 		}
-		if (m_fixexptime >= 0)
+		if (m_fixexptime >= 0){
 			pView->PostMessage(WM_DRAWSPECTRUM);
+		}
 		pView->PostMessage(WM_SHOWINTTIME);
 
 		return m_integrationTime;
@@ -1727,7 +1759,7 @@ std::string CSpectrometer::GetCurrentDate() {
 	else {
 		const int c = this->m_spectrumCounter; // local buffer, to avoid race conditions...
 		m_gps->Get(m_spectrumGpsData[c]);
-		return std::string(m_spectrumGpsData[c].date, 6);
+		return std::to_string(m_spectrumGpsData[c].date);
 	}
 }
 
@@ -1741,10 +1773,6 @@ long CSpectrometer::GetCurrentTime() {
 	if (!couldReadValidGPSData) {
 		startTime = GetTimeValue_UMT();
 		m_spectrumGpsData[currentSpectrumCounter].time = startTime;
-		m_spectrumGpsData[currentSpectrumCounter].altitude = 0.0;
-		m_spectrumGpsData[currentSpectrumCounter].latitude = 0.0;
-		m_spectrumGpsData[currentSpectrumCounter].longitude = 0.0;
-		m_spectrumGpsData[currentSpectrumCounter].nSatellites = 0;
 	}
 	else if (m_timeDiffToUtc == 0) {
 		time_t t;

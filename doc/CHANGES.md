@@ -4,13 +4,21 @@ Version 6.1 (TBD)
 
 Critical changes
 * Enable configuration and evaluation of second channel for spectrometers that support it (#8)
+* Removed support for text format configuration file.
 
 New features
 * Multiple reference files can be addeded or removed simultaneously through evaluation configuration dialogs
+* Warn user (audio and visual) when GPS connection is lost (#78)
+* Reduce number of spectra collected for characterization of the offset in adaptive mode (#87)
+* Option to disable audio in spectrometer configuration (#88)
+* Alter pitch based on column density, instead of volume, if supported by audio device (#88)
+* Use same tone for negative column values (#88)
 
 Bug fixes
-* Fix spectra collection feature that did not work when second channel is enabled for a spectrometer (#74)
 * Ensure evaluation configuration dialog updates properly when adding/removing a new fit window
+* Attempt to reconnect when GPS connection is lost (#77)
+* Added GPS lat/lon validation (#81)
+* Potential fix for bad GPS date in STD files (#86)
 
 -----------------------------------------------------
 Version 6.0 (April 2018)

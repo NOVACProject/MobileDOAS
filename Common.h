@@ -110,8 +110,8 @@ struct gpsData {
 	/* Number of satellites seen by the receiver. */
 	long nSatellites = 0;
 
-	/** Date, formatted as mmddyy */
-	char date[6];
+	/* Date */
+	int date = 0;
 };
 
 /** Extracts the time from the provided gpsData and separates it into hour-minute-second */

@@ -22,7 +22,7 @@ extern CString g_exePath;  // <-- This is the path to the executable. This is a 
 
 CGPS::CGPS()
 	: gpsInfo() {
-	m_gotContact = false;
+	//m_gotContact = false;
 
 	m_gpsThread = nullptr;
 	fRun = false;
@@ -30,26 +30,31 @@ CGPS::CGPS()
 
 CGPS::CGPS(char* pCOMPort, long pBaudrate)
 	: CGPS() {
+
 	serial.baudrate = pBaudrate;
 	strcpy(serial.serialPort, pCOMPort);
-	if (!serial.Init(pBaudrate)) {
+
+	if (!Connect()) {
 		MessageBox(nullptr, "Could not communicate with GPS. No GPS-data can be retrieved!", "Error", MB_OK | MB_SYSTEMMODAL);
 	}
-	m_gotContact = true;
 }
 
 CGPS::~CGPS(){
 
 	m_gpsThread = nullptr;
-	serial.Close();
+	//serial.Close();
 }
 
+bool CGPS::Connect() {
+	if (!serial.Init(this->serial.baudrate)) {
+		return false;
+	}
+	return true;
+}
 
 /**Get position information - latitude and longitude
 *
 */
-
-
 void CGPS::Get(gpsData& dst) const
 {
 	dst = this->gpsInfo;
@@ -98,7 +103,13 @@ bool CGPS::Parse(char *string, gpsData& data){
 				return false;
 			}
 			else {
-				data.latitude = ConvertToDecimalDegrees(strtod(token, &stopStr));
+				double lat = ConvertToDecimalDegrees(strtod(token, &stopStr));
+				if (lat >= -90.0 && lat <= 90.0) {
+					data.latitude = lat;
+				}
+				else {
+					return false;
+				}
 			}
 
 			/* 4: north/south hemisphere */
@@ -106,8 +117,15 @@ bool CGPS::Parse(char *string, gpsData& data){
 				return false;
 			}
 			else {
-				if (0 == strncmp(token, "S", 1))
+				if (0 == strncmp(token, "S", 1)) {
 					data.latitude = -data.latitude;
+				}
+				else if (0 == strncmp(token, "N", 1)) {
+					// this is ok too
+				}
+				else {
+					return false; // some issue here
+				}
 			}
 
 			/* 5: the longitude  */
@@ -115,7 +133,13 @@ bool CGPS::Parse(char *string, gpsData& data){
 				return false;
 			}
 			else {
-				data.longitude = ConvertToDecimalDegrees(strtod(token, &stopStr));
+				double lon = ConvertToDecimalDegrees(strtod(token, &stopStr));
+				if (lon >= -180.0 && lon <= 180.0) {
+					data.longitude = lon;
+				}
+				else {
+					return false;
+				}
 			}
 
 			/* 6: east/west hemisphere */
@@ -123,8 +147,15 @@ bool CGPS::Parse(char *string, gpsData& data){
 				return false;
 			}
 			else {
-				if (0 == strncmp(token, "W", 1))
+				if (0 == strncmp(token, "W", 1)) {
 					data.longitude = -data.longitude;
+				}
+				else if (0 == strncmp(token, "E", 1)) {
+					// this is ok too
+				}
+				else {
+					return false; // some issue here
+				}
 			}
 
 			/* 7: the speed [knots] (ignore) */
@@ -148,7 +179,7 @@ bool CGPS::Parse(char *string, gpsData& data){
 				return false;
 			}
 			else {
-				sprintf(data.date, "%s", token);
+				data.date = strtol(token, &stopStr, 10);
 			}
 
 			/* 10: magnetic variation(ignore) */
@@ -183,7 +214,13 @@ bool CGPS::Parse(char *string, gpsData& data){
 				return false;
 			}
 			else {
-				data.latitude = ConvertToDecimalDegrees(strtod(token, &stopStr));
+				double lat = ConvertToDecimalDegrees(strtod(token, &stopStr));
+				if (lat >= -90.0 && lat <= 90.0) {
+					data.latitude = lat;
+				}
+				else {
+					return false;
+				}
 			}
 
 			/* 3: north/south hemisphere */
@@ -191,8 +228,15 @@ bool CGPS::Parse(char *string, gpsData& data){
 				return false;
 			}
 			else {
-				if (0 == strncmp(token, "S", 1))
+				if (0 == strncmp(token, "S", 1)) {
 					data.latitude = -data.latitude;
+				}
+				else if (0 == strncmp(token, "N", 1)) {
+					// this is ok too
+				}
+				else {
+					return false; // some issue here
+				}
 			}
 
 			/* 4: longitude */
@@ -200,7 +244,13 @@ bool CGPS::Parse(char *string, gpsData& data){
 				return false;
 			}
 			else {
-				data.longitude = ConvertToDecimalDegrees(strtod(token, &stopStr));
+				double lon = ConvertToDecimalDegrees(strtod(token, &stopStr));
+				if (lon >= -180.0 && lon <= 180.0) {
+					data.longitude = lon;
+				}
+				else {
+					return false;
+				}
 			}
 
 			/* 5: east/west hemisphere */
@@ -208,8 +258,15 @@ bool CGPS::Parse(char *string, gpsData& data){
 				return false;
 			}
 			else {
-				if (0 == strncmp(token, "W", 1))
+				if (0 == strncmp(token, "W", 1)) {
 					data.longitude = -data.longitude;
+				}
+				else if (0 == strncmp(token, "E", 1)) {
+					// this is ok too
+				}
+				else {
+					return false; // some issue here
+				}
 			}
 
 			/* 6: quality of fix (ignore) */
@@ -273,10 +330,7 @@ void CGPS::Run(){
 
 void CGPS::Stop(){
 	this->fRun = false;
-	if(m_gpsThread != nullptr){
-	}
 }
-
 
 bool CGPS::ReadGPS(){
 	char gpstxt[256];
@@ -291,11 +345,12 @@ bool CGPS::ReadGPS(){
 				serial.Read(gpstxt+cnt,1);
 				cnt++;
 			}
+			m_gotContact = true;
 		}else{
 			printf("timeout in getting gps\n");
 			serial.FlushSerialPort(1);
 			m_gotContact = false;
-			return(0);
+			return false;
 		}
 	}while(!Parse(gpstxt, this->gpsInfo));
 
@@ -303,15 +358,12 @@ bool CGPS::ReadGPS(){
 	m_logFile.Format("gps.log"); // for testing only
 	if(strlen(m_logFile) > 0){
 		FILE *f = fopen(g_exePath + m_logFile, "a+");
-		fprintf(f, "%s\t%ld\t", gpsInfo.date, gpsInfo.time);
+		fprintf(f, "%1d\t%ld\t", gpsInfo.date, gpsInfo.time);
 		fprintf(f, "%lf\t%lf\t%lf\t", gpsInfo.latitude, gpsInfo.longitude, gpsInfo.altitude);
 		fprintf(f, "%ld\n", gpsInfo.nSatellites);
 		fclose(f);
 	}
 	#endif
-
-	// we've got contact with the gps again
-	m_gotContact = true;
 
 	return SUCCESS;
 }
@@ -325,13 +377,21 @@ UINT CollectGPSData(LPVOID pParam){
 	gps->fRun = true;
 
 	while(gps->fRun){
-		gps->ReadGPS();
-
-		/* make a small pause */
-		Sleep(100);
+		bool ret=gps->ReadGPS();
+		if (ret) {
+			/* make a small pause */
+			Sleep(100);
+		}
+		else {
+			// Error reading GPS.  Sleep longer and try again.
+			gps->CloseSerial();
+			Sleep(1000);
+			gps->Connect();
+		}
 	}
 
 	gps->CloseSerial();
+	gps->fRun = false;
 
 	return 0;
 }

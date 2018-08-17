@@ -227,6 +227,10 @@ public:
 	void	UpdateLegend();
 
 	void ShowStatusMsg(CString &str);
+
+	/** Sound error alarm **/
+	void SoundAlarm();
+
 #ifdef _DEBUG
 	virtual void AssertValid() const;
 	virtual void Dump(CDumpContext& dc) const;
