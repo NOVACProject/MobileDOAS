@@ -70,51 +70,35 @@ END_MESSAGE_MAP()
 
 void CPostWindDlg::OnBrowseEvallogSeries1()
 {
-	CString selectedLogFile = BrowseForEvalLog();
+	CString selectedLogFile;
+	if (!Common::BrowseForEvaluationLog(selectedLogFile)) {
+		return;
+	}
 
-	if(!selectedLogFile.IsEmpty()) {
-		m_evalLog[0].Format("%s", (LPCTSTR)selectedLogFile);
+	m_evalLog[0].Format("%s", (LPCTSTR)selectedLogFile);
 
-		if (ReadEvaluationLog(0)) {
-			// Update the text on the screen
-			SetDlgItemText(IDC_EDIT_EVALLOG_SERIES1, m_evalLog[0]);
-			// Redraw the screen
-			DrawColumn();
-		}
+	if (ReadEvaluationLog(0)) {
+		// Update the text on the screen
+		SetDlgItemText(IDC_EDIT_EVALLOG_SERIES1, m_evalLog[0]);
+		// Redraw the screen
+		DrawColumn();
 	}
 }
 
 void CPostWindDlg::OnBrowseEvallogSeries2()
 {
-	CString selectedLogFile = BrowseForEvalLog();
-
-	if (!selectedLogFile.IsEmpty()) {
-		m_evalLog[1].Format("%s", (LPCTSTR)selectedLogFile);
-
-		if (ReadEvaluationLog(1)) {
-			// Update the text on the screen
-			SetDlgItemText(IDC_EDIT_EVALLOG_SERIES2, m_evalLog[1]);
-			// Redraw the screen
-			DrawColumn();
-		}
+	CString selectedLogFile;
+	if (!Common::BrowseForEvaluationLog(selectedLogFile)) {
+		return;
 	}
-}
 
-CString CPostWindDlg::BrowseForEvalLog()
-{
-	CString evLog;
-	evLog.Format("");
-	TCHAR filter[512];
-	int n = _stprintf(filter, "Evaluation Logs\0");
-	n += _stprintf(filter + n + 1, "*.txt;\0");
-	filter[n + 2] = 0;
+	m_evalLog[1].Format("%s", (LPCTSTR)selectedLogFile);
 
-	// let the user browse for an evaluation log file and if one is selected, read it
-	if (Common::BrowseForFile(filter, evLog)) {
-		return evLog;
-	}
-	else {
-		return "";
+	if (ReadEvaluationLog(1)) {
+		// Update the text on the screen
+		SetDlgItemText(IDC_EDIT_EVALLOG_SERIES2, m_evalLog[1]);
+		// Redraw the screen
+		DrawColumn();
 	}
 }
 

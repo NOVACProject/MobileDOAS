@@ -5,6 +5,8 @@
 #include "../DMSpec.h"
 #include "PostPlumeHeightDlg.h"
 #include "../SourceSelectionDlg.h"
+#include "../Flux1.h"
+
 #include <algorithm>
 
 // CPostPlumeHeightDlg dialog
@@ -15,24 +17,17 @@ IMPLEMENT_DYNAMIC(CPostPlumeHeightDlg, CDialog)
 CPostPlumeHeightDlg::CPostPlumeHeightDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CPostPlumeHeightDlg::IDD, pParent)
 {
-	m_flux = nullptr;
-
 	for (int k = 0; k < MAX_N_SERIES; ++k) {
 		this->m_OriginalSeries[k] = nullptr;
 		this->m_PreparedSeries[k] = nullptr;
 	}
 	m_automatic = false;
-	m_nChannels = 0;
 	m_sourceLat = 0.0;
 	m_sourceLon = 0.0;
 }
 
 CPostPlumeHeightDlg::~CPostPlumeHeightDlg()
 {
-	if (m_flux != nullptr) {
-		delete m_flux;
-		m_flux = nullptr;
-	}
 	for (int k = 0; k < MAX_N_SERIES; ++k) {
 		delete m_OriginalSeries[k];
 		delete m_PreparedSeries[k];
@@ -53,9 +48,9 @@ void CPostPlumeHeightDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CPostPlumeHeightDlg, CDialog)
 	// Actions to perform
-	ON_BN_CLICKED(IDC_BTN_BROWSE_EVALLOG, OnBrowseEvallog)
+	ON_BN_CLICKED(IDC_BTN_BROWSE_EVALLOG_SERIES1, OnBrowseEvallogSeries1)
+	ON_BN_CLICKED(IDC_BTN_BROWSE_EVALLOG_SERIES2, OnBrowseEvallogSeries2)
 	ON_BN_CLICKED(IDC_BUTTON_CALCULATE_CORRELATION, OnCalculatePlumeHeight)
-	//ON_EN_CHANGE(IDC_EDIT_EVALLOG,									OnChangeEvalLog)
 
 	// Changing the settings
 	ON_BN_CLICKED(IDC_BUTTON_SOURCE_LAT, OnBnClickedButtonSourceLat)
@@ -64,123 +59,114 @@ END_MESSAGE_MAP()
 
 
 // CPostPlumeHeightDlg message handlers
-void CPostPlumeHeightDlg::OnBrowseEvallog()
+void CPostPlumeHeightDlg::OnBrowseEvallogSeries1()
 {
-	CString evLog;
-	evLog.Format("");
-	TCHAR filter[512];
-	int n = _stprintf(filter, "Evaluation Logs\0");
-	n += _stprintf(filter + n + 1, "*.txt;\0");
-	filter[n + 2] = 0;
-
-	// let the user browse for an evaluation log file and if one is selected, read it
-	if (Common::BrowseForFile(filter, evLog)) {
-		m_evalLog.Format("%s", (LPCTSTR)evLog);
-
-		// Read the newly opened evaluation-log
-		if (ReadEvaluationLog()) {
-			m_automatic = true;
-
-			// Update the text on the screen
-			SetDlgItemText(IDC_EDIT_EVALLOG, m_evalLog);
-
-			// Redraw the screen
-			DrawColumn();
-
-			m_automatic = false;
-		}
+	CString selectedLogFile;
+	if (!Common::BrowseForEvaluationLog(selectedLogFile)) {
+		return;
 	}
 
+	m_evalLog[0].Format("%s", (LPCTSTR)selectedLogFile);
 
+	// Read the newly opened evaluation-log
+	if (ReadEvaluationLog(0)) {
+		m_automatic = true;
+
+		// Update the text on the screen
+		SetDlgItemText(IDC_EDIT_EVALLOG_SERIES1, m_evalLog[0]);
+
+		// Redraw the screen
+		DrawColumn();
+
+		m_automatic = false;
+	}
 }
 
-void CPostPlumeHeightDlg::OnChangeEvalLog() {
-	CString evalLog;
-	// Get the name of the eval-log
-	GetDlgItemText(IDC_EDIT_EVALLOG, evalLog);
 
-	// Check if the file exists
-	if (strlen(evalLog) <= 3 || !Equals(evalLog.Right(4), ".txt") || m_automatic)
+void CPostPlumeHeightDlg::OnBrowseEvallogSeries2()
+{
+	CString selectedLogFile;
+	if (!Common::BrowseForEvaluationLog(selectedLogFile)) {
 		return;
+	}
 
-	FILE *f = fopen(evalLog, "r");
-	if (f == nullptr)
-		return;
-	fclose(f);
+	m_evalLog[1].Format("%s", (LPCTSTR)selectedLogFile);
 
-	// Read the evaluation - log
-	m_evalLog.Format(evalLog);
-	ReadEvaluationLog();
+	// Read the newly opened evaluation-log
+	if (ReadEvaluationLog(1)) {
+		m_automatic = true;
 
-	// Redraw the screen
-	DrawColumn();
+		// Update the text on the screen
+		SetDlgItemText(IDC_EDIT_EVALLOG_SERIES2, m_evalLog[1]);
+
+		// Redraw the screen
+		DrawColumn();
+
+		m_automatic = false;
+	}
 }
 
-bool CPostPlumeHeightDlg::ReadEvaluationLog() {
-	// Completely reset the old data
-	if (m_flux != nullptr)
-		delete m_flux;
-	m_flux = new Flux::CFlux();
+bool CPostPlumeHeightDlg::ReadEvaluationLog(int channelIndex) {
+	if (channelIndex < 0 || channelIndex > 1) { throw std::invalid_argument("Invalid channel index passed to ReadEvaluationLog!"); }
 
-	double fileVersion;	// the file-version of the evalution-log file
+	// the index in the traverse which we should read. Setting this to zero always assumes that we will always use
+	//	the first species in the traverse to evaluate the windspeed...
+	const int specieIndex = 0;
+	Flux::CFlux flux;		// The CFlux object helps with reading the data from the eval-log
+	int nChannels = 1;		// the number of channels in the data-file
+	double fileVersion = 0;	// the file-version of the evalution-log file
 
-						// Read the header of the log file and see if it is an ok file
-	int fileType = m_flux->ReadSettingFile(m_evalLog, m_nChannels, fileVersion);
+	// Read the header of the log file and see if it is an ok file
+	int fileType = flux.ReadSettingFile(m_evalLog[channelIndex], nChannels, fileVersion);
 	if (fileType != 1) {
-		MessageBox(TEXT("The file is not evaluation log file with right format.\nPlease choose a right file"), NULL, MB_OK);
+		MessageBox(TEXT("The file is not evaluation log file with right format.\nPlease choose a right file"), nullptr, MB_OK);
 		return FAIL;
 	}
-	if (m_nChannels < 2) {
-		MessageBox(TEXT("The evaluation log does not contain 2 channels."), NULL, MB_OK);
+
+	if (nChannels != 1) {
+		MessageBox(TEXT("The evaluation log does not contain evaluation data from one single channel. Please select another file in a correct format."), nullptr, MB_OK);
 		return FAIL;
 	}
 
 	// Read the data from the file
-	if (0 == m_flux->ReadLogFile("", m_evalLog, m_nChannels, fileVersion)) {
+	if (0 == flux.ReadLogFile("", m_evalLog[channelIndex], nChannels, fileVersion)) {
 		MessageBox(TEXT("That file is empty"));
 		return FAIL;
 	}
 
-	// Make sure that there are not more channels then the program can handle
-	m_nChannels = std::min(m_nChannels, MAX_N_SERIES);
-
 	// Copy the data to the local variables 'm_originalSeries'
-	for (int chnIndex = 0; chnIndex < m_nChannels; ++chnIndex) {
-		// to get less dereferencing
-		Flux::CTraverse *traverse = m_flux->m_traverse[chnIndex];
+	const Flux::CTraverse *traverse = flux.m_traverse[specieIndex];
+	const long traverseLength = traverse->m_recordNum;
 
-		long length = traverse->m_recordNum; // the length of the traverse
+	// create a new data series
+	m_OriginalSeries[channelIndex] = new CDualBeamCalculator::CMeasurementSeries(traverseLength);
+	if (m_OriginalSeries[channelIndex] == nullptr)
+		return FAIL; // <-- failed to allocate enough memory
 
-											 // create a new data series
-		m_OriginalSeries[chnIndex] = new CDualBeamCalculator::CMeasurementSeries(length);
-		if (m_OriginalSeries[chnIndex] == nullptr)
-			return FAIL; // <-- failed to allocate enough memory
+	Time startTime = traverse->time[0];
+	for (int specIndex = 0; specIndex < traverseLength; ++specIndex) {
 
-		Time &startTime = traverse->time[0];
-		for (int specIndex = 0; specIndex < length; ++specIndex) {
+		// Get the column of this spectrum
+		m_OriginalSeries[channelIndex]->column[specIndex] = traverse->columnArray[specIndex];
 
-			// Get the column of this spectrum
-			m_OriginalSeries[chnIndex]->column[specIndex] = traverse->columnArray[specIndex];
+		// Get the latitude 
+		m_OriginalSeries[channelIndex]->lat[specIndex] = traverse->latitude[specIndex];
 
-			// Get the latitude 
-			m_OriginalSeries[chnIndex]->lat[specIndex] = traverse->latitude[specIndex];
+		// Get the longitude
+		m_OriginalSeries[channelIndex]->lon[specIndex] = traverse->longitude[specIndex];
 
-			// Get the longitude
-			m_OriginalSeries[chnIndex]->lon[specIndex] = traverse->longitude[specIndex];
+		// Get the start time of this spectrum
+		Time t = traverse->time[specIndex];
 
-			// Get the start time of this spectrum
-			Time &t = traverse->time[specIndex];
-
-			// Save the time difference
-			m_OriginalSeries[chnIndex]->time[specIndex] =
-				3600 * (t.hour - startTime.hour) +
-				60 * (t.minute - startTime.minute) +
-				(t.second - startTime.second);
-		}
+		// Save the time difference
+		m_OriginalSeries[channelIndex]->time[specIndex] =
+			3600 * (t.hour - startTime.hour) +
+			60 * (t.minute - startTime.minute) +
+			(t.second - startTime.second);
 	}
 
 	// Correct the newly read in time-series for some common problems
-	CorrectTimeSeries();
+	CorrectTimeSeries(channelIndex);
 
 	return SUCCESS;
 }
@@ -219,7 +205,7 @@ void CPostPlumeHeightDlg::DrawColumn() {
 	int nSeries = 0;
 
 	// get the range for the plot
-	for (int k = 0; k < m_nChannels; ++k) {
+	for (int k = 0; k < MAX_N_SERIES; ++k) {
 		if (m_OriginalSeries[k] != nullptr) {
 			minT = std::min(minT, m_OriginalSeries[k]->time[0]);
 			maxT = std::max(maxT, m_OriginalSeries[k]->time[m_OriginalSeries[k]->length - 1]);
@@ -238,7 +224,7 @@ void CPostPlumeHeightDlg::DrawColumn() {
 	m_columnGraph.SetRange(minT, maxT, 0, minC, maxC, 1);
 
 	// Draw the time series
-	for (int k = 0; k < m_nChannels; ++k) {
+	for (int k = 0; k < MAX_N_SERIES; ++k) {
 		if (m_OriginalSeries[k] != nullptr) {
 
 			// ---------- Draw the original time series -----------
@@ -274,10 +260,6 @@ void CPostPlumeHeightDlg::DrawColumn() {
 	}
 }
 
-/** Performes a low pass filtering procedure on series number 'seriesNo'.
-The number of iterations is taken from 'm_settings.lowPassFilterAverage'
-The treated series is m_OriginalSeries[seriesNo]
-The result is saved as m_PreparedSeries[seriesNo]	*/
 int	CPostPlumeHeightDlg::LowPassFilter(int seriesNo) {
 	if (m_settings.lowPassFilterAverage <= 0)
 		return 0;
@@ -321,30 +303,27 @@ void CPostPlumeHeightDlg::OnCalculatePlumeHeight()
 }
 
 
-/** Corrects the time-series m_OriginalSeries for some common problems */
-void CPostPlumeHeightDlg::CorrectTimeSeries() {
-	for (int chn = 0; chn < m_nChannels; ++chn) {
+void CPostPlumeHeightDlg::CorrectTimeSeries(int seriesIndex) {
+	for (int spec = 1; spec < m_OriginalSeries[seriesIndex]->length - 1; ++spec) {
+		double *lat = m_OriginalSeries[seriesIndex]->lat;
+		double *lon = m_OriginalSeries[seriesIndex]->lon;
+		double *time = m_OriginalSeries[seriesIndex]->time;
 
-		for (int spec = 1; spec < m_OriginalSeries[chn]->length - 1; ++spec) {
-			double *lat = m_OriginalSeries[chn]->lat;
-			double *lon = m_OriginalSeries[chn]->lon;
-			double *time = m_OriginalSeries[chn]->time;
-
-			// If this latitude is same as for the last spectrum, then interpolate
-			if (lat[spec] == lat[spec - 1]) {
-				lat[spec] = 0.5*(lat[spec - 1] + lat[spec + 1]);
-			}
-			// If this longitude is same as for the last spectrum, then interpolate
-			if (lon[spec] == lon[spec - 1]) {
-				lon[spec] = 0.5*(lon[spec - 1] + lon[spec + 1]);
-			}
-			// If this starttime is unreasonable, then interpolate
-			if (time[spec] < time[spec - 1] || time[spec] < 0) {
-				time[spec] = 0.5 * (time[spec - 1] + time[spec + 1]);
-			}
+		// If this latitude is same as for the last spectrum, then interpolate
+		if (lat[spec] == lat[spec - 1]) {
+			lat[spec] = 0.5*(lat[spec - 1] + lat[spec + 1]);
+		}
+		// If this longitude is same as for the last spectrum, then interpolate
+		if (lon[spec] == lon[spec - 1]) {
+			lon[spec] = 0.5*(lon[spec - 1] + lon[spec + 1]);
+		}
+		// If this starttime is unreasonable, then interpolate
+		if (time[spec] < time[spec - 1] || time[spec] < 0) {
+			time[spec] = 0.5 * (time[spec - 1] + time[spec + 1]);
 		}
 	}
 }
+
 void CPostPlumeHeightDlg::OnBnClickedButtonSourceLat()
 {
 	Dialogs::CSourceSelectionDlg sourceDlg;

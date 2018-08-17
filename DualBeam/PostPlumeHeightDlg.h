@@ -2,7 +2,6 @@
 #include "afxwin.h"
 #include "../Graphs/GraphCtrl.h"
 #include "PlumeHeightCalculator.h"
-#include "../Flux1.h"
 
 // CPostPlumeHeightDlg dialog
 
@@ -33,61 +32,26 @@ public:
 	Graph::CGraphCtrl	m_columnGraph;
 
 	// ---------------------- EVENT HANDLERS ----------------------
-	/** Called when the user browses for a new evaluation-log */
-	afx_msg void OnBrowseEvallog();
+	/** Called when the user browses for a new evaluation-log for series 1 */
+	afx_msg void OnBrowseEvallogSeries1();
 
-	/** The user has changed the file in the Eval-log edit-box*/
-	afx_msg void OnChangeEvalLog();
+	/** Called when the user browses for a new evaluation-log for series 2 */
+	afx_msg void OnBrowseEvallogSeries2();
 
 	/** Intitializes the dialog */
 	virtual BOOL OnInitDialog();
 
-	// --------------------- PUBLIC METHODS -----------------------
-	/** Reads the evaluation log */
-	bool ReadEvaluationLog();
-
-	/** Draws the column graph */
-	void DrawColumn();
-
-	/** Performes a low pass filtering procedure on series number 'seriesNo'.
-			The number of iterations is taken from 'm_settings.lowPassFilterAverage'
-			The treated series is m_OriginalSeries[seriesNo]
-			The result is saved as m_PreparedSeries[seriesNo]	*/
-	int	LowPassFilter(int seriesNo);
+	afx_msg void OnBnClickedButtonSourceLat();
+	afx_msg void OnBnClickedButtonSourceLon();
 
 	/** Called when the user presses the 'Calculate plumeHeight' - button. 
 			Here lies the actual work of the dialog. */
 	afx_msg void OnCalculatePlumeHeight();
 
-	// ---------------------- PUBLIC DATA -------------------------
 
-	/** The currently opened evaluation - log */
-	CString	m_evalLog;
+private:
 
-	/** A flux-object, used to read the evaluation data */
-	Flux::CFlux	*m_flux;
-
-	/** Original measurement series, as they are in the file */
-	DualBeamMeasurement::CDualBeamCalculator::CMeasurementSeries		*m_OriginalSeries[MAX_N_SERIES];
-
-	/** Treated measurement series, low pass filtered etc. */
-	DualBeamMeasurement::CDualBeamCalculator::CMeasurementSeries		*m_PreparedSeries[MAX_N_SERIES];
-
-	/** The settings for how the plumeheight calculations should be done */
-	DualBeamMeasurement::CDualBeamMeasSettings	m_settings;
-
-	/** The plume height measurement-calculator. */
-	DualBeamMeasurement::CPlumeHeightCalculator		m_calc;
-
-	/** The source that we measure on */
-	double	m_sourceLat, m_sourceLon;
-
-	/** The number of channels in the last read evaluation log */
-	int 		m_nChannels;
-
-protected:
-
-	// ------------------ PROTECTED DATA ---------------------
+	// ------------------ PRIVATE DATA ---------------------
 	/** The colors for the time-series */
 	COLORREF	m_colorSeries[MAX_N_SERIES];
 
@@ -95,11 +59,40 @@ protected:
 			the program does */
 	bool		m_automatic;
 
-	// ---------------- PROTECTED METHODS ---------------------
+	/** The currently opened evaluation - logs, one per series*/
+	CString	m_evalLog[MAX_N_SERIES];
 
-	/** Corrects the time-series m_OriginalSeries for some common problems */
-	void		CorrectTimeSeries();
-public:
-	afx_msg void OnBnClickedButtonSourceLat();
-	afx_msg void OnBnClickedButtonSourceLon();
+	/** Original measurement series, as they are in the file */
+	DualBeamMeasurement::CDualBeamCalculator::CMeasurementSeries* m_OriginalSeries[MAX_N_SERIES];
+
+	/** Treated measurement series, low pass filtered etc. */
+	DualBeamMeasurement::CDualBeamCalculator::CMeasurementSeries* m_PreparedSeries[MAX_N_SERIES];
+
+	/** The settings for how the plumeheight calculations should be done */
+	DualBeamMeasurement::CDualBeamMeasSettings m_settings;
+
+	/** The plume height measurement-calculator. */
+	DualBeamMeasurement::CPlumeHeightCalculator m_calc;
+
+	/** The source that we measure on */
+	double m_sourceLat, m_sourceLon;
+
+	// ---------------- PRIVATE METHODS ---------------------
+
+	/** Corrects one time-series m_OriginalSeries for some common problems */
+	void CorrectTimeSeries(int seriesIndex);
+
+	// --------------------- PUBLIC METHODS -----------------------
+	/** Reads the evaluation log */
+	bool ReadEvaluationLog(int channelIndex);
+
+	/** Draws the column graph */
+	void DrawColumn();
+
+	/** Performes a low pass filtering procedure on series number 'seriesNo'.
+	The number of iterations is taken from 'm_settings.lowPassFilterAverage'
+	The treated series is m_OriginalSeries[seriesNo]
+	The result is saved as m_PreparedSeries[seriesNo]	*/
+	int	LowPassFilter(int seriesNo);
+
 };

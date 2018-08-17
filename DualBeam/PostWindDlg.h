@@ -94,10 +94,6 @@ private:
 
 	// --------------------- PRIVATE METHODS -----------------------
 
-	/** Lets the user browse for an evaluation log file. 
-		@return the name of the selected log file, or an empty string if none was selected */
-	CString BrowseForEvalLog();
-
 	/** Reads one of the evaluation logs.
 		@param channelIndex set to zero for the master or 1 for the slave channel.
 		@return SUCCESS if all went well. */

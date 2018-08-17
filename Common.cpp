@@ -485,6 +485,16 @@ bool Common::BrowseForFile(char *filter, CString &fileName){
 	return FAIL;
 }
 
+bool Common::BrowseForEvaluationLog(CString &fileName)
+{
+	TCHAR filter[512];
+	int n = _stprintf(filter, "Evaluation Logs\0");
+	n += _stprintf(filter + n + 1, "*.txt;\0");
+	filter[n + 2] = 0;
+
+	return Common::BrowseForFile(filter, fileName);
+}
+
 // open a browser window and let the user search for a file
 bool Common::BrowseForFile_SaveAs(TCHAR *filter, CString &fileName){
 	static TCHAR szFile[4096];
