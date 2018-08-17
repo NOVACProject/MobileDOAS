@@ -386,6 +386,8 @@
 #define IDC_RADIO_SHOW_WS               1207
 #define IDC_EDIT_LATITUDE               1207
 #define IDC_EDIT_LONGITUDE              1208
+#define IDC_EDIT_PH_ANGLESEPARATION     1208
+#define IDC_EDIT_WS_ANGLESEPARATION     1208
 #define IDC_BUTTON_SOURCE_LAT           1209
 #define IDC_BUTTON_SOURCE_LON           1210
 #define IDC_RADIO_CONNECTION_USB        1212
@@ -456,7 +458,6 @@
 #define IDC_LABEL_SLAVE                 1275
 #define IDC_BTN_BROWSE_EVALLOG_SERIES1  1276
 #define IDC_EDIT_EVALLOG_SERIES1        1277
-#define IDC_BTN_BROWSE_EVALLOG_SERIES3  1279
 #define ID_ANALYSIS_POSTFLUX            32771
 #define ID_CONTROL_STOP                 32772
 #define ID_CONTROL_START                32772

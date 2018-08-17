@@ -8,29 +8,26 @@ namespace DualBeamMeasurement{
 	class CDualBeamMeasSettings
 	{
 	public:
-		CDualBeamMeasSettings(void);
-		~CDualBeamMeasSettings(void);
-
 		/** The number of pixels to average in the low pass filtering.
 				If lowPassFilterAverage is 0, then no filtering will be done */
-		unsigned int		lowPassFilterAverage;
+		unsigned int lowPassFilterAverage = 20;
 
 		/** The maximum number of seconds to shift */
-		unsigned int		shiftMax;
+		unsigned int shiftMax = 90;
 
 		/** The length of the test-region, in seconds */
-		unsigned int		testLength;
+		unsigned int testLength = 300;
 
 		/** The minimum column value that will be taken into account */
-		double					columnMin;
+		double columnMin = -300.0;
 
 		/** The minimum sigma - level (???) */
-		double					sigmaMin;
+		double sigmaMin = 0.1;
 
 		/** The plume height */
-		double					plumeHeight;
+		double plumeHeight = 1000.0;
 
 		/** The angle separation in the instrument. In degrees */
-		double					angleSeparation;
+		double angleSeparation = 6.9;
 	};
 }

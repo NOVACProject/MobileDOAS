@@ -42,6 +42,7 @@ void CPostWindDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_MAXSHIFTTIME, m_settings.shiftMax);
 	DDX_Text(pDX, IDC_EDIT_TESTLENGTH, m_settings.testLength);
 	DDX_Text(pDX, IDC_EDIT_PLUMEHEIGHT, m_settings.plumeHeight);
+	DDX_Text(pDX, IDC_EDIT_WS_ANGLESEPARATION, m_settings.angleSeparation);
 
 	// Deciding what to show
 	DDX_Radio(pDX, IDC_RADIO_SHOW_CORR, m_showOption);
