@@ -121,14 +121,17 @@ END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CDMSpecView construction/destruction
-BOOL fRunSpec;
+
+// boolean flag to help us determine if the spectrometer thread is running. s_ stands for statics...
+static bool s_spectrometerAcquisitionThreadIsRunning = false;
+
 CDMSpecView::CDMSpecView()
 	: CFormView(CDMSpecView::IDD)
 {
 	m_WindDirection = 0.0;
 	m_WindSpeed = 8.0;
 	pView       = this;
-	fRunSpec    = FALSE;
+	s_spectrometerAcquisitionThreadIsRunning    = false;
 	int i;
 	for(i = 0; i < 200; i++)
 	{
@@ -300,7 +303,8 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam){
 	long	dynRange;
 	
 	// if the program is no longer running, then don't try to draw anything more...
-	if(!fRunSpec){
+	if(!s_spectrometerAcquisitionThreadIsRunning)
+	{
 		return 0;
 	}
 	
@@ -465,7 +469,8 @@ LRESULT CDMSpecView::OnShowIntTime(WPARAM wParam, LPARAM lParam){
 	int avg[2];
 
 	// if the program is no longer running, then don't try to draw anything more...
-	if(!fRunSpec){
+	if(!s_spectrometerAcquisitionThreadIsRunning)
+	{
 		return 0;
 	}
 
@@ -516,7 +521,7 @@ void CDMSpecView::OnMenuShowSpectrumInspectionDialog(){
 UINT CollectSpectra(LPVOID pParam){
 	CSpectrometer* spec = (CSpectrometer*)pParam ;
 	spec->Run();
-	fRunSpec = FALSE;
+	s_spectrometerAcquisitionThreadIsRunning = false;
 	return 0;
 }
 
@@ -526,13 +531,14 @@ UINT CollectSpectra(LPVOID pParam){
 UINT CollectSpectra_Wind(LPVOID pParam){
 	CSpectrometer* spec = (CSpectrometer*)pParam ;
 	spec->Run();
-	fRunSpec	= FALSE;
+	s_spectrometerAcquisitionThreadIsRunning = false;
 	return 0;
 }
 
 LRESULT CDMSpecView::OnShowStatus(WPARAM wParam, LPARAM lParam)
 {
-	if(fRunSpec){
+	if(s_spectrometerAcquisitionThreadIsRunning)
+	{
 		CString str;
 		str = m_Spectrometer->m_statusMsg;
 		ShowStatusMsg(str);
@@ -546,7 +552,8 @@ LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 	static int latNSat = 10;
 	
 	// if the program is no longer running, then don't try to draw anything more...
-	if(!fRunSpec){
+	if(!s_spectrometerAcquisitionThreadIsRunning)
+	{
 		return 0;
 	}
 	
@@ -652,7 +659,8 @@ void CDMSpecView::ShowStatusMsg(CString &str)
 
 
 void CDMSpecView::OnControlCountflux() {
-	if(fRunSpec){
+	if(s_spectrometerAcquisitionThreadIsRunning)
+	{
 		double flux = m_Spectrometer->GetFlux();
 		m_Spectrometer->WriteFluxLog();
 
@@ -661,9 +669,9 @@ void CDMSpecView::OnControlCountflux() {
 
 		MessageBox(str,"Flux",MB_OK);
 	}
-	else {
-		MessageBox(TEXT("The spectrometer hasn't been started.\nStart it first,\nthen you can use this function")
-		,"Notice",MB_OK);
+	else
+	{
+		MessageBox(TEXT("The spectrometer hasn't been started.\nStart it first,\nthen you can use this function") ,"Notice",MB_OK);
 	}
 }
 
@@ -701,8 +709,8 @@ void CDMSpecView::OnConfigurationPlotChangeplotcolor_Slave(){
 
 void CDMSpecView::OnControlStart() 
 {
-
-	if(!fRunSpec){
+	if(!s_spectrometerAcquisitionThreadIsRunning)
+	{
 		/* Check that the base name does not contain any illegal characters */
 		CString tmpStr;
 		this->GetDlgItemText(IDC_BASEEDIT, tmpStr);
@@ -726,7 +734,7 @@ void CDMSpecView::OnControlStart()
 
 		// Start the measurement thread
 		pSpecThread			= AfxBeginThread(CollectSpectra,(LPVOID)(m_Spectrometer),THREAD_PRIORITY_NORMAL,0,0,NULL);
-		fRunSpec			= TRUE;
+		s_spectrometerAcquisitionThreadIsRunning			= true;
 		m_spectrometerMode	= MODE_TRAVERSE;
 
 		// If the user wants to see the real-time route then initialize it also
@@ -750,16 +758,17 @@ void CDMSpecView::OnControlViewSpectra(){
 	CString tmpStr;
 	CRect rect;
 
-	if(!fRunSpec){
+	if(!s_spectrometerAcquisitionThreadIsRunning)
+	{
 		CDMSpecDoc* pDoc = GetDocument();
 		CMeasurement_View *spec = new CMeasurement_View();
 		this->m_Spectrometer = (CSpectrometer *)spec;
 		m_Spectrometer->m_spectrometerMode = MODE_VIEW;
 		memset(text,0,(size_t)100);
 
-		pSpecThread			= AfxBeginThread(CollectSpectra,(LPVOID)(m_Spectrometer),THREAD_PRIORITY_LOWEST,0,0,NULL);
-		fRunSpec			= TRUE;
-		m_spectrometerMode	= MODE_VIEW;
+		pSpecThread = AfxBeginThread(CollectSpectra,(LPVOID)(m_Spectrometer),THREAD_PRIORITY_LOWEST,0,0,NULL);
+		s_spectrometerAcquisitionThreadIsRunning = true;
+		m_spectrometerMode = MODE_VIEW;
 
 		// Show the window that makes it possible to change the exposure time
 		m_specSettingsDlg.m_Spectrometer = spec;
@@ -808,7 +817,8 @@ void CDMSpecView::OnControlCalibrateSpectrometer(){
 	CString tmpStr;
 	CRect rect;
 
-	if(!fRunSpec){
+	if(!s_spectrometerAcquisitionThreadIsRunning)
+	{
 		CDMSpecDoc* pDoc = GetDocument();
 		CMeasurement_Calibrate *spec = new CMeasurement_Calibrate();
 		this->m_calibration	= spec->m_calibration;
@@ -816,8 +826,8 @@ void CDMSpecView::OnControlCalibrateSpectrometer(){
 		m_Spectrometer->m_spectrometerMode = MODE_CALIBRATE;
 		memset(text,0,(size_t)100);
 
-		pSpecThread			= AfxBeginThread(CollectSpectra,(LPVOID)(m_Spectrometer),THREAD_PRIORITY_LOWEST,0,0,NULL);
-		fRunSpec			= TRUE;
+		pSpecThread = AfxBeginThread(CollectSpectra,(LPVOID)(m_Spectrometer),THREAD_PRIORITY_LOWEST,0,0,NULL);
+		s_spectrometerAcquisitionThreadIsRunning = true;
 		m_spectrometerMode	= MODE_CALIBRATE;
 
 		// Show the window that makes it possible to change the exposure time
@@ -863,7 +873,8 @@ void CDMSpecView::OnControlStartWindMeasurement()
 	char text[100];
 	CString tmpStr;
 
-	if(!fRunSpec){
+	if(!s_spectrometerAcquisitionThreadIsRunning)
+	{
 		/* Check that the base name does not contain any illegal characters */
 		this->GetDlgItemText(IDC_BASEEDIT, tmpStr);
 		if(-1 != tmpStr.FindOneOf("\\/:*?\"<>|")){
@@ -887,9 +898,9 @@ void CDMSpecView::OnControlStartWindMeasurement()
 		}
 
 		// Start the measurement thread
-		pSpecThread			= AfxBeginThread(CollectSpectra_Wind,(LPVOID)(m_Spectrometer),THREAD_PRIORITY_NORMAL,0,0,NULL);
-		fRunSpec			= TRUE;
-		m_spectrometerMode	= MODE_WIND;
+		pSpecThread = AfxBeginThread(CollectSpectra_Wind,(LPVOID)(m_Spectrometer),THREAD_PRIORITY_NORMAL,0,0,NULL);
+		s_spectrometerAcquisitionThreadIsRunning = true;
+		m_spectrometerMode = MODE_WIND;
 
 		// If the user wants to see the real-time route then initialize it also
 		if(m_realTimeRouteGraph.fVisible){
@@ -907,9 +918,9 @@ void CDMSpecView::OnControlStartWindMeasurement()
 
 void CDMSpecView::OnControlStop() 
 {
-	if(fRunSpec)
+	if(s_spectrometerAcquisitionThreadIsRunning)
 	{
-		fRunSpec = FALSE;
+		s_spectrometerAcquisitionThreadIsRunning = false;
 
 		DWORD dwExitCode;
 		HANDLE hThread = pSpecThread->m_hThread;
@@ -917,8 +928,8 @@ void CDMSpecView::OnControlStop()
 		{
 			AfxGetApp()->BeginWaitCursor();
 			m_Spectrometer->Stop();
-			Sleep(500);			
-			WaitForSingleObject(hThread,INFINITE);
+			Sleep(500);
+			WaitForSingleObject(hThread, INFINITE);
 			m_Spectrometer->serial.Close();
 			AfxGetApp()->EndWaitCursor();
 			MessageBox(TEXT("Spectrum collection has been stopped"),NULL,MB_OK);
@@ -933,7 +944,8 @@ void CDMSpecView::DrawSpectrum()
 	CString lambdaStr;
 	
 	// if the program is no longer running, then don't try to draw anything more...
-	if(!fRunSpec){
+	if(!s_spectrometerAcquisitionThreadIsRunning)
+	{
 		return;
 	}
 	
@@ -1151,11 +1163,12 @@ void CDMSpecView::OnViewRealtimeroute(){
 		/* create the real time route graph */
 		m_realTimeRouteGraph.Create(IDD_REALTIME_ROUTE_DLG, NULL);
 
-		if(fRunSpec){
-		m_realTimeRouteGraph.m_spectrometer		= this->m_Spectrometer;
+		if(s_spectrometerAcquisitionThreadIsRunning)
+		{
+			m_realTimeRouteGraph.m_spectrometer		= this->m_Spectrometer;
 			m_realTimeRouteGraph.m_intensityLimit = m_Spectrometer->m_spectrometerDynRange * (100 - m_intensitySliderLow.GetPos());
 		}else{
-		m_realTimeRouteGraph.m_spectrometer		= nullptr;
+			m_realTimeRouteGraph.m_spectrometer		= nullptr;
 			m_realTimeRouteGraph.m_intensityLimit = 0.25 * 4095;
 		}
 		m_realTimeRouteGraph.ShowWindow(SW_SHOW);
@@ -1194,7 +1207,8 @@ void CDMSpecView::OnViewSpectrumFit(){
 		/* create the real time route graph */
 		m_showFitDlg.Create(IDD_VIEW_FIT_DLG, NULL);
 
-		if (fRunSpec) {
+		if (s_spectrometerAcquisitionThreadIsRunning)
+		{
 			m_showFitDlg.m_spectrometer = this->m_Spectrometer;
 		}
 		else {
@@ -1208,11 +1222,14 @@ void CDMSpecView::OnViewSpectrumFit(){
 void CDMSpecView::OnControlAddComment(){
 	Dialogs::CCommentDlg cdlg;
 
-	if(fRunSpec){
+	if(s_spectrometerAcquisitionThreadIsRunning)
+	{
 		m_Spectrometer->GetCurrentPos(&cdlg.lat, &cdlg.lon, &cdlg.alt);
 		cdlg.t = m_Spectrometer->GetCurrentGPSTime();
 		cdlg.outputDir.Format(m_Spectrometer->m_subFolder);
-	}else{
+	}
+	else
+	{
 		cdlg.lat = cdlg.lon = cdlg.alt = 0;
 		cdlg.t = 0;
 		cdlg.outputDir.Format(g_exePath);

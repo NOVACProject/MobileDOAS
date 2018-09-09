@@ -15,10 +15,10 @@ public:
 	/** This is used to make a standard traverse, with each spectrum having the 
 		same exposure-time		
 	*/
-	void Run();	
+	void Run();
 	
 	/** This is used to make a traverse with varying exposure-time along the 
 		the measurement route
 	*/
-	void						Run_Adaptive();
+	void Run_Adaptive();
 };

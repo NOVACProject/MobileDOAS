@@ -25,7 +25,7 @@ void CMeasurement_Calibrate::Run(){
 	CString cfgFile;
 	double scanResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
 
-	MessageBox(pView->m_hWnd, TEXT("Start. Please connect the spectrometer and mercury lamp."),TEXT("NOTICE"),MB_OK);
+	ShowMessageBox("Start. Please connect the spectrometer and mercury lamp.", "NOTICE");
 
 	// Read configuration file. This is basically to figure out whether we should
 	//	be using the serial or USB port
@@ -50,7 +50,7 @@ void CMeasurement_Calibrate::Run(){
 	m_statusMsg.Format("Initializing communication with spectrometer");
 	pView->PostMessage(WM_STATUSMSG);
 	if(!m_connectViaUsb && serial.InitCommunication()){
-		MessageBox(pView->m_hWnd,TEXT("Can not initialize the communication"),TEXT("Error"),MB_OK);	
+		ShowMessageBox("Can not initialize the communication", "Error");
 		return;
 	}
 

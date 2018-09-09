@@ -103,7 +103,8 @@ public:
 		@param sumInSpectrometer - the number of spectra to add together in the spectrometer
 		@param pResult - will on successful return be filled with the measured spectrum. Returned spectrum 
 			is an average of the (sumInComputer*sumInSpectrometer) collected spectra.
-		@return 0 on success 
+		@return 0 on success
+		@return 1 if the collection failed or the collection should stop
 		 */
 	int Scan(long sumInComputer, long sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]);
 
@@ -113,7 +114,8 @@ public:
 		@param pResult - will on successful return be filled with the measured spectrum. Returned spectrum 
 			is an average of the (sumInComputer*sumInSpectrometer) collected spectra.
 		@return 0 on success 
-		 */
+		@return 1 if the collection failed or the collection should stop
+		*/
 	int ScanUSB(long sumInComputer, long sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]);
 
 	/** The number of channels in the spectrometer to use */
@@ -382,7 +384,7 @@ public:
 	
 	/** Called to close the USB-connection. Should only be done
 		when we're about to stop collecting spectra */
-	int		CloseUSBConnection();
+	void    CloseUSBConnection();
 	
 	// ------------------------ Setup ------------------------
 	
@@ -608,6 +610,13 @@ protected:
 
 	/** The base-name of the measurement. As set by the user */
 	CString m_measurementBaseName;
+
+	// ---------------------------------------------------------------------------------------
+	// ----------------------- Communicating wiht the user and the GUI -----------------------
+	// ---------------------------------------------------------------------------------------
+
+	/** Shows a message box to the user (through the main window form) */
+	void ShowMessageBox(CString message, CString label);
 
 private:
 

@@ -15,7 +15,7 @@ void CMeasurement_View::Run(){
 	double scanResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
 	double tmpSpec[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
 
-	MessageBox(pView->m_hWnd, TEXT("START "),TEXT("NOTICE"),MB_OK);
+	ShowMessageBox("START", "NOTICE");
 
 	// Read configuration file
 	CString cfgFile = g_exePath + TEXT("cfg.xml");
@@ -39,7 +39,7 @@ void CMeasurement_View::Run(){
 	m_statusMsg.Format("Initializing communication with spectrometer");
 	pView->PostMessage(WM_STATUSMSG);
 	if(!m_connectViaUsb && serial.InitCommunication()){
-		MessageBox(pView->m_hWnd,TEXT("Can not initialize the communication"),TEXT("Error"),MB_OK);	
+		ShowMessageBox("Can not initialize the communication", "Error");
 
 		// we have to call this before exiting the application otherwise we'll have trouble next time we start...
 		CloseUSBConnection();
@@ -49,7 +49,7 @@ void CMeasurement_View::Run(){
 
 	// Set the integration time
 	if(0 == m_fixexptime){
-		MessageBox(pView->m_hWnd, "Please point the spectrometer to sky","Notice",MB_OK);  // tell the user to point the telescope to zenith
+		ShowMessageBox("Please point the spectrometer to sky", "Notice");
 		AdjustIntegrationTime();
 	}else{
 		m_integrationTime = (short)m_fixexptime;
@@ -59,7 +59,7 @@ void CMeasurement_View::Run(){
 	m_sumInSpectrometer  = 1;
 	m_totalSpecNum       = 1;
 	if(0 != m_fixexptime){
-		MessageBox(pView->m_hWnd,  "Suitable exposure-time set", "", MB_OK);
+		ShowMessageBox("Suitable exposure-time set", "");
 	}
 	pView->PostMessage(WM_SHOWINTTIME);
 

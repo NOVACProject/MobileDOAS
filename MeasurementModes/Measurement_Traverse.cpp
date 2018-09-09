@@ -30,7 +30,7 @@ void CMeasurement_Traverse::Run(){
 	int roundResult[MAX_N_CHANNELS];
 	long serialDelay,gpsDelay;
 
-	MessageBox(pView->m_hWnd, TEXT("START "),TEXT("NOTICE"),MB_OK);
+	ShowMessageBox("START", "NOTICE");
 
 	// Read configuration file
 	cfgFile = g_exePath + TEXT("cfg.xml");
@@ -63,7 +63,7 @@ void CMeasurement_Traverse::Run(){
 	if(serialDelay >= this->m_timeResolution){
 		CString tmpStr;
 		tmpStr.Format("Error In cfg.xml: The time resolution is smaller than the serial delay. Please Change and restart. Set Time Resolution = %d [s]. Set Serial Delay = %d [s]", this->m_timeResolution, serialDelay);
-		MessageBox(pView->m_hWnd, tmpStr, "Error", MB_OK);
+		ShowMessageBox(tmpStr, "Error");
 		
 		// we have to call this before exiting the application otherwise we'll have trouble next time we start...
 		CloseUSBConnection();
@@ -95,8 +95,9 @@ void CMeasurement_Traverse::Run(){
 	/* -- Init Serial Communication -- */
 	m_statusMsg.Format("Initializing communication with spectrometer");
 	pView->PostMessage(WM_STATUSMSG);
-	if(!m_connectViaUsb && serial.InitCommunication()){
-		MessageBox(pView->m_hWnd,TEXT("Can not initialize the communication"),TEXT("Error"),MB_OK);	
+	if(!m_connectViaUsb && serial.InitCommunication())
+	{
+		ShowMessageBox("Can not initialize the communication", "Error");
 
 		// we have to call this before exiting the application otherwise we'll have trouble next time we start...
 		CloseUSBConnection();
@@ -127,7 +128,7 @@ void CMeasurement_Traverse::Run(){
 	
 	// Set the integration time
 	if(0 == m_fixexptime){
-		MessageBox(pView->m_hWnd, "Please point the spectrometer to sky","Notice",MB_OK);  // tell the user to point the telescope to zenith
+		ShowMessageBox("Please point the spectrometer to sky", "Notice");
 		AdjustIntegrationTime();
 	}else{
 		m_integrationTime = (short)m_fixexptime;
@@ -141,7 +142,7 @@ void CMeasurement_Traverse::Run(){
 	pView->PostMessage(WM_SHOWINTTIME);
 
 	/*  -- Collect the dark spectrum -- */
-	MessageBox(pView->m_hWnd, "Cover the spectrometer", "Notice", MB_OK);
+	ShowMessageBox("Cover the spectrometer", "Notice");
 	m_statusMsg.Format("Measuring the dark spectrum");
 	pView->PostMessage(WM_STATUSMSG);
 
@@ -246,10 +247,12 @@ void CMeasurement_Traverse::Run(){
 			GetSpectrumInfo(scanResult);
 			#ifndef _DEBUG
 				if(!m_specInfo->isDark)
-					MessageBox(pView->m_hWnd,  "It seems like the dark spectrum is not completely dark, consider restarting the program", "Error", MB_OK);
+				{
+					ShowMessageBox("It seems like the dark spectrum is not completely dark, consider restarting the program", "Error");
+				}
 			#endif
 
-			MessageBox(pView->m_hWnd, "Point the spectrometer to sky","Notice",MB_OK);
+			ShowMessageBox("Point the spectrometer to sky", "Notice");
 
 			m_statusMsg.Format("Measuring the sky spectrum");
 			pView->PostMessage(WM_STATUSMSG);
@@ -282,7 +285,9 @@ void CMeasurement_Traverse::Run(){
 			GetSpectrumInfo(scanResult);
 			#ifndef _DEBUG
 				if(m_specInfo->isDark)
-				MessageBox(pView->m_hWnd,  "It seems like the sky spectrum is dark, consider restarting the program", "Error", MB_OK);
+				{
+					ShowMessageBox("It seems like the sky spectrum is dark, consider restarting the program", "Error");
+				}
 			#endif
 
 		}else if(m_scanNum > SKY_SPECTRUM){
@@ -372,7 +377,7 @@ void CMeasurement_Traverse::Run_Adaptive(){
 	pView->PostMessage(WM_SHOWINTTIME);
 
 	/*  -- Collect the dark spectrum -- */
-	MessageBox(pView->m_hWnd, "Cover the spectrometer", "Notice", MB_OK);
+	ShowMessageBox("Cover the spectrometer", "Notice");
 	m_statusMsg.Format("Measuring the offset spectrum");
 	pView->PostMessage(WM_STATUSMSG);
 
@@ -395,8 +400,10 @@ void CMeasurement_Traverse::Run_Adaptive(){
 		}
 
 		// Get the next spectrum
-		if(Scan(m_sumInComputer,m_sumInSpectrometer,scanResult)){
-			if(!m_connectViaUsb) {
+		if(Scan(m_sumInComputer,m_sumInSpectrometer,scanResult))
+		{
+			if(!m_connectViaUsb)
+			{
 				serial.CloseAll();
 			}
 
@@ -444,7 +451,9 @@ void CMeasurement_Traverse::Run_Adaptive(){
 			GetSpectrumInfo(scanResult);
 			#ifndef _DEBUG
 				if(!m_specInfo->isDark)
-				MessageBox(pView->m_hWnd,  "It seems like the offset spectrum is not completely dark, consider restarting the program", "Error", MB_OK);
+				{
+					ShowMessageBox("It seems like the offset spectrum is not completely dark, consider restarting the program", "Error");
+				}
 			#endif
 
 			m_statusMsg.Format("Measuring the dark_current spectrum");
@@ -476,7 +485,7 @@ void CMeasurement_Traverse::Run_Adaptive(){
 			/* Get the information about the spectrum */
 			GetSpectrumInfo(scanResult);
 
-			MessageBox(pView->m_hWnd, "Point the spectrometer to sky","Notice",MB_OK);
+			ShowMessageBox("Point the spectrometer to sky","Notice");
 
 			m_statusMsg.Format("Measuring the sky spectrum");
 			pView->PostMessage(WM_STATUSMSG);
@@ -516,7 +525,9 @@ void CMeasurement_Traverse::Run_Adaptive(){
 			GetSpectrumInfo(scanResult);
 			#ifndef _DEBUG
 				if(m_specInfo->isDark)
-				MessageBox(pView->m_hWnd,  "It seems like the sky spectrum is dark, consider restarting the program", "Error", MB_OK);
+				{
+					ShowMessageBox("It seems like the sky spectrum is dark, consider restarting the program", "Error");
+				}
 			#endif
 
 			// Set the exposure-time
