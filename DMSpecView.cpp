@@ -132,16 +132,18 @@ CDMSpecView::CDMSpecView()
 	m_WindSpeed = 8.0;
 	pView       = this;
 	s_spectrometerAcquisitionThreadIsRunning    = false;
-	int i;
-	for(i = 0; i < 200; i++)
+
+	m_columnChartXAxisValues.resize(200);
+	for(int i = 0; i < 200; i++)
 	{
-		number[i]		=  i;
+		m_columnChartXAxisValues[i] =  i;
 	}
-	for(i = 0; i < MAX_SPECTRUM_LENGTH; i++)
+
+	m_spectrumChartXAxisValues.resize(MAX_SPECTRUM_LENGTH);
+	for(int i = 0; i < MAX_SPECTRUM_LENGTH; i++)
 	{
-		number2[i] =  (200.0 * i) / MAX_SPECTRUM_LENGTH;
+		m_spectrumChartXAxisValues[i] = (200.0 * i) / MAX_SPECTRUM_LENGTH;
 	}
-	number2Length = MAX_SPECTRUM_LENGTH;
 
 	m_Spectrometer = nullptr;
 	m_showErrorBar = FALSE;
@@ -380,38 +382,38 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam){
 		if(fitRegionNum == 1){
 			m_ColumnPlot.SetPlotColor(m_PlotColor[0]);
 			if(m_showErrorBar){
-				m_ColumnPlot.BarChart(number, column[0], columnErr[0], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+				m_ColumnPlot.BarChart(m_columnChartXAxisValues.data(), column[0], columnErr[0], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
 			}
 			else {
-				m_ColumnPlot.BarChart(number, column[0], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+				m_ColumnPlot.BarChart(m_columnChartXAxisValues.data(), column[0], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
 			}
 		}else{
 			m_ColumnPlot.SetPlotColor(m_PlotColor[0]);
 			if(m_showErrorBar) {
-				m_ColumnPlot.BarChart2(number, column[0], column[1], columnErr[0], columnErr[1], m_PlotColor[1], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+				m_ColumnPlot.BarChart2(m_columnChartXAxisValues.data(), column[0], column[1], columnErr[0], columnErr[1], m_PlotColor[1], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
 			}
 			else {
-				m_ColumnPlot.BarChart2(number, column[0], column[1], m_PlotColor[1], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+				m_ColumnPlot.BarChart2(m_columnChartXAxisValues.data(), column[0], column[1], m_PlotColor[1], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
 			}
 		}
 	}else if(m_spectrometerMode == MODE_WIND){
 		if(m_showErrorBar){
 			m_ColumnPlot.SetPlotColor(m_PlotColor[0]);
-			m_ColumnPlot.XYPlot(number, column[0], NULL, NULL, columnErr[0], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
+			m_ColumnPlot.XYPlot(m_columnChartXAxisValues.data(), column[0], NULL, NULL, columnErr[0], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
 
 			m_ColumnPlot.SetPlotColor(m_PlotColor[1]);
-			m_ColumnPlot.XYPlot(number, column[1], NULL, NULL, columnErr[1], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
+			m_ColumnPlot.XYPlot(m_columnChartXAxisValues.data(), column[1], NULL, NULL, columnErr[1], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
 		}else{
 			m_ColumnPlot.SetPlotColor(m_PlotColor[0]);
-			m_ColumnPlot.XYPlot(number, column[0], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
+			m_ColumnPlot.XYPlot(m_columnChartXAxisValues.data(), column[0], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
 
 			m_ColumnPlot.SetPlotColor(m_PlotColor[1]);
-			m_ColumnPlot.XYPlot(number, column[1], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
+			m_ColumnPlot.XYPlot(m_columnChartXAxisValues.data(), column[1], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
 		}
 	}
 
 	// Draw the intensities
-	m_ColumnPlot.DrawCircles(number, intensity[0], size, Graph::CGraphCtrl::PLOT_SECOND_AXIS);
+	m_ColumnPlot.DrawCircles(m_columnChartXAxisValues.data(), intensity[0], size, Graph::CGraphCtrl::PLOT_SECOND_AXIS);
 
 	// Draw the spectrum
 	DrawSpectrum();
@@ -421,7 +423,8 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam){
 		m_realTimeRouteGraph.m_intensityLimit = dynRange * (100 - m_intensitySliderLow.GetPos());
 		m_realTimeRouteGraph.DrawRouteGraph();
 	}
-	if(m_showFitDlg.fVisible){
+	if(m_showFitDlg.fVisible)
+	{
 		m_showFitDlg.DrawFit();
 	}
 
@@ -502,17 +505,13 @@ LRESULT CDMSpecView::OnChangeSpectrometer(WPARAM wParam, LPARAM lParam){
 
 void CDMSpecView::OnMenuShowPostFluxDialog() 
 {
-	m_fluxDlg = new CPostFluxDlg;
-	m_fluxDlg->DoModal();
-
-	delete(m_fluxDlg);
+	CPostFluxDlg fluxDlg;
+	fluxDlg.DoModal();
 }
 
 void CDMSpecView::OnMenuShowSpectrumInspectionDialog(){
-	Dialogs::CSpectrumInspectionDlg *dlg  = new Dialogs::CSpectrumInspectionDlg();
-	dlg->DoModal();
-
-	delete dlg;
+	Dialogs::CSpectrumInspectionDlg dlg;
+	dlg.DoModal();
 }
 
 /** This function is the thread function to start running spectrometer
@@ -742,7 +741,9 @@ void CDMSpecView::OnControlStart()
 			m_realTimeRouteGraph.m_spectrometer = m_Spectrometer;
 			m_realTimeRouteGraph.DrawRouteGraph();
 		}
-		if(m_showFitDlg.fVisible){
+
+		if(m_showFitDlg.fVisible)
+		{
 			m_showFitDlg.m_spectrometer = m_Spectrometer;
 			m_showFitDlg.DrawFit();
 		}
@@ -793,7 +794,9 @@ void CDMSpecView::OnControlViewSpectra(){
 			m_realTimeRouteGraph.m_spectrometer = m_Spectrometer;
 			m_realTimeRouteGraph.DrawRouteGraph();
 		}
-		if(m_showFitDlg.fVisible){
+
+		if(m_showFitDlg.fVisible)
+		{
 			m_showFitDlg.m_spectrometer = m_Spectrometer;
 			m_showFitDlg.DrawFit();
 		}
@@ -851,7 +854,9 @@ void CDMSpecView::OnControlCalibrateSpectrometer(){
 			m_realTimeRouteGraph.m_spectrometer = m_Spectrometer;
 			m_realTimeRouteGraph.DrawRouteGraph();
 		}
-		if(m_showFitDlg.fVisible){
+
+		if(m_showFitDlg.fVisible)
+		{
 			m_showFitDlg.m_spectrometer = m_Spectrometer;
 			m_showFitDlg.DrawFit();
 		}
@@ -907,9 +912,11 @@ void CDMSpecView::OnControlStartWindMeasurement()
 			m_realTimeRouteGraph.m_spectrometer = m_Spectrometer;
 			m_realTimeRouteGraph.DrawRouteGraph();
 		}
-		if(m_showFitDlg.fVisible){
-		m_showFitDlg.m_spectrometer = m_Spectrometer;
-		m_showFitDlg.DrawFit();
+
+		if(m_showFitDlg.fVisible)
+		{
+			m_showFitDlg.m_spectrometer = m_Spectrometer;
+			m_showFitDlg.DrawFit();
 		}
 	}else{
 		MessageBox(TEXT("Spectra are collecting"),"Notice",MB_OK);
@@ -955,13 +962,15 @@ void CDMSpecView::DrawSpectrum()
 	// Get the maximum intensity of the spectrometer
 	double	dynRange_inv = 100.0 / (double)m_Spectrometer->m_spectrometerDynRange;
 
-	// If the length of the 'number2' - parameter does not 
+	// If the length of the 'm_spectrumChartXAxisValues' - parameter does not 
 	//	agree with the size of the spectrometer - detector
-	if(spectrumLength != number2Length){
-		for (int i = 0; i < spectrumLength; i++) {
-			number2[i] = (200.0 * i) / spectrumLength;
+	if(spectrumLength != m_spectrumChartXAxisValues.size())
+	{
+		m_spectrumChartXAxisValues.resize(spectrumLength);
+		for (int i = 0; i < spectrumLength; i++)
+		{
+			m_spectrumChartXAxisValues[i] = (200.0 * i) / spectrumLength;
 		}
-		number2Length = spectrumLength;
 	}
 
 	// Copy the spectrum and transform it into saturation-ratio
@@ -975,7 +984,7 @@ void CDMSpecView::DrawSpectrum()
 
 		// Plot the spectrum
 		m_ColumnPlot.SetPlotColor(m_Spectrum0Color);
-		m_ColumnPlot.XYPlot(number2, spectrum1, spectrumLength, Graph::CGraphCtrl::PLOT_SECOND_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
+		m_ColumnPlot.XYPlot(m_spectrumChartXAxisValues.data(), spectrum1, spectrumLength, Graph::CGraphCtrl::PLOT_SECOND_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
 
 		// If a second channel is used, then do the same thing with the slave-spectrum
 		if(m_Spectrometer->m_NChannels == 1){
@@ -987,7 +996,7 @@ void CDMSpecView::DrawSpectrum()
 
 			m_ColumnPlot.SetPlotColor(m_Spectrum1Color);
 			m_ColumnPlot.SetLineWidth(2);
-			m_ColumnPlot.XYPlot(number2, spectrum2, spectrumLength, Graph::CGraphCtrl::PLOT_SECOND_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
+			m_ColumnPlot.XYPlot(m_spectrumChartXAxisValues.data(), spectrum2, spectrumLength, Graph::CGraphCtrl::PLOT_SECOND_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
 		}
 		
 		return;
@@ -1039,7 +1048,7 @@ void CDMSpecView::OnConfigurationOperation()
 	}
 
 	// Initiate the configuration-object
-	Configuration::CMobileConfiguration	*configuration = new Configuration::CMobileConfiguration(cfgFile);
+	Configuration::CMobileConfiguration	configuration;
 
 	// Initiate the configuration-dialog itself
 	Configuration::CConfigurationDialog	confDlg;
@@ -1048,15 +1057,15 @@ void CDMSpecView::OnConfigurationOperation()
 	// Initiate the pages in the configuration dialog
 	Configuration::CConfigure_Spectrometer m_specPage;
 	m_specPage.Construct(IDD_CONFIGURE_SPECTROMETER);
-	m_specPage.m_conf	= configuration;
+	m_specPage.m_conf	= &configuration;
 
 	Configuration::CConfigure_GPS	m_gpsPage;
 	m_gpsPage.Construct(IDD_CONFIGURE_GPS);
-	m_gpsPage.m_conf	= configuration;
+	m_gpsPage.m_conf	= &configuration;
 
 	Configuration::CConfigure_Evaluation m_EvalPage;
 	m_EvalPage.Construct(IDD_CONFIGURE_EVALUATION);
-	m_EvalPage.m_conf		= configuration;
+	m_EvalPage.m_conf		= &configuration;
 
 	// Add the pages once they have been constructed
 	confDlg.AddPage(&m_specPage);
@@ -1065,10 +1074,6 @@ void CDMSpecView::OnConfigurationOperation()
 
 	// Open the configuration dialog
 	confDlg.DoModal();
-
-
-	// Clean up
-	delete configuration;
 }
 
 BOOL CDMSpecView::OnHelpInfo(HELPINFO* pHelpInfo) 
