@@ -54,8 +54,13 @@ namespace Configuration{
 
 		// ------------ Exposure time -------------------
 		
-		/** The channel number where to judge the spectrum-centre */
+		/** The channel number around which the intensity of the spectrum will be calculated. */
 		long		m_specCenter;
+
+		/** The number of pixels to the left and to the right of m_specCenter which 
+			will be used to calculate the intensity of the spectrum.
+			In total 2 * m_specCenterHalfWidth pixels are used. */
+		const long	m_specCenterHalfWidth = 10;
 
 		/** The desired saturation level at that channel (in percent 0-100%) */
 		long		m_percent;

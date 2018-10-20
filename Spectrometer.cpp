@@ -20,7 +20,6 @@ static char THIS_FILE[] = __FILE__;
 #define new DEBUG_NEW
 #endif
 
-#define OFFSET 10		//the distance from the m_conf->m_specCenter
 #define SERIALDELAY 2000
 
 //////////////////////////////////////////////////////////////////////
@@ -1050,21 +1049,21 @@ void CSpectrometer::Sing(double factor)
 long CSpectrometer::AverageIntens(double *pSpectrum, long ptotalNum) {
 	double sum = 0.0;
 	long num;
-	if (m_conf->m_specCenter <= OFFSET)
-		m_conf->m_specCenter = OFFSET;
-	if (m_conf->m_specCenter >= MAX_SPECTRUM_LENGTH - OFFSET)
-		m_conf->m_specCenter = MAX_SPECTRUM_LENGTH - 2 * OFFSET;
+	if (m_conf->m_specCenter <= m_conf->m_specCenterHalfWidth)
+		m_conf->m_specCenter = m_conf->m_specCenterHalfWidth;
+	if (m_conf->m_specCenter >= MAX_SPECTRUM_LENGTH - m_conf->m_specCenterHalfWidth)
+		m_conf->m_specCenter = MAX_SPECTRUM_LENGTH - 2 * m_conf->m_specCenterHalfWidth;
 
-	for (int j = m_conf->m_specCenter - OFFSET; j < m_conf->m_specCenter + OFFSET; j++) {
+	for (int j = m_conf->m_specCenter - m_conf->m_specCenterHalfWidth; j < m_conf->m_specCenter + m_conf->m_specCenterHalfWidth; j++) {
 		sum += pSpectrum[j];
 	}
 
 	if (ptotalNum != 0) {
-		num = 2 * OFFSET*ptotalNum;
+		num = 2 * m_conf->m_specCenterHalfWidth*ptotalNum;
 		sum = fabs(sum / (double)num);
 	}
 	else {
-		num = 2 * OFFSET;
+		num = 2 * m_conf->m_specCenterHalfWidth;
 		sum = fabs(sum / (double)num);
 		ShowMessageBox("TOTAL SUM = 0", "ERROR");
 		//Show information on screen
