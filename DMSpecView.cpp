@@ -1038,9 +1038,6 @@ void CDMSpecView::DrawSpectrum()
 
 void CDMSpecView::OnConfigurationOperation() 
 {
-	/** The new configuration dialog */
-
-	CString titles[2];
 	CString cfgFile; // <-- the path and filename of the configurationfile to read-in
 	cfgFile.Format("%s\\cfg.xml", g_exePath);
 	if(!IsExistingFile(cfgFile)){
@@ -1048,24 +1045,24 @@ void CDMSpecView::OnConfigurationOperation()
 	}
 
 	// Initiate the configuration-object
-	Configuration::CMobileConfiguration	configuration;
+	Configuration::CMobileConfiguration configuration{ cfgFile };
 
 	// Initiate the configuration-dialog itself
-	Configuration::CConfigurationDialog	confDlg;
+	Configuration::CConfigurationDialog confDlg;
 	confDlg.Construct("Configure", this, 0);
 
 	// Initiate the pages in the configuration dialog
 	Configuration::CConfigure_Spectrometer m_specPage;
 	m_specPage.Construct(IDD_CONFIGURE_SPECTROMETER);
-	m_specPage.m_conf	= &configuration;
+	m_specPage.m_conf = &configuration;
 
 	Configuration::CConfigure_GPS	m_gpsPage;
 	m_gpsPage.Construct(IDD_CONFIGURE_GPS);
-	m_gpsPage.m_conf	= &configuration;
+	m_gpsPage.m_conf = &configuration;
 
 	Configuration::CConfigure_Evaluation m_EvalPage;
 	m_EvalPage.Construct(IDD_CONFIGURE_EVALUATION);
-	m_EvalPage.m_conf		= &configuration;
+	m_EvalPage.m_conf = &configuration;
 
 	// Add the pages once they have been constructed
 	confDlg.AddPage(&m_specPage);
