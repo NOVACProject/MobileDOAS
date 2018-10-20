@@ -9,6 +9,7 @@
 #include "Version.h"
 #include "Common/SpectrumIO.h"
 
+#include <memory>
 #include <limits>
 
 #include <ArrayTypes.h> // located in %OMNIDRIVER_HOME%\include
@@ -521,7 +522,7 @@ protected:
 	bool m_connectViaUsb;
 
 	/** The settings, read in from the cfg.txt - file */
-	Configuration::CMobileConfiguration *m_conf;
+	std::unique_ptr<Configuration::CMobileConfiguration> m_conf;
 
 	/* -------  The spectra ----------- */
 

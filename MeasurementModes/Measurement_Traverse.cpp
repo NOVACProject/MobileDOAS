@@ -34,7 +34,7 @@ void CMeasurement_Traverse::Run(){
 
 	// Read configuration file
 	cfgFile = g_exePath + TEXT("cfg.xml");
-	m_conf = new Configuration::CMobileConfiguration(cfgFile);
+	m_conf.reset(new Configuration::CMobileConfiguration(cfgFile));
 
 	// Convert the settings from the CMobileConfiuration-format to the internal CSpectrometer-format
 	ApplySettings();

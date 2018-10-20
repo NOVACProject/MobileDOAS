@@ -38,7 +38,7 @@ void CMeasurement_Wind::Run(){
 	if(!IsExistingFile(cfgFile)){
 		cfgFile = g_exePath + TEXT("cfg.txt");
 	}
-	m_conf = new Configuration::CMobileConfiguration(cfgFile);
+	m_conf.reset(new Configuration::CMobileConfiguration(cfgFile));
 
 	// Convert the settings from the CMobileConfiuration-format to the internal CSpectrometer-format
 	ApplySettings();
