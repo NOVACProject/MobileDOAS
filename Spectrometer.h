@@ -178,8 +178,12 @@ public:
 	    timeresolution with the set exposure time. */
 	int CountRound(long timeResolution, long serialDelay,long gpsDelay,int* pResults);
 
-	/** Returns the average intensity of the supplied spectrum. */
-	long AverageIntens(double* pSpectrum,long totalNum);
+	/** Returns the average intensity of the supplied spectrum. 
+		The pixels which will be used to calculate the intensity are taken from m_conf.
+		@param pSpectrum pointer to the first pixel in the measured spectrum. 
+			This is assumed to be MAX_SPECTRUM_LENGTH number of pixels long.
+		@param totalNum the number of spectra co-added (not averaged) into the supplied spectrum. */
+	long AverageIntens(double* pSpectrum, long totalNum) const;
 
 	/** Makes the initial adjustments and sets the 
 		parameter 'm_integrationTime' so that intensity of 
@@ -616,7 +620,7 @@ protected:
 	// ---------------------------------------------------------------------------------------
 
 	/** Shows a message box to the user (through the main window form) */
-	void ShowMessageBox(CString message, CString label);
+	void ShowMessageBox(CString message, CString label) const;
 
 private:
 

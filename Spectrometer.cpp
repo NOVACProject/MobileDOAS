@@ -1046,7 +1046,7 @@ void CSpectrometer::Sing(double factor)
 	PlaySound(fileToPlay, 0, SND_SYNC);
 }
 
-long CSpectrometer::AverageIntens(double *pSpectrum, long ptotalNum) {
+long CSpectrometer::AverageIntens(double *pSpectrum, long ptotalNum) const {
 	double sum = 0.0;
 	long num;
 	if (m_conf->m_specCenter <= m_conf->m_specCenterHalfWidth)
@@ -1833,7 +1833,7 @@ unsigned int CSpectrometer::GetProcessedSpectrum(double* dst, unsigned int maxNo
 	return length;
 }
 
-void CSpectrometer::ShowMessageBox(CString message, CString label)
+void CSpectrometer::ShowMessageBox(CString message, CString label) const
 {
 	if (m_isRunning)
 	{

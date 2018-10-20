@@ -370,10 +370,10 @@ void CMeasurement_Traverse::Run_Adaptive(){
 	m_scanNum = OFFSET_SPECTRUM;
 
 	// 1. Start collecting the offset spectrum.
-	m_integrationTime     = 3;
-	m_sumInComputer = 100;
+	m_integrationTime   = 3;
+	m_sumInComputer     = 100;
 	m_sumInSpectrometer = 15;
-	m_totalSpecNum        = m_sumInSpectrometer * m_sumInComputer;
+	m_totalSpecNum      = m_sumInSpectrometer * m_sumInComputer;
 	pView->PostMessage(WM_SHOWINTTIME);
 
 	/*  -- Collect the dark spectrum -- */
@@ -413,7 +413,7 @@ void CMeasurement_Traverse::Run_Adaptive(){
 			return;
 		}
 
-		cFinish = clock();
+		cFinish       = clock();
 		elapsedSecond = (long)((double)(cFinish - cStart) / (double)CLOCKS_PER_SEC);
 
 		// Copy the spectrum to the local variables
@@ -465,7 +465,8 @@ void CMeasurement_Traverse::Run_Adaptive(){
 			m_sumInSpectrometer    = 1;
 			m_totalSpecNum         = m_sumInSpectrometer * m_sumInComputer;
 			pView->PostMessage(WM_SHOWINTTIME);
-		}else if(m_scanNum == DARKCURRENT_SPECTRUM){
+		}
+		else if(m_scanNum == DARKCURRENT_SPECTRUM){
 
 			/* -------------- IF THE MEASURED SPECTRUM WAS THE DARK-CURRENT SPECTRUM ------------- */
 			for(int j = 0; j < m_NChannels; ++j){
@@ -496,7 +497,8 @@ void CMeasurement_Traverse::Run_Adaptive(){
 			m_sumInSpectrometer   = roundResult[0];
 			m_totalSpecNum        = m_sumInComputer*m_sumInSpectrometer;
 			pView->PostMessage(WM_SHOWINTTIME);
-		}else if(m_scanNum == SKY_SPECTRUM){
+		}
+		else if(m_scanNum == SKY_SPECTRUM){
 			/* -------------- IF THE MEASURED SPECTRUM WAS THE SKY SPECTRUM ------------- */
 
 			memcpy((void*)m_sky, (void*)scanResult, sizeof(double) * MAX_N_CHANNELS*MAX_SPECTRUM_LENGTH);
@@ -537,7 +539,8 @@ void CMeasurement_Traverse::Run_Adaptive(){
 			m_totalSpecNum				= m_sumInComputer*m_sumInSpectrometer;
 			pView->PostMessage(WM_SHOWINTTIME);
 
-		}else if(m_scanNum > SKY_SPECTRUM){
+		}
+		else if(m_scanNum > SKY_SPECTRUM){
 			/* -------------- IF THE MEASURED SPECTRUM WAS A NORMAL SPECTRUM ------------- */
 			for(int i = 0; i < m_NChannels; ++i) {
 				m_averageSpectrumIntensity[i] = AverageIntens(tmpSpec[i],1);
