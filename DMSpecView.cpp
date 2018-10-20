@@ -5,6 +5,7 @@
 
 #include "stdafx.h"
 #include <afxdlgs.h>
+#include <memory>
 #include "DMSpec.h"
 
 #include "DMSpecDoc.h"
@@ -1045,7 +1046,8 @@ void CDMSpecView::OnConfigurationOperation()
 	}
 
 	// Initiate the configuration-object
-	Configuration::CMobileConfiguration configuration{ cfgFile };
+	std::shared_ptr<Configuration::CMobileConfiguration> configuration;
+	configuration.reset(new Configuration::CMobileConfiguration{ cfgFile });
 
 	// Initiate the configuration-dialog itself
 	Configuration::CConfigurationDialog confDlg;
@@ -1054,15 +1056,15 @@ void CDMSpecView::OnConfigurationOperation()
 	// Initiate the pages in the configuration dialog
 	Configuration::CConfigure_Spectrometer m_specPage;
 	m_specPage.Construct(IDD_CONFIGURE_SPECTROMETER);
-	m_specPage.m_conf = &configuration;
+	m_specPage.m_conf = configuration;
 
 	Configuration::CConfigure_GPS	m_gpsPage;
 	m_gpsPage.Construct(IDD_CONFIGURE_GPS);
-	m_gpsPage.m_conf = &configuration;
+	m_gpsPage.m_conf = configuration;
 
 	Configuration::CConfigure_Evaluation m_EvalPage;
 	m_EvalPage.Construct(IDD_CONFIGURE_EVALUATION);
-	m_EvalPage.m_conf = &configuration;
+	m_EvalPage.m_conf = configuration;
 
 	// Add the pages once they have been constructed
 	confDlg.AddPage(&m_specPage);
