@@ -171,10 +171,14 @@ public:
 		@param fileName - the complete path of the file */
 	static void GetDirectory(CString &fileName);
 
-	/** Opens a browser window and lets the user select a file */
-
+	/** Opens a browser window and lets the user select any number of files */
 	static std::vector<CString> BrowseForFiles();
+
+	/** Opens a browser window and lets the user select one file which matches the provided filter. */
 	static bool BrowseForFile(char *filter, CString &fileName);
+
+	/** Specialization of BrowseForFile, only allows for browsing of evaluation-logs (.txt) */
+	static bool BrowseForEvaluationLog(CString &fileName);
 
 	/** Opens a dialog window and lets the user browse for a filename to save to */
 	static bool BrowseForFile_SaveAs(TCHAR *filter, CString &fileName);

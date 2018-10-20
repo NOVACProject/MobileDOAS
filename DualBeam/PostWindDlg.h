@@ -3,7 +3,6 @@
 #include "../Graphs/GraphCtrl.h"
 #include "WindSpeedCalculator.h"
 #include "DualBeamMeasSettings.h"
-#include "../Flux1.h"
 
 // CPostWindDlg dialog
 
@@ -12,7 +11,11 @@ class CPostWindDlg : public CDialog
 	DECLARE_DYNAMIC(CPostWindDlg)
 
 public:
+	/** The number of time series which we can handle, normally two. */
 	static const int MAX_N_SERIES = 2;
+
+	/* The maximum length of 'corr', 'delay' and 'ws'. */
+	static const int MAX_CORRELATION_NUM = 4096;
 
 	CPostWindDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CPostWindDlg();
@@ -31,20 +34,20 @@ public:
 	CStatic m_frameColumn;
 
 	/** The column graph */
-	Graph::CGraphCtrl	m_columnGraph;
+	Graph::CGraphCtrl m_columnGraph;
 
 	/** The frame around the result graph */
 	CStatic m_frameResult;
 
 	/** The result graph */
-	Graph::CGraphCtrl	m_resultGraph;
+	Graph::CGraphCtrl m_resultGraph;
 
 	// ---------------------- EVENT HANDLERS ----------------------
-	/** Called when the user browses for a new evaluation-log */
-	afx_msg void OnBrowseEvallog();
+	/** Called when the user browses for a new evaluation-log for Master */
+	afx_msg void OnBrowseEvallogSeries1();
 
-	/** The user has changed the file in the Eval-log edit-box*/
-	afx_msg void OnChangeEvalLog();
+	/** Called when the user browses for a new evaluation-log for Slave*/
+	afx_msg void OnBrowseEvallogSeries2();
 
 	/** Intitializes the dialog */
 	virtual BOOL OnInitDialog();
@@ -59,9 +62,42 @@ public:
 			Here lies the actual work of the dialog. */
 	afx_msg void OnCalculateWindspeed();
 
-	// --------------------- PUBLIC METHODS -----------------------
-	/** Reads the evaluation log */
-	bool ReadEvaluationLog();
+private:
+
+	// ---------------------- PRIVATE DATA -------------------------
+
+	/** The currently opened evaluation-log(s), one for each measurement series. */
+	CString m_evalLog[MAX_N_SERIES];
+
+	/** Original measurement series, as they are in the file */
+	DualBeamMeasurement::CDualBeamCalculator::CMeasurementSeries* m_OriginalSeries[MAX_N_SERIES];
+
+	/** Treated measurement series, low pass filtered etc. */
+	DualBeamMeasurement::CDualBeamCalculator::CMeasurementSeries* m_PreparedSeries[MAX_N_SERIES];
+
+	/** The settings for how the windspeed calculations should be done */
+	DualBeamMeasurement::CDualBeamMeasSettings m_settings;
+
+	/** The wind speed measurement-calculator. */
+	DualBeamMeasurement::CWindSpeedCalculator m_calc;
+
+	/** Choosing what to show in the dialog */
+	int m_showOption;
+
+	/** The arrays for the data shown in the result - graph */
+	std::vector<double> correlations;
+	std::vector<double> timeDelay;
+	std::vector<double> windspeeds;
+
+	/** The colors for the time-series */
+	COLORREF m_colorSeries[MAX_N_SERIES];
+
+	// --------------------- PRIVATE METHODS -----------------------
+
+	/** Reads one of the evaluation logs.
+		@param channelIndex set to zero for the master or 1 for the slave channel.
+		@return SUCCESS if all went well. */
+	bool ReadEvaluationLog(int channelIndex);
 
 	/** Draws the column graph */
 	void DrawColumn();
@@ -73,41 +109,9 @@ public:
 	void SaveResult();
 
 	/** Performes a low pass filtering procedure on series number 'seriesNo'.
-			The number of iterations is taken from 'm_settings.lowPassFilterAverage'
-			The treated series is m_OriginalSeries[seriesNo]
-			The result is saved as m_PreparedSeries[seriesNo]	*/
-	int	LowPassFilter(int seriesNo);
-
-	// ---------------------- PUBLIC DATA -------------------------
-
-	/** The currently opened evaluation - log */
-	CString	m_evalLog;
-
-	/** A flux-object, used to read the evaluation data */
-	Flux::CFlux	*m_flux;
-
-	/** Original measurement series, as they are in the file */
-	DualBeamMeasurement::CDualBeamCalculator::CMeasurementSeries		*m_OriginalSeries[MAX_N_SERIES];
-
-	/** Treated measurement series, low pass filtered etc. */
-	DualBeamMeasurement::CDualBeamCalculator::CMeasurementSeries		*m_PreparedSeries[MAX_N_SERIES];
-
-	/** The settings for how the windspeed calculations should be done */
-	DualBeamMeasurement::CDualBeamMeasSettings	m_settings;
-
-	/** The wind speed measurement-calculator. */
-	DualBeamMeasurement::CWindSpeedCalculator		m_calc;
-
-	/** Choosing what to show in the dialog */
-	int m_showOption;
-
-protected:
-
-	// ------------------ PROTECTED DATA ---------------------
-	/** The arrays for the data shown in the result - graph */
-	double *corr, *delay, *ws;
-
-	/** The colors for the time-series */
-	COLORREF	m_colorSeries[MAX_N_SERIES];
-
+		The number of iterations is taken from 'm_settings.lowPassFilterAverage'
+		The treated series is m_OriginalSeries[seriesNo]
+		The result is saved as m_PreparedSeries[seriesNo]
+		@return 1 on success. */
+	int LowPassFilter(int seriesNo);
 };

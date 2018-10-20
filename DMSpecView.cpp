@@ -5,6 +5,7 @@
 
 #include "stdafx.h"
 #include <afxdlgs.h>
+#include <memory>
 #include "DMSpec.h"
 
 #include "DMSpecDoc.h"
@@ -121,24 +122,29 @@ END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CDMSpecView construction/destruction
-BOOL fRunSpec;
+
+// boolean flag to help us determine if the spectrometer thread is running. s_ stands for statics...
+static bool s_spectrometerAcquisitionThreadIsRunning = false;
+
 CDMSpecView::CDMSpecView()
 	: CFormView(CDMSpecView::IDD)
 {
 	m_WindDirection = 0.0;
 	m_WindSpeed = 8.0;
 	pView       = this;
-	fRunSpec    = FALSE;
-	int i;
-	for(i = 0; i < 200; i++)
+	s_spectrometerAcquisitionThreadIsRunning    = false;
+
+	m_columnChartXAxisValues.resize(200);
+	for(int i = 0; i < 200; i++)
 	{
-		number[i]		=  i;
+		m_columnChartXAxisValues[i] =  i;
 	}
-	for(i = 0; i < MAX_SPECTRUM_LENGTH; i++)
+
+	m_spectrumChartXAxisValues.resize(MAX_SPECTRUM_LENGTH);
+	for(int i = 0; i < MAX_SPECTRUM_LENGTH; i++)
 	{
-		number2[i] =  (200.0 * i) / MAX_SPECTRUM_LENGTH;
+		m_spectrumChartXAxisValues[i] = (200.0 * i) / MAX_SPECTRUM_LENGTH;
 	}
-	number2Length = MAX_SPECTRUM_LENGTH;
 
 	m_Spectrometer = nullptr;
 	m_showErrorBar = FALSE;
@@ -300,7 +306,8 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam){
 	long	dynRange;
 	
 	// if the program is no longer running, then don't try to draw anything more...
-	if(!fRunSpec){
+	if(!s_spectrometerAcquisitionThreadIsRunning)
+	{
 		return 0;
 	}
 	
@@ -376,38 +383,38 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam){
 		if(fitRegionNum == 1){
 			m_ColumnPlot.SetPlotColor(m_PlotColor[0]);
 			if(m_showErrorBar){
-				m_ColumnPlot.BarChart(number, column[0], columnErr[0], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+				m_ColumnPlot.BarChart(m_columnChartXAxisValues.data(), column[0], columnErr[0], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
 			}
 			else {
-				m_ColumnPlot.BarChart(number, column[0], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+				m_ColumnPlot.BarChart(m_columnChartXAxisValues.data(), column[0], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
 			}
 		}else{
 			m_ColumnPlot.SetPlotColor(m_PlotColor[0]);
 			if(m_showErrorBar) {
-				m_ColumnPlot.BarChart2(number, column[0], column[1], columnErr[0], columnErr[1], m_PlotColor[1], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+				m_ColumnPlot.BarChart2(m_columnChartXAxisValues.data(), column[0], column[1], columnErr[0], columnErr[1], m_PlotColor[1], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
 			}
 			else {
-				m_ColumnPlot.BarChart2(number, column[0], column[1], m_PlotColor[1], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+				m_ColumnPlot.BarChart2(m_columnChartXAxisValues.data(), column[0], column[1], m_PlotColor[1], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
 			}
 		}
 	}else if(m_spectrometerMode == MODE_WIND){
 		if(m_showErrorBar){
 			m_ColumnPlot.SetPlotColor(m_PlotColor[0]);
-			m_ColumnPlot.XYPlot(number, column[0], NULL, NULL, columnErr[0], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
+			m_ColumnPlot.XYPlot(m_columnChartXAxisValues.data(), column[0], NULL, NULL, columnErr[0], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
 
 			m_ColumnPlot.SetPlotColor(m_PlotColor[1]);
-			m_ColumnPlot.XYPlot(number, column[1], NULL, NULL, columnErr[1], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
+			m_ColumnPlot.XYPlot(m_columnChartXAxisValues.data(), column[1], NULL, NULL, columnErr[1], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
 		}else{
 			m_ColumnPlot.SetPlotColor(m_PlotColor[0]);
-			m_ColumnPlot.XYPlot(number, column[0], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
+			m_ColumnPlot.XYPlot(m_columnChartXAxisValues.data(), column[0], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
 
 			m_ColumnPlot.SetPlotColor(m_PlotColor[1]);
-			m_ColumnPlot.XYPlot(number, column[1], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
+			m_ColumnPlot.XYPlot(m_columnChartXAxisValues.data(), column[1], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
 		}
 	}
 
 	// Draw the intensities
-	m_ColumnPlot.DrawCircles(number, intensity[0], size, Graph::CGraphCtrl::PLOT_SECOND_AXIS);
+	m_ColumnPlot.DrawCircles(m_columnChartXAxisValues.data(), intensity[0], size, Graph::CGraphCtrl::PLOT_SECOND_AXIS);
 
 	// Draw the spectrum
 	DrawSpectrum();
@@ -417,7 +424,8 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam){
 		m_realTimeRouteGraph.m_intensityLimit = dynRange * (100 - m_intensitySliderLow.GetPos());
 		m_realTimeRouteGraph.DrawRouteGraph();
 	}
-	if(m_showFitDlg.fVisible){
+	if(m_showFitDlg.fVisible)
+	{
 		m_showFitDlg.DrawFit();
 	}
 
@@ -465,7 +473,8 @@ LRESULT CDMSpecView::OnShowIntTime(WPARAM wParam, LPARAM lParam){
 	int avg[2];
 
 	// if the program is no longer running, then don't try to draw anything more...
-	if(!fRunSpec){
+	if(!s_spectrometerAcquisitionThreadIsRunning)
+	{
 		return 0;
 	}
 
@@ -497,17 +506,13 @@ LRESULT CDMSpecView::OnChangeSpectrometer(WPARAM wParam, LPARAM lParam){
 
 void CDMSpecView::OnMenuShowPostFluxDialog() 
 {
-	m_fluxDlg = new CPostFluxDlg;
-	m_fluxDlg->DoModal();
-
-	delete(m_fluxDlg);
+	CPostFluxDlg fluxDlg;
+	fluxDlg.DoModal();
 }
 
 void CDMSpecView::OnMenuShowSpectrumInspectionDialog(){
-	Dialogs::CSpectrumInspectionDlg *dlg  = new Dialogs::CSpectrumInspectionDlg();
-	dlg->DoModal();
-
-	delete dlg;
+	Dialogs::CSpectrumInspectionDlg dlg;
+	dlg.DoModal();
 }
 
 /** This function is the thread function to start running spectrometer
@@ -516,7 +521,7 @@ void CDMSpecView::OnMenuShowSpectrumInspectionDialog(){
 UINT CollectSpectra(LPVOID pParam){
 	CSpectrometer* spec = (CSpectrometer*)pParam ;
 	spec->Run();
-	fRunSpec = FALSE;
+	s_spectrometerAcquisitionThreadIsRunning = false;
 	return 0;
 }
 
@@ -526,13 +531,14 @@ UINT CollectSpectra(LPVOID pParam){
 UINT CollectSpectra_Wind(LPVOID pParam){
 	CSpectrometer* spec = (CSpectrometer*)pParam ;
 	spec->Run();
-	fRunSpec	= FALSE;
+	s_spectrometerAcquisitionThreadIsRunning = false;
 	return 0;
 }
 
 LRESULT CDMSpecView::OnShowStatus(WPARAM wParam, LPARAM lParam)
 {
-	if(fRunSpec){
+	if(s_spectrometerAcquisitionThreadIsRunning)
+	{
 		CString str;
 		str = m_Spectrometer->m_statusMsg;
 		ShowStatusMsg(str);
@@ -546,7 +552,8 @@ LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 	static int latNSat = 10;
 	
 	// if the program is no longer running, then don't try to draw anything more...
-	if(!fRunSpec){
+	if(!s_spectrometerAcquisitionThreadIsRunning)
+	{
 		return 0;
 	}
 	
@@ -652,7 +659,8 @@ void CDMSpecView::ShowStatusMsg(CString &str)
 
 
 void CDMSpecView::OnControlCountflux() {
-	if(fRunSpec){
+	if(s_spectrometerAcquisitionThreadIsRunning)
+	{
 		double flux = m_Spectrometer->GetFlux();
 		m_Spectrometer->WriteFluxLog();
 
@@ -661,9 +669,9 @@ void CDMSpecView::OnControlCountflux() {
 
 		MessageBox(str,"Flux",MB_OK);
 	}
-	else {
-		MessageBox(TEXT("The spectrometer hasn't been started.\nStart it first,\nthen you can use this function")
-		,"Notice",MB_OK);
+	else
+	{
+		MessageBox(TEXT("The spectrometer hasn't been started.\nStart it first,\nthen you can use this function") ,"Notice",MB_OK);
 	}
 }
 
@@ -701,8 +709,8 @@ void CDMSpecView::OnConfigurationPlotChangeplotcolor_Slave(){
 
 void CDMSpecView::OnControlStart() 
 {
-
-	if(!fRunSpec){
+	if(!s_spectrometerAcquisitionThreadIsRunning)
+	{
 		/* Check that the base name does not contain any illegal characters */
 		CString tmpStr;
 		this->GetDlgItemText(IDC_BASEEDIT, tmpStr);
@@ -726,7 +734,7 @@ void CDMSpecView::OnControlStart()
 
 		// Start the measurement thread
 		pSpecThread			= AfxBeginThread(CollectSpectra,(LPVOID)(m_Spectrometer),THREAD_PRIORITY_NORMAL,0,0,NULL);
-		fRunSpec			= TRUE;
+		s_spectrometerAcquisitionThreadIsRunning			= true;
 		m_spectrometerMode	= MODE_TRAVERSE;
 
 		// If the user wants to see the real-time route then initialize it also
@@ -734,7 +742,9 @@ void CDMSpecView::OnControlStart()
 			m_realTimeRouteGraph.m_spectrometer = m_Spectrometer;
 			m_realTimeRouteGraph.DrawRouteGraph();
 		}
-		if(m_showFitDlg.fVisible){
+
+		if(m_showFitDlg.fVisible)
+		{
 			m_showFitDlg.m_spectrometer = m_Spectrometer;
 			m_showFitDlg.DrawFit();
 		}
@@ -750,16 +760,17 @@ void CDMSpecView::OnControlViewSpectra(){
 	CString tmpStr;
 	CRect rect;
 
-	if(!fRunSpec){
+	if(!s_spectrometerAcquisitionThreadIsRunning)
+	{
 		CDMSpecDoc* pDoc = GetDocument();
 		CMeasurement_View *spec = new CMeasurement_View();
 		this->m_Spectrometer = (CSpectrometer *)spec;
 		m_Spectrometer->m_spectrometerMode = MODE_VIEW;
 		memset(text,0,(size_t)100);
 
-		pSpecThread			= AfxBeginThread(CollectSpectra,(LPVOID)(m_Spectrometer),THREAD_PRIORITY_LOWEST,0,0,NULL);
-		fRunSpec			= TRUE;
-		m_spectrometerMode	= MODE_VIEW;
+		pSpecThread = AfxBeginThread(CollectSpectra,(LPVOID)(m_Spectrometer),THREAD_PRIORITY_LOWEST,0,0,NULL);
+		s_spectrometerAcquisitionThreadIsRunning = true;
+		m_spectrometerMode = MODE_VIEW;
 
 		// Show the window that makes it possible to change the exposure time
 		m_specSettingsDlg.m_Spectrometer = spec;
@@ -784,7 +795,9 @@ void CDMSpecView::OnControlViewSpectra(){
 			m_realTimeRouteGraph.m_spectrometer = m_Spectrometer;
 			m_realTimeRouteGraph.DrawRouteGraph();
 		}
-		if(m_showFitDlg.fVisible){
+
+		if(m_showFitDlg.fVisible)
+		{
 			m_showFitDlg.m_spectrometer = m_Spectrometer;
 			m_showFitDlg.DrawFit();
 		}
@@ -808,7 +821,8 @@ void CDMSpecView::OnControlCalibrateSpectrometer(){
 	CString tmpStr;
 	CRect rect;
 
-	if(!fRunSpec){
+	if(!s_spectrometerAcquisitionThreadIsRunning)
+	{
 		CDMSpecDoc* pDoc = GetDocument();
 		CMeasurement_Calibrate *spec = new CMeasurement_Calibrate();
 		this->m_calibration	= spec->m_calibration;
@@ -816,8 +830,8 @@ void CDMSpecView::OnControlCalibrateSpectrometer(){
 		m_Spectrometer->m_spectrometerMode = MODE_CALIBRATE;
 		memset(text,0,(size_t)100);
 
-		pSpecThread			= AfxBeginThread(CollectSpectra,(LPVOID)(m_Spectrometer),THREAD_PRIORITY_LOWEST,0,0,NULL);
-		fRunSpec			= TRUE;
+		pSpecThread = AfxBeginThread(CollectSpectra,(LPVOID)(m_Spectrometer),THREAD_PRIORITY_LOWEST,0,0,NULL);
+		s_spectrometerAcquisitionThreadIsRunning = true;
 		m_spectrometerMode	= MODE_CALIBRATE;
 
 		// Show the window that makes it possible to change the exposure time
@@ -841,7 +855,9 @@ void CDMSpecView::OnControlCalibrateSpectrometer(){
 			m_realTimeRouteGraph.m_spectrometer = m_Spectrometer;
 			m_realTimeRouteGraph.DrawRouteGraph();
 		}
-		if(m_showFitDlg.fVisible){
+
+		if(m_showFitDlg.fVisible)
+		{
 			m_showFitDlg.m_spectrometer = m_Spectrometer;
 			m_showFitDlg.DrawFit();
 		}
@@ -863,7 +879,8 @@ void CDMSpecView::OnControlStartWindMeasurement()
 	char text[100];
 	CString tmpStr;
 
-	if(!fRunSpec){
+	if(!s_spectrometerAcquisitionThreadIsRunning)
+	{
 		/* Check that the base name does not contain any illegal characters */
 		this->GetDlgItemText(IDC_BASEEDIT, tmpStr);
 		if(-1 != tmpStr.FindOneOf("\\/:*?\"<>|")){
@@ -887,18 +904,20 @@ void CDMSpecView::OnControlStartWindMeasurement()
 		}
 
 		// Start the measurement thread
-		pSpecThread			= AfxBeginThread(CollectSpectra_Wind,(LPVOID)(m_Spectrometer),THREAD_PRIORITY_NORMAL,0,0,NULL);
-		fRunSpec			= TRUE;
-		m_spectrometerMode	= MODE_WIND;
+		pSpecThread = AfxBeginThread(CollectSpectra_Wind,(LPVOID)(m_Spectrometer),THREAD_PRIORITY_NORMAL,0,0,NULL);
+		s_spectrometerAcquisitionThreadIsRunning = true;
+		m_spectrometerMode = MODE_WIND;
 
 		// If the user wants to see the real-time route then initialize it also
 		if(m_realTimeRouteGraph.fVisible){
 			m_realTimeRouteGraph.m_spectrometer = m_Spectrometer;
 			m_realTimeRouteGraph.DrawRouteGraph();
 		}
-		if(m_showFitDlg.fVisible){
-		m_showFitDlg.m_spectrometer = m_Spectrometer;
-		m_showFitDlg.DrawFit();
+
+		if(m_showFitDlg.fVisible)
+		{
+			m_showFitDlg.m_spectrometer = m_Spectrometer;
+			m_showFitDlg.DrawFit();
 		}
 	}else{
 		MessageBox(TEXT("Spectra are collecting"),"Notice",MB_OK);
@@ -907,9 +926,9 @@ void CDMSpecView::OnControlStartWindMeasurement()
 
 void CDMSpecView::OnControlStop() 
 {
-	if(fRunSpec)
+	if(s_spectrometerAcquisitionThreadIsRunning)
 	{
-		fRunSpec = FALSE;
+		s_spectrometerAcquisitionThreadIsRunning = false;
 
 		DWORD dwExitCode;
 		HANDLE hThread = pSpecThread->m_hThread;
@@ -917,8 +936,8 @@ void CDMSpecView::OnControlStop()
 		{
 			AfxGetApp()->BeginWaitCursor();
 			m_Spectrometer->Stop();
-			Sleep(500);			
-			WaitForSingleObject(hThread,INFINITE);
+			Sleep(500);
+			WaitForSingleObject(hThread, INFINITE);
 			m_Spectrometer->serial.Close();
 			AfxGetApp()->EndWaitCursor();
 			MessageBox(TEXT("Spectrum collection has been stopped"),NULL,MB_OK);
@@ -933,7 +952,8 @@ void CDMSpecView::DrawSpectrum()
 	CString lambdaStr;
 	
 	// if the program is no longer running, then don't try to draw anything more...
-	if(!fRunSpec){
+	if(!s_spectrometerAcquisitionThreadIsRunning)
+	{
 		return;
 	}
 	
@@ -943,13 +963,15 @@ void CDMSpecView::DrawSpectrum()
 	// Get the maximum intensity of the spectrometer
 	double	dynRange_inv = 100.0 / (double)m_Spectrometer->m_spectrometerDynRange;
 
-	// If the length of the 'number2' - parameter does not 
+	// If the length of the 'm_spectrumChartXAxisValues' - parameter does not 
 	//	agree with the size of the spectrometer - detector
-	if(spectrumLength != number2Length){
-		for (int i = 0; i < spectrumLength; i++) {
-			number2[i] = (200.0 * i) / spectrumLength;
+	if(spectrumLength != m_spectrumChartXAxisValues.size())
+	{
+		m_spectrumChartXAxisValues.resize(spectrumLength);
+		for (int i = 0; i < spectrumLength; i++)
+		{
+			m_spectrumChartXAxisValues[i] = (200.0 * i) / spectrumLength;
 		}
-		number2Length = spectrumLength;
 	}
 
 	// Copy the spectrum and transform it into saturation-ratio
@@ -963,7 +985,7 @@ void CDMSpecView::DrawSpectrum()
 
 		// Plot the spectrum
 		m_ColumnPlot.SetPlotColor(m_Spectrum0Color);
-		m_ColumnPlot.XYPlot(number2, spectrum1, spectrumLength, Graph::CGraphCtrl::PLOT_SECOND_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
+		m_ColumnPlot.XYPlot(m_spectrumChartXAxisValues.data(), spectrum1, spectrumLength, Graph::CGraphCtrl::PLOT_SECOND_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
 
 		// If a second channel is used, then do the same thing with the slave-spectrum
 		if(m_Spectrometer->m_NChannels == 1){
@@ -975,7 +997,7 @@ void CDMSpecView::DrawSpectrum()
 
 			m_ColumnPlot.SetPlotColor(m_Spectrum1Color);
 			m_ColumnPlot.SetLineWidth(2);
-			m_ColumnPlot.XYPlot(number2, spectrum2, spectrumLength, Graph::CGraphCtrl::PLOT_SECOND_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
+			m_ColumnPlot.XYPlot(m_spectrumChartXAxisValues.data(), spectrum2, spectrumLength, Graph::CGraphCtrl::PLOT_SECOND_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
 		}
 		
 		return;
@@ -1017,9 +1039,6 @@ void CDMSpecView::DrawSpectrum()
 
 void CDMSpecView::OnConfigurationOperation() 
 {
-	/** The new configuration dialog */
-
-	CString titles[2];
 	CString cfgFile; // <-- the path and filename of the configurationfile to read-in
 	cfgFile.Format("%s\\cfg.xml", g_exePath);
 	if(!IsExistingFile(cfgFile)){
@@ -1027,24 +1046,25 @@ void CDMSpecView::OnConfigurationOperation()
 	}
 
 	// Initiate the configuration-object
-	Configuration::CMobileConfiguration	*configuration = new Configuration::CMobileConfiguration(cfgFile);
+	std::shared_ptr<Configuration::CMobileConfiguration> configuration;
+	configuration.reset(new Configuration::CMobileConfiguration{ cfgFile });
 
 	// Initiate the configuration-dialog itself
-	Configuration::CConfigurationDialog	confDlg;
+	Configuration::CConfigurationDialog confDlg;
 	confDlg.Construct("Configure", this, 0);
 
 	// Initiate the pages in the configuration dialog
 	Configuration::CConfigure_Spectrometer m_specPage;
 	m_specPage.Construct(IDD_CONFIGURE_SPECTROMETER);
-	m_specPage.m_conf	= configuration;
+	m_specPage.m_conf = configuration;
 
 	Configuration::CConfigure_GPS	m_gpsPage;
 	m_gpsPage.Construct(IDD_CONFIGURE_GPS);
-	m_gpsPage.m_conf	= configuration;
+	m_gpsPage.m_conf = configuration;
 
 	Configuration::CConfigure_Evaluation m_EvalPage;
 	m_EvalPage.Construct(IDD_CONFIGURE_EVALUATION);
-	m_EvalPage.m_conf		= configuration;
+	m_EvalPage.m_conf = configuration;
 
 	// Add the pages once they have been constructed
 	confDlg.AddPage(&m_specPage);
@@ -1053,10 +1073,6 @@ void CDMSpecView::OnConfigurationOperation()
 
 	// Open the configuration dialog
 	confDlg.DoModal();
-
-
-	// Clean up
-	delete configuration;
 }
 
 BOOL CDMSpecView::OnHelpInfo(HELPINFO* pHelpInfo) 
@@ -1151,11 +1167,12 @@ void CDMSpecView::OnViewRealtimeroute(){
 		/* create the real time route graph */
 		m_realTimeRouteGraph.Create(IDD_REALTIME_ROUTE_DLG, NULL);
 
-		if(fRunSpec){
-		m_realTimeRouteGraph.m_spectrometer		= this->m_Spectrometer;
+		if(s_spectrometerAcquisitionThreadIsRunning)
+		{
+			m_realTimeRouteGraph.m_spectrometer		= this->m_Spectrometer;
 			m_realTimeRouteGraph.m_intensityLimit = m_Spectrometer->m_spectrometerDynRange * (100 - m_intensitySliderLow.GetPos());
 		}else{
-		m_realTimeRouteGraph.m_spectrometer		= nullptr;
+			m_realTimeRouteGraph.m_spectrometer		= nullptr;
 			m_realTimeRouteGraph.m_intensityLimit = 0.25 * 4095;
 		}
 		m_realTimeRouteGraph.ShowWindow(SW_SHOW);
@@ -1194,7 +1211,8 @@ void CDMSpecView::OnViewSpectrumFit(){
 		/* create the real time route graph */
 		m_showFitDlg.Create(IDD_VIEW_FIT_DLG, NULL);
 
-		if (fRunSpec) {
+		if (s_spectrometerAcquisitionThreadIsRunning)
+		{
 			m_showFitDlg.m_spectrometer = this->m_Spectrometer;
 		}
 		else {
@@ -1208,11 +1226,14 @@ void CDMSpecView::OnViewSpectrumFit(){
 void CDMSpecView::OnControlAddComment(){
 	Dialogs::CCommentDlg cdlg;
 
-	if(fRunSpec){
+	if(s_spectrometerAcquisitionThreadIsRunning)
+	{
 		m_Spectrometer->GetCurrentPos(&cdlg.lat, &cdlg.lon, &cdlg.alt);
 		cdlg.t = m_Spectrometer->GetCurrentGPSTime();
 		cdlg.outputDir.Format(m_Spectrometer->m_subFolder);
-	}else{
+	}
+	else
+	{
 		cdlg.lat = cdlg.lon = cdlg.alt = 0;
 		cdlg.t = 0;
 		cdlg.outputDir.Format(g_exePath);

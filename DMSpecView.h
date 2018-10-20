@@ -43,9 +43,6 @@ public:
 	/** The edit-box for the basename */
 	CEdit						m_BaseEdit;
 
-	/** The post-flux dialog */
-	CPostFluxDlg*				m_fluxDlg;
-
 	/** The background color for the main-plot */
 	COLORREF					m_bkColor;
 
@@ -258,11 +255,10 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 	/** The X-Axis of the column bar-chart */
-	double number[200];
+	std::vector<double> m_columnChartXAxisValues;
 
 	/** The X-Axis of the spectrum chart */
-	double  number2[MAX_SPECTRUM_LENGTH];
-	long		number2Length;
+	std::vector<double> m_spectrumChartXAxisValues;
 
 	/** Used to set the range for the column plot*/
 	double m_columnLimit;

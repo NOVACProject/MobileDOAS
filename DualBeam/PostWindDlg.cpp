@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "../DMSpec.h"
 #include "PostWindDlg.h"
+#include "../Flux1.h"
 
 // CPostWindDlg dialog
 
@@ -10,7 +11,6 @@ IMPLEMENT_DYNAMIC(CPostWindDlg, CDialog)
 CPostWindDlg::CPostWindDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CPostWindDlg::IDD, pParent)
 {
-	m_flux = nullptr;
 	m_showOption = 0;
 
 	for (int k = 0; k < MAX_N_SERIES; ++k) {
@@ -18,23 +18,17 @@ CPostWindDlg::CPostWindDlg(CWnd* pParent /*=NULL*/)
 		this->m_PreparedSeries[k] = nullptr;
 	}
 
-	corr = delay = ws = nullptr;
+	correlations.resize(MAX_CORRELATION_NUM);
+	timeDelay.resize(MAX_CORRELATION_NUM);
+	windspeeds.resize(MAX_CORRELATION_NUM);
 }
 
 CPostWindDlg::~CPostWindDlg()
 {
-	if (m_flux != nullptr) {
-		delete m_flux;
-		m_flux = nullptr;
-	}
 	for (int k = 0; k < MAX_N_SERIES; ++k) {
 		delete m_OriginalSeries[k];
 		delete m_PreparedSeries[k];
 	}
-
-	delete[] corr;
-	delete[] delay;
-	delete[] ws;
 }
 
 void CPostWindDlg::DoDataExchange(CDataExchange* pDX)
@@ -48,6 +42,7 @@ void CPostWindDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_MAXSHIFTTIME, m_settings.shiftMax);
 	DDX_Text(pDX, IDC_EDIT_TESTLENGTH, m_settings.testLength);
 	DDX_Text(pDX, IDC_EDIT_PLUMEHEIGHT, m_settings.plumeHeight);
+	DDX_Text(pDX, IDC_EDIT_WS_ANGLESEPARATION, m_settings.angleSeparation);
 
 	// Deciding what to show
 	DDX_Radio(pDX, IDC_RADIO_SHOW_CORR, m_showOption);
@@ -56,9 +51,9 @@ void CPostWindDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CPostWindDlg, CDialog)
 	// Actions to perform
-	ON_BN_CLICKED(IDC_BTN_BROWSE_EVALLOG, OnBrowseEvallog)
+	ON_BN_CLICKED(IDC_BTN_BROWSE_EVALLOG_SERIES1, OnBrowseEvallogSeries1)
+	ON_BN_CLICKED(IDC_BTN_BROWSE_EVALLOG_SERIES2, OnBrowseEvallogSeries2)
 	ON_BN_CLICKED(IDC_BUTTON_CALCULATE_CORRELATION, OnCalculateWindspeed)
-	//ON_EN_CHANGE(IDC_EDIT_EVALLOG,									OnChangeEvalLog)
 
 	// Changing the settings
 	ON_EN_KILLFOCUS(IDC_EDIT_LPITERATIONS, OnChangeLPIterations)
@@ -74,105 +69,92 @@ END_MESSAGE_MAP()
 
 // CPostWindDlg message handlers
 
-void CPostWindDlg::OnBrowseEvallog()
+void CPostWindDlg::OnBrowseEvallogSeries1()
 {
-	CString evLog;
-	evLog.Format("");
-	TCHAR filter[512];
-	int n = _stprintf(filter, "Evaluation Logs\0");
-	n += _stprintf(filter + n + 1, "*.txt;\0");
-	filter[n + 2] = 0;
-
-	// let the user browse for an evaluation log file and if one is selected, read it
-	if (Common::BrowseForFile(filter, evLog)) {
-		m_evalLog.Format("%s", (LPCTSTR)evLog);
-
-		if (ReadEvaluationLog()) {
-			// Update the text on the screen
-			SetDlgItemText(IDC_EDIT_EVALLOG, m_evalLog);
-			// Redraw the screen
-			DrawColumn();
-		}
+	CString selectedLogFile;
+	if (!Common::BrowseForEvaluationLog(selectedLogFile)) {
+		return;
 	}
 
+	m_evalLog[0].Format("%s", (LPCTSTR)selectedLogFile);
+
+	if (ReadEvaluationLog(0)) {
+		// Update the text on the screen
+		SetDlgItemText(IDC_EDIT_EVALLOG_SERIES1, m_evalLog[0]);
+		// Redraw the screen
+		DrawColumn();
+	}
 }
 
-void CPostWindDlg::OnChangeEvalLog() {
-	CString evalLog;
-	// Get the name of the eval-log
-	GetDlgItemText(IDC_EDIT_EVALLOG, evalLog);
-
-	// Check if the file exists
-	if (strlen(evalLog) <= 3 || !Equals(evalLog.Right(4), ".txt"))
+void CPostWindDlg::OnBrowseEvallogSeries2()
+{
+	CString selectedLogFile;
+	if (!Common::BrowseForEvaluationLog(selectedLogFile)) {
 		return;
+	}
 
-	FILE *f = fopen(evalLog, "r");
-	if (f == nullptr)
-		return;
-	fclose(f);
+	m_evalLog[1].Format("%s", (LPCTSTR)selectedLogFile);
 
-	// Read the evaluation - log
-	m_evalLog.Format(evalLog);
-	ReadEvaluationLog();
-
-	// Redraw the screen
-	DrawColumn();
+	if (ReadEvaluationLog(1)) {
+		// Update the text on the screen
+		SetDlgItemText(IDC_EDIT_EVALLOG_SERIES2, m_evalLog[1]);
+		// Redraw the screen
+		DrawColumn();
+	}
 }
 
-bool CPostWindDlg::ReadEvaluationLog() {
-	// Completely reset the old data
-	if (m_flux != nullptr)
-		delete m_flux;
-	m_flux = new Flux::CFlux();
+bool CPostWindDlg::ReadEvaluationLog(int channelIndex) {
+	if(channelIndex < 0 || channelIndex > 1) { throw std::invalid_argument("Invalid channel index passed to ReadEvaluationLog!"); }
 
-	int nChannels;			// the number of channels in the data-file
-	double fileVersion;	// the file-version of the evalution-log file
+	// the index in the traverse which we should read. Setting this to zero always assumes that we will always use
+	//	the first species in the traverse to evaluate the windspeed...
+	const int specieIndex = 0;
+	Flux::CFlux flux;		// The CFlux object helps with reading the data from the eval-log
+	int nChannels = 1;		// the number of channels in the data-file
+	double fileVersion = 0;	// the file-version of the evalution-log file
 
-						// Read the header of the log file and see if it is an ok file
-	int fileType = m_flux->ReadSettingFile(m_evalLog, nChannels, fileVersion);
+	// Read the header of the log file and see if it is an ok file
+	int fileType = flux.ReadSettingFile(m_evalLog[channelIndex], nChannels, fileVersion);
 	if (fileType != 1) {
 		MessageBox(TEXT("The file is not evaluation log file with right format.\nPlease choose a right file"), NULL, MB_OK);
 		return FAIL;
 	}
 
-	if (nChannels < 2) {
-		MessageBox(TEXT("The evaluation log does not contain 2 channels."), NULL, MB_OK);
+	if (nChannels != 1) {
+		MessageBox(TEXT("The evaluation log does not contain evaluation data from one single channel. Please select another file in a correct format."), NULL, MB_OK);
 		return FAIL;
 	}
 
 	// Read the data from the file
-	if (0 == m_flux->ReadLogFile("", m_evalLog, nChannels, fileVersion)) {
+	if (0 == flux.ReadLogFile("", m_evalLog[channelIndex], nChannels, fileVersion)) {
 		MessageBox(TEXT("That file is empty"));
 		return FAIL;
 	}
 
 	// Copy the data to the local variables 'm_originalSeries'
-	for (int chnIndex = 0; chnIndex < nChannels; ++chnIndex) {
-		// to get less dereferencing
-		Flux::CTraverse *traverse = m_flux->m_traverse[chnIndex];
+	const Flux::CTraverse *traverse = flux.m_traverse[specieIndex];
+	const long traverseLength		= traverse->m_recordNum;
 
-		long length = traverse->m_recordNum; // the length of the traverse
+	// create a new data series
+	m_OriginalSeries[channelIndex] = new DualBeamMeasurement::CDualBeamCalculator::CMeasurementSeries(traverseLength);
+	if (m_OriginalSeries[channelIndex] == nullptr) {
+		return FAIL; // <-- failed to allocate enough memory
+	}
 
-											 // create a new data series
-		m_OriginalSeries[chnIndex] = new DualBeamMeasurement::CDualBeamCalculator::CMeasurementSeries(length);
-		if (m_OriginalSeries[chnIndex] == nullptr)
-			return FAIL; // <-- failed to allocate enough memory
+	Time startTime = traverse->time[0];
+	for (int spectrumIndex = 0; spectrumIndex < traverseLength; ++spectrumIndex) {
 
-		Time &startTime = traverse->time[0];
-		for (int specIndex = 0; specIndex < length; ++specIndex) {
+		// Get the column of this spectrum
+		m_OriginalSeries[channelIndex]->column[spectrumIndex] = traverse->columnArray[spectrumIndex];
 
-			// Get the column of this spectrum
-			m_OriginalSeries[chnIndex]->column[specIndex] = traverse->columnArray[specIndex];
+		// Get the start time of this spectrum
+		Time t = traverse->time[spectrumIndex];
 
-			// Get the start time of this spectrum
-			Time &t = traverse->time[specIndex];
-
-			// Save the time difference
-			m_OriginalSeries[chnIndex]->time[specIndex] =
-				3600 * (t.hour - startTime.hour) +
-				60 * (t.minute - startTime.minute) +
-				(t.second - startTime.second);
-		}
+		// Save the time difference
+		m_OriginalSeries[channelIndex]->time[spectrumIndex] =
+			3600 * (t.hour - startTime.hour) +
+			60 * (t.minute - startTime.minute) +
+			(t.second - startTime.second);
 	}
 
 	return SUCCESS;
@@ -281,33 +263,30 @@ void CPostWindDlg::DrawColumn() {
 	}
 }
 
-/** Draws the result */
-void	CPostWindDlg::DrawResult() {
-	static const int BUFFER_SIZE = 1024;
-	if (corr == nullptr) {
-		corr = new double[BUFFER_SIZE];
-		delay = new double[BUFFER_SIZE];
-		ws = new double[BUFFER_SIZE];
-	}
+void CPostWindDlg::DrawResult() {
 
-	if (m_calc.m_length == 0 || m_calc.corr == 0)
+	if (m_calc.m_length == 0 || m_calc.corr == 0) {
 		return;
+	}
 
 	UpdateData(TRUE); // <-- get the options for how to plot the data
 
-					  /** Copy the values to the local buffers */
+	/** Copy the values to the local buffers */
 	int length = 0;
-	double distance = m_settings.plumeHeight * tan(DEGREETORAD * m_settings.angleSeparation);
+	const double distance = m_settings.plumeHeight * tan(DEGREETORAD * m_settings.angleSeparation);
 	for (int k = 0; k < m_calc.m_length; ++k) {
-		if (length > BUFFER_SIZE)
+		if (length > MAX_CORRELATION_NUM) {
 			break;
+		}
 		if (m_calc.used[k]) {
-			corr[length] = m_calc.corr[k];
-			delay[length] = m_calc.delays[k];
-			if (fabs(m_calc.delays[k]) < 1e-5)
-				ws[length] = 0.0;
-			else
-				ws[length] = distance / m_calc.delays[k];
+			correlations[length]  = m_calc.corr[k];
+			timeDelay[length]	  = m_calc.delays[k];
+			if (fabs(m_calc.delays[k]) < 1e-5) {
+				windspeeds[length] = 0.0;
+			}
+			else {
+				windspeeds[length] = distance / m_calc.delays[k];
+			}
 			++length;
 		}
 	}
@@ -315,24 +294,20 @@ void	CPostWindDlg::DrawResult() {
 	if (m_showOption == 0) {
 		/** Draw the correlation */
 		m_resultGraph.SetYUnits("Correlation [-]");
-		m_resultGraph.XYPlot(NULL, corr, length);
+		m_resultGraph.XYPlot(nullptr, correlations.data(), length);
 	}
 	else if (m_showOption == 1) {
-		/** Draw the delay */
+		/** Draw the timeDelay */
 		m_resultGraph.SetYUnits("Temporal delay [s]");
-		m_resultGraph.XYPlot(NULL, delay, length);
+		m_resultGraph.XYPlot(nullptr, timeDelay.data(), length);
 	}
 	else if (m_showOption == 2) {
 		/** Draw the resulting wind speed */
 		m_resultGraph.SetYUnits("Wind speed [m/s]");
-		m_resultGraph.XYPlot(NULL, ws, length);
+		m_resultGraph.XYPlot(nullptr, windspeeds.data(), length);
 	}
 }
 
-/** Performes a low pass filtering procedure on series number 'seriesNo'.
-The number of iterations is taken from 'm_settings.lowPassFilterAverage'
-The treated series is m_OriginalSeries[seriesNo]
-The result is saved as m_PreparedSeries[seriesNo]	*/
 int	CPostWindDlg::LowPassFilter(int seriesNo) {
 	if (m_settings.lowPassFilterAverage <= 0)
 		return 0;
@@ -359,8 +334,9 @@ int	CPostWindDlg::LowPassFilter(int seriesNo) {
 void CPostWindDlg::OnChangeLPIterations()
 {
 	UpdateData(TRUE); // <-- save the data in the dialog
-	if (m_settings.lowPassFilterAverage >= 0)
+	if (m_settings.lowPassFilterAverage >= 0) {
 		DrawColumn();
+	}
 }
 
 void CPostWindDlg::OnCalculateWindspeed()
@@ -423,16 +399,16 @@ void CPostWindDlg::OnChangePlumeHeight()
 	UpdateData(TRUE);
 
 	// 2. Update the result-graph, if necessary
-	if (m_showOption == 2)
+	if (m_showOption == 2) {
 		DrawResult();
-
+	}
 }
 
 void CPostWindDlg::SaveResult() {
 	// 1. Get the directory where the evaluation log-file is. The
 	//		wind-speed log-file will be saved in the same directory
 	CString directory;
-	directory.Format(m_evalLog);
+	directory.Format(m_evalLog[0]);
 	Common::GetDirectory(directory);
 
 	// 2. Make a new name for the wind-speed log-file

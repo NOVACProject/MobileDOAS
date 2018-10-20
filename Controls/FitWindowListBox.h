@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include "../Configuration/MobileConfiguration.h"
 
 // CFitWindowListBox
@@ -14,7 +15,7 @@ namespace DlgControls{
 		virtual ~CFitWindowListBox();
 
 		/** A pointer to the CMobileConfiguration object that this object modifies */
-		Configuration::CMobileConfiguration *m_conf;
+		std::shared_ptr<Configuration::CMobileConfiguration> m_conf;
 
 		/** Called to populate the fit window list */
 		void	PopulateList();
