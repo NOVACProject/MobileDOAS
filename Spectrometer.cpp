@@ -999,10 +999,9 @@ long CSpectrometer::GetColumnNumber()
 	return columnSize;
 }
 
-void CSpectrometer::GetNSpecAverage(int N[]) {
-	N[0] = this->m_sumInSpectrometer;
-	N[1] = this->m_sumInComputer;
-	return;
+void CSpectrometer::GetNSpecAverage(int& averageInSpectrometer, int& averageInComputer) {
+	averageInSpectrometer = this->m_sumInSpectrometer;
+	averageInComputer     = this->m_sumInComputer;
 }
 
 void CSpectrometer::WriteFluxLog()

@@ -470,7 +470,8 @@ LRESULT CDMSpecView::OnChangedSpectrumScale(WPARAM wParam,LPARAM lParam){
 
 LRESULT CDMSpecView::OnShowIntTime(WPARAM wParam, LPARAM lParam){
 	CString expTime, nAverage;
-	int avg[2];
+	int averageInSpectrometer = 0;
+	int averageInComputer = 0;
 
 	// if the program is no longer running, then don't try to draw anything more...
 	if(!s_spectrometerAcquisitionThreadIsRunning)
@@ -481,8 +482,8 @@ LRESULT CDMSpecView::OnShowIntTime(WPARAM wParam, LPARAM lParam){
 	expTime.Format("%d  ms",m_Spectrometer->RequestIntTime());
 	this->SetDlgItemText(IDC_INTTIME,expTime);
 
-	m_Spectrometer->GetNSpecAverage(avg);
-	nAverage.Format("%dx%d", avg[0], avg[1]);
+	m_Spectrometer->GetNSpecAverage(averageInSpectrometer, averageInComputer);
+	nAverage.Format("%dx%d", averageInSpectrometer, averageInComputer);
 	this->SetDlgItemText(IDC_SPECNO, nAverage);
 
 	// Update the legend

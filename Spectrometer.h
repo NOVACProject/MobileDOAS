@@ -425,8 +425,8 @@ public:
 
 	//  ----------------- Communicating with other parts of the program -----------------
 	
-	/** gets the number of spectra that are averaged into one */
-	void    GetNSpecAverage(int N[MAX_N_CHANNELS]);
+	/** Gets the number of spectra that are averaged in the spectrometer and in the computer */
+	void    GetNSpecAverage(int& averageInSpectrometer, int& averageInComputer);
 
 	/** Retrieves the last evaluated column.
 		@return a pointer to 'm_result' */
