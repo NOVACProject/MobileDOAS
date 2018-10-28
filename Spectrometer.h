@@ -657,7 +657,7 @@ private:
 	/** This is the object through which we will access all of Omnidriver's capabilities
 		This is used to control the OceanOptics Spectrometers through USB.
 		There can be only one Wrapper object in the application!!!		*/
-	std::unique_ptr<Wrapper> m_wrapper;
+	Wrapper m_wrapper;
 
 	// -------------------- PRIVATE METHODS --------------------
 
