@@ -33,6 +33,9 @@ CSpectrometer::CSpectrometer()
 
 	sprintf(m_GPSPort, "COM5");
 
+	// Create the usb wrapper object
+	m_wrapper.reset(new Wrapper());
+
 	m_isRunning = true;
 	m_spectrometerMode = MODE_TRAVERSE; // default mode
 	m_posFlag = 1;
@@ -275,10 +278,10 @@ int CSpectrometer::ScanUSB(long sumInComputer, long sumInSpectrometer, double pR
 	for (int chn = 0; chn < m_NChannels; ++chn)
 	{
 		// Set the exposure time to use (this function takes exp-time in micro-seconds)
-		m_wrapper.setIntegrationTime(m_spectrometerIndex, chn, m_integrationTime * 1000);
+		m_wrapper->setIntegrationTime(m_spectrometerIndex, chn, m_integrationTime * 1000);
 
 		// Set the number of co-adds
-		m_wrapper.setScansToAverage(m_spectrometerIndex, chn, sumInSpectrometer);
+		m_wrapper->setScansToAverage(m_spectrometerIndex, chn, sumInSpectrometer);
 	}
 
 
@@ -294,7 +297,7 @@ int CSpectrometer::ScanUSB(long sumInComputer, long sumInSpectrometer, double pR
 			}
 
 			// Retreives the spectrum from the spectrometer
-			DoubleArray spectrumArray = m_wrapper.getSpectrum(m_spectrometerIndex, chn);
+			DoubleArray spectrumArray = m_wrapper->getSpectrum(m_spectrometerIndex, chn);
 
 			// copies the spectrum-values to the output array
 			const double* spectrum = spectrumArray.getDoubleValues();	// Sets a pointer to the values of the Spectrum array 
@@ -311,6 +314,17 @@ int CSpectrometer::ScanUSB(long sumInComputer, long sumInSpectrometer, double pR
 				pResult[chn][i] /= sumInComputer;
 			}
 		}
+	}
+
+	// Check the status of the last readout
+	WrapperExtensions ext = m_wrapper->getWrapperExtensions();
+	if (!ext.isSpectrumValid(m_spectrometerIndex))
+	{
+		if(IsSpectrometerDisconnected())
+		{
+			ReconnectWithSpectrometer();
+		}
+		return 0;
 	}
 
 	return 0;
@@ -648,7 +662,7 @@ void CSpectrometer::GetSky() {
 
 int CSpectrometer::Stop()
 {
-	this->m_wrapper.stopAveraging(this->m_spectrometerIndex);
+	this->m_wrapper->stopAveraging(this->m_spectrometerIndex);
 
 	// Stop this thread
 	m_isRunning = false;
@@ -1244,10 +1258,10 @@ void CSpectrometer::GetConnectedSpecs(CList <CString, CString&> &connectedSpectr
 	connectedSpectrometers.RemoveAll();
 
 	// Get the number of spectrometers attached to the computer
-	int numberOfSpectrometersAttached = m_wrapper.openAllSpectrometers();
+	int numberOfSpectrometersAttached = m_wrapper->openAllSpectrometers();
 
 	for (int k = 0; k < numberOfSpectrometersAttached; ++k) {
-		connectedSpectrometers.AddTail(CString(m_wrapper.getSerialNumber(k).getASCII()));
+		connectedSpectrometers.AddTail(CString(m_wrapper->getSerialNumber(k).getASCII()));
 	}
 
 	return;
@@ -1259,12 +1273,12 @@ int CSpectrometer::TestUSBConnection() {
 	m_statusMsg.Format("Searching for attached spectrometers"); pView->PostMessage(WM_STATUSMSG);
 
 	// Get the number of spectrometers attached to the computer
-	m_numberOfSpectrometersAttached = m_wrapper.openAllSpectrometers();
+	m_numberOfSpectrometersAttached = m_wrapper->openAllSpectrometers();
 
 	// Check the number of spectrometers attached
 	if (m_numberOfSpectrometersAttached == -1) {
 		// something went wrong!
-		m_wrapper.getLastException();
+		m_wrapper->getLastException();
 	}
 	else if (m_numberOfSpectrometersAttached == 0) {
 		ShowMessageBox("No spectrometer found. Make sure that the spectrometer is attached properly to the USB-port and the driver is installed.", "Error");
@@ -1278,20 +1292,20 @@ int CSpectrometer::TestUSBConnection() {
 
 		dlg.m_windowText.Format("Select which spectrometer to use");
 		for (int k = 0; k < m_numberOfSpectrometersAttached; ++k) {
-			dlg.m_option[k].Format(m_wrapper.getSerialNumber(k).getASCII());
+			dlg.m_option[k].Format(m_wrapper->getSerialNumber(k).getASCII());
 		}
 		dlg.m_currentSelection = &selectedSerial;
 		dlg.DoModal();
 
 		for (int k = 0; k < m_numberOfSpectrometersAttached; ++k) {
-			if (Equals(selectedSerial, m_wrapper.getSerialNumber(k).getASCII())) {
+			if (Equals(selectedSerial, m_wrapper->getSerialNumber(k).getASCII())) {
 				m_spectrometerIndex = k;
 			}
 		}
 		m_spectrometerName.Format(selectedSerial);
 	}
 	else {
-		m_spectrometerName.Format(m_wrapper.getSerialNumber(0).getASCII());
+		m_spectrometerName.Format(m_wrapper->getSerialNumber(0).getASCII());
 	}
 
 	m_statusMsg.Format("Will use spectrometer %s.", m_spectrometerName); pView->PostMessage(WM_STATUSMSG);
@@ -1302,6 +1316,36 @@ int CSpectrometer::TestUSBConnection() {
 
 	return 1;
 }
+
+bool CSpectrometer::IsSpectrometerDisconnected()
+{
+	const char* lastErrorMsg = m_wrapper->getLastException().getASCII();
+
+	// This search string isn't really documented by Ocean Optics but has been found through experimentation.
+	// Full error message returned from the driver was: "java.io.IOException: Bulk failed."
+	return (nullptr != lastErrorMsg && nullptr != strstr(lastErrorMsg, "Bulk failed."));
+}
+
+void CSpectrometer::ReconnectWithSpectrometer()
+{
+	m_statusMsg.Format("Connection with spectrometer lost! Reconnecting."); pView->PostMessage(WM_STATUSMSG);
+
+	m_wrapper->closeAllSpectrometers();
+	int nofSpectrometersFound = -1;
+	int attemptNumber = 1;
+	while (nofSpectrometersFound != m_numberOfSpectrometersAttached)
+	{
+		// Make the user aware of the problems here...
+		Sing(1.0);
+
+		Sleep(500);
+		m_wrapper.reset(new Wrapper());
+		nofSpectrometersFound = m_wrapper->openAllSpectrometers();
+
+		m_statusMsg.Format("Connection with spectrometer lost! Reconnecting, attempt #%d", attemptNumber++); pView->PostMessage(WM_STATUSMSG);
+	}
+}
+
 
 /** This will change the spectrometer to use, to the one with the
 	given spectrometerIndex. If no spectrometer exist with the given
@@ -1324,7 +1368,7 @@ int CSpectrometer::ChangeSpectrometer(int selectedspec, int channel) {
 				this->m_spectrometerChannel = 0;
 			}
 			else if (channel > 0) {
-				int nAvailableChannels = m_wrapper.getWrapperExtensions().getNumberOfChannels(m_spectrometerIndex);
+				int nAvailableChannels = m_wrapper->getWrapperExtensions().getNumberOfChannels(m_spectrometerIndex);
 				if (channel < nAvailableChannels) {
 					m_spectrometerChannel = channel;
 				}
@@ -1345,9 +1389,9 @@ int CSpectrometer::ChangeSpectrometer(int selectedspec, int channel) {
 	pView->PostMessage(WM_CHANGEDSPEC);
 
 	// Get the spectrometer model
-	m_spectrometerModel.Format(m_wrapper.getName(m_spectrometerIndex).getASCII());
+	m_spectrometerModel.Format(m_wrapper->getName(m_spectrometerIndex).getASCII());
 
-	WrapperExtensions ext = m_wrapper.getWrapperExtensions();
+	WrapperExtensions ext = m_wrapper->getWrapperExtensions();
 	m_spectrometerDynRange = ext.getSaturationIntensity(m_spectrometerIndex);
 	const int nofChannelsAvailable = ext.getNumberOfEnabledChannels(m_spectrometerIndex);
 	
@@ -1373,10 +1417,10 @@ int CSpectrometer::ChangeSpectrometer(int selectedspec, int channel) {
 	// Get a spectrum
 	m_statusMsg.Format("Attempting to retrieve a spectrum from %s", m_spectrometerName); pView->PostMessage(WM_STATUSMSG);
 
-	m_wrapper.setIntegrationTime(m_spectrometerIndex, m_spectrometerChannel, 3000); // use 3 ms exp-time
-	m_wrapper.setScansToAverage(m_spectrometerIndex, m_spectrometerChannel, 1);		// only retrieve one single spectrum
-	DoubleArray spectrumArray = m_wrapper.getSpectrum(m_spectrometerIndex);		// Retreives the spectrum from the spectrometer
-	DoubleArray wavelengthArray = m_wrapper.getWavelengths(m_spectrometerIndex);	// Retreives the wavelengths of the spectrometer 
+	m_wrapper->setIntegrationTime(m_spectrometerIndex, m_spectrometerChannel, 3000); // use 3 ms exp-time
+	m_wrapper->setScansToAverage(m_spectrometerIndex, m_spectrometerChannel, 1);		// only retrieve one single spectrum
+	DoubleArray spectrumArray = m_wrapper->getSpectrum(m_spectrometerIndex);		// Retreives the spectrum from the spectrometer
+	DoubleArray wavelengthArray = m_wrapper->getWavelengths(m_spectrometerIndex);	// Retreives the wavelengths of the spectrometer 
 	m_detectorSize = spectrumArray.getLength();					// Sets numberOfPixels to the length of the spectrumArray 
 
 	// Get the wavelength calibration from the spectrometer
@@ -1393,7 +1437,7 @@ int CSpectrometer::ChangeSpectrometer(int selectedspec, int channel) {
 
 void CSpectrometer::CloseUSBConnection()
 {
-	m_wrapper.closeAllSpectrometers();
+	m_wrapper->closeAllSpectrometers();
 }
 
 void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]) {
@@ -1456,9 +1500,9 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 	}
 
 	/** If possible, get the temperature of the spectrometer */
-	if (m_wrapper.isFeatureSupportedBoardTemperature(m_spectrometerIndex) == 1) {
+	if (m_wrapper->isFeatureSupportedBoardTemperature(m_spectrometerIndex) == 1) {
 		// Board temperature feature is supported by this spectrometer
-		BoardTemperature boardTemperature	= m_wrapper.getFeatureControllerBoardTemperature(m_spectrometerIndex);
+		BoardTemperature boardTemperature	= m_wrapper->getFeatureControllerBoardTemperature(m_spectrometerIndex);
 		const double temperature			= boardTemperature.getBoardTemperatureCelsius();
 
 		for (int n = 0; n < m_NChannels; ++n) {

@@ -390,6 +390,13 @@ public:
 	/** Called to close the USB-connection. Should only be done
 		when we're about to stop collecting spectra */
 	void    CloseUSBConnection();
+
+	/** @return true if the spectrometer has been disconnected */
+	bool    IsSpectrometerDisconnected();
+
+	/** Attepts to reconnect with the spectrometer after the connection has been lost. 
+		This will not return until the connection has been regained */
+	void    ReconnectWithSpectrometer();
 	
 	// ------------------------ Setup ------------------------
 	
@@ -650,11 +657,7 @@ private:
 	/** This is the object through which we will access all of Omnidriver's capabilities
 		This is used to control the OceanOptics Spectrometers through USB.
 		There can be only one Wrapper object in the application!!!		*/
-	Wrapper m_wrapper;
-
-	/** The wrapper extensions is used to get additional functionality when
-		handling the OceanOptics spectrometers using the USB-port */
-	WrapperExtensions	m_wrapperExt;
+	std::unique_ptr<Wrapper> m_wrapper;
 
 	// -------------------- PRIVATE METHODS --------------------
 
