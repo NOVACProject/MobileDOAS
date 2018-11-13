@@ -35,7 +35,10 @@ namespace Flux
 		void  Reset();
 		bool  hasValidGPS(int file = -1);
 
-		/* Reading the files */
+		// --------  Reading the files --------
+
+		/** This reads the properties in the evaluation log file and checks that all data is valid.
+			@return 1 if the file is ok, otherwise 0. */
 		int       ReadSettingFile(CString filename, int &nChannels, double &fileVersion);
 		int       ReadSettingFile(CString filename, long fileIndex, int &nChannels, double &fileVersion);
 		long      ReadLogFile(CString filePath, CString fileName, int nChannels, double fileVersion);

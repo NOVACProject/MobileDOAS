@@ -450,7 +450,7 @@ bool CReEvaluator::DoEvaluation(){
 				// Rebuild darkSpectrum if adaptive mode
 				// darkspec = offset + (skySpectrum.exposureTime)*darkcur/(darkcurSpectrum.exposureTime)
 				if (adaptiveMode) {
-					darkSpectrum.Copy(darkcurSpectrum);
+					darkSpectrum = CSpectrum(darkcurSpectrum);
 					darkSpectrum.Mult(skySpectrum.exposureTime);
 					darkSpectrum.Div(darkcurSpectrum.exposureTime);
 					darkSpectrum.Add(offsetSpectrum);
@@ -514,7 +514,7 @@ bool CReEvaluator::DoEvaluation(){
 				}
 				else {
 					// darkspec = offset + (curSpectrum.intTime)*darkcur/(darkcurSpectrum.intTime)
-					darkSpectrum.Copy(darkcurSpectrum);
+					darkSpectrum = CSpectrum(darkcurSpectrum);
 					darkSpectrum.Mult(curSpectrum.exposureTime);
 					darkSpectrum.Div(darkcurSpectrum.exposureTime);
 					darkSpectrum.Add(offsetSpectrum);
@@ -652,7 +652,7 @@ bool CReEvaluator::GetSpectrum(CSpectrum &spec, int number, int channel){
 	spectrum[0].Div(m_settings.m_nAverageSpectra);
 
 	// copy spectrum[0] to @spec
-	spec.Copy(spectrum[0]);
+	spec = CSpectrum(spectrum[0]);
 
 	return true;
 }
@@ -666,10 +666,10 @@ bool CReEvaluator::ReadSpectrum(CSpectrum &spec, int number, int channel){
 	if(CSpectrumIO::readSTDFile(specFileName, &spec)){
 		specFileName.Format("%s\\%05d.STD", m_specFileDir, number); // the file name
 		if(CSpectrumIO::readSTDFile(specFileName, &spec)){
-		CString message;
-		message.Format("Cannot read spectrum %s. Evaluation stopped.", specFileName);
-		MessageBox(NULL, message, "Error", MB_OK);
-		return false;
+			CString message;
+			message.Format("Cannot read spectrum %s. Evaluation stopped.", specFileName);
+			MessageBox(NULL, message, "Error", MB_OK);
+			return false;
 		}
 	}
 

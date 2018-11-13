@@ -9,6 +9,9 @@
 #include "Version.h"
 #include "Common/SpectrumIO.h"
 
+#include <memory>
+#include <limits>
+
 #include <ArrayTypes.h> // located in %OMNIDRIVER_HOME%\include
 #include <Wrapper.h>
 //#include <ADC1000USB.h>
@@ -101,7 +104,8 @@ public:
 		@param sumInSpectrometer - the number of spectra to add together in the spectrometer
 		@param pResult - will on successful return be filled with the measured spectrum. Returned spectrum 
 			is an average of the (sumInComputer*sumInSpectrometer) collected spectra.
-		@return 0 on success 
+		@return 0 on success
+		@return 1 if the collection failed or the collection should stop
 		 */
 	int Scan(long sumInComputer, long sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]);
 
@@ -111,7 +115,8 @@ public:
 		@param pResult - will on successful return be filled with the measured spectrum. Returned spectrum 
 			is an average of the (sumInComputer*sumInSpectrometer) collected spectra.
 		@return 0 on success 
-		 */
+		@return 1 if the collection failed or the collection should stop
+		*/
 	int ScanUSB(long sumInComputer, long sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]);
 
 	/** The number of channels in the spectrometer to use */
@@ -172,29 +177,33 @@ public:
 	/** Counts how many spectra should be averaged inside the computer and
 	    how many should be averaged inside the spectrometer get the desired
 	    timeresolution with the set exposure time. */
-	int     CountRound(long timeResolution, long serialDelay,long gpsDelay,int* pResults);
+	int CountRound(long timeResolution, long serialDelay,long gpsDelay,int* pResults);
 
-	/** Returns the average intensity of the supplied spectrum. */
-	long    AverageIntens(double* pSpectrum,long totalNum);
+	/** Returns the average intensity of the supplied spectrum. 
+		The pixels which will be used to calculate the intensity are taken from m_conf.
+		@param pSpectrum pointer to the first pixel in the measured spectrum. 
+			This is assumed to be MAX_SPECTRUM_LENGTH number of pixels long.
+		@param totalNum the number of spectra co-added (not averaged) into the supplied spectrum. */
+	long AverageIntens(double* pSpectrum, long totalNum) const;
 
 	/** Makes the initial adjustments and sets the 
-	  parameter 'integrationTime' so that intensity of 
-	  the spectra are at the desired percent of max. */
-	short    AdjustIntegrationTime();
+		parameter 'm_integrationTime' so that intensity of 
+		the spectra are at the desired percent of max. 
+		@return the set integration time (in milli seconds) */
+	short AdjustIntegrationTime();
 
-	/** Makes a more clever adjustment of the parameter 
-			'integrationTime' so that intensity of 
-		  the spectra are at the desired percent of max. 
-			
-			NB: Called from the function 'AdjustIntegrationTime' !!! */
-	short		 AdjustIntegrationTime_Calculate(long minExpTime, long maxExpTime);
+	/** Makes adjustments to the integration time (m_integrationTime) so that the
+		intensity of the spectra are at the desired percent of max.
+		@return the set integration time (in milli seconds) */
+	short AdjustIntegrationTimeToLastIntensity(long maximumIntensity);
 
 	/** Calculates the integration time, 
 	  given the intensity of the dark and the sky spectra 
 	  and the exposure time they were collected with*/
-	long GetInttime(long pSky,long pDark, int intT = 100);   
+	long GetInttime(long pSky,long pDark, int intT = 100);
 
-	/** The integration time that is used by the program. In milli seconds*/
+	/** The integration time that is used by the program. In milli seconds.
+		Maximum value is 65 seconds (from the type). */
 	short    m_integrationTime;
 
 	/** The desired intensity of the measured spectra, 
@@ -380,7 +389,7 @@ public:
 	
 	/** Called to close the USB-connection. Should only be done
 		when we're about to stop collecting spectra */
-	int		CloseUSBConnection();
+	void    CloseUSBConnection();
 	
 	// ------------------------ Setup ------------------------
 	
@@ -513,7 +522,7 @@ protected:
 	bool m_connectViaUsb;
 
 	/** The settings, read in from the cfg.txt - file */
-	Configuration::CMobileConfiguration *m_conf;
+	std::unique_ptr<Configuration::CMobileConfiguration> m_conf;
 
 	/* -------  The spectra ----------- */
 
@@ -564,9 +573,14 @@ protected:
 		is dark or not. */
 	typedef struct SpectrumInfo {
 		/** The electronic offset of the spectrum, measured in channel 2 - 24 */
-		double offset;
+		double offset = 0.0;
+
 		/** True if the program judges that the spectrum is dark */
-		bool   isDark;
+		bool   isDark = false;
+
+		/** The temperature, as reported by the spectrometer, in degrees Celsius. 
+			Set to NaN if this could not be read. */
+		double temperature = std::numeric_limits<double>::quiet_NaN();
 	}SpectrumInfo;
 
 	/** Information about the last spectrum collected */
@@ -602,8 +616,16 @@ protected:
 	/** The base-name of the measurement. As set by the user */
 	CString m_measurementBaseName;
 
+	// ---------------------------------------------------------------------------------------
+	// ----------------------- Communicating wiht the user and the GUI -----------------------
+	// ---------------------------------------------------------------------------------------
+
+	/** Shows a message box to the user (through the main window form) */
+	void ShowMessageBox(CString message, CString label) const;
+
 private:
 
+	// -------------------- PRIVATE DATA --------------------
 
 	/** Used by 'CountFlux' to calculate the flux.
 		TODO: Is this really necessary?? */
@@ -633,6 +655,15 @@ private:
 	/** The wrapper extensions is used to get additional functionality when
 		handling the OceanOptics spectrometers using the USB-port */
 	WrapperExtensions	m_wrapperExt;
+
+	// -------------------- PRIVATE METHODS --------------------
+
+	/** Makes a more clever adjustment of the parameter
+		'integrationTime' so that intensity of
+		the spectra are at the desired percent of max.
+		NB: Called from the function 'AdjustIntegrationTime' !!! */
+	short	AdjustIntegrationTime_Calculate(long minExpTime, long maxExpTime);
+
 };
 
 #endif // !defined(AFX_COMMUNICATION_H__7C04DDEA_2314_405E_A09D_02B403AC7762__INCLUDED_)

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include "MobileConfiguration.h"
 
 // CConfigure_GPS dialog
@@ -18,7 +19,7 @@ namespace Configuration{
 		enum { IDD = IDD_CONFIGURE_GPS };
 
 		/** The local handle to the configuration that we're changing */
-		CMobileConfiguration	*m_conf;
+		std::shared_ptr<CMobileConfiguration> m_conf;
 
 		// ----------------------- EVENT HANDLERS -------------------------
 		/** Saves the settings in the dialog */

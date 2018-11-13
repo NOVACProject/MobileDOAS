@@ -210,17 +210,18 @@ int CMobileConfiguration::ParseIntensity(){
 	while(szToken = NextToken()){
 
 		// no use to parse empty lines
-		if(strlen(szToken) < 3)
-		continue;
+		if(strlen(szToken) < 3) {
+			continue;
+		}
 
 		// ignore comments
 		if(Equals(szToken, "!--", 3)){
-		continue;
+			continue;
 		}
 
 		// the end of the Intensity section
 		if(Equals(szToken, "/Intensity")){
-		return 0;
+			return 0;
 		}
 
 		// Fixed exposure-time??
@@ -257,17 +258,18 @@ int CMobileConfiguration::ParseOffset(){
 	while(szToken = NextToken()){
 
 		// no use to parse empty lines
-		if(strlen(szToken) < 2)
-		continue;
+		if(strlen(szToken) < 2) {
+			continue;
+		}
 
 		// ignore comments
 		if(Equals(szToken, "!--", 3)){
-		continue;
+			continue;
 		}
 
 		// the end of the Offset section
 		if(Equals(szToken, "/Offset")){
-		return 0;
+			return 0;
 		}
 
 		// Measure offset from...
@@ -293,17 +295,18 @@ int CMobileConfiguration::ParseFitWindow(){
 	while(szToken = NextToken()){
 
 		// no use to parse empty lines
-		if(strlen(szToken) < 3)
-		continue;
+		if(strlen(szToken) < 3) {
+			continue;
+		}
 
 		// ignore comments
 		if(Equals(szToken, "!--", 3)){
-		continue;
+			continue;
 		}
 
 		// the end of the Fit-window section
 		if(Equals(szToken, "/FitWindow")){
-		return 0;
+			return 0;
 		}
 
 		// The name of the fit-window
@@ -353,17 +356,18 @@ int	CMobileConfiguration::ParseReference(Evaluation::CReferenceFile &reference){
 	while(szToken = NextToken()){
 
 		// no use to parse empty lines
-		if(strlen(szToken) < 3)
-		continue;
+		if(strlen(szToken) < 3) {
+			continue;
+		}
 
 		// ignore comments
 		if(Equals(szToken, "!--", 3)){
-		continue;
+			continue;
 		}
 
 		// the end of the Reference section
 		if(Equals(szToken, "/Reference")){
-		return 0;
+			return 0;
 		}
 
 		// The name of the specie
@@ -408,17 +412,18 @@ int CMobileConfiguration::Parse_ShiftOrSqueeze(const CString &label, Evaluation:
 	while(szToken = NextToken()){
 
 		// no use to parse empty lines
-		if(strlen(szToken) < 3)
-		continue;
+		if(strlen(szToken) < 3) {
+			continue;
+		}
 
 		// ignore comments
 		if(Equals(szToken, "!--", 3)){
-		continue;
+			continue;
 		}
 
 		// the end of this section
 		if(Equals(szToken, label)){
-		return 0;
+			return 0;
 		}
 		// convert the string to lowercase
 		_strlwr(szToken);

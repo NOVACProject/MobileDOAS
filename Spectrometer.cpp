@@ -20,7 +20,6 @@ static char THIS_FILE[] = __FILE__;
 #define new DEBUG_NEW
 #endif
 
-#define OFFSET 10		//the distance from the m_conf->m_specCenter
 #define SERIALDELAY 2000
 
 //////////////////////////////////////////////////////////////////////
@@ -186,7 +185,7 @@ int CSpectrometer::Scan(long sumInComputer, long sumInSpectrometer, double pResu
 	maxlen = 65536;
 	smem1 = (double *)malloc(sizeof(double)*(2 + maxlen));	// initialize one buffer
 	if (smem1 == 0) {
-		MessageBox(pView->m_hWnd, TEXT("Not enough memory"), NULL, MB_OK);
+		ShowMessageBox("Not enough memory", "");
 		return 1;
 	}
 	memset((void*)smem1, 0, sizeof(double)*(2 + maxlen));
@@ -226,14 +225,14 @@ int CSpectrometer::Scan(long sumInComputer, long sumInSpectrometer, double pResu
 		if (i == 0)
 		{
 			free(smem1);
-			MessageBox(pView->m_hWnd, TEXT("Timeout"), TEXT("SERROR"), MB_OK);
+			ShowMessageBox("Timeout", "SERROR");
 			return 1;
 		}
 		if ((sbuf[0] != 0xffff) && m_isRunning)
 		{
 
 			free(smem1);
-			MessageBox(pView->m_hWnd, TEXT("First byte of transmission is incorrect"), NULL, MB_OK);
+			ShowMessageBox("First byte of transmission is incorrect", "");
 			return 1;
 		}
 
@@ -273,7 +272,8 @@ int CSpectrometer::ScanUSB(long sumInComputer, long sumInSpectrometer, double pR
 	memset(pResult, 0, MAX_N_CHANNELS * MAX_SPECTRUM_LENGTH * sizeof(double));
 
 	// Set the parameters for acquiring the spectrum
-	for (int chn = 0; chn < m_NChannels; ++chn) {
+	for (int chn = 0; chn < m_NChannels; ++chn)
+	{
 		// Set the exposure time to use (this function takes exp-time in micro-seconds)
 		m_wrapper.setIntegrationTime(m_spectrometerIndex, chn, m_integrationTime * 1000);
 
@@ -283,11 +283,15 @@ int CSpectrometer::ScanUSB(long sumInComputer, long sumInSpectrometer, double pR
 
 
 	// if we only use one channel
-	for (int chn = 0; chn < m_NChannels; ++chn) {
+	for (int chn = 0; chn < m_NChannels; ++chn)
+	{
 		// Get the spectrum
-		for (int k = 0; k < sumInComputer; ++k) {
+		for (int k = 0; k < sumInComputer; ++k)
+		{
 			if (!m_isRunning)
-				return 0;
+			{
+				return 1; // abort the spectrum collection
+			}
 
 			// Retreives the spectrum from the spectrometer
 			DoubleArray spectrumArray = m_wrapper.getSpectrum(m_spectrometerIndex, chn);
@@ -300,8 +304,10 @@ int CSpectrometer::ScanUSB(long sumInComputer, long sumInSpectrometer, double pR
 		}
 
 		// make the spectrum an average 
-		if (sumInComputer > 0) {
-			for (int i = 0; i < m_detectorSize; i++) {
+		if (sumInComputer > 0)
+		{
+			for (int i = 0; i < m_detectorSize; i++)
+			{
 				pResult[chn][i] /= sumInComputer;
 			}
 		}
@@ -347,7 +353,7 @@ void CSpectrometer::ApplySettings() {
 		m_NChannels = 2; error = true;
 	}
 	if (error) {
-		MessageBox(pView->m_hWnd, msg, "Error in settings", NULL);
+		ShowMessageBox(msg, "Error in settings");
 	}
 
 	// The GPS-settings
@@ -394,8 +400,9 @@ int CSpectrometer::CheckSettings() {
 	int  nColumns;
 
 	// 1. Check so that there are at least one reference-file defined
-	if (m_fitRegion[0].window.nRef <= 0) {
-		MessageBox(pView->m_hWnd, "There are no reference-files defined in the configuration file. Please check settings and restart", "Error", MB_OK);
+	if (m_fitRegion[0].window.nRef <= 0)
+	{
+		ShowMessageBox("There are no reference-files defined in the configuration file. Please check settings and restart", "Error");
 		return 1;
 	}
 
@@ -409,7 +416,7 @@ int CSpectrometer::CheckSettings() {
 			f = fopen(fileName, "r");
 			if (nullptr == f) {
 				msgStr.Format("Cannot open reference file : %s for reading.", m_fitRegion[0].window.ref[k].m_path);
-				MessageBox(pView->m_hWnd, msgStr, "Error", MB_OK);
+				ShowMessageBox(msgStr, "Error");
 				return 1;
 			}
 		}
@@ -422,7 +429,7 @@ int CSpectrometer::CheckSettings() {
 			++nRows;
 			if (nColumns == 3) {
 				msgStr.Format("There are %d columns in the reference file. This programs wants reference files with one or two columns", nColumns);
-				MessageBox(pView->m_hWnd, msgStr, "Error", MB_OK);
+				ShowMessageBox(msgStr, "Error");
 				fclose(f);
 				return 1;
 			}
@@ -432,7 +439,7 @@ int CSpectrometer::CheckSettings() {
 
 		if (nRows > MAX_SPECTRUM_LENGTH) {
 			msgStr.Format("Length of the reference file is: %d values. Cannot handle references with more than %d data-points.", nRows, MAX_SPECTRUM_LENGTH);
-			MessageBox(pView->m_hWnd, msgStr, "Error", MB_OK);
+			ShowMessageBox(msgStr, "Error");
 			return 1;
 		}
 	}
@@ -470,7 +477,7 @@ void CSpectrometer::WriteEvFile(CString filename, FitRegion *fitRegion) {
 	CString wholePath = m_subFolder + "\\" + m_measurementBaseName + "_" + m_measurementStartTimeStr + filename;
 	f = fopen(wholePath, "a+");
 	if (f < (FILE*)1) {
-		MessageBox(pView->m_hWnd, "Could not open evaluation log file. No data was written!", "Error", MB_OK);
+		ShowMessageBox("Could not open evaluation log file. No data was written!", "Error");
 		return;
 	}
 
@@ -678,7 +685,7 @@ int CSpectrometer::ReadReferenceFiles() {
 				}
 				else {
 					errorMessage.Format("Can not read reference file\n %s\n Please check the file location and restart collection", m_fitRegion[j].window.ref[k].m_path);
-					MessageBox(pView->m_hWnd, errorMessage, TEXT("Error"), MB_OK);
+					ShowMessageBox(errorMessage, "Error");
 					return 1;
 				}
 			}
@@ -686,13 +693,13 @@ int CSpectrometer::ReadReferenceFiles() {
 
 		/* Init the Master Channel Evaluator */
 		if (!(m_fitRegion[j].eval[0]->ReadRefList(refFileList, m_fitRegion[j].window.nRef, m_detectorSize))) {
-			MessageBox(pView->m_hWnd, TEXT("Can not read reference file\n Please check the file location and restart collection"), TEXT("Error"), MB_OK);
+			ShowMessageBox("Can not read reference file\n Please check the file location and restart collection", "Error");
 			return 1;
 		}
 
 		/* Init the 1:st Slave Channel Evaluator */
 		if (!(m_fitRegion[j].eval[1]->ReadRefList(refFileList, m_fitRegion[j].window.nRef, m_detectorSize))) {
-			MessageBox(pView->m_hWnd, TEXT("Can not read reference file\n Please check the file location and restart collection"), TEXT("Error"), MB_OK);
+			ShowMessageBox("Can not read reference file\n Please check the file location and restart collection", "Error");
 			return 1;
 		}
 	}
@@ -794,7 +801,7 @@ void CSpectrometer::CreateDirectories()
 			else {
 				tmpStr.Format("Could not create output directory, not enough free disk space?. Error code returned %ld", errorCode);
 			}
-			MessageBox(pView->m_hWnd, tmpStr, "ERROR", MB_OK);
+			ShowMessageBox(tmpStr, "ERROR");
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -811,7 +818,7 @@ void CSpectrometer::CreateDirectories()
 		else {
 			tmpStr.Format("Could not create output directory, not enough free disk space?. Error code returned %ld", errorCode);
 		}
-		MessageBox(pView->m_hWnd, tmpStr, "ERROR", MB_OK);
+		ShowMessageBox(tmpStr, "ERROR");
 		exit(EXIT_FAILURE);
 	}
 }
@@ -1039,26 +1046,26 @@ void CSpectrometer::Sing(double factor)
 	PlaySound(fileToPlay, 0, SND_SYNC);
 }
 
-long CSpectrometer::AverageIntens(double *pSpectrum, long ptotalNum) {
+long CSpectrometer::AverageIntens(double *pSpectrum, long ptotalNum) const {
 	double sum = 0.0;
 	long num;
-	if (m_conf->m_specCenter <= OFFSET)
-		m_conf->m_specCenter = OFFSET;
-	if (m_conf->m_specCenter >= MAX_SPECTRUM_LENGTH - OFFSET)
-		m_conf->m_specCenter = MAX_SPECTRUM_LENGTH - 2 * OFFSET;
+	if (m_conf->m_specCenter <= m_conf->m_specCenterHalfWidth)
+		m_conf->m_specCenter = m_conf->m_specCenterHalfWidth;
+	if (m_conf->m_specCenter >= MAX_SPECTRUM_LENGTH - m_conf->m_specCenterHalfWidth)
+		m_conf->m_specCenter = MAX_SPECTRUM_LENGTH - 2 * m_conf->m_specCenterHalfWidth;
 
-	for (int j = m_conf->m_specCenter - OFFSET; j < m_conf->m_specCenter + OFFSET; j++) {
+	for (int j = m_conf->m_specCenter - m_conf->m_specCenterHalfWidth; j < m_conf->m_specCenter + m_conf->m_specCenterHalfWidth; j++) {
 		sum += pSpectrum[j];
 	}
 
 	if (ptotalNum != 0) {
-		num = 2 * OFFSET*ptotalNum;
+		num = 2 * m_conf->m_specCenterHalfWidth*ptotalNum;
 		sum = fabs(sum / (double)num);
 	}
 	else {
-		num = 2 * OFFSET;
+		num = 2 * m_conf->m_specCenterHalfWidth;
 		sum = fabs(sum / (double)num);
-		MessageBox(pView->m_hWnd, TEXT("TOTAL SUM = 0"), TEXT("ERROR"), MB_OK);
+		ShowMessageBox("TOTAL SUM = 0", "ERROR");
 		//Show information on screen
 	}
 	return (long)sum;
@@ -1104,7 +1111,7 @@ void CSpectrometer::WriteLogFile(CString filename, CString txt) {
 	if (f < (FILE*)1) {
 		CString tmpStr;
 		tmpStr.Format("Could not write log file: %s. Not enough free space?", filename);
-		MessageBox(pView->m_hWnd, tmpStr, "Big Error", MB_OK);
+		ShowMessageBox(tmpStr, "Big Error");
 		return;
 	}
 
@@ -1260,7 +1267,7 @@ int CSpectrometer::TestUSBConnection() {
 		m_wrapper.getLastException();
 	}
 	else if (m_numberOfSpectrometersAttached == 0) {
-		MessageBox(pView->m_hWnd, "No spectrometer found. Make sure that the spectrometer is attached properly to the USB-port and the driver is installed.", "Error", MB_OK);
+		ShowMessageBox("No spectrometer found. Make sure that the spectrometer is attached properly to the USB-port and the driver is installed.", "Error");
 		return 0;
 	}
 	else if (m_numberOfSpectrometersAttached > 1) {
@@ -1347,7 +1354,7 @@ int CSpectrometer::ChangeSpectrometer(int selectedspec, int channel) {
 	if (m_NChannels > nofChannelsAvailable) {
 		CString msg;
 		msg.Format("Cfg.txt specifies %d channels to be used but spectrometer can only handle %d. Changing configuration to handle only %d channel(s)", m_NChannels, nofChannelsAvailable, nofChannelsAvailable);
-		MessageBox(pView->m_hWnd, msg, "Error", MB_OK);
+		ShowMessageBox(msg, "Error");
 		m_NChannels = nofChannelsAvailable;
 	}
 
@@ -1384,11 +1391,9 @@ int CSpectrometer::ChangeSpectrometer(int selectedspec, int channel) {
 }
 
 
-int	CSpectrometer::CloseUSBConnection() {
-
-	this->m_wrapper.closeAllSpectrometers();
-
-	return 1;
+void CSpectrometer::CloseUSBConnection()
+{
+	m_wrapper.closeAllSpectrometers();
 }
 
 void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]) {
@@ -1399,9 +1404,6 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 	if (m_fixexptime < 0){
 		nagFlag = true;
 	}
-
-	// The board-temperature, if one could be retrieved
-	double temperature = NOT_A_NUMBER;
 
 	/* Cut from the S2000 manual:
 		pixel   Description
@@ -1456,8 +1458,18 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 	/** If possible, get the temperature of the spectrometer */
 	if (m_wrapper.isFeatureSupportedBoardTemperature(m_spectrometerIndex) == 1) {
 		// Board temperature feature is supported by this spectrometer
-		BoardTemperature boardTemperature = m_wrapper.getFeatureControllerBoardTemperature(m_spectrometerIndex);
-		temperature = boardTemperature.getBoardTemperatureCelsius();
+		BoardTemperature boardTemperature	= m_wrapper.getFeatureControllerBoardTemperature(m_spectrometerIndex);
+		const double temperature			= boardTemperature.getBoardTemperatureCelsius();
+
+		for (int n = 0; n < m_NChannels; ++n) {
+			m_specInfo[n].temperature = temperature;
+		}
+	}
+	else
+	{
+		for (int n = 0; n < m_NChannels; ++n) {
+			m_specInfo[n].temperature = std::numeric_limits<double>::quiet_NaN();
+		}
 	}
 
 	/* Print the information to a file */
@@ -1469,7 +1481,7 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 		fprintf(f, "#--Additional log file to the Mobile DOAS program---\n");
 		fprintf(f, "#This file has only use as test file for further development of the Mobile DOAS program\n\n");
 		fprintf(f, "#SpectrumNumber\t");
-		if (temperature != NOT_A_NUMBER) {
+		if (!std::isnan(m_specInfo[0].temperature)) {
 			fprintf(f, "BoardTemperature\t");
 		}
 		if (m_NChannels == 1) {
@@ -1490,8 +1502,8 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 		// Spectrum number
 		fprintf(f, "%ld\t", m_spectrumCounter);
 		// The board temperature (?)
-		if (temperature != NOT_A_NUMBER){
-			fprintf(f, "%.3lf\t", temperature);
+		if (!std::isnan(m_specInfo[0].temperature)) {
+			fprintf(f, "%.3lf\t", m_specInfo[0].temperature);
 		}
 
 		// The master-channel
@@ -1564,7 +1576,7 @@ short CSpectrometer::AdjustIntegrationTime() {
 	int oldIntTime = m_integrationTime;
 
 	int highLimit = MAX_EXPOSURETIME; // maximum exposure time
-	int lowLimit = MIN_EXPOSURETIME; // minimum exposure time
+	int lowLimit  = MIN_EXPOSURETIME; // minimum exposure time
 
 	// if the exposure time is set by the user, don't even bother to calculate it
 	if (m_fixexptime > 0) {
@@ -1585,7 +1597,7 @@ short CSpectrometer::AdjustIntegrationTime() {
 		if (!m_connectViaUsb) {
 			if (InitSpectrometer(0, m_integrationTime, m_sumInSpectrometer)) {
 				serial.CloseAll();
-				MessageBox(pView->m_hWnd, "Failed to initialize spectrometer", "Error", MB_OK);
+				ShowMessageBox("Failed to initialize spectrometer", "Error");
 				return -1;
 			}
 		}
@@ -1645,6 +1657,29 @@ short CSpectrometer::AdjustIntegrationTime() {
 	return m_integrationTime;
 }
 
+short CSpectrometer::AdjustIntegrationTimeToLastIntensity(long maximumIntensity)
+{
+	const double ratioTolerance     = 0.2;
+	const double minTolerableRatio  = std::max(0.0, m_percent - ratioTolerance);
+	const double maxTolerableRatio  = std::min(1.0, m_percent + ratioTolerance);
+
+	const double curSaturationRatio = maximumIntensity / (double)m_spectrometerDynRange;
+	if (curSaturationRatio >= minTolerableRatio && curSaturationRatio <= maxTolerableRatio)
+	{
+		// nothing needs to be done...
+		return m_integrationTime;
+	}
+
+	// Adjust the integration time
+	long desiredIntegrationTime = (curSaturationRatio < minTolerableRatio) ? 
+		(long)(m_integrationTime * (1.0 + ratioTolerance)) : 
+		(long)(m_integrationTime / (1.0 + ratioTolerance));
+
+	m_integrationTime = std::max((long)MIN_EXPOSURETIME, std::min(m_timeResolution, desiredIntegrationTime));
+
+	return m_integrationTime;
+}
+
 short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxExpTime) {
 	double skySpec[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
 	m_sumInSpectrometer = 1;
@@ -1659,7 +1694,7 @@ short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxEx
 	if (!m_connectViaUsb) {
 		if (InitSpectrometer(0, m_integrationTime, m_sumInSpectrometer)) {
 			serial.CloseAll();
-			MessageBox(pView->m_hWnd, "Failed to initialize spectrometer", "Error", MB_OK);
+			ShowMessageBox("Failed to initialize spectrometer", "Error");
 			return -1;
 		}
 	}
@@ -1676,7 +1711,7 @@ short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxEx
 	if (!m_connectViaUsb) {
 		if (InitSpectrometer(0, m_integrationTime, m_sumInSpectrometer)) {
 			serial.CloseAll();
-			MessageBox(pView->m_hWnd, "Failed to initialize spectrometer", "Error", MB_OK);
+			ShowMessageBox("Failed to initialize spectrometer", "Error");
 			return -1;
 		}
 	}
@@ -1708,7 +1743,7 @@ short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxEx
 	if (!m_connectViaUsb) {
 		if (InitSpectrometer(0, m_integrationTime, m_sumInSpectrometer)) {
 			serial.CloseAll();
-			MessageBox(pView->m_hWnd, "Failed to initialize spectrometer", "Error", MB_OK);
+			ShowMessageBox("Failed to initialize spectrometer", "Error");
 			return -1;
 		}
 	}
@@ -1796,4 +1831,13 @@ unsigned int CSpectrometer::GetProcessedSpectrum(double* dst, unsigned int maxNo
 	const unsigned int length = std::min(maxNofElements, (unsigned int)MAX_SPECTRUM_LENGTH);
 	memcpy(dst, this->m_spectrum[chn], MAX_SPECTRUM_LENGTH * sizeof(double));
 	return length;
+}
+
+void CSpectrometer::ShowMessageBox(CString message, CString label) const
+{
+	if (m_isRunning)
+	{
+		// the point here is that we only allow the messagebox to be shown when the user interface is ready for receiving message boxes (i.e. when the program is running!)
+		MessageBox(pView->m_hWnd, message, label, MB_OK);
+	}
 }

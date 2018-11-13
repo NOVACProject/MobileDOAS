@@ -1,133 +1,216 @@
 #include "StdAfx.h"
-#include "spectrum.h"
+#include "Spectrum.h"
+#include <algorithm>
+
+#undef min
+#undef max
 
 CSpectrum::CSpectrum(void)
 {
 	this->Clear();
 }
 
-
 CSpectrum::~CSpectrum(void)
 {
 }
 
-double CSpectrum::GetMax() const{
-  double ret = 0;
+CSpectrum::CSpectrum(const CSpectrum& other) {
+	this->isDark = other.isDark;
+	this->length = other.length;
+	this->exposureTime = other.exposureTime;
+	this->lat = other.lat;
+	this->lon = other.lon;
+	this->altitude = other.altitude;
+	this->scans = other.scans;
+	this->spectrometerSerial.Format(other.spectrometerSerial);
+	this->spectrometerModel.Format(other.spectrometerModel);
+	this->name.Format(other.name);
 
-  for(int i = 0; i < this->length; ++i){
-    if(I[i] > ret)
-      ret = I[i];
-  }
-  return ret;
+	memcpy(this->date, other.date, 3 * sizeof(int));
+	memcpy(this->startTime, other.startTime, 3 * sizeof(int));
+	memcpy(this->stopTime, other.stopTime, 3 * sizeof(int));
+
+	memcpy(this->I, other.I, MAX_SPECTRUM_LENGTH * sizeof(double));
 }
 
-double CSpectrum::GetAverage() const{
-  
-  if(this->length == 0)
-    return 0;
-  else{
-    double sum = this->GetSum();
-    return (sum / this->length);
-  }
+CSpectrum& CSpectrum::operator=(CSpectrum other)
+{
+	swap(*this, other);
+	return *this;
 }
 
-double CSpectrum::GetAverage(int low, int high) const{
-  low   = max(low, 0);
-  high  = min(high, this->length);
-  
-  if(this->length == 0)
-    return 0;
-  if(high == low)
-    return 0;
+void swap(CSpectrum & first, CSpectrum & second)
+{
+	using std::swap;
 
-  double sum = this->GetSum(low, high);
-  return (sum / (high - low));
+	swap(first.isDark, second.isDark);
+	swap(first.length, second.length);
+	swap(first.exposureTime, second.exposureTime);
+	swap(first.lat, second.lat);
+	swap(first.lon, second.lon);
+	swap(first.altitude, second.altitude);
+	swap(first.scans, second.scans);
+	swap(first.spectrometerSerial, second.spectrometerSerial);
+	swap(first.spectrometerModel, second.spectrometerModel);
+	swap(first.name, second.name);
+
+	for(int ii = 0; ii < 3; ++ii) {
+		swap(first.date[ii], second.date[ii]);
+		swap(first.startTime[ii], second.startTime[ii]);
+		swap(first.stopTime[ii], second.stopTime[ii]);
+	}
+
+	for (int ii = 0; ii < first.length; ++ii) {
+		swap(first.I[ii], second.I[ii]);
+	}
 }
 
-double CSpectrum::GetSum() const{
-  double ret = 0;
-  for(int i = 0; i < this->length; ++i)
-    ret += I[i];
+void CSpectrum::GetMinMax(double& minValue, double&maxValue) const
+{
+	if (0 == this->length)
+	{
+		minValue = 0.0;
+		maxValue = 0.0;
+		return;
+	}
 
-  return ret;
+	minValue = I[0];
+	maxValue = I[0];
+
+	for (int ii = 0; ii < this->length; ++ii)
+	{
+		minValue = std::min(minValue, I[ii]);
+		maxValue = std::max(maxValue, I[ii]);
+	}
 }
 
-double CSpectrum::GetSum(int low, int high) const{
-  double ret = 0;
+double CSpectrum::GetMax() const {
+	double maxValue = 0;
 
-  if(low > high)
-    return 0;
-  low   = max(low, 0);
-  high  = min(high, this->length);
+	for (int i = 0; i < this->length; ++i)
+	{
+		maxValue = std::max(maxValue, I[i]);
+	}
 
-  for(int i = low; i < high; ++i)
-    ret += I[i];
-
-  return ret;
+	return maxValue;
 }
 
-// add two spectra together
-bool CSpectrum::Add(CSpectrum &spec2){
-  if(this->length != spec2.length)
-    return false;
+double CSpectrum::GetAverage() const {
 
-  for(int i = 0; i < this->length; ++i){
-    this->I[i] += spec2.I[i];
-  }
-
-  scans += spec2.scans;
-
-  return true;
+	if (this->length == 0)
+		return 0;
+	else {
+		double sum = this->GetSum();
+		return (sum / this->length);
+	}
 }
 
-// divide one spectrum with another
-bool CSpectrum::Div(CSpectrum &spec2){
-  if(this->length != spec2.length)
-    return false;
+double CSpectrum::GetAverage(int low, int high) const {
+	low = std::max(low, 0);
+	high = std::min(high, this->length);
 
-  for(int i = 0; i < this->length; ++i){
-    if(spec2.I[i] == 0)
-      this->I[i] = 0;
-    else
-      this->I[i] /= spec2.I[i];
-  }
-  return true;
+	if (this->length == 0) {
+		return 0;
+	}
+
+	if (high == low) {
+		return 0;
+	}
+
+	double sum = this->GetSum(low, high);
+	return (sum / (high - low));
 }
 
-// subtract one spectrum from another
-bool CSpectrum::Sub(CSpectrum &spec2){
-  if(this->length != spec2.length)
-    return false;
+double CSpectrum::GetSum() const {
+	double sum = 0;
+	
+	for (int i = 0; i < this->length; ++i) {
+		sum += I[i];
+	}
 
-  for(int i = 0; i < this->length; ++i){
-    this->I[i] -= spec2.I[i];
-  }
-  return true;
+	return sum;
 }
 
-// add a constant to a spectrum
-bool CSpectrum::Add(double value){
-  for(int i = 0; i < this->length; ++i){
-    this->I[i] += value;
-  }
-  return true;
+double CSpectrum::GetSum(int low, int high) const {
+	double sum = 0;
+
+	if (low > high) {
+		return 0;
+	}
+
+	low  = std::max(low, 0);
+	high = std::min(high, this->length);
+
+	for (int i = low; i < high; ++i) {
+		sum += I[i];
+	}
+
+	return sum;
 }
 
-// divide a spectrum with a constant
-bool CSpectrum::Div(double value){
-  if(value == 0)
-    return false;
-
-  for(int i = 0; i < this->length; ++i){
-    this->I[i] /= value;
-  }
-  return true;
-}
-
-// multiply a spectrum with a constant
-bool CSpectrum::Mult(double value) {
-	if (value == 0)
+bool CSpectrum::Add(CSpectrum &spec2) {
+	if (this->length != spec2.length) {
 		return false;
+	}
+
+	for (int i = 0; i < this->length; ++i) {
+		this->I[i] += spec2.I[i];
+	}
+
+	scans += spec2.scans;
+
+	return true;
+}
+
+bool CSpectrum::Div(CSpectrum &spec2) {
+	if (this->length != spec2.length) {
+		return false;
+	}
+
+	for (int i = 0; i < this->length; ++i) {
+		if (spec2.I[i] == 0) {
+			this->I[i] = 0;
+		}
+		else {
+			this->I[i] /= spec2.I[i];
+		}
+	}
+	return true;
+}
+
+bool CSpectrum::Sub(CSpectrum &spec2) {
+	if (this->length != spec2.length) {
+		return false;
+	}
+
+	for (int i = 0; i < this->length; ++i) {
+		this->I[i] -= spec2.I[i];
+	}
+	return true;
+}
+
+bool CSpectrum::Add(double value) {
+	for (int i = 0; i < this->length; ++i) {
+		this->I[i] += value;
+	}
+	return true;
+}
+
+bool CSpectrum::Div(double value) {
+	if (value == 0) {
+		return false;
+	}
+
+	for (int i = 0; i < this->length; ++i) {
+		this->I[i] /= value;
+	}
+	return true;
+}
+
+bool CSpectrum::Mult(double value) {
+	if (value == 0) {
+		return false;
+	}
 
 	for (int i = 0; i < this->length; ++i) {
 		this->I[i] *= value;
@@ -135,44 +218,28 @@ bool CSpectrum::Mult(double value) {
 	return true;
 }
 
-// subtract a constant from a spectrum
-bool CSpectrum::Sub(double value){
-  for(int i = 0; i < this->length; ++i){
-    this->I[i] -= value;
-  }
-  return true;
-}
-
-bool CSpectrum::Copy(const CSpectrum &spec2){
-  this->isDark    = spec2.isDark;
-  this->length    = spec2.length;
-  this->exposureTime   = spec2.exposureTime;
-  this->lat       = spec2.lat;
-  this->lon       = spec2.lon;
-  this->scans     = spec2.scans;
-  this->spectrometer.Format(spec2.spectrometer);
-
-  memcpy(this->date, spec2.date, 3*sizeof(int));
-  memcpy(this->startTime, spec2.startTime, 3*sizeof(int));
-  memcpy(this->stopTime,  spec2.stopTime,  3*sizeof(int));
-
-  memcpy(this->I, spec2.I, MAX_SPECTRUM_LENGTH*sizeof(double));
-
-  return true;
+bool CSpectrum::Sub(double value) {
+	for (int i = 0; i < this->length; ++i) {
+		this->I[i] -= value;
+	}
+	return true;
 }
 
 // clearing out the information in the spectrum
-void	CSpectrum::Clear(){
-  length	= 0;
-	scans		= 0;
+void CSpectrum::Clear() {
+	length = 0;
+	scans = 0;
 	exposureTime = 0;
-	lat			= 0.0;
-	lon			= 0.0;
-	spectrometer.Format("");
+	lat = 0.0;
+	lon = 0.0;
+	altitude = 0.0;
+	spectrometerSerial.Format("");
+	spectrometerModel.Format("");
+	name.Format("");
 
-	date[0]				= date[1]				= date[2] = 0;
-	startTime[0]	= startTime[1]	= startTime[2] = 0;
-	stopTime[0]		= stopTime[1]		= stopTime[2] = 0;
+	date[0] = date[1] = date[2] = 0;
+	startTime[0] = startTime[1] = startTime[2] = 0;
+	stopTime[0] = stopTime[1] = stopTime[2] = 0;
 
 	isDark = false;
 

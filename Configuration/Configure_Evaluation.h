@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include "../Controls/ReferenceFileControl.h"
 #include "MobileConfiguration.h"
 #include "../Controls/FitWindowListBox.h"
@@ -20,7 +21,7 @@ namespace Configuration{
 		enum { IDD = IDD_CONFIGURE_EVALUATION };
 
 		/** The local handle to the CMobileConfiguration object that we're changing */
-		Configuration::CMobileConfiguration	*m_conf;
+		std::shared_ptr<CMobileConfiguration> m_conf;
 
 		/** The local handle to the option of wheather to use this window or not */
 		int		*m_Evaluate;
