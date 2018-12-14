@@ -330,6 +330,7 @@
     <ClCompile Include="Flux\Traverse.cpp" />
     <ClCompile Include="Flux\WindField.cpp" />
     <ClCompile Include="GPS.cpp" />
+    <ClCompile Include="GpsData.cpp" />
     <ClCompile Include="Graphs\ColumnGraph.cpp" />
     <ClCompile Include="Graphs\GraphCtrl.cpp" />
     <ClCompile Include="Graphs\SpectrumGraph.cpp" />
@@ -467,6 +468,7 @@
     <ClInclude Include="Flux\Traverse.h" />
     <ClInclude Include="Flux\WindField.h" />
     <ClInclude Include="GPS.h" />
+    <ClInclude Include="GpsData.h" />
     <ClInclude Include="Graphs\ColumnGraph.h" />
     <ClInclude Include="Graphs\GraphCtrl.h" />
     <ClInclude Include="Graphs\SpectrumGraph.h" />

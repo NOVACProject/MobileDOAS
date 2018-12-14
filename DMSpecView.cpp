@@ -1281,32 +1281,29 @@ void CDMSpecView::OnMenuAnalysisPlumeheightmeasurement()
 
 void CDMSpecView::OnMenuControlTestTheGPS()
 {
-	CSerialConnection serial;
 	CString status;
 
 	// set the baudrate for the connection
-	long baudrate[] = { 4800, 9600 };
+	const std::vector<long> baudrate{ 4800, 9600 };
 
-	for (int i=0; i < 2; i++) {
-		serial.baudrate = baudrate[i];
-		for (int port = 1; port < 256; ++port) {
+	for (int port = 1; port < 256; ++port) {
+		for (long baudrateToTest : baudrate) {
 			// try this serial-port and see what happens
-			sprintf(serial.serialPort, "COM%d", port);
-			status.Format("Testing port: %s Baud rate: %d", serial.serialPort, serial.baudrate);
+			status.Format("Testing port: COM%d Baud rate: %d", port, baudrateToTest);
 			ShowStatusMsg(status);
 
 			// test the serial-port
-			if (!serial.Init(serial.baudrate)) {
+			CSerialConnection serial;
+			if (!serial.Init(port, baudrateToTest)) {
 				// could not connect to this serial-port
 				continue;
 			}
 			// it was possible to open the serial-port, test if there is a gps on this port
-			serial.Close();
 
-			CGPS gps{serial.serialPort, serial.baudrate};
+			CGPS gps(std::move(serial));
 			for (int i = 0; i < 10; ++i) {
 				if (SUCCESS == gps.ReadGPS()) {
-					status.Format("Found GPS on serialPort: %s using baud rate %d", serial.serialPort, serial.baudrate);
+					status.Format("Found GPS on serialPort: COM%d using baud rate %d", port, baudrateToTest);
 					ShowStatusMsg(status); 
 					MessageBox(status, "Found GPS reciever");
 

@@ -6,6 +6,7 @@
 #include "Common.h"
 #include <utility>
 #include <vector>
+#include <string>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -37,44 +38,6 @@ int IsExistingFile(const CString &fileName){
 	return IsExistingFile(&fileName);
 }
 
-//////////////////////////////////////////////////////////////////////
-// gpsData
-//////////////////////////////////////////////////////////////////////
-
-gpsData::gpsData(){}
-
-gpsData::gpsData(const gpsData& other) {
-	this->latitude = other.latitude;
-	this->longitude = other.longitude;
-	this->altitude = other.altitude;
-	this->time = other.time;
-	this->nSatellites = other.nSatellites;
-	this->date = other.date;
-}
-
-gpsData& gpsData::operator=(gpsData other)
-{
-	swap(*this, other);
-	return *this;
-}
-
-void swap(gpsData & first, gpsData & second)
-{
-	using std::swap;
-	swap(first.latitude, second.latitude);
-	swap(first.longitude, second.longitude);
-	swap(first.altitude, second.altitude);
-	swap(first.time, second.time);
-	swap(first.nSatellites, second.nSatellites);
-	swap(first.date, second.date);
-}
-
-void ExtractTime(const gpsData& gpsData, int& hours, int& minutes, int& seconds)
-{
-	hours   = gpsData.time / 10000;
-	minutes = (gpsData.time - hours * 10000) / 100;
-	seconds = gpsData.time % 100;
-}
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

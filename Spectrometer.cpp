@@ -342,8 +342,8 @@ void CSpectrometer::ApplySettings() {
 	CString msg;
 
 	// The settings for the serial-port
-	serial.baudrate = m_conf->m_baudrate;
-	sprintf(serial.serialPort, m_conf->m_serialPort);
+	serial.SetBaudrate(m_conf->m_baudrate);
+	serial.SetPort(m_conf->m_serialPort);
 	m_connectViaUsb = (m_conf->m_spectrometerConnection == Configuration::CMobileConfiguration::CONNECTION_USB);
 	m_NChannels = m_conf->m_nChannels;
 	bool error = false;
@@ -1081,30 +1081,28 @@ long CSpectrometer::AverageIntens(double *pSpectrum, long ptotalNum) const {
 	return (long)sum;
 }
 
-bool CSpectrometer::UpdateGpsData() {
+bool CSpectrometer::UpdateGpsData(gpsData& gpsInfo)
+{
 	// If GPS thread does not exist or is not running
-	if (nullptr == m_gps) {
+	if (nullptr == m_gps)
+	{
 		return false;
 	}
 
-	bool gpsDataIsValid = true;
-
-	m_gps->Get(m_spectrumGpsData[m_spectrumCounter]);
+	// Read the data from the GPS
+	m_gps->Get(gpsInfo);
+	m_spectrumGpsData[m_spectrumCounter] = gpsInfo;
 
 	// check for valid lat/lon
-	if ((m_spectrumGpsData[m_spectrumCounter].latitude == 0.0) && (m_spectrumGpsData[m_spectrumCounter].longitude == 0.0)) {
-		// Invalid data, no latitude / longitude could be retrieved
+	bool gpsDataIsValid = IsValidGpsData(gpsInfo);
+
+	if (!m_gps->m_gotContact)
+	{
 		gpsDataIsValid = false;
 	}
-	// check for valid number of satellites
-	if (m_spectrumGpsData[m_spectrumCounter].nSatellites == 0) {
-		// Invalid data, the receiver couldn't connect to any satellite
-		gpsDataIsValid = false;
-	}
-	if (!m_gps->m_gotContact) {
-		gpsDataIsValid = false;
-	}
-	if (m_spectrumCounter > 0 && (m_spectrumGpsData[m_spectrumCounter].time == m_spectrumGpsData[m_spectrumCounter-1].time)) {
+
+	if (m_spectrumCounter > 0 && (m_spectrumGpsData[m_spectrumCounter].time == m_spectrumGpsData[m_spectrumCounter-1].time))
+	{
 		gpsDataIsValid = false;
 	}
 	
@@ -1146,7 +1144,7 @@ void CSpectrometer::WriteBeginEvFile(int fitRegion) {
 
 	if (!m_connectViaUsb) {
 		str4.Format("SPEC_BAUD=%d\nSERIALPORT=%s\nGPSBAUD=%d\nGPSPORT=%s\nTIMERESOLUTION=%d\n",
-			serial.baudrate, serial.serialPort, m_GPSBaudRate, m_GPSPort, m_timeResolution);
+			serial.GetBaudrate(), serial.GetPort(), m_GPSBaudRate, m_GPSPort, m_timeResolution);
 	}
 	else {
 		str4.Format("SERIALPORT=USB\nGPSBAUD=%d\nGPSPORT=%s\nTIMERESOLUTION=%d\n",
@@ -1813,51 +1811,36 @@ short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxEx
 	}
 }
 
-std::string CSpectrometer::GetCurrentDate() {
+std::string CSpectrometer::GetCurrentDateFromComputerClock() const
+{
+	char startDate[7];
+	time_t t;
+	time(&t);
+	struct tm *tim = localtime(&t);
+	int mon = tim->tm_mon+1;
+	int day = tim->tm_mday;
+	int year = tim->tm_year - 100; // only good for 21st century
+	sprintf(startDate, "%02d%02d%02d", mon, day, year);
 
-	const bool couldReadValidGPSData = (m_useGps) ? UpdateGpsData() : false;
-
-	if (!couldReadValidGPSData) {
-		char startDate[7];
-
-		struct tm *tim;
-		time_t t;
-		time(&t);
-		tim = localtime(&t);
-		int mon = tim->tm_mon+1;
-		int day = tim->tm_mday;
-		int year = tim->tm_year - 100; // only good for 21st century
-		sprintf(startDate, "%02d%02d%02d", mon, day, year);
-
-		return std::string(startDate, 6);
-	}
-	else {
-		const int c = this->m_spectrumCounter; // local buffer, to avoid race conditions...
-		m_gps->Get(m_spectrumGpsData[c]);
-		return std::to_string(m_spectrumGpsData[c].date);
-	}
+	return std::string(startDate, 6);
 }
 
-long CSpectrometer::GetCurrentTime() {
-	long startTime = 0;
-
-	const bool couldReadValidGPSData = (m_useGps) ? UpdateGpsData() : false;
-
+long CSpectrometer::GetCurrentTimeFromComputerClock()
+{
 	const int currentSpectrumCounter = this->m_spectrumCounter; // local copy to prevent race conditions
 
-	if (!couldReadValidGPSData) {
-		startTime = GetTimeValue_UMT();
-		m_spectrumGpsData[currentSpectrumCounter].time = startTime;
-	}
-	else if (m_timeDiffToUtc == 0) {
+	long startTime = GetTimeValue_UMT();
+
+	if (m_timeDiffToUtc == 0)
+	{
 		time_t t;
 		time(&t);
 		struct tm *localTime = localtime(&t);
 
-		m_gps->Get(m_spectrumGpsData[currentSpectrumCounter]);
+		const gpsData curGpsInfo = m_spectrumGpsData[currentSpectrumCounter];
 
 		int hr, min, sec;
-		ExtractTime(m_spectrumGpsData[currentSpectrumCounter], hr, min, sec);
+		ExtractTime(curGpsInfo, hr, min, sec);
 
 		/* get the difference between the local time and the GPS-time */
 		m_timeDiffToUtc = 3600 * (hr - localTime->tm_hour) + 60 * (min - localTime->tm_min) + (sec - localTime->tm_sec);

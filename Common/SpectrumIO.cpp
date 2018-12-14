@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "SpectrumIO.h"
+#include "../GpsData.h"
 #include <vector>
 
 CSpectrumIO::CSpectrumIO()
@@ -296,13 +297,20 @@ bool CSpectrumIO::WriteStdFile(const CString &fileName, const double *spectrum, 
 	}
 
 	// date
-	std::string dmy = std::string(startdate);
-	std::string d = dmy.substr(0,2);
-	std::string m = dmy.substr(2, 2);
-	std::string y = dmy.substr(4, 2);
-	dmy = d + '.' + m + '.' + y;
-	std::vector<char> datetxt(dmy.length()+1);
-	std::strcpy(datetxt.data(), dmy.c_str());
+	std::vector<char> datetxt;
+	if(6 == startdate.size())
+	{
+		std::string d	= startdate.substr(0,2);
+		std::string m	= startdate.substr(2, 2);
+		std::string y	= startdate.substr(4, 2);
+		std::string dmy = d + '.' + m + '.' + y;
+		datetxt.resize(dmy.length()+1);
+		std::strcpy(datetxt.data(), dmy.c_str());
+	}
+	else
+	{
+		datetxt.push_back('-');
+	}
 
 	// Find the name of the file itself (removing the path)
 	CString name;

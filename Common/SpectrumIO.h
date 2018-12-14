@@ -2,6 +2,8 @@
 
 #include "Spectrum.h"
 
+struct gpsData;
+
 /** This is a simple, static, class for reading and writing spectra to/from file */
 class CSpectrumIO
 {

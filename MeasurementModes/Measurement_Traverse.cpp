@@ -157,8 +157,18 @@ void CMeasurement_Traverse::Run(){
 		SetFileName();
 
 		/* ------------ Get the date, time and position --------------- */
-		startDate = GetCurrentDate();
-		startTime = GetCurrentTime();
+		gpsData currentGpsInfo;
+		const bool couldReadValidGPSData = (m_useGps) ? UpdateGpsData(currentGpsInfo) : false;
+		if(couldReadValidGPSData)
+		{
+			startDate = GetCurrentDateFromComputerClock();
+			startTime = GetCurrentTimeFromComputerClock();
+		}
+		else
+		{
+			startDate = GetDate(currentGpsInfo);
+			startTime = GetTime(currentGpsInfo);
+		}
 
 		/** ---------------- if the user wants to change the exposure time, 
 									calculate a new exposure time. --------------------- */
@@ -389,8 +399,18 @@ void CMeasurement_Traverse::Run_Adaptive(){
 		SetFileName();
 
 		/* ------------ Get the date, time and position --------------- */
-		startDate = GetCurrentDate();
-		startTime = GetCurrentTime();
+		gpsData currentGpsInfo;
+		const bool couldReadValidGPSData = (m_useGps) ? UpdateGpsData(currentGpsInfo) : false;
+		if (couldReadValidGPSData)
+		{
+			startDate = GetCurrentDateFromComputerClock();
+			startTime = GetCurrentTimeFromComputerClock();
+		}
+		else
+		{
+			startDate = GetDate(currentGpsInfo);
+			startTime = GetTime(currentGpsInfo);
+		}
 	
 		// Initialize the spectrometer, if using the serial-port
 		if(!m_connectViaUsb){

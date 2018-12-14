@@ -340,17 +340,17 @@ public:
 		This will NOT call the Gps itself, nor cause any block.
 		@return true if the updated data is valid (i.e. if the GPS can retrieve lat/long).
 		@return false if the data is not valid or the GPS isn't used. */
-	bool UpdateGpsData();
+	bool UpdateGpsData(gpsData& gpsInfo);
 	
 	/** Retrieves the last GPS position */
 	int GetGpsPos(gpsData& data) const;
 	
-	/** Retrieves the current time, either from the GPS or the system time */
-	long GetCurrentTime();
+	/** Retrieves the current time from the system time */
+	long GetCurrentTimeFromComputerClock();
 
-	/** Retrieves the current date, either from the GPS or the system time.
+	/** Retrieves the current date, either from the system time.
 		The date is a string formatted as: mmddyy (6 characters) */
-	std::string GetCurrentDate();
+	std::string GetCurrentDateFromComputerClock() const;
 	
 	/** Pointer to the gps reading thread */
 	CGPS*   m_gps = nullptr;
