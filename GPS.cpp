@@ -36,16 +36,15 @@ CGPS::CGPS(const char* pCOMPort, long pBaudrate)
 }
 
 CGPS::CGPS(CSerialConnection&& serial)
-	: m_gpsInfo(), m_gpsThread(nullptr), fRun(false)
+	: m_gpsInfo(), fRun(false)
 {
 	// Take ownership of the serial connection.
 	this->serial = std::move(serial);
 }
 
 
-CGPS::~CGPS(){
-
-	m_gpsThread = nullptr;
+CGPS::~CGPS()
+{
 	serial.Close();
 }
 
@@ -64,16 +63,6 @@ void CGPS::Get(gpsData& dst)
 	dst = this->m_gpsInfo;
 }
 
-
-void CGPS::Run()
-{
-	m_gpsThread = AfxBeginThread(CollectGPSData, (LPVOID)this, THREAD_PRIORITY_NORMAL,0,0,nullptr);
-}
-
-void CGPS::Stop()
-{
-	this->fRun = false;
-}
 
 bool CGPS::ReadGPS()
 {
@@ -123,11 +112,15 @@ bool CGPS::ReadGPS()
 	return true;
 }
 
-void CGPS::CloseSerial(){
+void CGPS::CloseSerial()
+{
 	this->serial.Close();
 }
 
-UINT CollectGPSData(LPVOID pParam){
+/** The async GPS data collection thread. This will take ownership of the CGPS which is passed in as reference
+	and delete it when we're done. */
+UINT CollectGPSData(LPVOID pParam)
+{
 	CGPS *gps = (CGPS *)pParam;
 	gps->fRun = true;
 
@@ -148,8 +141,38 @@ UINT CollectGPSData(LPVOID pParam){
 		}
 	}
 
-	gps->CloseSerial();
 	gps->fRun = false;
 
+	delete gps;
+
 	return 0;
+}
+
+GpsAsyncReader::GpsAsyncReader(const char* pCOMPort, long baudrate)
+{
+	m_gps = new CGPS(pCOMPort, baudrate);
+	m_gpsThread = AfxBeginThread(CollectGPSData, (LPVOID)m_gps, THREAD_PRIORITY_NORMAL, 0, 0, nullptr);
+}
+
+GpsAsyncReader::~GpsAsyncReader()
+{
+	m_gps = nullptr; // we don't get to delete the m_gps, its up to the background thread to do so.
+}
+
+void GpsAsyncReader::Stop()
+{
+	if(nullptr != m_gps && m_gps->fRun == true)
+	{
+		m_gps->fRun = false;
+	}
+}
+
+void GpsAsyncReader::Get(gpsData& data)
+{
+	m_gps->Get(data);
+}
+
+bool GpsAsyncReader::GotContact() const
+{
+	return m_gps->m_gotContact;
 }

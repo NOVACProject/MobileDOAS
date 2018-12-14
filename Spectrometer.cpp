@@ -90,7 +90,8 @@ CSpectrometer::~CSpectrometer()
 	delete this->m_fitRegion[0].eval[0];
 	delete this->m_fitRegion[0].eval[1];
 
-	if (m_gps != nullptr) {
+	if (m_gps != nullptr)
+	{
 		delete m_gps;
 	}
 }
@@ -665,7 +666,8 @@ int CSpectrometer::Stop()
 	m_isRunning = false;
 
 	// Also stop the GPS-reading thread
-	if (m_gps != nullptr) {
+	if (m_gps != nullptr)
+	{
 		m_gps->Stop();
 	}
 
@@ -1096,7 +1098,7 @@ bool CSpectrometer::UpdateGpsData(gpsData& gpsInfo)
 	// check for valid lat/lon
 	bool gpsDataIsValid = IsValidGpsData(gpsInfo);
 
-	if (!m_gps->m_gotContact)
+	if (!m_gps->GotContact())
 	{
 		gpsDataIsValid = false;
 	}

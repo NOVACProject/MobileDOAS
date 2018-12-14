@@ -112,9 +112,9 @@ void CMeasurement_Traverse::Run(){
 	}
 
 	/* Start the GPS collection thread */
-	if(m_useGps){
-		m_gps	= new CGPS(m_GPSPort, m_GPSBaudRate);
-		m_gps->Run(); /* start the gps-reading thread */
+	if(m_useGps)
+	{
+		m_gps = new GpsAsyncReader(m_GPSPort, m_GPSBaudRate);
 	}
 
 	// Check if we are to be running with adaptive or with fixed exposure-time

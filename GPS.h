@@ -54,8 +54,6 @@ public:
 	// void    WriteLog(char *pFile,char* txt);
 
 	/* Running the GPS collection */
-	void    Run();
-	void    Stop();
 	void    CloseSerial();
 
 	/** Reads data from the gps, this will use and block the serial port. 
@@ -76,12 +74,34 @@ private:
 
 	/* Serial communication */
 	CSerialConnection serial;
+};
+
+/** The GpsAsyncReader is a background data collector which uses a CGPS instance
+	to collect GPS data on a background thread. This owns the thread, but not the serial connection. */
+class GpsAsyncReader
+{
+public:
+	GpsAsyncReader(const char* pCOMPort, long baudrate);
+	~GpsAsyncReader();
+
+	/** This will stop the data collection. */
+	void Stop();
+
+	/** Retrieving the read out data (this will not communicate with
+		the device, only copy out the last read piece of data. */
+	void Get(gpsData& dst);
+
+	/** @return true if the GPS device has got contact with at least one satellite */
+	bool GotContact() const;
+
+private:
+	/** A handle to the GPS-reader. This is owned by the background thread, not by us, 
+		and will be terminated once the background thread finishes. */
+	CGPS* m_gps = nullptr;
 
 	/** The gps-reading thread. */
 	CWinThread* m_gpsThread = nullptr;
 };
-
-UINT CollectGPSData(LPVOID pParam);
 
 #endif // !defined(AFX_GPS_H__EBAA5A71_5FAD_46B7_90C6_B5DBE3408F77__INCLUDED_)
 

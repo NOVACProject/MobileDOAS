@@ -353,11 +353,11 @@ public:
 	std::string GetCurrentDateFromComputerClock() const;
 	
 	/** Pointer to the gps reading thread */
-	CGPS*   m_gps = nullptr;
+	GpsAsyncReader* m_gps = nullptr;
 	
 	/** This is true if we should use the GPS receiver (default behavior).
 		Set to false if the gps is missing or nor working. */
-	bool	m_useGps = true;
+	bool m_useGps = true;
 	
 	/** The Serial-port that we should read the GPS data from 
 		This is something like 'COM4' */
@@ -605,7 +605,8 @@ protected:
 	/* Spectrum number, only used to judge if this is dark, sky or measurement spectrum */
 	long m_scanNum;
 
-	/* Spectrum number, pointer into 'pos' and 'specTime'. Counts how many spectra we have acquired so far. 
+	/* Spectrum number, pointer into 'm_spectrumGpsData'. 
+		Counts how many spectra we have acquired so far. 
 		(this differs from m_scanNum but it's not exactly clear how...) */
 	long m_spectrumCounter;
 
