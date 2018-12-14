@@ -66,19 +66,27 @@ void CGPS::Get(gpsData& dst)
 
 bool CGPS::ReadGPS()
 {
-	char gpstxt[256];
+	const long bytesToRead = 512;
+	char gpstxt[512];
 
 	gpstxt[0] = 0;
 
-	gpsData localGpsInfo;
+	// copy the old data into the temp structure (not all sentences provide all data...)
+	gpsData localGpsInfo = this->m_gpsInfo;
 
 	do{
 		long cnt = 0;
-		serial.FlushSerialPort(10);
-		if(serial.Check(550))
+		// serial.FlushSerialPort(10);
+		if(serial.Check(2000))
 		{
-			while(serial.Check(100) && cnt<256){ // Read GPRMC and GPGGA
-				serial.Read(gpstxt+cnt,1);
+			while(serial.Check(100) && cnt < bytesToRead)
+			{
+				// Read GPRMC and GPGGA
+				serial.Read(gpstxt + cnt, 1);
+				if (gpstxt[cnt] == '\n')
+				{
+ 					break; // each sentence ends with newline
+				}
 				cnt++;
 			}
 			m_gotContact = true;
@@ -129,7 +137,7 @@ UINT CollectGPSData(LPVOID pParam)
 		if (gps->ReadGPS())
 		{
 			/* make a small pause */
-			Sleep(100);
+			Sleep(10);
 		}
 		else
 		{

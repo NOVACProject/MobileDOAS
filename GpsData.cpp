@@ -71,7 +71,7 @@ bool IsValidGpsData(const gpsData& data)
 }
 
 /** Parse the read GPS-Information */
-/** See http://www.gpsinformation.org/dale/nmea.htm/ */
+/** See http://www.gpsinformation.org/dale/nmea.htm */
 bool Parse(char *gpsString, gpsData& data)
 {
 	const char sep[] = ",";   /* the separator */
@@ -79,15 +79,18 @@ bool Parse(char *gpsString, gpsData& data)
 
 	char *token = strtok(gpsString, sep);  /* get first sentence identifier */
 
-	if (token == nullptr) {
+	int numberOfParsedSentences = 0;
+
+	if (token == nullptr)
+	{
 		return false;
 	}
 
-	while (token != nullptr) {
-
-		if (0 == strncmp(token, "$GPRMC", 6)) {	// fisrt sentence should be GPRMC
-
-												/* 1: the time */
+	while (token != nullptr)
+	{
+		if (0 == strncmp(token, "$GPRMC", 6))
+		{
+			/* 1: the time */
 			if (nullptr == (token = strtok(nullptr, sep))) {
 				return false;
 			}
@@ -208,10 +211,13 @@ bool Parse(char *gpsString, gpsData& data)
 			// }
 
 			/* 11:checksum          (ignore) */
+
+			++numberOfParsedSentences;
 		}
 
-		if (0 == strncmp(token, "$GPGGA", 6)) {	// second sentence should be GPGGA
-												/* 1: the time */
+		if (0 == strncmp(token, "$GPGGA", 6))
+		{
+			/* 1: the time */
 			if (nullptr == (token = strtok(nullptr, sep))) {
 				return false;
 			}
@@ -316,6 +322,7 @@ bool Parse(char *gpsString, gpsData& data)
 			/*11: age of the deferrential correction data (ignore) */
 			/*12: deferential station's ID (ignore) */
 			/*13: checksum for the sentence (ignore) */
+			++numberOfParsedSentences;
 		}
 
 		token = strtok(nullptr, "\n"); // go to end of line
@@ -324,7 +331,7 @@ bool Parse(char *gpsString, gpsData& data)
 		}
 	}
 
-	return true;
+	return (numberOfParsedSentences > 0);
 }
 
 double ConvertToDecimalDegrees(double rawData)

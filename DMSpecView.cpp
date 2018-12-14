@@ -608,7 +608,7 @@ LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 	this->SetDlgItemText(IDC_NGPSSAT, nSat);
 
 
-	if (!m_Spectrometer->m_gps->m_gotContact) { // If GPS signal is lost
+	if (!m_Spectrometer->m_gps->GotContact()) { // If GPS signal is lost
 		COLORREF warning = RGB(255, 75, 75);
 
 		// Set the background color to red
