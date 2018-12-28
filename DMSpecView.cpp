@@ -103,6 +103,7 @@ BEGIN_MESSAGE_MAP(CDMSpecView, CFormView)
 	ON_COMMAND(ID_CONFIGURATION_CHANGEEXPOSURETIME,	OnConfigurationChangeexposuretime)
 	ON_WM_HELPINFO()
 	ON_COMMAND(ID_CONTROL_TESTTHEGPS,				OnMenuControlTestTheGPS)
+	ON_COMMAND(ID_CONTROL_STARTTHEGPS,				OnMenuControlRunTheGPS)
 
 	ON_COMMAND(ID_VIEW_COLUMNERROR,					OnViewColumnError)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_COLUMNERROR,		OnUpdateViewColumnError)
@@ -112,6 +113,7 @@ BEGIN_MESSAGE_MAP(CDMSpecView, CFormView)
 	ON_UPDATE_COMMAND_UI(ID_CONTROL_STOP,							OnUpdate_EnableOnRun)
 	ON_UPDATE_COMMAND_UI(ID_CONTROL_VIEWSPECTRAFROMSPECTROMETER,	OnUpdate_DisableOnRun)
 	ON_UPDATE_COMMAND_UI(ID_CONTROL_STARTWINDMEASUREMENT,			OnUpdateWindMeasurement)
+	ON_UPDATE_COMMAND_UI(ID_CONTROL_STARTTHEGPS,					OnUpdate_StartTheGps)
 	ON_UPDATE_COMMAND_UI(ID_CONTROL_ADDCOMMENT,						OnUpdate_EnableOnRun)
 	ON_UPDATE_COMMAND_UI(ID_CONFIGURATION_CHANGEEXPOSURETIME,		OnUpdate_EnableOnRun)
 	ON_UPDATE_COMMAND_UI(ID_CONTROL_CALIBRATESPECTROMETER,			OnUpdate_CalibrateSpectrometer)
@@ -599,7 +601,7 @@ LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 		strSec.Format("%d",sec);
 	}
 
-	nSat.Format("%d", (long)data.nSatellites);
+	nSat.Format("%d", (long)data.nSatellitesTracked);
 
 	tim = strHr + strMin + strSec;
 	this->SetDlgItemText(IDC_GPSTIME, tim);
@@ -608,7 +610,9 @@ LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 	this->SetDlgItemText(IDC_NGPSSAT, nSat);
 
 
-	if (!m_Spectrometer->m_gps->GotContact()) { // If GPS signal is lost
+	if (!m_Spectrometer->m_gps->GotContact())
+	{
+		// If the communication with the GPS is broken (e.g. device unplugged)
 		COLORREF warning = RGB(255, 75, 75);
 
 		// Set the background color to red
@@ -619,7 +623,9 @@ LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 
 		SoundAlarm();
 
-	}else if(latNSat != 0 && data.nSatellites == 0){
+	}
+	else if(latNSat != 0 && data.nSatellitesTracked == 0)
+	{
 		COLORREF warning = RGB(255, 75, 75);
 
 		// Set the background color to red
@@ -640,7 +646,7 @@ LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 	}
 	
 	// Remember the number of satelites
-	latNSat = (int)data.nSatellites;
+	latNSat = (int)data.nSatellitesTracked;
 
 	return 0;
 }
@@ -1279,6 +1285,44 @@ void CDMSpecView::OnMenuAnalysisPlumeheightmeasurement()
 	postPHDlg.DoModal();
 }
 
+void CDMSpecView::OnMenuControlRunTheGPS()
+{
+	CString status;
+
+	// set the baudrate for the connection
+	const std::vector<long> baudrate{ 4800, 9600 };
+
+	for (int port = 1; port < 256; ++port) {
+		for (long baudrateToTest : baudrate) {
+			// try this serial-port and see what happens
+			status.Format("Testing port: COM%d Baud rate: %d", port, baudrateToTest);
+			ShowStatusMsg(status);
+
+			// test the serial-port
+			CSerialConnection serial;
+			if (!serial.Init(port, baudrateToTest)) {
+				// could not connect to this serial-port
+				continue;
+			}
+			// it was possible to open the serial-port, test if there is a gps on this port
+
+			CGPS gps(std::move(serial));
+			for (int i = 0; i < 10; ++i)
+			{
+				if (SUCCESS == gps.ReadGPS())
+				{
+					GpsAsyncReader gpsReader(std::move(gps));
+					return;
+				}
+				Sleep(10);
+			}
+		}
+	}
+	status = "No GPS reciever could be found";
+	ShowStatusMsg(status);
+	MessageBox(status);
+}
+
 void CDMSpecView::OnMenuControlTestTheGPS()
 {
 	CString status;
@@ -1424,6 +1468,15 @@ void CDMSpecView::OnUpdate_DisableOnRun(CCmdUI *pCmdUI){
 void CDMSpecView::OnUpdateWindMeasurement(CCmdUI *pCmdUI){
 	// disable
 	pCmdUI->Enable(FALSE); // unfortunately does not OmniDriver not yet support dual-beam wind measurements. Disable this in the meantime...
+}
+
+void CDMSpecView::OnUpdate_StartTheGps(CCmdUI *pCmdUI) {
+// only available for debugging...
+#ifdef _DEBUG
+	pCmdUI->Enable(TRUE);
+#else
+	pCmdUI->Enable(FALSE);
+#endif // _DEBUG
 }
 
 void CDMSpecView::OnUpdate_CalibrateSpectrometer(CCmdUI *pCmdUI){

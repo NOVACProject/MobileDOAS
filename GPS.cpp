@@ -42,6 +42,26 @@ CGPS::CGPS(CSerialConnection&& serial)
 	this->serial = std::move(serial);
 }
 
+CGPS::CGPS(CGPS&& other)
+{
+	this->serial		= std::move(other.serial);
+	this->fRun			= other.fRun;
+	this->m_gotContact	= other.m_gotContact;
+	this->m_gpsInfo		= other.m_gpsInfo;
+	this->m_logFile		= other.m_logFile;
+}
+
+CGPS& CGPS::operator=(CGPS&& other)
+{
+	this->serial		= std::move(other.serial);
+	this->fRun			= other.fRun;
+	this->m_gotContact	= other.m_gotContact;
+	this->m_gpsInfo		= other.m_gpsInfo;
+	this->m_logFile		= other.m_logFile;
+	return *this;
+}
+
+
 
 CGPS::~CGPS()
 {
@@ -110,9 +130,10 @@ bool CGPS::ReadGPS()
 	m_logFile.Format("gps.log"); // for testing only
 	if(strlen(m_logFile) > 0){
 		FILE *f = fopen(g_exePath + m_logFile, "a+");
-		fprintf(f, "%1d\t%ld\t", localGpsInfo.date, localGpsInfo.time);
+		fprintf(f, "%1d\t%lf\t", localGpsInfo.date, localGpsInfo.fTime);
 		fprintf(f, "%lf\t%lf\t%lf\t", localGpsInfo.latitude, localGpsInfo.longitude, localGpsInfo.altitude);
-		fprintf(f, "%ld\n", localGpsInfo.nSatellites);
+		fprintf(f, "%ld\t", localGpsInfo.nSatellitesTracked);
+		fprintf(f, "%ld\n", localGpsInfo.nSatellitesSeen);
 		fclose(f);
 	}
 	#endif
@@ -161,6 +182,13 @@ GpsAsyncReader::GpsAsyncReader(const char* pCOMPort, long baudrate)
 	m_gps = new CGPS(pCOMPort, baudrate);
 	m_gpsThread = AfxBeginThread(CollectGPSData, (LPVOID)m_gps, THREAD_PRIORITY_NORMAL, 0, 0, nullptr);
 }
+
+GpsAsyncReader::GpsAsyncReader(CGPS&& gps)
+{
+	m_gps = new CGPS(std::move(gps));
+	m_gpsThread = AfxBeginThread(CollectGPSData, (LPVOID)m_gps, THREAD_PRIORITY_NORMAL, 0, 0, nullptr);
+}
+
 
 GpsAsyncReader::~GpsAsyncReader()
 {

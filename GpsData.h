@@ -4,6 +4,18 @@
 
 // --------------- This file collects data structures and routines related to GPS reading --------------- 
 
+enum GpsFixQuality
+{
+	INVALID = 0,
+	GPS_FIXED = 1,
+	DGPS_FIXED = 2,
+	PPS_FIX = 3,
+	RTK_FIX = 4,
+	FRTK_FIX = 5,
+	MANUAL = 7,
+	SIMULATED = 8
+};
+
 /** Common structure for stroring data read out from the GPS */
 struct gpsData {
 	gpsData();
@@ -13,23 +25,32 @@ struct gpsData {
 
 	friend void swap(gpsData& first, gpsData& second);
 
-	/* Latitude in (decimal) degrees. */
+	/* Latitude in (decimal) degrees. Positive values corresponds to northern hemisphere. */
 	double latitude = 0.0;
 
-	/* Longitude in (decimal) degrees. */
+	/* Longitude in (decimal) degrees. Positive values corresponds to eastern hemisphere. */
 	double longitude = 0.0;
 
 	/* Altitude above sea level in meters. */
 	double altitude = 0.0;
 
-	/* The time stamp from the Gps */
+	/* The time stamp from the Gps (in the format hhmmss) */
 	long time = 0;
 
-	/* Number of satellites seen by the receiver. */
-	long nSatellites = 0;
+	/* The time stamp from the Gps (in the format hhmmss.ddd) */
+	float fTime = 0;
 
-	/* Date */
+	/* Number of satellites seen by the receiver (not all of these needs to be used) */
+	long nSatellitesSeen = 0;
+
+	/* Number of satellites tracked by the receiver */
+	long nSatellitesTracked = 0;
+
+	/* Date (in the format ddmmyy) */
 	int date = 0;
+
+	/* The quality of the GPS-fix */
+	GpsFixQuality fixQuality = GpsFixQuality::INVALID;
 };
 
 /** Extracts the time from the provided gpsData and separates it into hour-minute-second */

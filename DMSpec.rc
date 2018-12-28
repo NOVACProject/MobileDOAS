@@ -83,6 +83,7 @@ BEGIN
         MENUITEM "Start WindMeasurement",       ID_CONTROL_STARTWINDMEASUREMENT
         MENUITEM SEPARATOR
         MENUITEM "Test the &GPS",               ID_CONTROL_TESTTHEGPS
+        MENUITEM "Start the GPS",               ID_CONTROL_STARTTHEGPS
         MENUITEM SEPARATOR
         MENUITEM "Realtime Flux",               ID_CONTROL_COUNTFLUX
         MENUITEM "Calculate Flux From File",    ID_ANALYSIS_POSTFLUX

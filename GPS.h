@@ -36,6 +36,10 @@ public:
 	CGPS(const CGPS&) = delete;
 	CGPS& operator=(const CGPS&) = delete;
 
+	// --- This class manages is however movable
+	CGPS(CGPS&&);
+	CGPS& operator=(CGPS&&);
+
 	bool Connect();
 
 	/** Set to true when the gps-collecting thread is running. */
@@ -82,6 +86,7 @@ class GpsAsyncReader
 {
 public:
 	GpsAsyncReader(const char* pCOMPort, long baudrate);
+	GpsAsyncReader(CGPS&& gps);
 	~GpsAsyncReader();
 
 	/** This will stop the data collection. */
