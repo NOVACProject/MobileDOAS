@@ -130,7 +130,7 @@ bool CGPS::ReadGPS()
 	m_logFile.Format("gps.log"); // for testing only
 	if(strlen(m_logFile) > 0){
 		FILE *f = fopen(g_exePath + m_logFile, "a+");
-		fprintf(f, "%1d\t%lf\t", localGpsInfo.date, localGpsInfo.fTime);
+		fprintf(f, "%1d\t%ld\t", localGpsInfo.date, localGpsInfo.time);
 		fprintf(f, "%lf\t%lf\t%lf\t", localGpsInfo.latitude, localGpsInfo.longitude, localGpsInfo.altitude);
 		fprintf(f, "%ld\t", localGpsInfo.nSatellitesTracked);
 		fprintf(f, "%ld\n", localGpsInfo.nSatellitesSeen);

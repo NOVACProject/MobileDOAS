@@ -37,9 +37,6 @@ struct gpsData {
 	/* The time stamp from the Gps (in the format hhmmss) */
 	long time = 0;
 
-	/* The time stamp from the Gps (in the format hhmmss.ddd) */
-	float fTime = 0;
-
 	/* Number of satellites seen by the receiver (not all of these needs to be used) */
 	long nSatellitesSeen = 0;
 

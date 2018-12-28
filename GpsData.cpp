@@ -14,7 +14,6 @@ gpsData::gpsData(const gpsData& other)
 	this->longitude = other.longitude;
 	this->altitude = other.altitude;
 	this->time = other.time;
-	this->fTime = other.fTime;
 	this->nSatellitesTracked = other.nSatellitesTracked;
 	this->nSatellitesSeen = other.nSatellitesSeen;
 	this->date = other.date;
@@ -34,7 +33,6 @@ void swap(gpsData & first, gpsData & second)
 	swap(first.longitude, second.longitude);
 	swap(first.altitude, second.altitude);
 	swap(first.time, second.time);
-	swap(first.fTime, second.fTime);
 	swap(first.nSatellitesTracked, second.nSatellitesTracked);
 	swap(first.nSatellitesSeen, second.nSatellitesSeen);
 	swap(first.date, second.date);
@@ -123,7 +121,6 @@ void SetTime(const std::string& curToken, gpsData& data)
 	if (time > 0.0)
 	{
 		data.time  = (long)time;
-		data.fTime = time;
 	}
 }
 void SetDate(const std::string& curToken, gpsData& data)
