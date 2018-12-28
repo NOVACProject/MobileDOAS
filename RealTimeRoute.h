@@ -36,12 +36,12 @@ namespace Dialogs
 		CSpectrometer *m_spectrometer;
 
 		long    m_pointNum;
-		double  m_lon[65536];
-		double  m_lat[65536];
-		double  m_col[65536];
+		double  m_lon[65536]; // TODO: Convert this to std::vector
+		double  m_lat[65536]; // TODO: Convert this to std::vector
+		double  m_col[65536]; // TODO: Convert this to std::vector
 		double  m_colmax;
 		double  m_colmin;
-		double  m_int[65536];
+		double  m_int[65536]; // TODO: Convert this to std::vector
 
 		struct plotRange m_range;
 		double m_srcLat, m_srcLon;
