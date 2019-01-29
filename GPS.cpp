@@ -34,8 +34,13 @@ CGPS::CGPS(char* pCOMPort, long pBaudrate)
 	serial.baudrate = pBaudrate;
 	strcpy(serial.serialPort, pCOMPort);
 
-	if (!Connect()) {
-		MessageBox(nullptr, "Could not communicate with GPS. No GPS-data can be retrieved!", "Error", MB_OK | MB_SYSTEMMODAL);
+	int c = 0;
+	while (!Connect()) {
+		Sleep(1000);
+		if (c++ >= 10) { // retry 10 times
+			MessageBox(nullptr, "Could not communicate with GPS. No GPS-data can be retrieved!", "Error", MB_OK | MB_SYSTEMMODAL);
+			break;
+		}
 	}
 }
 
