@@ -36,6 +36,9 @@ void CConfigure_Spectrometer::DoDataExchange(CDataExchange* pDX)
 	// The determination of the exposure-time
 	DDX_Radio(pDX, IDC_RADIO_EXPTIME_AUTOMATIC, m_conf->m_expTimeMode);
 
+	// set point for the CCD temperature
+	DDX_Text(pDX, IDC_EDIT_SETPOINT, m_conf->m_setPointTemperature);
+
 	// The parameters for judging how to calculate the exp-time
 	DDX_Text(pDX,		IDC_EDIT_SPECCENTER,		m_conf->m_specCenter);
 	DDX_Text(pDX,		IDC_EDIT_PERCENT,				m_conf->m_percent);
@@ -68,24 +71,26 @@ void CConfigure_Spectrometer::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CConfigure_Spectrometer, CPropertyPage)
 	// Changing the contents of the radio-boxes:
-	ON_LBN_SELCHANGE(IDC_COMBO_PORT,			SaveSettings)
+	ON_LBN_SELCHANGE(IDC_COMBO_PORT,		SaveSettings)
 	ON_LBN_SELCHANGE(IDC_COMBO_BAUDRATE,	SaveSettings)
-	ON_LBN_SELCHANGE(IDC_COMBO_NCHANNELS, SaveSettings)
+	ON_LBN_SELCHANGE(IDC_COMBO_NCHANNELS,	SaveSettings)
 
 	// Changing the selection using the radio-buttons:
-	ON_BN_CLICKED(IDC_RADIO_CONNECTION_USB,			SaveSettings)
+	ON_BN_CLICKED(IDC_RADIO_CONNECTION_USB,		SaveSettings)
 	ON_BN_CLICKED(IDC_RADIO_CONNECTION_SERIAL,	SaveSettings)
 	ON_BN_CLICKED(IDC_RADIO_EXPTIME_AUTOMATIC,	SaveSettings)
-	ON_BN_CLICKED(IDC_RADIO_EXPTIME_FIXED,			SaveSettings)
-	ON_BN_CLICKED(IDC_RADIO_EXPTIME_ADAPTIVE,		SaveSettings)
+	ON_BN_CLICKED(IDC_RADIO_EXPTIME_FIXED,		SaveSettings)
+	ON_BN_CLICKED(IDC_RADIO_EXPTIME_ADAPTIVE,	SaveSettings)
 
 	// Changing the contents of the edit-boxes
-	ON_EN_CHANGE(IDC_EDIT_SPECCENTER,						SaveSettings)
-	ON_EN_CHANGE(IDC_EDIT_PERCENT,							SaveSettings)
-	ON_EN_CHANGE(IDC_EDIT_FIXEXPTIME,						SaveSettings)
-	ON_EN_CHANGE(IDC_EDIT_TIMERESOLUTION,				SaveSettings)
-	ON_EN_CHANGE(IDC_EDIT_OFFSETFROM,						SaveSettings)
-	ON_EN_CHANGE(IDC_EDIT_OFFSETTO,							SaveSettings)
+	ON_EN_CHANGE(IDC_EDIT_SPECCENTER,		SaveSettings)
+	ON_EN_CHANGE(IDC_EDIT_PERCENT,			SaveSettings)
+	ON_EN_CHANGE(IDC_EDIT_FIXEXPTIME,		SaveSettings)
+	ON_EN_CHANGE(IDC_EDIT_TIMERESOLUTION,	SaveSettings)
+	ON_EN_CHANGE(IDC_EDIT_OFFSETFROM,		SaveSettings)
+	ON_EN_CHANGE(IDC_EDIT_OFFSETTO,			SaveSettings)
+	ON_EN_CHANGE(IDC_EDIT_SETPOINT,			SaveSettings)
+	ON_EN_CHANGE(IDC_EDIT_MAXCOLUMN,		SaveSettings)
 
 	// Changing wheather we should use the audio or not
 	ON_BN_CLICKED(IDC_CHECK_USEAUDIO, SaveSettings)
@@ -231,6 +236,7 @@ void CConfigure_Spectrometer::OnOK(){
 
 	fprintf(f, "\t<useAudio>%d</useAudio>\n", m_conf->m_useAudio);
 	fprintf(f, "\t<maxColumn>%.2lf</maxColumn>\n",			m_conf->m_maxColumn);
+	fprintf(f, "\t<setPointTemperature>%.2lf</setPointTemperature>\n", m_conf->m_setPointTemperature);
 
 	// ------------ Settings for the Exposure-time -------------
 	fprintf(f, "\t<Intensity>\n");

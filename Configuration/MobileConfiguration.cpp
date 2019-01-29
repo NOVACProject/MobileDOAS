@@ -26,6 +26,7 @@ void CMobileConfiguration::Clear(){
 	m_serialPort.Format("COM1");
 	m_baudrate = 57600;
 	m_nChannels = 1;
+	m_setPointTemperature = -10.0;
 
 	// Exposure-Time
 	m_expTimeMode = EXPOSURETIME_AUTOMATIC;
@@ -131,6 +132,12 @@ int CMobileConfiguration::Parse(){
 		// The number of channels to use...
 		if(Equals(szToken, "nchannels")){
 			Parse_IntItem("/nchannels", m_nChannels);
+			continue;
+		}
+
+		// The set point for the CCD temperature
+		if (Equals(szToken, "setPointTemperature")) {
+			Parse_FloatItem("/setPointTemperature", m_setPointTemperature);
 			continue;
 		}
 

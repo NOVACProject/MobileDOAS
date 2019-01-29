@@ -67,6 +67,15 @@ public:
 	/** The actual graph, shows the columns, the spectra, the intensities, etc...*/
 	Graph::CGraphCtrl m_ColumnPlot;
 
+
+	DlgControls::CLabel	m_expLabel;
+	DlgControls::CLabel	m_scanNoLabel;
+	DlgControls::CLabel	m_colLabel;
+	DlgControls::CLabel	m_noSpecLabel;
+	DlgControls::CLabel	m_shiftLabel;
+	DlgControls::CLabel	m_squeezeLabel;
+	DlgControls::CLabel	m_tempLabel;
+
 	DlgControls::CLabel	m_gpsLatLabel;
 	DlgControls::CLabel	m_gpsLonLabel;
 	DlgControls::CLabel	m_gpsTimeLabel;
@@ -77,6 +86,8 @@ public:
 	DlgControls::CLabel	m_colorLabelSeries1;
 	DlgControls::CLabel	m_colorLabelSeries2;
 	CStatic				m_legendSeries1, m_legendSeries2, m_legendSpectrum1, m_legendSpectrum2;
+
+
 
 	// ---------------------- PUBLIC DATA ----------------------------
 

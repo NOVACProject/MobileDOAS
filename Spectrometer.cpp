@@ -279,6 +279,7 @@ int CSpectrometer::ScanUSB(long sumInComputer, long sumInSpectrometer, double pR
 
 		// Set the number of co-adds
 		m_wrapper.setScansToAverage(m_spectrometerIndex, chn, sumInSpectrometer);
+
 	}
 
 
@@ -354,6 +355,13 @@ void CSpectrometer::ApplySettings() {
 	}
 	if (error) {
 		ShowMessageBox(msg, "Error in settings");
+	}
+
+	// set point temperature for CCD if supported
+	if (m_wrapper.isFeatureSupportedDetectorTemperature(m_spectrometerIndex) == 1) {
+		ThermoElectricWrapper tew = m_wrapper.getFeatureControllerThermoElectric(m_spectrometerIndex);
+		tew.setTECEnable(true);
+		m_wrapper.setDetectorSetPointCelsius(m_spectrometerIndex, m_conf->m_setPointTemperature);
 	}
 
 	// The GPS-settings
@@ -1455,21 +1463,31 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 		}
 	}
 
-	/** If possible, get the temperature of the spectrometer */
+	/** If possible, get the board temperature of the spectrometer */
 	if (m_wrapper.isFeatureSupportedBoardTemperature(m_spectrometerIndex) == 1) {
 		// Board temperature feature is supported by this spectrometer
-		BoardTemperature boardTemperature	= m_wrapper.getFeatureControllerBoardTemperature(m_spectrometerIndex);
-		const double temperature			= boardTemperature.getBoardTemperatureCelsius();
+		BoardTemperature bt	= m_wrapper.getFeatureControllerBoardTemperature(m_spectrometerIndex);
+		boardTemperature = bt.getBoardTemperatureCelsius();
+	}
+	else {
+		boardTemperature = std::numeric_limits<double>::quiet_NaN();
+	}
 
-		for (int n = 0; n < m_NChannels; ++n) {
-			m_specInfo[n].temperature = temperature;
+	/** If possible, get the detector temperature of the spectrometer */
+	if (m_wrapper.isFeatureSupportedDetectorTemperature(m_spectrometerIndex) == 1) {
+		DetectorTemperature dt = m_wrapper.getFeatureControllerDetectorTemperature(m_spectrometerIndex);
+		detectorTemperature = dt.getDetectorTemperatureCelsius();
+		if (abs(detectorTemperature - m_conf->m_setPointTemperature) <= 2) {
+			detectorTemperatureIsSetPointTemp = true;
+		}
+		else {
+			detectorTemperatureIsSetPointTemp = false;
 		}
 	}
 	else
 	{
-		for (int n = 0; n < m_NChannels; ++n) {
-			m_specInfo[n].temperature = std::numeric_limits<double>::quiet_NaN();
-		}
+		detectorTemperature = std::numeric_limits<double>::quiet_NaN();
+		detectorTemperatureIsSetPointTemp = false;
 	}
 
 	/* Print the information to a file */
@@ -1481,8 +1499,11 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 		fprintf(f, "#--Additional log file to the Mobile DOAS program---\n");
 		fprintf(f, "#This file has only use as test file for further development of the Mobile DOAS program\n\n");
 		fprintf(f, "#SpectrumNumber\t");
-		if (!std::isnan(m_specInfo[0].temperature)) {
+		if (!std::isnan(boardTemperature)) {
 			fprintf(f, "BoardTemperature\t");
+		}
+		if (!std::isnan(detectorTemperature)) {
+			fprintf(f, "DetectorTemperature\t");
 		}
 		if (m_NChannels == 1) {
 			fprintf(f, "Offset\tSpecCenterIntensity\tisDark\n");
@@ -1501,11 +1522,14 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 	else {
 		// Spectrum number
 		fprintf(f, "%ld\t", m_spectrumCounter);
-		// The board temperature (?)
-		if (!std::isnan(m_specInfo[0].temperature)) {
-			fprintf(f, "%.3lf\t", m_specInfo[0].temperature);
+		// The board temperature 
+		if (!std::isnan(boardTemperature)) {
+			fprintf(f, "%.3lf\t", boardTemperature);
 		}
-
+		// The detector temperature 
+		if (!std::isnan(detectorTemperature)) {
+			fprintf(f, "%.3lf\t", detectorTemperature);
+		}
 		// The master-channel
 		fprintf(f, "%lf\t%ld\t%d", m_specInfo[0].offset, m_averageSpectrumIntensity[0], m_specInfo[0].isDark);
 		if (m_NChannels > 1){

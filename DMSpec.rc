@@ -172,7 +172,7 @@ BEGIN
     LTEXT           "Yan Zhang, Mattias Johansson, Diana Norgaard",IDC_STATIC,126,54,103,18
 END
 
-IDD_DMSPEC_FORM DIALOGEX 0, 0, 667, 397
+IDD_DMSPEC_FORM DIALOGEX 0, 0, 667, 419
 STYLE DS_SETFONT | WS_CHILD
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
@@ -184,28 +184,28 @@ BEGIN
     EDITTEXT        IDC_BASEEDIT,95,372,82,13,ES_AUTOHSCROLL
     LTEXT           "m/s",IDC_STATIC,165,348,13,8
     RTEXT           "degree ",IDC_STATIC,153,361,25,8
-    GROUPBOX        "Spectrometer Information",IDC_STATIC,249,334,205,56
+    GROUPBOX        "Spectrometer Information",IDC_STATIC,249,334,237,69
     LTEXT           "Column",IDC_STATIC,257,361,24,8
     LTEXT           "Shift",IDC_STATIC,257,374,15,8
     LTEXT           "Squeeze",IDC_STATIC,379,374,29,8
     LTEXT           "",IDC_CONCENTRATION,310,361,65,8
     LTEXT           "",IDC_SH,310,374,45,8
     LTEXT           "",IDC_SQ,410,374,39,8
-    LTEXT           "",IDC_LAT,509,361,82,8
-    LTEXT           "Latitude",IDC_STATIC,469,361,26,8
-    LTEXT           "Longitude",IDC_STATIC,469,374,32,8
-    LTEXT           "",IDC_LON,509,374,82,8
+    LTEXT           "",IDC_LAT,551,361,82,8
+    LTEXT           "Latitude",IDC_STATIC,511,361,26,8
+    LTEXT           "Longitude",IDC_STATIC,511,374,32,8
+    LTEXT           "",IDC_LON,551,374,82,8
     LTEXT           "Exposure Time",IDC_STATIC,257,348,48,8
     LTEXT           "",IDC_INTTIME,310,348,45,8
-    GROUPBOX        "GPS Information",IDC_STATIC,463,334,178,56
+    GROUPBOX        "GPS Information",IDC_STATIC,499,334,142,68
     GROUPBOX        "Initial Setting",IDC_STATIC,35,334,205,56
-    CONTROL         "GPS time",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,469,347,30,8
-    LTEXT           "",IDC_GPSTIME,509,347,46,8
+    CONTROL         "GPS time",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,511,347,30,8
+    LTEXT           "",IDC_GPSTIME,551,347,46,8
     LTEXT           "Spec No.",IDC_STATIC,379,348,31,8
     LTEXT           "",IDC_SCANNO,410,348,39,8
     PUSHBUTTON      "Start",IDC_BTNSTART,189,344,46,41
-    LTEXT           "# Satellites",IDC_STATIC,567,347,36,8
-    LTEXT           "",IDC_NGPSSAT,608,348,27,8
+    LTEXT           "# Satellites",IDC_STATIC,509,387,36,8
+    LTEXT           "",IDC_NGPSSAT,550,388,27,8
     LTEXT           "No Spec",IDC_STATIC,380,361,29,8
     LTEXT           "",IDC_SPECNO,410,362,39,8
     CONTROL         "",IDC_SIGNALLIMIT_SLIDER,"msctls_trackbar32",TBS_AUTOTICKS | TBS_VERT | TBS_TOP | WS_TABSTOP,640,7,20,314
@@ -217,6 +217,8 @@ BEGIN
     LTEXT           "Spectrum",IDC_LABEL_SPECTRUM,47,321,64,8
     LTEXT           "",IDC_LABEL_COLOR_SPECTRUM2,117,322,8,8,WS_BORDER
     LTEXT           "Spectrum",IDC_LABEL_SPECTRUM2,129,321,59,8
+    LTEXT           "Temperature",IDC_STATIC,258,385,41,8
+    LTEXT           "",IDC_TEMPERATURE,311,385,45,8
 END
 
 IDD_REEVAL_EVALUATIONLOG DIALOGEX 0, 0, 433, 283
@@ -388,27 +390,30 @@ BEGIN
     EDITTEXT        IDC_EDIT_PERCENT,205,41,50,12,ES_AUTOHSCROLL
     EDITTEXT        IDC_EDIT_FIXEXPTIME,206,56,50,12,ES_AUTOHSCROLL
     EDITTEXT        IDC_EDIT_TIMERESOLUTION,239,84,42,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_EDIT_OFFSETFROM,63,122,66,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_EDIT_OFFSETTO,63,135,66,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_OFFSETFROM,63,138,66,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_OFFSETTO,63,151,66,12,ES_AUTOHSCROLL
     LTEXT           "Port:",IDC_STATIC,25,44,17,8
     LTEXT           "Baudrate:",IDC_STATIC,25,59,33,8
     LTEXT           "N Channels:",IDC_STATIC,15,75,40,8
-    GROUPBOX        "Spectrometer",IDC_STATIC,7,7,137,97
-    GROUPBOX        "ExposureTime:",IDC_STATIC,147,7,187,98
+    GROUPBOX        "Spectrometer",IDC_STATIC,7,7,137,115
+    GROUPBOX        "ExposureTime:",IDC_STATIC,147,7,187,115
     LTEXT           "Intensity at channel:",IDC_STATIC,169,29,68,8
     LTEXT           "Should be:",IDC_STATIC,169,44,35,8
     LTEXT           "% of maximum",IDC_STATIC,261,44,48,8
     LTEXT           "[ms]",IDC_STATIC,260,59,15,8
     LTEXT           "Save a spectrum every:",IDC_STATIC,158,86,78,8
     LTEXT           "[ms]",IDC_STATIC,289,86,15,8
-    GROUPBOX        "Offset Removal",IDC_STATIC,7,111,137,48
-    LTEXT           "From",IDC_STATIC,25,124,17,8
-    LTEXT           "To",IDC_STATIC,25,138,9,8
-    GROUPBOX        "Audio",IDC_STATIC,150,111,184,48
-    LTEXT           "Maximum Expected Column",IDC_STATIC,159,136,88,8
-    LTEXT           "[ppmm]",IDC_STATIC,297,136,24,8
-    EDITTEXT        IDC_EDIT_MAXCOLUMN,252,133,35,12,ES_AUTOHSCROLL
-    CONTROL         "Use Audio",IDC_CHECK_USEAUDIO,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,159,123,48,10
+    GROUPBOX        "Offset Removal",IDC_STATIC,7,127,137,48
+    LTEXT           "From",IDC_STATIC,25,140,17,8
+    LTEXT           "To",IDC_STATIC,25,154,9,8
+    GROUPBOX        "Audio",IDC_STATIC,150,127,184,48
+    LTEXT           "Maximum Expected Column",IDC_STATIC,159,152,88,8
+    LTEXT           "[ppmm]",IDC_STATIC,297,152,24,8
+    EDITTEXT        IDC_EDIT_MAXCOLUMN,252,149,35,12,ES_AUTOHSCROLL
+    CONTROL         "Use Audio",IDC_CHECK_USEAUDIO,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,159,139,48,10
+    LTEXT           "Set Point Temperature:",IDC_STATIC,15,92,43,18
+    LTEXT           "[Celsius]",IDC_STATIC,110,98,28,8
+    EDITTEXT        IDC_EDIT_SETPOINT,63,96,38,12,ES_AUTOHSCROLL
 END
 
 IDD_CONFIGURE_GPS DIALOGEX 0, 0, 330, 110
@@ -484,7 +489,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 656
         TOPMARGIN, 7
-        BOTTOMMARGIN, 394
+        BOTTOMMARGIN, 416
     END
 
     IDD_REEVAL_EVALUATIONLOG, DIALOG

@@ -169,6 +169,17 @@ public:
 	
 	/** This retrieves a list of all spectrometers that are connected to this computer */
 	void GetConnectedSpecs(CList <CString, CString&> &connectedSpectrometers);
+	
+	/** The board temperature, as reported by the spectrometer, in degrees Celsius.
+	Set to NaN if this could not be read. */
+	double boardTemperature = std::numeric_limits<double>::quiet_NaN();
+
+	/** The detector temperature, as reported by the spectrometer, in degrees Celsius.
+	Set to NaN if this could not be read. */
+	double detectorTemperature = std::numeric_limits<double>::quiet_NaN();
+
+	/** If detector temperature is within 2 degrees of set point temperature than set to true. */
+	bool detectorTemperatureIsSetPointTemp = false;
 
 	// -------------------------------------------------------------------------------------
 	// ---------------------- Managing the intensity of the spectra ------------------------
@@ -578,9 +589,6 @@ protected:
 		/** True if the program judges that the spectrum is dark */
 		bool   isDark = false;
 
-		/** The temperature, as reported by the spectrometer, in degrees Celsius. 
-			Set to NaN if this could not be read. */
-		double temperature = std::numeric_limits<double>::quiet_NaN();
 	}SpectrumInfo;
 
 	/** Information about the last spectrum collected */
