@@ -107,7 +107,7 @@ public:
 		@return 0 on success
 		@return 1 if the collection failed or the collection should stop
 		 */
-	int Scan(long sumInComputer, long sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]);
+	int Scan(int sumInComputer, int sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]);
 
 	/* Collects a spectrum from the spectrometer using the USB-connection
 		@param sumInComputer - the number of spectra to add together in the computer
@@ -117,7 +117,7 @@ public:
 		@return 0 on success 
 		@return 1 if the collection failed or the collection should stop
 		*/
-	int ScanUSB(long sumInComputer, long sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]);
+	int ScanUSB(int sumInComputer, int sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]);
 
 	/** The number of channels in the spectrometer to use */
 	int     m_NChannels; 
@@ -127,7 +127,7 @@ public:
 	long    m_totalSpecNum;
 	
 	/** number of spectra to average in spectrometer */
-	short   m_sumInSpectrometer; 
+	int   m_sumInSpectrometer; 
 	
 	/** Number of spectra to average in computer */
 	int     m_sumInComputer;

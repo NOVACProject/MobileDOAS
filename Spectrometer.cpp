@@ -166,7 +166,7 @@ int CSpectrometer::InitSpectrometer(short channel, short inttime, short sumSpec)
 ** @sumInSpectrometer - the number of spectra to gather in spectrometer
 ** @chn - 0 , use one spectrometer
 */
-int CSpectrometer::Scan(long sumInComputer, long sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]) {
+int CSpectrometer::Scan(int sumInComputer, int sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]) {
 
 	if (m_connectViaUsb) {
 		return ScanUSB(sumInComputer, sumInSpectrometer, pResult);
@@ -266,24 +266,43 @@ int CSpectrometer::Scan(long sumInComputer, long sumInSpectrometer, double pResu
 ** @sumInSpectrometer - the number of spectra to gather in spectrometer
 
 */
-int CSpectrometer::ScanUSB(long sumInComputer, long sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]) {
+int CSpectrometer::ScanUSB(int sumInComputer, int sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]) {
 
 	// clear the old spectrum
 	memset(pResult, 0, MAX_N_CHANNELS * MAX_SPECTRUM_LENGTH * sizeof(double));
 
+	// set point temperature for CCD if supported
+	if (m_wrapper.isFeatureSupportedThermoElectric(m_spectrometerIndex)) {
+		ThermoElectricWrapper tew = m_wrapper.getFeatureControllerThermoElectric(m_spectrometerIndex);
+		tew.setTECEnable(true);
+		tew.setDetectorSetPointCelsius(m_conf->m_setPointTemperature);
+	}
+
 	// Set the parameters for acquiring the spectrum
 	for (int chn = 0; chn < m_NChannels; ++chn)
 	{
-		// Set the exposure time to use (this function takes exp-time in micro-seconds)
-		m_wrapper.setIntegrationTime(m_spectrometerIndex, chn, m_integrationTime * 1000);
 
-		// Set the number of co-adds
+		int newExpTime = m_integrationTime * 1000;
+		m_wrapper.setIntegrationTime(m_spectrometerIndex, chn, newExpTime);
 		m_wrapper.setScansToAverage(m_spectrometerIndex, chn, sumInSpectrometer);
+
+
+		// Set the exposure time to use (this function takes exp-time in micro-seconds)
+		//int curExpTime = m_wrapper.getIntegrationTime(m_spectrometerIndex);
+		//int newExpTime = m_integrationTime * 1000;
+		//if (curExpTime != newExpTime) {
+		//	m_wrapper.setIntegrationTime(m_spectrometerIndex, chn, newExpTime);
+		//}
+
+		//// Set the number of co-adds
+		//int scanToAvg = m_wrapper.getScansToAverage(m_spectrometerIndex);
+		//if (scanToAvg != sumInSpectrometer) {
+		//	m_wrapper.setScansToAverage(m_spectrometerIndex, chn, sumInSpectrometer);
+		//}
 
 	}
 
-
-	// if we only use one channel
+	// for each channel
 	for (int chn = 0; chn < m_NChannels; ++chn)
 	{
 		// Get the spectrum
@@ -357,13 +376,6 @@ void CSpectrometer::ApplySettings() {
 		ShowMessageBox(msg, "Error in settings");
 	}
 
-	// set point temperature for CCD if supported
-	if (m_wrapper.isFeatureSupportedDetectorTemperature(m_spectrometerIndex) == 1) {
-		ThermoElectricWrapper tew = m_wrapper.getFeatureControllerThermoElectric(m_spectrometerIndex);
-		tew.setTECEnable(true);
-		m_wrapper.setDetectorSetPointCelsius(m_spectrometerIndex, m_conf->m_setPointTemperature);
-	}
-
 	// The GPS-settings
 	m_GPSBaudRate = m_conf->m_gpsBaudrate;
 	sprintf(m_GPSPort, "%s", (LPCTSTR)m_conf->m_gpsPort);
@@ -398,6 +410,7 @@ void CSpectrometer::ApplySettings() {
 	// Audio Settings
 	this->m_useAudio = m_conf->m_useAudio;
 	this->m_maxColumn = m_conf->m_maxColumn;
+
 }
 
 /* makes a test of the settings, returns 0 if all is ok, else 1 */
@@ -1054,6 +1067,7 @@ void CSpectrometer::Sing(double factor)
 	PlaySound(fileToPlay, 0, SND_SYNC);
 }
 
+// TODO: What is ptotalNum for?  Seems it is always 1.
 long CSpectrometer::AverageIntens(double *pSpectrum, long ptotalNum) const {
 	double sum = 0.0;
 	long num;
@@ -1474,10 +1488,10 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 	}
 
 	/** If possible, get the detector temperature of the spectrometer */
-	if (m_wrapper.isFeatureSupportedDetectorTemperature(m_spectrometerIndex) == 1) {
-		DetectorTemperature dt = m_wrapper.getFeatureControllerDetectorTemperature(m_spectrometerIndex);
-		detectorTemperature = dt.getDetectorTemperatureCelsius();
-		if (abs(detectorTemperature - m_conf->m_setPointTemperature) <= 2) {
+	if (m_wrapper.isFeatureSupportedThermoElectric(m_spectrometerIndex)) {
+		ThermoElectricWrapper tew = m_wrapper.getFeatureControllerThermoElectric(m_spectrometerIndex);
+		detectorTemperature = tew.getDetectorTemperatureCelsius();
+		if (abs(detectorTemperature - m_conf->m_setPointTemperature) <= 2.0) {
 			detectorTemperatureIsSetPointTemp = true;
 		}
 		else {
