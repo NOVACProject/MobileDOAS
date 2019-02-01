@@ -30,7 +30,7 @@ void CMobileConfiguration::Clear(){
 
 	// Exposure-Time
 	m_expTimeMode = EXPOSURETIME_AUTOMATIC;
-	m_specCenter = 1144;
+	m_specCenter = 1144;	// approximate pixel with the highest intensity in standard spectrometers we use. user can change.
 	m_percent = 70;
 	m_timeResolution	= 5000;
 
