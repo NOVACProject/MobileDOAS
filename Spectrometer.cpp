@@ -271,34 +271,27 @@ int CSpectrometer::ScanUSB(int sumInComputer, int sumInSpectrometer, double pRes
 	// clear the old spectrum
 	memset(pResult, 0, MAX_N_CHANNELS * MAX_SPECTRUM_LENGTH * sizeof(double));
 
-	// set point temperature for CCD if supported
-	if (m_wrapper.isFeatureSupportedThermoElectric(m_spectrometerIndex)) {
-		ThermoElectricWrapper tew = m_wrapper.getFeatureControllerThermoElectric(m_spectrometerIndex);
-		tew.setTECEnable(true);
-		tew.setDetectorSetPointCelsius(m_conf->m_setPointTemperature);
-	}
-
 	// Set the parameters for acquiring the spectrum
+	// TODO: do this somewhere else?
 	for (int chn = 0; chn < m_NChannels; ++chn)
 	{
 
-		int newExpTime = m_integrationTime * 1000;
-		m_wrapper.setIntegrationTime(m_spectrometerIndex, chn, newExpTime);
-		m_wrapper.setScansToAverage(m_spectrometerIndex, chn, sumInSpectrometer);
-
+		//int newExpTime = m_integrationTime * 1000;
+		//m_wrapper.setIntegrationTime(m_spectrometerIndex, chn, newExpTime);
+		//m_wrapper.setScansToAverage(m_spectrometerIndex, chn, sumInSpectrometer);
 
 		// Set the exposure time to use (this function takes exp-time in micro-seconds)
-		//int curExpTime = m_wrapper.getIntegrationTime(m_spectrometerIndex);
-		//int newExpTime = m_integrationTime * 1000;
-		//if (curExpTime != newExpTime) {
-		//	m_wrapper.setIntegrationTime(m_spectrometerIndex, chn, newExpTime);
-		//}
+		int curExpTime = m_wrapper.getIntegrationTime(m_spectrometerIndex);
+		int newExpTime = m_integrationTime * 1000;
+		if (curExpTime != newExpTime) {
+			m_wrapper.setIntegrationTime(m_spectrometerIndex, chn, newExpTime);
+		}
 
-		//// Set the number of co-adds
-		//int scanToAvg = m_wrapper.getScansToAverage(m_spectrometerIndex);
-		//if (scanToAvg != sumInSpectrometer) {
-		//	m_wrapper.setScansToAverage(m_spectrometerIndex, chn, sumInSpectrometer);
-		//}
+		// Set the number of co-adds
+		int scanToAvg = m_wrapper.getScansToAverage(m_spectrometerIndex);
+		if (scanToAvg != sumInSpectrometer) {
+			m_wrapper.setScansToAverage(m_spectrometerIndex, chn, sumInSpectrometer);
+		}
 
 	}
 
@@ -410,7 +403,16 @@ void CSpectrometer::ApplySettings() {
 	// Audio Settings
 	this->m_useAudio = m_conf->m_useAudio;
 	this->m_maxColumn = m_conf->m_maxColumn;
+}
 
+void CSpectrometer::SetDetectorSetPoint() {
+	// set point temperature for CCD if supported.  
+	// TODO: do this only once somewhere else.
+	if (m_wrapper.isFeatureSupportedThermoElectric(m_spectrometerIndex)) {
+		ThermoElectricWrapper tew = m_wrapper.getFeatureControllerThermoElectric(m_spectrometerIndex);
+		tew.setTECEnable(true);
+		tew.setDetectorSetPointCelsius(m_conf->m_setPointTemperature);
+	}
 }
 
 /* makes a test of the settings, returns 0 if all is ok, else 1 */
@@ -1071,6 +1073,7 @@ void CSpectrometer::Sing(double factor)
 long CSpectrometer::AverageIntens(double *pSpectrum, long ptotalNum) const {
 	double sum = 0.0;
 	long num;
+	// take the average of the 10 pixel surrounding the spec center
 	if (m_conf->m_specCenter <= m_conf->m_specCenterHalfWidth)
 		m_conf->m_specCenter = m_conf->m_specCenterHalfWidth;
 	if (m_conf->m_specCenter >= MAX_SPECTRUM_LENGTH - m_conf->m_specCenterHalfWidth)
@@ -1770,8 +1773,11 @@ short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxEx
 	// Calculate the exposure-time
 	m_integrationTime = (short)((m_spectrometerDynRange - int_short) * (maxExpTime - minExpTime) * m_percent / (int_long - int_short));
 
-	if (m_integrationTime > MAX_EXPOSURETIME){
-		m_integrationTime = MAX_EXPOSURETIME;
+	//if (m_integrationTime > MAX_EXPOSURETIME){
+	//	m_integrationTime = MAX_EXPOSURETIME;
+	//}
+	if (m_integrationTime > m_timeResolution) {
+		m_integrationTime = m_timeResolution;
 	}
 	if (m_integrationTime < MIN_EXPOSURETIME){
 		m_integrationTime = MIN_EXPOSURETIME;

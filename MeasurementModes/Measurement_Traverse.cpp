@@ -38,7 +38,7 @@ void CMeasurement_Traverse::Run(){
 
 	// Convert the settings from the CMobileConfiuration-format to the internal CSpectrometer-format
 	ApplySettings();
-
+	
 	/* Check the settings in the configuration file */
 	if(CheckSettings()){
 		return;
@@ -116,6 +116,9 @@ void CMeasurement_Traverse::Run(){
 		m_gps	= new CGPS(m_GPSPort, m_GPSBaudRate);
 		m_gps->Run(); /* start the gps-reading thread */
 	}
+
+	// Set point for CCD temperature
+	SetDetectorSetPoint();
 
 	// Check if we are to be running with adaptive or with fixed exposure-time
 	if(m_fixexptime < 0){
