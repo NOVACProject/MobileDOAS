@@ -51,6 +51,8 @@ namespace Configuration{
 		/** The number of channels on the spectrometer to use */
 		int			m_nChannels;
 
+		/** The set point for the CCD temperature in Celsius */
+		double		m_setPointTemperature;
 
 		// ------------ Exposure time -------------------
 		

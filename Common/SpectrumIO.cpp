@@ -146,6 +146,7 @@ int CSpectrumIO::readSTDFile(CString filename, CSpectrum *curSpec){
 	return 0;
 }
 
+[[deprecated]]
 int CSpectrumIO::readTextFile(CString filename, CSpectrum *curSpec){
 	double tmpDouble1, tmpDouble2;
 	int tmpInt = 0;

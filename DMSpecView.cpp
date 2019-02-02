@@ -126,6 +126,11 @@ END_MESSAGE_MAP()
 // boolean flag to help us determine if the spectrometer thread is running. s_ stands for statics...
 static bool s_spectrometerAcquisitionThreadIsRunning = false;
 
+// label colors
+
+COLORREF warning = RGB(255, 75, 75);
+COLORREF normal = RGB(236, 233, 216);
+
 CDMSpecView::CDMSpecView()
 	: CFormView(CDMSpecView::IDD)
 {
@@ -178,6 +183,15 @@ void CDMSpecView::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX,	IDC_LON,		m_gpsLonLabel);
 	DDX_Control(pDX,	IDC_GPSTIME,	m_gpsTimeLabel);
 	DDX_Control(pDX,	IDC_NGPSSAT,	m_gpsNSatLabel);
+
+	// Spectrometer Info labels
+	DDX_Control(pDX, IDC_INTTIME, m_expLabel);
+	DDX_Control(pDX, IDC_SCANNO, m_scanNoLabel);
+	DDX_Control(pDX, IDC_CONCENTRATION, m_colLabel);
+	DDX_Control(pDX, IDC_SPECNO, m_noSpecLabel);
+	DDX_Control(pDX, IDC_SH, m_shiftLabel);
+	DDX_Control(pDX, IDC_SQ, m_squeezeLabel);
+	DDX_Control(pDX, IDC_TEMPERATURE, m_tempLabel);
 
 	// The legend
 	DDX_Control(pDX,	IDC_LABEL_COLOR_SPECTRUM,		m_colorLabelSpectrum1);
@@ -264,6 +278,16 @@ void CDMSpecView::OnInitialUpdate()
 
 	// Fix the legend
 	UpdateLegend();
+
+	// set background color for spectrometer info labels
+	m_expLabel.SetBackgroundColor(normal);
+	m_scanNoLabel.SetBackgroundColor(normal);
+	m_colLabel.SetBackgroundColor(normal);
+	m_noSpecLabel.SetBackgroundColor(normal);
+	m_shiftLabel.SetBackgroundColor(normal);
+	m_squeezeLabel.SetBackgroundColor(normal);
+	m_tempLabel.SetBackgroundColor(normal);
+
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -301,6 +325,7 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam){
 	CString cShift;		//shift str
 	CString cSqueeze;	//squeeze str
 	CString cScanNo;	//scanned spectra number after sky and dark spectra
+	CString cTemp;		// detector temperature
 	long scanNo;
 	double* result;
 	long	dynRange;
@@ -336,7 +361,24 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam){
 	this->SetDlgItemText(IDC_SH,cShift);
 	this->SetDlgItemText(IDC_SQ,cSqueeze);
 	this->SetDlgItemText(IDC_SCANNO,cScanNo);
+	
+	// update the temperature
+	double temp = m_Spectrometer->detectorTemperature;
+	if (!std::isnan(temp)) {
+		cTemp.Format("%.1f", temp);
+		if (m_Spectrometer->detectorTemperatureIsSetPointTemp) {
+			m_tempLabel.SetBackgroundColor(normal);
+		}
+		else {
+			m_tempLabel.SetBackgroundColor(warning);
 
+		}
+	}
+	else {
+		cTemp = "N/A";
+		m_tempLabel.SetBackgroundColor(normal);
+	}
+	this->SetDlgItemText(IDC_TEMPERATURE, cTemp);
 
 	// --- Get the data ---
 	size = std::min(long(199), m_Spectrometer->GetColumnNumber());
@@ -608,8 +650,6 @@ LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 
 
 	if (!m_Spectrometer->m_gps->m_gotContact) { // If GPS signal is lost
-		COLORREF warning = RGB(255, 75, 75);
-
 		// Set the background color to red
 		m_gpsLatLabel.SetBackgroundColor(warning);
 		m_gpsLonLabel.SetBackgroundColor(warning);
@@ -619,8 +659,6 @@ LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 		SoundAlarm();
 
 	}else if(latNSat != 0 && data.nSatellites == 0){
-		COLORREF warning = RGB(255, 75, 75);
-
 		// Set the background color to red
 		m_gpsLatLabel.SetBackgroundColor(warning);
 		m_gpsLonLabel.SetBackgroundColor(warning);
@@ -628,9 +666,6 @@ LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 		m_gpsNSatLabel.SetBackgroundColor(warning);
 	}
 	else {
-
-		COLORREF normal = RGB(236, 233, 216);
-
 		// Set the background color to normal
 		m_gpsLatLabel.SetBackgroundColor(normal);
 		m_gpsLonLabel.SetBackgroundColor(normal);

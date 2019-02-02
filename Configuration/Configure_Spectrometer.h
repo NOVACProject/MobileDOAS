@@ -78,5 +78,7 @@ namespace Configuration{
 
 		/** The baudrates that the user can choose from */
 		long	m_availableBaudrates[6];
+	public:
+
 	};
 }

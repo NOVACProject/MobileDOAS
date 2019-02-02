@@ -111,7 +111,7 @@ struct gpsData {
 	long nSatellites = 0;
 
 	/* Date */
-	int date = 0;
+	char date[6];
 };
 
 /** Extracts the time from the provided gpsData and separates it into hour-minute-second */
