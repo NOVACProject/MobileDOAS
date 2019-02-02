@@ -9,6 +9,7 @@ public:
 	// ------------- Reading in spectra from file -----------------------
 
 	static int readSTDFile(CString filename, CSpectrum *curSpec);
+	[[deprecated]]
 	static int readTextFile(CString filename, CSpectrum *curSpec);
 
 	// ---------------- Writing spectra to file ---------------------

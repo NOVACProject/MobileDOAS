@@ -634,6 +634,8 @@ protected:
 	/** Shows a message box to the user (through the main window form) */
 	void ShowMessageBox(CString message, CString label) const;
 
+	CSpectrum CSpectrometer::CreateSpectrum(double spec[], std::string startDate, long startTime, long elapsedSecond);
+
 private:
 
 	// -------------------- PRIVATE DATA --------------------

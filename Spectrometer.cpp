@@ -1773,9 +1773,6 @@ short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxEx
 	// Calculate the exposure-time
 	m_integrationTime = (short)((m_spectrometerDynRange - int_short) * (maxExpTime - minExpTime) * m_percent / (int_long - int_short));
 
-	//if (m_integrationTime > MAX_EXPOSURETIME){
-	//	m_integrationTime = MAX_EXPOSURETIME;
-	//}
 	if (m_integrationTime > m_timeResolution) {
 		m_integrationTime = m_timeResolution;
 	}
@@ -1838,7 +1835,7 @@ std::string CSpectrometer::GetCurrentDate() {
 	else {
 		const int c = this->m_spectrumCounter; // local buffer, to avoid race conditions...
 		m_gps->Get(m_spectrumGpsData[c]);
-		return std::to_string(m_spectrumGpsData[c].date);
+		return std::string(m_spectrumGpsData[c].date, 6);
 	}
 }
 
@@ -1884,4 +1881,32 @@ void CSpectrometer::ShowMessageBox(CString message, CString label) const
 		// the point here is that we only allow the messagebox to be shown when the user interface is ready for receiving message boxes (i.e. when the program is running!)
 		MessageBox(pView->m_hWnd, message, label, MB_OK);
 	}
+}
+
+CSpectrum CSpectrometer::CreateSpectrum(double spec[], std::string startDate, long startTime, long elapsedSecond) {
+	CSpectrum spectrum;
+	memcpy((void*)spectrum.I, (void*)spec, sizeof(double)*MAX_SPECTRUM_LENGTH);
+	spectrum.length = m_detectorSize;
+	spectrum.exposureTime = m_integrationTime;
+	spectrum.SetDate(startDate);
+	spectrum.spectrometerModel = m_spectrometerModel;
+	spectrum.spectrometerSerial = m_spectrometerName;
+	spectrum.scans = m_totalSpecNum;
+	spectrum.name = m_measurementBaseName;
+	spectrum.fitHigh = m_conf->m_fitWindow->fitHigh;
+	spectrum.fitLow = m_conf->m_fitWindow->fitLow;
+	spectrum.boardTemperature = boardTemperature;
+	spectrum.detectorTemperature = detectorTemperature;
+	if (m_useGps) {
+		spectrum.SetStartTime(m_spectrumGpsData[m_spectrumCounter].time);
+		spectrum.SetStopTime(m_spectrumGpsData[m_spectrumCounter].time + elapsedSecond);
+		spectrum.lat = m_spectrumGpsData[m_spectrumCounter].latitude;
+		spectrum.lon = m_spectrumGpsData[m_spectrumCounter].longitude;
+		spectrum.altitude = m_spectrumGpsData[m_spectrumCounter].altitude;
+	}
+	else {
+		spectrum.SetStartTime(startTime);
+		spectrum.SetStopTime(startTime + elapsedSecond);
+	}
+	return spectrum;
 }
