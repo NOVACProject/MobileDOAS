@@ -745,37 +745,6 @@ bool CReEvaluator::ReadSkySpectrum(CSpectrum &spec, int channel){
 		return true;
 	}
 
-	// if the user has supplied certain criteria to choose which spectrum to use
-	// as sky spectrum
-	if(USE_SKY_CUSTOM == m_settings.m_skySelection){
-		double avgIntensity = 0.0f;
-
-		for(int i = 0; i < m_recordNum[channel]; ++i){
-			// check if the column value is ok
-			if(m_oldCol[channel][i] < m_settings.m_skyColumnLow || m_oldCol[channel][i] > m_settings.m_skyColumnHigh)
-				continue;
-
-			// read the spectrum
-			GetSpectrum(curSpectrum, i, channel);
-
-			// check if the intensity is ok
-			avgIntensity = curSpectrum.GetAverage(m_settings.m_skyIntensityChannel - 10, m_settings.m_skyIntensityChannel + 10);
-			if(avgIntensity < m_settings.m_skyIntensityLow  || avgIntensity > m_settings.m_skyIntensityHigh)
-				continue;
-
-			// all is ok, add it in to the sky spectrum
-			spec.Add(curSpectrum);
-			++nAdded;
-		}
-		spec.Div(nAdded);
-
-		if(pView != nullptr){
-			m_statusMsg.Format("Created Sky spectrum as average of: %ld spectra", nAdded);
-			pView->PostMessage(WM_STATUS);
-		}
-		return true;
-	}
-
 	// if the user has supplied a custom sky spectrum
 	if(USE_SKY_USER == m_settings.m_skySelection){
 		// read the sky spectrum

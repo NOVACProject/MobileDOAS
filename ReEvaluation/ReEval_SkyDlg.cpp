@@ -98,16 +98,6 @@ void CReEval_SkyDlg::UpdateControls(){
 		m_editSkySpecDark.EnableWindow(FALSE);
 		m_btnBrowseSky.EnableWindow(FALSE);
 		m_btnBrowseDark.EnableWindow(FALSE);
-	}else if(m_reeval->m_settings.m_skySelection == USE_SKY_CUSTOM){
-		//m_columnHigh.EnableWindow(TRUE);
-		//m_columnLow.EnableWindow(TRUE);
-		//m_intensityLow.EnableWindow(TRUE);
-		//m_intensityHigh.EnableWindow(TRUE);
-		//m_intensityChannel.EnableWindow(TRUE);
-		m_editSkySpec.EnableWindow(FALSE);
-		m_editSkySpecDark.EnableWindow(FALSE);
-		m_btnBrowseSky.EnableWindow(FALSE);
-		m_btnBrowseDark.EnableWindow(FALSE);
 	}else if(m_reeval->m_settings.m_skySelection == USE_SKY_USER){
 		//m_columnHigh.EnableWindow(FALSE);
 		//m_columnLow.EnableWindow(FALSE);

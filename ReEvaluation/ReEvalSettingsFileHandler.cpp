@@ -85,17 +85,7 @@ int CReEvalSettingsFileHandler::WriteFile(const ReEvaluation::CReEvaluationSetti
 	// Options for using the sky-spectrum
 	fprintf(f, "\t<Sky>\n");
 	fprintf(f, "\t\t<option>%d</option>\n", settings.m_skySelection);
-	if(settings.m_skySelection == USE_SKY_CUSTOM){
-		fprintf(f, "\t\t<column>\n");
-		fprintf(f, "\t\t\t<high>%lf</high>\n",	settings.m_skyColumnHigh);
-		fprintf(f, "\t\t\t<low>%lf</low>\n",	settings.m_skyColumnLow);
-		fprintf(f, "\t\t</column>\n");
-		fprintf(f, "\t\t<intensity>\n");
-		fprintf(f, "\t\t\t<channel>%ld</channel>\n",		settings.m_skyIntensityChannel);
-		fprintf(f, "\t\t\t<low>%lf</low>\n",			settings.m_skyIntensityLow);
-		fprintf(f, "\t\t\t<high>%lf</high>\n",			settings.m_skyIntensityHigh);
-		fprintf(f, "\t\t</intensity>\n");
-	}else if(settings.m_skySelection == USE_SKY_USER){
+	if(settings.m_skySelection == USE_SKY_USER){
 		fprintf(f, "\t\t<path_sky>%s</path_sky>\n", (LPCTSTR)settings.m_skySpectrumFile);
 		fprintf(f, "\t\t<path_dark>%s</path_dark>\n", (LPCTSTR)settings.m_skySpectrumDark);
 	}
