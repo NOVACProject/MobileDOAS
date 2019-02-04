@@ -282,7 +282,7 @@ BEGIN
                     "Button",BS_AUTORADIOBUTTON | WS_GROUP,33,25,129,10
     CONTROL         "Use average of all spectra as sky reference",IDC_ALL_SKY,
                     "Button",BS_AUTORADIOBUTTON,33,39,155,10
-    CONTROL         "Use The Following Spectrum:",IDC_USER_SKY,"Button",BS_AUTORADIOBUTTON,33,52,108,10
+    CONTROL         "Use the following spectrum:",IDC_USER_SKY,"Button",BS_AUTORADIOBUTTON,33,52,108,10
     EDITTEXT        IDC_EDIT_SKYSPEC,55,66,257,13,ES_AUTOHSCROLL
     PUSHBUTTON      "Browse...",IDC_BUTTON_BROWSE_SKY,318,63,41,16
     LTEXT           "(With the following dark:",IDC_STATIC,53,87,80,8
@@ -600,6 +600,11 @@ BEGIN
 END
 
 IDD_CONFIGURE_SPECTROMETER AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_REEVAL_SKY AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
