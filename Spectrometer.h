@@ -362,10 +362,6 @@ public:
 	/** Retrieves the current time from the system time */
 	long GetCurrentTimeFromComputerClock();
 
-	/** Retrieves the current date, either from the system time.
-		The date is a string formatted as: mmddyy (6 characters) */
-	std::string GetCurrentDateFromComputerClock() const;
-	
 	/** Pointer to the gps reading thread */
 	GpsAsyncReader* m_gps = nullptr;
 	

@@ -39,26 +39,6 @@ void swap(gpsData & first, gpsData & second)
 	swap(first.fixQuality, second.fixQuality);
 }
 
-void ExtractTime(const gpsData& gpsData, int& hours, int& minutes, int& seconds)
-{
-	hours   = gpsData.time / 10000;
-	minutes = (gpsData.time - hours * 10000) / 100;
-	seconds = gpsData.time % 100;
-}
-
-std::string GetDate(const gpsData& data)
-{
-	char startDate[7];
-	sprintf(startDate, "%06d", data.date);
-
-	return std::string(startDate);
-}
-
-long GetTime(const gpsData& data)
-{
-	return data.time;
-}
-
 bool IsValidGpsData(const gpsData& data)
 {
 	if (data.nSatellitesTracked == 0 || data.fixQuality == GpsFixQuality::INVALID)

@@ -119,19 +119,3 @@ int CXMLFileReader::Parse_IPNumber(const CString &label, BYTE &ip0, BYTE &ip1, B
 	return 0;
 }
 
-/** General parsing of a date */
-int CXMLFileReader::Parse_Date(const CString &label, CDateTime &datum){
-	while(szToken = NextToken()){
-			int i0, i1, i2;
-
-		if(Equals(szToken, label))
-			return 1;
-
-		sscanf(szToken, "%d.%d.%d", &i0, &i1, &i2);
-		datum.year = i0;
-		datum.month = i1;
-		datum.day = i2;
-	}
-
-	return 0;
-}

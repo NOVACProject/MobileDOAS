@@ -88,11 +88,7 @@ typedef struct gpsPosition{
 }gpsPosition;
 
 
-typedef struct Time{
-	char hour = 0;
-	char minute = 0;
-	char second = 0;
-}Time;
+
 
 // ---------------------------------------------------------------
 // ---------------- GLOBAL FUNCTIONS -----------------------------
@@ -209,8 +205,6 @@ void	CalculateDestination(double lat1, double lon1, double dist, double az, doub
   1 to point 2 and the wind is defined by 'windAngle' */
 double GetWindFactor(double lat1, double lon1, double lat2, double lon2, double windAngle);
 
-/** This function converts a time value given as an integer to three values (hour, minute second) */
-void GetHrMinSec(int time, int &hr, int &min, int &sec);
 
 // --------------------------------------------------------------------
 // ------------------- ARRAY FUNCTIONS --------------------------------

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Common.h"
+#include "../Common/DateTime.h"
 #include <afxtempl.h>
 
 namespace Flux

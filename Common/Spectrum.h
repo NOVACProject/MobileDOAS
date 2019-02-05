@@ -67,5 +67,4 @@ public:
 	bool WriteStdFile(const CString &fileName);
 
 private:
-	void GetHrMinSec(int time, int &hr, int &min, int &sec);
 };
