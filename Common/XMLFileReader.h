@@ -1,8 +1,7 @@
 #pragma once
 
-#include "DateTime.h"
-
-namespace FileHandler{
+namespace FileHandler
+{
 	class CXMLFileReader
 	{
 	public:
@@ -26,9 +25,6 @@ namespace FileHandler{
 
 		/** General parsing of a IP-number */
 		int Parse_IPNumber(const CString &label, BYTE &ip0, BYTE &ip1, BYTE &ip2, BYTE &ip3);
-
-		/** General parsing of a date */
-		int Parse_Date(const CString &label, CDateTime &datum);
 
 		/**set the opened file pointer*/
 		void SetFile(CStdioFile* file);

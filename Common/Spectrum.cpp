@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "Spectrum.h"
+#include "../Common/DateTime.h"
 #include <algorithm>
 #include <string>
 
@@ -272,23 +273,6 @@ void CSpectrum::SetStartTime(long time) {
 
 void CSpectrum::SetStopTime(long time) {
 	GetHrMinSec(time, stopTime[0], stopTime[1], stopTime[2]);
-}
-
-void CSpectrum::GetHrMinSec(int time, int &hr, int &min, int &sec) {
-	hr = time / 10000;
-	min = (time - hr * 10000) / 100;
-	sec = time % 100;
-
-	// make sure that there's no numbers greather than or equal to 60 (or 24) !!!
-	if (sec >= 60) {
-		sec -= 60;
-		min += 1;
-	}
-	if (min >= 60) {
-		min -= 60;
-		hr += 1;
-	}
-	hr = hr % 24;
 }
 
 int CSpectrum::readSTDFile(CString filename) {

@@ -50,15 +50,6 @@ struct gpsData {
 	GpsFixQuality fixQuality = GpsFixQuality::INVALID;
 };
 
-/** Extracts the time from the provided gpsData and separates it into hour-minute-second */
-void ExtractTime(const gpsData& gpsData, int& hours, int& minutes, int& seconds);
-
-/** Reads out the data in the provided gpsData and formats it in the format 'mmddyy' */
-std::string GetDate(const gpsData& data);
-
-/** Reads out the timestamp in the provided gpsData */
-long GetTime(const gpsData& data);
-
 /** @return true if the provided gpsData contains a valid GPS readout
 	This checks that any satelite was seen and that the lat/long aren't zero. */
 bool IsValidGpsData(const gpsData& data);

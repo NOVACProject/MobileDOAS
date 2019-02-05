@@ -1,168 +1,90 @@
 #include "StdAfx.h"
-#include "datetime.h"
-#include "../Common.h"
+#include "DateTime.h"
+#include "../GpsData.h"
 
-CDateTime::CDateTime(void)
+#include <assert.h>
+#include <time.h>
+#include <vector>
+
+std::string GetCurrentDateFromComputerClock(char separatorCharacter)
 {
-	year	= 0;
-	month	= 0;
-	day		= 0;
-	hour	= 0;
-	minute	= 0;
-	second	= 0;
-}
-
-CDateTime::CDateTime(const CDateTime &t2){
-	year	= t2.year;
-	month	= t2.month;
-	day		= t2.day;
-	hour	= t2.hour;
-	minute	= t2.minute;
-	second	= t2.second;
-}
-
-CDateTime::CDateTime(int y, int mo, int d, int h, int mi, int s){
-	year	= y;
-	month	= mo;
-	day		= d;
-	hour	= h;
-	minute	= mi;
-	second	= s;
-}
-
-CDateTime::~CDateTime(void)
-{
-}
-
-int CDateTime::operator <(const CDateTime &t2) const{
-	if(this->year < t2.year)
-		return 1;
-	if(this->year > t2.year)
-		return 0;
-	if(this->month < t2.month)
-		return 1;
-	if(this->month > t2.month)
-		return 0;
-	if(this->day < t2.day)
-		return 1;
-	if(day > t2.day)
-		return 0;
-	if(this->hour < t2.hour)
-		return 1;
-	if(this->hour > t2.hour)
-		return 0;
-	if(this->minute < t2.minute)
-		return 1;
-	if(this->minute > t2.minute)
-		return 0;
-	if(this->second < t2.second)
-		return 1;
-	if(this->second > t2.second)
-		return 0;
-
-	// equal
-	return 0;
-}
-
-bool CDateTime::operator==(const CDateTime& t2) const{
-	if(this->second != t2.second)
-		return false;
-	if(this->minute != t2.minute)
-		return false;
-	if(this->hour != t2.hour)
-		return false;
-	if(this->day != t2.day)
-		return false;
-	if(this->month != t2.month)
-		return false;
-	if(this->year != t2.year)
-		return false;
-	return true;
-}
-
-CDateTime	& CDateTime::operator=(const CDateTime& t2){
-	this->year	= t2.year;
-	this->month	= t2.month;
-	this->day		= t2.day;
-	this->hour	= t2.hour;
-	this->minute= t2.minute;
-	this->second= t2.second;
-	return *this;
-}
-
-void CDateTime::SetToNow(){
-	struct tm *tim;
+	char startDate[7];
 	time_t t;
 	time(&t);
-	tim = localtime(&t);
+	struct tm *tim = localtime(&t);
+	int mon = tim->tm_mon + 1;
+	int day = tim->tm_mday;
+	int year = tim->tm_year - 100; // only good for 21st century
+	sprintf(startDate, "%02d%c%02d%c%02d", day, separatorCharacter, mon, separatorCharacter, year);
 
-	this->year	= 1900 + tim->tm_year;
-	this->month	=	1 + tim->tm_mon;
-	this->day	= tim->tm_mday;
-	this->hour	= tim->tm_hour;
-	this->minute= tim->tm_min;
-	this->second= tim->tm_sec;
+	return std::string(startDate, 6);
 }
 
-/** Calculates the difference, in seconds, between two times.
-		If t2 is later than t1, then the result will be negative. */
-double	CDateTime::Difference(const CDateTime &t1, const CDateTime &t2){
-	struct tm tid1, tid2;
-	tid1.tm_year	= t1.year - 1900;
-	tid1.tm_mon		= t1.month - 1;
-	tid1.tm_mday	= t1.day;
-	tid1.tm_hour	= t1.hour;
-	tid1.tm_min		= t1.minute;
-	tid1.tm_sec		= t1.second;
-	tid1.tm_wday	= 0;
-	tid1.tm_yday	= 0;
-	tid1.tm_isdst	= 0;
-
-	tid2.tm_year	= t2.year - 1900;
-	tid2.tm_mon		= t2.month - 1;
-	tid2.tm_mday	= t2.day;
-	tid2.tm_hour	= t2.hour;
-	tid2.tm_min		= t2.minute;
-	tid2.tm_sec		= t2.second;
-	tid2.tm_wday	= 0;
-	tid2.tm_yday	= 0;
-	tid2.tm_isdst	= 0;
-
-	time_t t_1 = mktime(&tid1);
-	time_t t_2 = mktime(&tid2);
-
-	return difftime(t_1, t_2);
+void ExtractTime(const gpsData& gpsData, int& hours, int& minutes, int& seconds)
+{
+	hours   = gpsData.time / 10000;
+	minutes = (gpsData.time - hours * 10000) / 100;
+	seconds = gpsData.time % 100;
 }
 
-/** Increments the current time with the supplied number of seconds */
-void CDateTime::Increment(int secs){
-	this->second += secs;
-	if(this->second < 60)
-		return;
+void ExtractDate(const gpsData& gpsData, int& day, int& month, int& year)
+{
+	day   = gpsData.date / 10000;
+	month = (gpsData.date - day * 10000) / 100;
+	year  = gpsData.date % 100;
 
-	this->minute += this->second / 60;
-	this->second %= 60;
-	if(this->minute < 60)
-		return;
+	assert(day >= 1 && day <= 31);
+	assert(month >= 1 && month <= 12);
+}
 
-	this->hour		+= this->minute / 60;
-	this->minute	%= 60;
-	if(this->hour < 24)
-		return;
+std::string GetDate(const gpsData& data)
+{
+	char buffer[7];
+	sprintf(buffer, "%06d", data.date);
+	return std::string(buffer);
+}
 
-	int daysInMonth	= Common::DaysInMonth(this->year, this->month);
-	this->day			+= this->hour / 24;
-	this->hour		%= 24;
-	if(this->day < daysInMonth)
-		return;
+std::string GetDate(const gpsData& data, char separatorCharacter)
+{
+	int day, month, year;
+	ExtractDate(data, day, month, year);
 
-	while(this->day / daysInMonth > 1){
-		this->month			+=	1;
-		if(this->month	> 12){
-			this->month = 1;
-			this->year	+= 1;
-		}
-		this->day	-=	daysInMonth;
-		daysInMonth	=	Common::DaysInMonth(this->year, this->month);
+	char buffer[64];
+	sprintf(buffer, "%02d%c%02d%c%02d", day, separatorCharacter, month, separatorCharacter, year);
+	return std::string(buffer);
+}
+
+
+long GetTime(const gpsData& data)
+{
+	return data.time;
+}
+
+void GetHrMinSec(int time, int &hr, int &min, int &sec)
+{
+	hr = time / 10000;
+	min = (time - hr * 10000) / 100;
+	sec = time % 100;
+
+	// make sure that there's no numbers greather than or equal to 60 (or 24) !!!
+	if (sec >= 60) {
+		sec -= 60;
+		min += 1;
 	}
+	if (min >= 60) {
+		min -= 60;
+		hr += 1;
+	}
+	hr = hr % 24;
+}
+
+std::string FormatTime(long hhmmss, char separatorCharacter)
+{
+	int hr, min, sec;
+	GetHrMinSec(hhmmss, hr, min, sec);
+
+	char msgBuffer[64];
+	sprintf(msgBuffer, "%02d%c%02d%c%02d", hr, separatorCharacter, min, separatorCharacter, sec);
+
+	return std::string(msgBuffer);
 }
