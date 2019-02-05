@@ -48,7 +48,10 @@ void ExtractTime(const gpsData& gpsData, int& hours, int& minutes, int& seconds)
 
 std::string GetDate(const gpsData& data)
 {
-	return std::to_string(data.date);
+	char startDate[7];
+	sprintf(startDate, "%06d", data.date);
+
+	return std::string(startDate);
 }
 
 long GetTime(const gpsData& data)
