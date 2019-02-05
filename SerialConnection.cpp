@@ -3,6 +3,8 @@
 #include "stdafx.h"
 #include "serialconnection.h"
 
+#include <iostream>
+
 CSerialConnection::CSerialConnection(void)
 {
 	baudrate = 57600;
@@ -12,40 +14,120 @@ CSerialConnection::CSerialConnection(void)
 
 CSerialConnection::~CSerialConnection(void)
 {
+	this->Close();
+}
+
+CSerialConnection::CSerialConnection(CSerialConnection&& other)
+{
+	this->hComm = std::move(other.hComm);
+	this->baudrate = other.baudrate;
+	this->br1 = other.br1;
+	this->br2 = other.br2;
+	this->isRunning = std::move(other.isRunning);
+	this->m_delay = other.m_delay;
+	memcpy(this->serbuf, other.serbuf, sizeof(serbuf));
+	this->serbufpt = std::move(other.serbufpt);
+	memcpy(this->serialPort, other.serialPort, sizeof(serialPort));
+	this->startChn = other.startChn;
+	this->stopChn = other.stopChn;
+	this->sysBaud = other.sysBaud;
+
+	other.hComm = nullptr;
+}
+
+CSerialConnection& CSerialConnection::operator=(CSerialConnection&& other)
+{
+	this->hComm = std::move(other.hComm);
+	this->baudrate = other.baudrate;
+	this->br1 = other.br1;
+	this->br2 = other.br2;
+	this->isRunning = std::move(other.isRunning);
+	this->m_delay = other.m_delay;
+	memcpy(this->serbuf, other.serbuf, sizeof(serbuf));
+	this->serbufpt = std::move(other.serbufpt);
+	memcpy(this->serialPort, other.serialPort, sizeof(serialPort));
+	this->startChn = other.startChn;
+	this->stopChn = other.stopChn;
+	this->sysBaud = other.sysBaud;
+
+	other.hComm = nullptr;
+
+	return *this;
 }
 
 
-//-----------------------------------------------------------------
-bool CSerialConnection::Init(long speed){
-	DCB dcb;
-	int portNumber;
+void CSerialConnection::SetPort(int portNumber)
+{
+	// This construct makes it possible to handle COM-ports above 9
+	if (portNumber > 9)
+	{
+		sprintf(this->serialPort, "\\\\.\\COM%d", portNumber);
+	}
+	else
+	{
+		sprintf(this->serialPort, "COM%d", portNumber);
+	}
+}
 
-	// To be able to handle COM-ports above 9
-	sscanf(serialPort, "COM%d", &portNumber);
-	if(portNumber > 9){
-		sprintf(serialPort, "\\\\.\\COM%d", portNumber);
+void CSerialConnection::SetPort(const CString& port)
+{
+	int portNumber;
+	sscanf(port, "COM%d", &portNumber);
+	this->SetPort(portNumber);
+}
+
+//-----------------------------------------------------------------
+bool CSerialConnection::Init(int portNumber, long speed)
+{
+	this->SetPort(portNumber);
+
+	this->baudrate = speed;
+
+	return this->Init();
+}
+
+bool CSerialConnection::Init(long speed)
+{
+	this->baudrate = speed;
+
+	return this->Init();
+}
+
+bool CSerialConnection::Init()
+{
+	if (nullptr != hComm)
+	{
+		this->Close();
 	}
 
-	hComm = CreateFile( serialPort,  
+	DCB dcb;
+
+	hComm = CreateFile( this->serialPort,
 					GENERIC_READ | GENERIC_WRITE, 
 					0, 
 					0, 
 					OPEN_EXISTING,
 					FILE_FLAG_WRITE_THROUGH,
 					0);
-	if (hComm == INVALID_HANDLE_VALUE){
+
+	if (hComm == INVALID_HANDLE_VALUE)
+	{
 		//CString msg;
 		//msg.Format("Could not open serial port: %s", serialPort);
 		//MessageBox(NULL, msg,  "Error", MB_OK);
-		return FALSE;
+		hComm = nullptr;
+		return false;
 	}
 
 	FillMemory(&dcb, sizeof(dcb), 0);
 
-	if (!GetCommState(hComm, &dcb))     // get current DCB
-		return FALSE;
+	if (!GetCommState(hComm, &dcb))
+	{
+		hComm = nullptr;
+		return false;
+	}
 
-	dcb.BaudRate = speed;
+	dcb.BaudRate = this->baudrate;
 	dcb.ByteSize = 8;
 	dcb.Parity = NOPARITY;
 	dcb.StopBits = ONESTOPBIT;
@@ -55,20 +137,25 @@ bool CSerialConnection::Init(long speed){
 	dcb.fRtsControl=0;
 	dcb.fDtrControl=0;
 
-	if (!SetCommState(hComm, &dcb)){
+	if (!SetCommState(hComm, &dcb))
+	{
+		hComm = nullptr;
 		MessageBox(NULL,TEXT("Error in SetCommState!"),NULL,MB_OK);
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 
-int CSerialConnection::Check(long timeOut)
+bool CSerialConnection::Check(long timeOut)
 {
-
-	DWORD dwRead;
+	DWORD nofBytesRead = 0;
 	COMMTIMEOUTS timeouts;
-	if(serbufpt) return(1);
+	if(serbufpt)
+	{
+		// There's more data to read out from this buffer
+		return true;
+	}
 	  
 	GetCommTimeouts(hComm,&timeouts);
 
@@ -76,16 +163,27 @@ int CSerialConnection::Check(long timeOut)
 	timeouts.ReadTotalTimeoutMultiplier = 1;
 	timeouts.ReadTotalTimeoutConstant = timeOut;
 
-	if (SetCommTimeouts(hComm, &timeouts)==0){
-		//	  MessageBox(NULL,TEXT("Error setting time-outs in serial.Check."),TEXT("ERROR"),MB_OK);
-		return 0;
+	if (SetCommTimeouts(hComm, &timeouts)==0)
+	{
+		std::cerr << " Error reading from serial connection, could not set communication timeouts." << std::endl;
+		return false;
 	}
 
-	ReadFile(hComm, serbuf, 1, &dwRead, NULL);
-	if(dwRead==0) return(0);
-	serbufpt+=dwRead;
+	if (FALSE == ReadFile(hComm, serbuf, 1, &nofBytesRead, NULL))
+	{
+		DWORD errorCode = GetLastError();
+		std::cerr << " Error reading from serial connection, last error was: " << errorCode << std::endl;
+		return false;
+	}
 
-	return(1);
+	if(nofBytesRead == 0)
+	{
+		return false;
+	}
+
+	serbufpt += nofBytesRead;
+
+	return true;
 }
 //-----------------------------------------------------------------
 void CSerialConnection::Write(void *ptTxt,long byteNum)
@@ -112,7 +210,8 @@ long CSerialConnection::Read(void *ptBuf,long byteNum)
 	timeouts.ReadIntervalTimeout = MAXDWORD; 
 	timeouts.ReadTotalTimeoutMultiplier = 0;
 	timeouts.ReadTotalTimeoutConstant = 0;
-	if ((!SetCommTimeouts(hComm, &timeouts)) && isRunning) {
+	int ret = SetCommTimeouts(hComm, &timeouts);
+	if (0 == ret || (nullptr != isRunning && *isRunning == false)) {
 		//	  MessageBox(NULL,TEXT("Error setting time-outs in ReadSerial."),TEXT("ERROR"),MB_OK);
 		return 0;
 	}
@@ -127,13 +226,24 @@ void CSerialConnection::FlushSerialPort(long timeOut)
 {
 	char txt[1];
 	while(this->Check(timeOut))
+	{
 		this->Read(&txt,1);
+	}
 }
 //-----------------------------------------------------------------
 void CSerialConnection::Close()
 {
 	if(hComm != nullptr)
-		CloseHandle(hComm);
+	{
+		int ret = CloseHandle(hComm);
+		if (ret == 0)
+		{
+			// failure, the the reason for the error
+			DWORD errorCode = GetLastError();
+			std::cerr << " Failed to close the serial connection, errorcode was: " << errorCode << std::endl;
+		}
+		hComm = nullptr;
+	}
 }
 
 int CSerialConnection::InitCommunication()

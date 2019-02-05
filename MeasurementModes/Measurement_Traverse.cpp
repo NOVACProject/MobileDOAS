@@ -112,9 +112,9 @@ void CMeasurement_Traverse::Run(){
 	}
 
 	/* Start the GPS collection thread */
-	if(m_useGps){
-		m_gps	= new CGPS(m_GPSPort, m_GPSBaudRate);
-		m_gps->Run(); /* start the gps-reading thread */
+	if(m_useGps)
+	{
+		m_gps = new GpsAsyncReader(m_GPSPort, m_GPSBaudRate);
 	}
 
 	// Set point for CCD temperature
@@ -160,8 +160,18 @@ void CMeasurement_Traverse::Run(){
 		SetFileName();
 
 		/* ------------ Get the date, time and position --------------- */
-		startDate = GetCurrentDate();
-		startTime = GetCurrentTime();
+		gpsData currentGpsInfo;
+		const bool couldReadValidGPSData = (m_useGps) ? UpdateGpsData(currentGpsInfo) : false;
+		if(couldReadValidGPSData)
+		{
+			startDate = GetCurrentDateFromComputerClock();
+			startTime = GetCurrentTimeFromComputerClock();
+		}
+		else
+		{
+			startDate = GetDate(currentGpsInfo);
+			startTime = GetTime(currentGpsInfo);
+		}
 
 		/** ---------------- if the user wants to change the exposure time, 
 									calculate a new exposure time. --------------------- */
@@ -397,8 +407,18 @@ void CMeasurement_Traverse::Run_Adaptive(){
 		SetFileName();
 
 		/* ------------ Get the date, time and position --------------- */
-		startDate = GetCurrentDate();
-		startTime = GetCurrentTime();
+		gpsData currentGpsInfo;
+		const bool couldReadValidGPSData = (m_useGps) ? UpdateGpsData(currentGpsInfo) : false;
+		if (couldReadValidGPSData)
+		{
+			startDate = GetCurrentDateFromComputerClock();
+			startTime = GetCurrentTimeFromComputerClock();
+		}
+		else
+		{
+			startDate = GetDate(currentGpsInfo);
+			startTime = GetTime(currentGpsInfo);
+		}
 	
 		// Initialize the spectrometer, if using the serial-port
 		if(!m_connectViaUsb){

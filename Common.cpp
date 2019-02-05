@@ -6,6 +6,7 @@
 #include "Common.h"
 #include <utility>
 #include <vector>
+#include <string>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -36,6 +37,7 @@ int IsExistingFile(const CString *fileName){
 int IsExistingFile(const CString &fileName){
 	return IsExistingFile(&fileName);
 }
+
 
 //////////////////////////////////////////////////////////////////////
 // gpsData

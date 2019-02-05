@@ -87,6 +87,7 @@ typedef struct gpsPosition{
 	double altitude = 0.0;
 }gpsPosition;
 
+/** Common structure for stroring data read out from the GPS */
 struct gpsData {
 	gpsData();
 	gpsData(const gpsData& other);

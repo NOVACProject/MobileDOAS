@@ -67,13 +67,15 @@ BOOL CRealTimeRoute::OnInitDialog()
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
 
-void CRealTimeRoute::DrawRouteGraph(){
-
+void CRealTimeRoute::DrawRouteGraph()
+{
+	const int nofDecimals = 4;
+	
 	// Read the data from the CSpectrometer class
 	ReadData();
 
 	// set range
-	m_gpsPlot.SetRange(m_range.minLat, m_range.maxLat, 2, m_range.minLon, m_range.maxLon, 2);
+	m_gpsPlot.SetRange(m_range.minLat, m_range.maxLat, nofDecimals, m_range.minLon, m_range.maxLon, nofDecimals);
 	
 	// Draw route plot
 	m_gpsPlot.DrawCircles(m_lon, m_lat, m_col, m_pointNum);
@@ -115,10 +117,8 @@ void CRealTimeRoute::ReadData(){
 	if(nullptr == m_spectrometer)
 		return;
 
-	int sum;
-
-	sum = m_spectrometer->GetColumnNumber();
-	m_spectrometer->GetLatLongAlt(m_lat, m_lon, NULL, sum);
+	long sum = std::min(65535L, m_spectrometer->GetColumnNumber()); // limit the number here since the vectors aren't long enough...
+	m_spectrometer->GetLatLongAlt(m_lat, m_lon, nullptr, sum);
 	m_spectrometer->GetColumns(m_col, sum);
 	m_spectrometer->GetIntensity(m_int, sum);
 

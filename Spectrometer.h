@@ -354,24 +354,24 @@ public:
 		This will NOT call the Gps itself, nor cause any block.
 		@return true if the updated data is valid (i.e. if the GPS can retrieve lat/long).
 		@return false if the data is not valid or the GPS isn't used. */
-	bool UpdateGpsData();
+	bool UpdateGpsData(gpsData& gpsInfo);
 	
 	/** Retrieves the last GPS position */
 	int GetGpsPos(gpsData& data) const;
 	
-	/** Retrieves the current time, either from the GPS or the system time */
-	long GetCurrentTime();
+	/** Retrieves the current time from the system time */
+	long GetCurrentTimeFromComputerClock();
 
-	/** Retrieves the current date, either from the GPS or the system time.
+	/** Retrieves the current date, either from the system time.
 		The date is a string formatted as: mmddyy (6 characters) */
-	std::string GetCurrentDate();
+	std::string GetCurrentDateFromComputerClock() const;
 	
 	/** Pointer to the gps reading thread */
-	CGPS*   m_gps = nullptr;
+	GpsAsyncReader* m_gps = nullptr;
 	
 	/** This is true if we should use the GPS receiver (default behavior).
 		Set to false if the gps is missing or nor working. */
-	bool	m_useGps = true;
+	bool m_useGps = true;
 	
 	/** The Serial-port that we should read the GPS data from 
 		This is something like 'COM4' */
@@ -404,6 +404,13 @@ public:
 	/** Called to close the USB-connection. Should only be done
 		when we're about to stop collecting spectra */
 	void    CloseUSBConnection();
+
+	/** @return true if the spectrometer has been disconnected */
+	bool    IsSpectrometerDisconnected();
+
+	/** Attepts to reconnect with the spectrometer after the connection has been lost. 
+		This will not return until the connection has been regained */
+	void    ReconnectWithSpectrometer();
 	
 	// ------------------------ Setup ------------------------
 	
@@ -432,8 +439,8 @@ public:
 
 	//  ----------------- Communicating with other parts of the program -----------------
 	
-	/** gets the number of spectra that are averaged into one */
-	void    GetNSpecAverage(int N[MAX_N_CHANNELS]);
+	/** Gets the number of spectra that are averaged in the spectrometer and in the computer */
+	void    GetNSpecAverage(int& averageInSpectrometer, int& averageInComputer);
 
 	/** Retrieves the last evaluated column.
 		@return a pointer to 'm_result' */
@@ -609,7 +616,8 @@ protected:
 	/* Spectrum number, only used to judge if this is dark, sky or measurement spectrum */
 	long m_scanNum;
 
-	/* Spectrum number, pointer into 'pos' and 'specTime'. Counts how many spectra we have acquired so far. 
+	/* Spectrum number, pointer into 'm_spectrumGpsData'. 
+		Counts how many spectra we have acquired so far. 
 		(this differs from m_scanNum but it's not exactly clear how...) */
 	long m_spectrumCounter;
 
@@ -664,10 +672,6 @@ private:
 		This is used to control the OceanOptics Spectrometers through USB.
 		There can be only one Wrapper object in the application!!!		*/
 	Wrapper m_wrapper;
-
-	/** The wrapper extensions is used to get additional functionality when
-		handling the OceanOptics spectrometers using the USB-port */
-	WrapperExtensions	m_wrapperExt;
 
 	// -------------------- PRIVATE METHODS --------------------
 
