@@ -38,7 +38,7 @@ void CMeasurement_Traverse::Run(){
 
 	// Convert the settings from the CMobileConfiuration-format to the internal CSpectrometer-format
 	ApplySettings();
-
+	
 	/* Check the settings in the configuration file */
 	if(CheckSettings()){
 		return;
@@ -116,6 +116,9 @@ void CMeasurement_Traverse::Run(){
 	{
 		m_gps = new GpsAsyncReader(m_GPSPort, m_GPSBaudRate);
 	}
+
+	// Set point for CCD temperature
+	SetDetectorSetPoint();
 
 	// Check if we are to be running with adaptive or with fixed exposure-time
 	if(m_fixexptime < 0){
@@ -224,6 +227,11 @@ void CMeasurement_Traverse::Run(){
 		}
 
 		/* ----------------- Save the spectrum(-a) -------------------- */
+		//for (int i = 0; i < m_NChannels; ++i) {
+		//	CSpectrum spectrum = CreateSpectrum(tmpSpec[i], startDate, startTime, elapsedSecond);
+		//	spectrum.WriteStdFile(m_stdfileName[i]);
+		//}
+
 		if (m_useGps) {
 			for (int i = 0; i < m_NChannels; ++i) {
 				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, m_spectrumGpsData[m_spectrumCounter].time, m_spectrumGpsData[m_spectrumCounter].time + elapsedSecond, m_spectrumGpsData[m_spectrumCounter], m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);

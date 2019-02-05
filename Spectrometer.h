@@ -76,6 +76,9 @@ protected:
 		CVector						vColumn[6]; /* The evaluation results from the master channel [col, colError, shift, shiftError, squeeze, squeezeError] */
 		CVector						vColumn2[6]; /* The evaluation results from the slave channel (if there is any) [col, colError, shift, shiftError, squeeze, squeezeError] */
 	}FitRegion;
+
+	void CSpectrometer::SetDetectorSetPoint();
+
 public:
 	CSpectrometer();
 	virtual ~CSpectrometer();
@@ -107,7 +110,7 @@ public:
 		@return 0 on success
 		@return 1 if the collection failed or the collection should stop
 		 */
-	int Scan(long sumInComputer, long sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]);
+	int Scan(int sumInComputer, int sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]);
 
 	/* Collects a spectrum from the spectrometer using the USB-connection
 		@param sumInComputer - the number of spectra to add together in the computer
@@ -117,7 +120,7 @@ public:
 		@return 0 on success 
 		@return 1 if the collection failed or the collection should stop
 		*/
-	int ScanUSB(long sumInComputer, long sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]);
+	int ScanUSB(int sumInComputer, int sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]);
 
 	/** The number of channels in the spectrometer to use */
 	int     m_NChannels; 
@@ -127,7 +130,7 @@ public:
 	long    m_totalSpecNum;
 	
 	/** number of spectra to average in spectrometer */
-	short   m_sumInSpectrometer; 
+	int   m_sumInSpectrometer; 
 	
 	/** Number of spectra to average in computer */
 	int     m_sumInComputer;
@@ -169,6 +172,17 @@ public:
 	
 	/** This retrieves a list of all spectrometers that are connected to this computer */
 	void GetConnectedSpecs(CList <CString, CString&> &connectedSpectrometers);
+	
+	/** The board temperature, as reported by the spectrometer, in degrees Celsius.
+	Set to NaN if this could not be read. */
+	double boardTemperature = std::numeric_limits<double>::quiet_NaN();
+
+	/** The detector temperature, as reported by the spectrometer, in degrees Celsius.
+	Set to NaN if this could not be read. */
+	double detectorTemperature = std::numeric_limits<double>::quiet_NaN();
+
+	/** If detector temperature is within 2 degrees of set point temperature than set to true. */
+	bool detectorTemperatureIsSetPointTemp = false;
 
 	// -------------------------------------------------------------------------------------
 	// ---------------------- Managing the intensity of the spectra ------------------------
@@ -585,9 +599,6 @@ protected:
 		/** True if the program judges that the spectrum is dark */
 		bool   isDark = false;
 
-		/** The temperature, as reported by the spectrometer, in degrees Celsius. 
-			Set to NaN if this could not be read. */
-		double temperature = std::numeric_limits<double>::quiet_NaN();
 	}SpectrumInfo;
 
 	/** Information about the last spectrum collected */
@@ -630,6 +641,8 @@ protected:
 
 	/** Shows a message box to the user (through the main window form) */
 	void ShowMessageBox(CString message, CString label) const;
+
+	CSpectrum CSpectrometer::CreateSpectrum(double spec[], std::string startDate, long startTime, long elapsedSecond);
 
 private:
 

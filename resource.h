@@ -173,6 +173,8 @@
 #define IDC_LON                         1010
 #define IDC_INTTIME                     1011
 #define IDC_GPSTIME                     1012
+#define IDC_SH2                         1013
+#define IDC_TEMPERATURE                 1013
 #define IDC_SCANNO                      1020
 #define IDC_SPECNO                      1021
 #define IDC_FLUXDLAT                    1022
@@ -423,6 +425,7 @@
 #define IDC_LABEL_COLOR_SPECTRUM2       1232
 #define IDC_LABEL_SPECTRUM2             1233
 #define IDC_COMBO_CHANNEL               1233
+#define IDC_EDIT_SETPOINT               1233
 #define ID_SAVESCRIPT                   1234
 #define IDC_LIST_EVALUATIONLOGS         1235
 #define IDC_BUTTON_INSERTEVALLOG        1236

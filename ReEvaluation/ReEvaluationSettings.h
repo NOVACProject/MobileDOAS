@@ -8,7 +8,7 @@
 #define MAX_IGNORE_LIST_LENGTH 256
 
 /** The options for the sky-spectrum */
-const enum SKY_OPTION {USE_SKY_FIRST, USE_SKY_ALL, USE_SKY_CUSTOM, USE_SKY_USER};
+const enum SKY_OPTION {USE_SKY_FIRST, USE_SKY_ALL, USE_SKY_USER};
 
 namespace ReEvaluation{
 	class CReEvaluationSettings

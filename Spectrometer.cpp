@@ -167,7 +167,7 @@ int CSpectrometer::InitSpectrometer(short channel, short inttime, short sumSpec)
 ** @sumInSpectrometer - the number of spectra to gather in spectrometer
 ** @chn - 0 , use one spectrometer
 */
-int CSpectrometer::Scan(long sumInComputer, long sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]) {
+int CSpectrometer::Scan(int sumInComputer, int sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]) {
 
 	if (m_connectViaUsb) {
 		return ScanUSB(sumInComputer, sumInSpectrometer, pResult);
@@ -267,23 +267,36 @@ int CSpectrometer::Scan(long sumInComputer, long sumInSpectrometer, double pResu
 ** @sumInSpectrometer - the number of spectra to gather in spectrometer
 
 */
-int CSpectrometer::ScanUSB(long sumInComputer, long sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]) {
+int CSpectrometer::ScanUSB(int sumInComputer, int sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]) {
 
 	// clear the old spectrum
 	memset(pResult, 0, MAX_N_CHANNELS * MAX_SPECTRUM_LENGTH * sizeof(double));
 
 	// Set the parameters for acquiring the spectrum
+	// TODO: do this somewhere else?
 	for (int chn = 0; chn < m_NChannels; ++chn)
 	{
+
+		//int newExpTime = m_integrationTime * 1000;
+		//m_wrapper.setIntegrationTime(m_spectrometerIndex, chn, newExpTime);
+		//m_wrapper.setScansToAverage(m_spectrometerIndex, chn, sumInSpectrometer);
+
 		// Set the exposure time to use (this function takes exp-time in micro-seconds)
-		m_wrapper.setIntegrationTime(m_spectrometerIndex, chn, m_integrationTime * 1000);
+		int curExpTime = m_wrapper.getIntegrationTime(m_spectrometerIndex);
+		int newExpTime = m_integrationTime * 1000;
+		if (curExpTime != newExpTime) {
+			m_wrapper.setIntegrationTime(m_spectrometerIndex, chn, newExpTime);
+		}
 
 		// Set the number of co-adds
-		m_wrapper.setScansToAverage(m_spectrometerIndex, chn, sumInSpectrometer);
+		int scanToAvg = m_wrapper.getScansToAverage(m_spectrometerIndex);
+		if (scanToAvg != sumInSpectrometer) {
+			m_wrapper.setScansToAverage(m_spectrometerIndex, chn, sumInSpectrometer);
+		}
+
 	}
 
-
-	// if we only use one channel
+	// for each channel
 	for (int chn = 0; chn < m_NChannels; ++chn)
 	{
 		// Get the spectrum
@@ -402,6 +415,16 @@ void CSpectrometer::ApplySettings() {
 	// Audio Settings
 	this->m_useAudio = m_conf->m_useAudio;
 	this->m_maxColumn = m_conf->m_maxColumn;
+}
+
+void CSpectrometer::SetDetectorSetPoint() {
+	// set point temperature for CCD if supported.  
+	// TODO: do this only once somewhere else.
+	if (m_wrapper.isFeatureSupportedThermoElectric(m_spectrometerIndex)) {
+		ThermoElectricWrapper tew = m_wrapper.getFeatureControllerThermoElectric(m_spectrometerIndex);
+		tew.setTECEnable(true);
+		tew.setDetectorSetPointCelsius(m_conf->m_setPointTemperature);
+	}
 }
 
 /* makes a test of the settings, returns 0 if all is ok, else 1 */
@@ -1058,9 +1081,11 @@ void CSpectrometer::Sing(double factor)
 	PlaySound(fileToPlay, 0, SND_SYNC);
 }
 
+// TODO: What is ptotalNum for?  Seems it is always 1.
 long CSpectrometer::AverageIntens(double *pSpectrum, long ptotalNum) const {
 	double sum = 0.0;
 	long num;
+	// take the average of the 10 pixel surrounding the spec center
 	if (m_conf->m_specCenter <= m_conf->m_specCenterHalfWidth)
 		m_conf->m_specCenter = m_conf->m_specCenterHalfWidth;
 	if (m_conf->m_specCenter >= MAX_SPECTRUM_LENGTH - m_conf->m_specCenterHalfWidth)
@@ -1454,11 +1479,11 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 
 			Cut from the USB4000 manual:
 			 Pixel			Description
-				 1–5				Not usable
-				 6–18				Optical black pixels
-				 19–21			Transition pixels
-				 22–3669		Optical active pixels
-				 3670–3681	Not usable
+				 1Â–5				Not usable
+				 6Â–18				Optical black pixels
+				 19Â–21			Transition pixels
+				 22Â–3669		Optical active pixels
+				 3670Â–3681	Not usable
   */
 
   /* The offset is judged as the average intensity in pixels 6 - 18 */
@@ -1495,21 +1520,31 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 		}
 	}
 
-	/** If possible, get the temperature of the spectrometer */
+	/** If possible, get the board temperature of the spectrometer */
 	if (m_wrapper.isFeatureSupportedBoardTemperature(m_spectrometerIndex) == 1) {
 		// Board temperature feature is supported by this spectrometer
-		BoardTemperature boardTemperature	= m_wrapper.getFeatureControllerBoardTemperature(m_spectrometerIndex);
-		const double temperature			= boardTemperature.getBoardTemperatureCelsius();
+		BoardTemperature bt	= m_wrapper.getFeatureControllerBoardTemperature(m_spectrometerIndex);
+		boardTemperature = bt.getBoardTemperatureCelsius();
+	}
+	else {
+		boardTemperature = std::numeric_limits<double>::quiet_NaN();
+	}
 
-		for (int n = 0; n < m_NChannels; ++n) {
-			m_specInfo[n].temperature = temperature;
+	/** If possible, get the detector temperature of the spectrometer */
+	if (m_wrapper.isFeatureSupportedThermoElectric(m_spectrometerIndex)) {
+		ThermoElectricWrapper tew = m_wrapper.getFeatureControllerThermoElectric(m_spectrometerIndex);
+		detectorTemperature = tew.getDetectorTemperatureCelsius();
+		if (abs(detectorTemperature - m_conf->m_setPointTemperature) <= 2.0) {
+			detectorTemperatureIsSetPointTemp = true;
+		}
+		else {
+			detectorTemperatureIsSetPointTemp = false;
 		}
 	}
 	else
 	{
-		for (int n = 0; n < m_NChannels; ++n) {
-			m_specInfo[n].temperature = std::numeric_limits<double>::quiet_NaN();
-		}
+		detectorTemperature = std::numeric_limits<double>::quiet_NaN();
+		detectorTemperatureIsSetPointTemp = false;
 	}
 
 	/* Print the information to a file */
@@ -1521,8 +1556,11 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 		fprintf(f, "#--Additional log file to the Mobile DOAS program---\n");
 		fprintf(f, "#This file has only use as test file for further development of the Mobile DOAS program\n\n");
 		fprintf(f, "#SpectrumNumber\t");
-		if (!std::isnan(m_specInfo[0].temperature)) {
+		if (!std::isnan(boardTemperature)) {
 			fprintf(f, "BoardTemperature\t");
+		}
+		if (!std::isnan(detectorTemperature)) {
+			fprintf(f, "DetectorTemperature\t");
 		}
 		if (m_NChannels == 1) {
 			fprintf(f, "Offset\tSpecCenterIntensity\tisDark\n");
@@ -1541,11 +1579,14 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 	else {
 		// Spectrum number
 		fprintf(f, "%ld\t", m_spectrumCounter);
-		// The board temperature (?)
-		if (!std::isnan(m_specInfo[0].temperature)) {
-			fprintf(f, "%.3lf\t", m_specInfo[0].temperature);
+		// The board temperature 
+		if (!std::isnan(boardTemperature)) {
+			fprintf(f, "%.3lf\t", boardTemperature);
 		}
-
+		// The detector temperature 
+		if (!std::isnan(detectorTemperature)) {
+			fprintf(f, "%.3lf\t", detectorTemperature);
+		}
 		// The master-channel
 		fprintf(f, "%lf\t%ld\t%d", m_specInfo[0].offset, m_averageSpectrumIntensity[0], m_specInfo[0].isDark);
 		if (m_NChannels > 1){
@@ -1772,8 +1813,8 @@ short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxEx
 	// Calculate the exposure-time
 	m_integrationTime = (short)((m_spectrometerDynRange - int_short) * (maxExpTime - minExpTime) * m_percent / (int_long - int_short));
 
-	if (m_integrationTime > MAX_EXPOSURETIME){
-		m_integrationTime = MAX_EXPOSURETIME;
+	if (m_integrationTime > m_timeResolution) {
+		m_integrationTime = m_timeResolution;
 	}
 	if (m_integrationTime < MIN_EXPOSURETIME){
 		m_integrationTime = MIN_EXPOSURETIME;
@@ -1865,4 +1906,32 @@ void CSpectrometer::ShowMessageBox(CString message, CString label) const
 		// the point here is that we only allow the messagebox to be shown when the user interface is ready for receiving message boxes (i.e. when the program is running!)
 		MessageBox(pView->m_hWnd, message, label, MB_OK);
 	}
+}
+
+CSpectrum CSpectrometer::CreateSpectrum(double spec[], std::string startDate, long startTime, long elapsedSecond) {
+	CSpectrum spectrum;
+	memcpy((void*)spectrum.I, (void*)spec, sizeof(double)*MAX_SPECTRUM_LENGTH);
+	spectrum.length = m_detectorSize;
+	spectrum.exposureTime = m_integrationTime;
+	spectrum.SetDate(startDate);
+	spectrum.spectrometerModel = m_spectrometerModel;
+	spectrum.spectrometerSerial = m_spectrometerName;
+	spectrum.scans = m_totalSpecNum;
+	spectrum.name = m_measurementBaseName;
+	spectrum.fitHigh = m_conf->m_fitWindow->fitHigh;
+	spectrum.fitLow = m_conf->m_fitWindow->fitLow;
+	spectrum.boardTemperature = boardTemperature;
+	spectrum.detectorTemperature = detectorTemperature;
+	if (m_useGps) {
+		spectrum.SetStartTime(m_spectrumGpsData[m_spectrumCounter].time);
+		spectrum.SetStopTime(m_spectrumGpsData[m_spectrumCounter].time + elapsedSecond);
+		spectrum.lat = m_spectrumGpsData[m_spectrumCounter].latitude;
+		spectrum.lon = m_spectrumGpsData[m_spectrumCounter].longitude;
+		spectrum.altitude = m_spectrumGpsData[m_spectrumCounter].altitude;
+	}
+	else {
+		spectrum.SetStartTime(startTime);
+		spectrum.SetStopTime(startTime + elapsedSecond);
+	}
+	return spectrum;
 }

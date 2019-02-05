@@ -4,6 +4,7 @@
 
 class CSpectrum
 {
+
 public:
 	CSpectrum();
 	~CSpectrum();
@@ -28,6 +29,12 @@ public:
 	CString spectrometerModel;  // Model of the spectrometer
 	CString name;			// name of the spectrum
 
+	// additional added 1/30/2019 DLN
+	double boardTemperature; 
+	double detectorTemperature;
+	int fitHigh;
+	int fitLow;
+
 	// statistics
 	void    GetMinMax(double& minValue, double&maxValue) const;
 	double  GetMax() const;
@@ -49,4 +56,16 @@ public:
 
 	// clearing out the information in the spectrum
 	void    Clear();
+
+	// date functions
+	void SetDate(std::string startDate);
+	void SetStartTime(long startTime);
+	void SetStopTime(long stopTime);
+
+	// read and write from STD files
+	int readSTDFile(CString filename);
+	bool WriteStdFile(const CString &fileName);
+
+private:
+	void GetHrMinSec(int time, int &hr, int &min, int &sec);
 };
