@@ -87,36 +87,6 @@ typedef struct gpsPosition{
 	double altitude = 0.0;
 }gpsPosition;
 
-/** Common structure for stroring data read out from the GPS */
-struct gpsData {
-	gpsData();
-	gpsData(const gpsData& other);
-
-	gpsData& operator=(gpsData other);
-
-	friend void swap(gpsData& first, gpsData& second);
-
-	/* Latitude in (decimal) degrees. */
-	double latitude = 0.0;
-
-	/* Longitude in (decimal) degrees. */
-	double longitude = 0.0;
-
-	/* Altitude above sea level in meters. */
-	double altitude = 0.0;
-
-	/* The time stamp from the Gps */
-	long time = 0;
-
-	/* Number of satellites seen by the receiver. */
-	long nSatellites = 0;
-
-	/* Date */
-	char date[6];
-};
-
-/** Extracts the time from the provided gpsData and separates it into hour-minute-second */
-void ExtractTime(const gpsData& gpsData, int& hours, int& minutes, int& seconds);
 
 typedef struct Time{
 	char hour = 0;

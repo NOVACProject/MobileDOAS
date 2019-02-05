@@ -644,6 +644,9 @@ protected:
 
 	CSpectrum CSpectrometer::CreateSpectrum(double spec[], std::string startDate, long startTime, long elapsedSecond);
 
+	/** Retrieves the current date and time either from the GPS or from the computer time (if no valid gps-data). */
+	void GetCurrentDateAndTime(std::string& currentDate, long& currentTime);
+
 private:
 
 	// -------------------- PRIVATE DATA --------------------

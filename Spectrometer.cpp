@@ -1138,6 +1138,21 @@ bool CSpectrometer::UpdateGpsData(gpsData& gpsInfo)
 	return gpsDataIsValid;
 }
 
+void CSpectrometer::GetCurrentDateAndTime(std::string& currentDate, long& currentTime)
+{
+	gpsData currentGpsInfo;
+	const bool couldReadValidGPSData = (m_useGps) ? UpdateGpsData(currentGpsInfo) : false;
+	if (!couldReadValidGPSData)
+	{
+		currentDate = GetCurrentDateFromComputerClock();
+		currentTime = GetCurrentTimeFromComputerClock();
+	}
+	else
+	{
+		currentDate = GetDate(currentGpsInfo);
+		currentTime = GetTime(currentGpsInfo);
+	}
+}
 
 void CSpectrometer::WriteLogFile(CString filename, CString txt) {
 	FILE *f;
@@ -1863,7 +1878,7 @@ std::string CSpectrometer::GetCurrentDateFromComputerClock() const
 	int mon = tim->tm_mon+1;
 	int day = tim->tm_mday;
 	int year = tim->tm_year - 100; // only good for 21st century
-	sprintf(startDate, "%02d%02d%02d", mon, day, year);
+	sprintf(startDate, "%02d%02d%02d", day, mon, year);
 
 	return std::string(startDate, 6);
 }
