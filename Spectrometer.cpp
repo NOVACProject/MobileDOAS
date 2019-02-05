@@ -90,7 +90,8 @@ CSpectrometer::~CSpectrometer()
 	delete this->m_fitRegion[0].eval[0];
 	delete this->m_fitRegion[0].eval[1];
 
-	if (m_gps != nullptr) {
+	if (m_gps != nullptr)
+	{
 		delete m_gps;
 	}
 }
@@ -326,6 +327,17 @@ int CSpectrometer::ScanUSB(int sumInComputer, int sumInSpectrometer, double pRes
 		}
 	}
 
+	// Check the status of the last readout
+	WrapperExtensions ext = m_wrapper.getWrapperExtensions();
+	if (!ext.isSpectrumValid(m_spectrometerIndex))
+	{
+		if(IsSpectrometerDisconnected())
+		{
+			ReconnectWithSpectrometer();
+		}
+		return 0;
+	}
+
 	return 0;
 }
 
@@ -344,8 +356,8 @@ void CSpectrometer::ApplySettings() {
 	CString msg;
 
 	// The settings for the serial-port
-	serial.baudrate = m_conf->m_baudrate;
-	sprintf(serial.serialPort, m_conf->m_serialPort);
+	serial.SetBaudrate(m_conf->m_baudrate);
+	serial.SetPort(m_conf->m_serialPort);
 	m_connectViaUsb = (m_conf->m_spectrometerConnection == Configuration::CMobileConfiguration::CONNECTION_USB);
 	m_NChannels = m_conf->m_nChannels;
 	bool error = false;
@@ -677,7 +689,8 @@ int CSpectrometer::Stop()
 	m_isRunning = false;
 
 	// Also stop the GPS-reading thread
-	if (m_gps != nullptr) {
+	if (m_gps != nullptr)
+	{
 		m_gps->Stop();
 	}
 
@@ -1008,10 +1021,9 @@ long CSpectrometer::GetColumnNumber()
 	return columnSize;
 }
 
-void CSpectrometer::GetNSpecAverage(int N[]) {
-	N[0] = this->m_sumInSpectrometer;
-	N[1] = this->m_sumInComputer;
-	return;
+void CSpectrometer::GetNSpecAverage(int& averageInSpectrometer, int& averageInComputer) {
+	averageInSpectrometer = this->m_sumInSpectrometer;
+	averageInComputer     = this->m_sumInComputer;
 }
 
 void CSpectrometer::WriteFluxLog()
@@ -1096,30 +1108,28 @@ long CSpectrometer::AverageIntens(double *pSpectrum, long ptotalNum) const {
 	return (long)sum;
 }
 
-bool CSpectrometer::UpdateGpsData() {
+bool CSpectrometer::UpdateGpsData(gpsData& gpsInfo)
+{
 	// If GPS thread does not exist or is not running
-	if (nullptr == m_gps) {
+	if (nullptr == m_gps)
+	{
 		return false;
 	}
 
-	bool gpsDataIsValid = true;
-
-	m_gps->Get(m_spectrumGpsData[m_spectrumCounter]);
+	// Read the data from the GPS
+	m_gps->Get(gpsInfo);
+	m_spectrumGpsData[m_spectrumCounter] = gpsInfo;
 
 	// check for valid lat/lon
-	if ((m_spectrumGpsData[m_spectrumCounter].latitude == 0.0) && (m_spectrumGpsData[m_spectrumCounter].longitude == 0.0)) {
-		// Invalid data, no latitude / longitude could be retrieved
+	bool gpsDataIsValid = IsValidGpsData(gpsInfo);
+
+	if (!m_gps->GotContact())
+	{
 		gpsDataIsValid = false;
 	}
-	// check for valid number of satellites
-	if (m_spectrumGpsData[m_spectrumCounter].nSatellites == 0) {
-		// Invalid data, the receiver couldn't connect to any satellite
-		gpsDataIsValid = false;
-	}
-	if (!m_gps->m_gotContact) {
-		gpsDataIsValid = false;
-	}
-	if (m_spectrumCounter > 0 && (m_spectrumGpsData[m_spectrumCounter].time == m_spectrumGpsData[m_spectrumCounter-1].time)) {
+
+	if (m_spectrumCounter > 0 && (m_spectrumGpsData[m_spectrumCounter].time == m_spectrumGpsData[m_spectrumCounter-1].time))
+	{
 		gpsDataIsValid = false;
 	}
 	
@@ -1128,6 +1138,21 @@ bool CSpectrometer::UpdateGpsData() {
 	return gpsDataIsValid;
 }
 
+void CSpectrometer::GetCurrentDateAndTime(std::string& currentDate, long& currentTime)
+{
+	gpsData currentGpsInfo;
+	const bool couldReadValidGPSData = (m_useGps) ? UpdateGpsData(currentGpsInfo) : false;
+	if (!couldReadValidGPSData)
+	{
+		currentDate = GetCurrentDateFromComputerClock();
+		currentTime = GetCurrentTimeFromComputerClock();
+	}
+	else
+	{
+		currentDate = GetDate(currentGpsInfo);
+		currentTime = GetTime(currentGpsInfo);
+	}
+}
 
 void CSpectrometer::WriteLogFile(CString filename, CString txt) {
 	FILE *f;
@@ -1161,7 +1186,7 @@ void CSpectrometer::WriteBeginEvFile(int fitRegion) {
 
 	if (!m_connectViaUsb) {
 		str4.Format("SPEC_BAUD=%d\nSERIALPORT=%s\nGPSBAUD=%d\nGPSPORT=%s\nTIMERESOLUTION=%d\n",
-			serial.baudrate, serial.serialPort, m_GPSBaudRate, m_GPSPort, m_timeResolution);
+			serial.GetBaudrate(), serial.GetPort(), m_GPSBaudRate, m_GPSPort, m_timeResolution);
 	}
 	else {
 		str4.Format("SERIALPORT=USB\nGPSBAUD=%d\nGPSPORT=%s\nTIMERESOLUTION=%d\n",
@@ -1328,6 +1353,36 @@ int CSpectrometer::TestUSBConnection() {
 	return 1;
 }
 
+bool CSpectrometer::IsSpectrometerDisconnected()
+{
+	const char* lastErrorMsg = m_wrapper.getLastException().getASCII();
+
+	// This search string isn't really documented by Ocean Optics but has been found through experimentation.
+	// Full error message returned from the driver was: "java.io.IOException: Bulk failed."
+	return (nullptr != lastErrorMsg && nullptr != strstr(lastErrorMsg, "Bulk failed."));
+}
+
+void CSpectrometer::ReconnectWithSpectrometer()
+{
+	m_statusMsg.Format("Connection with spectrometer lost! Reconnecting."); pView->PostMessage(WM_STATUSMSG);
+
+	m_wrapper.closeAllSpectrometers();
+	int nofSpectrometersFound = -1;
+	int attemptNumber = 1;
+	while (nofSpectrometersFound != m_numberOfSpectrometersAttached)
+	{
+		// Make the user aware of the problems here...
+		Sing(1.0);
+
+		Sleep(500);
+		m_wrapper = Wrapper();
+		nofSpectrometersFound = m_wrapper.openAllSpectrometers();
+
+		m_statusMsg.Format("Connection with spectrometer lost! Reconnecting, attempt #%d", attemptNumber++); pView->PostMessage(WM_STATUSMSG);
+	}
+}
+
+
 /** This will change the spectrometer to use, to the one with the
 	given spectrometerIndex. If no spectrometer exist with the given
 	index then no changes will be made */
@@ -1439,11 +1494,11 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 
 			Cut from the USB4000 manual:
 			 Pixel			Description
-				 1–5				Not usable
-				 6–18				Optical black pixels
-				 19–21			Transition pixels
-				 22–3669		Optical active pixels
-				 3670–3681	Not usable
+				 1Â–5				Not usable
+				 6Â–18				Optical black pixels
+				 19Â–21			Transition pixels
+				 22Â–3669		Optical active pixels
+				 3670Â–3681	Not usable
   */
 
   /* The offset is judged as the average intensity in pixels 6 - 18 */
@@ -1814,51 +1869,36 @@ short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxEx
 	}
 }
 
-std::string CSpectrometer::GetCurrentDate() {
+std::string CSpectrometer::GetCurrentDateFromComputerClock() const
+{
+	char startDate[7];
+	time_t t;
+	time(&t);
+	struct tm *tim = localtime(&t);
+	int mon = tim->tm_mon+1;
+	int day = tim->tm_mday;
+	int year = tim->tm_year - 100; // only good for 21st century
+	sprintf(startDate, "%02d%02d%02d", day, mon, year);
 
-	const bool couldReadValidGPSData = (m_useGps) ? UpdateGpsData() : false;
-
-	if (!couldReadValidGPSData) {
-		char startDate[7];
-
-		struct tm *tim;
-		time_t t;
-		time(&t);
-		tim = localtime(&t);
-		int mon = tim->tm_mon+1;
-		int day = tim->tm_mday;
-		int year = tim->tm_year - 100; // only good for 21st century
-		sprintf(startDate, "%02d%02d%02d", mon, day, year);
-
-		return std::string(startDate, 6);
-	}
-	else {
-		const int c = this->m_spectrumCounter; // local buffer, to avoid race conditions...
-		m_gps->Get(m_spectrumGpsData[c]);
-		return std::string(m_spectrumGpsData[c].date, 6);
-	}
+	return std::string(startDate, 6);
 }
 
-long CSpectrometer::GetCurrentTime() {
-	long startTime = 0;
-
-	const bool couldReadValidGPSData = (m_useGps) ? UpdateGpsData() : false;
-
+long CSpectrometer::GetCurrentTimeFromComputerClock()
+{
 	const int currentSpectrumCounter = this->m_spectrumCounter; // local copy to prevent race conditions
 
-	if (!couldReadValidGPSData) {
-		startTime = GetTimeValue_UMT();
-		m_spectrumGpsData[currentSpectrumCounter].time = startTime;
-	}
-	else if (m_timeDiffToUtc == 0) {
+	long startTime = GetTimeValue_UMT();
+
+	if (m_timeDiffToUtc == 0)
+	{
 		time_t t;
 		time(&t);
 		struct tm *localTime = localtime(&t);
 
-		m_gps->Get(m_spectrumGpsData[currentSpectrumCounter]);
+		const gpsData curGpsInfo = m_spectrumGpsData[currentSpectrumCounter];
 
 		int hr, min, sec;
-		ExtractTime(m_spectrumGpsData[currentSpectrumCounter], hr, min, sec);
+		ExtractTime(curGpsInfo, hr, min, sec);
 
 		/* get the difference between the local time and the GPS-time */
 		m_timeDiffToUtc = 3600 * (hr - localTime->tm_hour) + 60 * (min - localTime->tm_min) + (sec - localTime->tm_sec);

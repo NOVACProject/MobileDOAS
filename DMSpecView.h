@@ -208,6 +208,7 @@ public:
 	afx_msg void OnMenuAnalysisPlumeheightmeasurement();
 
 	afx_msg void OnMenuControlTestTheGPS();
+	afx_msg void OnMenuControlRunTheGPS();
 	//afx_msg void OnUpdate_TestTheGPS(CCmdUI *pCmdUI);
 
 	// Updating the interface
@@ -215,6 +216,7 @@ public:
 	afx_msg void OnUpdate_DisableOnRun(CCmdUI *pCmdUI);
 
 	afx_msg void OnUpdateWindMeasurement(CCmdUI *pCmdUI);
+	afx_msg void OnUpdate_StartTheGps(CCmdUI *pCmdUI);
 
 	afx_msg void OnUpdate_CalibrateSpectrometer(CCmdUI *pCmdUI);
 

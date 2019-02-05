@@ -388,7 +388,6 @@
 #define IDC_RADIO_SHOW_WS               1207
 #define IDC_EDIT_LATITUDE               1207
 #define IDC_EDIT_LONGITUDE              1208
-#define IDC_EDIT_PH_ANGLESEPARATION     1208
 #define IDC_EDIT_WS_ANGLESEPARATION     1208
 #define IDC_BUTTON_SOURCE_LAT           1209
 #define IDC_BUTTON_SOURCE_LON           1210
@@ -473,6 +472,8 @@
 #define ID_CONFIGURATION_PLOT_CHANGEPLOTCOLOR_SLAVE 32784
 #define ID_CONFIGURATION_TEST           32787
 #define ID_CONFIGURATION_OPERATION      32788
+#define ID_START_GPS                    32799
+#define ID_CONTROL_STARTTHEGPS          32800
 
 // Next default values for new objects
 // 
@@ -480,8 +481,8 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        270
-#define _APS_NEXT_COMMAND_VALUE         32799
-#define _APS_NEXT_CONTROL_VALUE         1279
+#define _APS_NEXT_COMMAND_VALUE         32801
+#define _APS_NEXT_CONTROL_VALUE         1278
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif
