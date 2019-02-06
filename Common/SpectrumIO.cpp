@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "SpectrumIO.h"
 #include "../GpsData.h"
+#include "../Common/DateTime.h"
 #include <vector>
 
 CSpectrumIO::CSpectrumIO()
@@ -278,12 +279,11 @@ bool CSpectrumIO::WriteStdFile(const CString &fileName, const CSpectrum& spectru
 bool CSpectrumIO::WriteStdFile(const CString &fileName, const double *spectrum, long specLength, const std::string& startdate, long starttime, long stoptime, const gpsData& position, long integrationTime, const CString &spectrometer, const CString &measName, long exposureNum){
 	int extendedFormat = 1;
 	long i;
-	FILE *f;
-	int hr,min,sec,hr2,min2,sec2;	
-	GetHrMinSec(starttime, hr, min, sec);
-	GetHrMinSec(stoptime, hr2, min2, sec2);
 
-	f=fopen(fileName,"w");
+	const std::string startTimeStr = FormatTime(starttime, ':');
+	const std::string endTimeStr   = FormatTime(stoptime, ':');
+
+	FILE* f = fopen(fileName,"w");
 	if(f < (FILE*)1){
 		return FAIL;
 	}
@@ -297,22 +297,6 @@ bool CSpectrumIO::WriteStdFile(const CString &fileName, const double *spectrum, 
 		fprintf(f,"%.9lf\n", spectrum[i]);
 	}
 
-	// date
-	std::vector<char> datetxt;
-	if(6 == startdate.size())
-	{
-		std::string d	= startdate.substr(0,2);
-		std::string m	= startdate.substr(2, 2);
-		std::string y	= startdate.substr(4, 2);
-		std::string dmy = d + '.' + m + '.' + y;
-		datetxt.resize(dmy.length()+1);
-		std::strcpy(datetxt.data(), dmy.c_str());
-	}
-	else
-	{
-		datetxt.push_back('-');
-	}
-
 	// Find the name of the file itself (removing the path)
 	CString name;
 	name.Format(fileName);
@@ -322,9 +306,9 @@ bool CSpectrumIO::WriteStdFile(const CString &fileName, const double *spectrum, 
 	fprintf(f,"%s\n", (LPCTSTR)spectrometer);  /* The name of the spectrometer */
 	fprintf(f,"%s\n", (LPCTSTR)spectrometer); // why is there a second output of spectrometer name?
 	
-	fprintf(f,"%s\n", datetxt.data());
-	fprintf(f,"%02d:%02d:%02d\n",hr,min,sec);
-	fprintf(f,"%02d:%02d:%02d\n",hr2,min2,sec2);
+	fprintf(f,"%s\n", startdate.c_str());
+	fprintf(f,"%s\n", startTimeStr.c_str());
+	fprintf(f,"%s\n", endTimeStr.c_str());
 	fprintf(f,"0.0\n");
 	fprintf(f,"0.0\n");
 	fprintf(f,"SCANS %ld\n",		exposureNum);

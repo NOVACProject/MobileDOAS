@@ -545,23 +545,6 @@ long Common::Round(double d){
 		return ret;
 }
 
-void GetHrMinSec(int time, int &hr, int &min, int &sec){
-	hr = time/10000;
-	min = (time - hr*10000)/100;
-	sec = time % 100;
-
-	// make sure that there's no numbers greather than or equal to 60 (or 24) !!!
-	if(sec >= 60){
-		sec -= 60;
-		min +=1;
-	}
-	if(min >= 60){
-		min -= 60;
-		hr += 1;
-	}
-	hr = hr % 24;
-}
-
 /** Take out the exe name from a long path 
 	  @param fileName path of the exe file	*/
 void Common::GetFileName(CString& fileName)

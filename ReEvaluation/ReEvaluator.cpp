@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "reevaluator.h"
 #include "../Version.h"
+#include "../Common/DateTime.h"
 
 using namespace ReEvaluation;
 using namespace Evaluation;

@@ -1,6 +1,7 @@
 #pragma once
 #include <afxtempl.h>
 #include "../Common.h"
+#include "../Common/DateTime.h"
 #include "FitWindow.h"
 
 /** The class <b>CTraverseResult</b> is used to store the evaluated

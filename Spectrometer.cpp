@@ -9,6 +9,7 @@
 #include <Mmsystem.h>	// used for PlaySound
 #include "DMSpec.h"
 #include "Spectrometer.h"
+#include "Common/DateTime.h"
 #include <algorithm>
 #include "Dialogs/SelectionDialog.h"
 
@@ -1144,12 +1145,12 @@ void CSpectrometer::GetCurrentDateAndTime(std::string& currentDate, long& curren
 	const bool couldReadValidGPSData = (m_useGps) ? UpdateGpsData(currentGpsInfo) : false;
 	if (!couldReadValidGPSData)
 	{
-		currentDate = GetCurrentDateFromComputerClock();
+		currentDate = GetCurrentDateFromComputerClock('.');
 		currentTime = GetCurrentTimeFromComputerClock();
 	}
 	else
 	{
-		currentDate = GetDate(currentGpsInfo);
+		currentDate = GetDate(currentGpsInfo, '.');
 		currentTime = GetTime(currentGpsInfo);
 	}
 }
@@ -1867,20 +1868,6 @@ short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxEx
 
 		return m_integrationTime;
 	}
-}
-
-std::string CSpectrometer::GetCurrentDateFromComputerClock() const
-{
-	char startDate[7];
-	time_t t;
-	time(&t);
-	struct tm *tim = localtime(&t);
-	int mon = tim->tm_mon+1;
-	int day = tim->tm_mday;
-	int year = tim->tm_year - 100; // only good for 21st century
-	sprintf(startDate, "%02d%02d%02d", day, mon, year);
-
-	return std::string(startDate, 6);
 }
 
 long CSpectrometer::GetCurrentTimeFromComputerClock()
