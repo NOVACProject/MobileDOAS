@@ -8,7 +8,7 @@
 
 std::string GetCurrentDateFromComputerClock(char separatorCharacter)
 {
-	char startDate[7];
+	char startDate[32];
 	time_t t;
 	time(&t);
 	struct tm *tim = localtime(&t);
