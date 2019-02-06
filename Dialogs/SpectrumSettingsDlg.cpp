@@ -167,7 +167,7 @@ void CSpectrumSettingsDlg::SaveSpectrum(){
 
 	int spectrumLength       = m_Spectrometer->m_detectorSize;
 	gpsData gps;
-	std::string startdate = m_Spectrometer->GetCurrentDate();
+	std::string startdate = "00.00.00";
 	long starttime = 0; // <-- this we don't know anything about
 	long stoptime  = 0; // <-- this we don't know anything about
 
