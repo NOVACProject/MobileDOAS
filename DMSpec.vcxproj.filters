@@ -42,9 +42,6 @@
     <Filter Include="Header Files\GridCtrl">
       <UniqueIdentifier>{6487d11f-10b8-4386-a869-a8f4d633c5a7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Fit">
-      <UniqueIdentifier>{5444da62-bee0-4d85-ac8b-5ed343443feb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Dialogs">
       <UniqueIdentifier>{4f22f1d8-7fd2-4a86-b621-ce41f415a41d}</UniqueIdentifier>
     </Filter>
@@ -69,6 +66,18 @@
     <Filter Include="Resource Files">
       <UniqueIdentifier>{5bac7d2f-4a40-499f-9edd-d25c584d8f43}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="Header Files\SpectralEvaluation">
+      <UniqueIdentifier>{cf9ec174-1281-4516-89cf-8c04947eb3a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\SpectralEvaluation\Fit">
+      <UniqueIdentifier>{963bcb87-a659-43e5-8145-320c77f32695}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SpectralEvaluation">
+      <UniqueIdentifier>{67a79942-5e59-4c25-afda-ac6e2a3579a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SpectralEvaluation\Fit">
+      <UniqueIdentifier>{845b7291-6738-464b-aa3b-937b04c6f5b5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -207,9 +216,6 @@
     <ClCompile Include="BasicMath.cpp">
       <Filter>Source Files\Fit</Filter>
     </ClCompile>
-    <ClCompile Include="Fit\MessageLog.cpp">
-      <Filter>Source Files\Fit</Filter>
-    </ClCompile>
     <ClCompile Include="CommentDlg.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
@@ -338,6 +344,9 @@
     </ClCompile>
     <ClCompile Include="GpsData.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\Fit\MessageLog.cpp">
+      <Filter>Source Files\SpectralEvaluation\Fit</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -487,129 +496,6 @@
     <ClInclude Include="GridCtrl\TitleTip.h">
       <Filter>Header Files\GridCtrl</Filter>
     </ClInclude>
-    <ClInclude Include="Fit\ApertureFunction.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\BSplineF.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\BSplineImpl.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\BandedMatrix.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="BasicMath.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\ConstFunction.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\ConvoluteFunction.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\ConvolutionCoreFunction.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\CubicBSplineFunction.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\CubicSplineFunction.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\DOASVector.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\DataSet.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\DiscreteFunction.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\DivFunction.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\ExpFunction.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\Fit.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\FitBasic.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\FitException.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\Function.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\GaussFunction.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\LeastSquareFit.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\LevenbergMarquardtFit.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\LinearInterpolateFunction.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\LnFunction.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\Matrix.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\MessageLog.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\Minimizer.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\MulFunction.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\NegateFunction.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\NonlinearParameterFunction.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\ParamFunction.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\ParameterLinkItem.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\ParameterVector.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\PolynomialFunction.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\ReferenceSpectrumFunction.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\SimpleDOASFunction.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\StandardFit.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\StandardMetricFunction.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\StatisticVector.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\SumFunction.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\Vector.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
     <ClInclude Include="InformationDialog.h">
       <Filter>Header Files\Dialogs</Filter>
     </ClInclude>
@@ -739,6 +625,132 @@
     <ClInclude Include="GpsData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\ApertureFunction.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\BandedMatrix.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\BSpline.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\BSplineD.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\BSplineF.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\BSplineImpl.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\ConstFunction.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\ConvoluteFunction.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\ConvolutionCoreFunction.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\CubicBSplineFunction.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\CubicSplineFunction.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\DataSet.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\DiscreteFunction.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\DivFunction.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\DOASVector.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\ExpFunction.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\Fit.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\FitBasic.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\FitException.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\Function.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\GaussFunction.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\LeastSquareFit.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\LevenbergMarquardtFit.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\LinearInterpolateFunction.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\LnFunction.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\Matrix.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\Minimizer.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\MulFunction.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\NegateFunction.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\NonlinearParameterFunction.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\ParameterLinkItem.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\ParameterVector.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\ParamFunction.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\PolynomialFunction.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\ReferenceSpectrumFunction.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\SimpleDOASFunction.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\StandardFit.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\StandardMetricFunction.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\StatisticVector.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\SumFunction.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\Vector.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Fit\MessageLog.h">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\CHALMERSAvancez30.bmp">
@@ -782,5 +794,10 @@
     <None Include="res\DMSpec.rc2">
       <Filter>Resource Files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="SpectralEvaluation\Fit\CMakeLists.txt">
+      <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </Text>
   </ItemGroup>
 </Project>

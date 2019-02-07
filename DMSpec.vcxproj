@@ -324,7 +324,6 @@
     <ClCompile Include="Evaluation\ReferenceFitResult.cpp" />
     <ClCompile Include="Evaluation\TraverseResult.cpp" />
     <ClCompile Include="ExportEvLogDlg.cpp" />
-    <ClCompile Include="Fit\MessageLog.cpp" />
     <ClCompile Include="Flux1.cpp" />
     <ClCompile Include="FluxPathListBox.cpp" />
     <ClCompile Include="Flux\Traverse.cpp" />
@@ -366,6 +365,10 @@
     <ClCompile Include="SerialConnection.cpp" />
     <ClCompile Include="ShowFitDlg.cpp" />
     <ClCompile Include="SourceSelectionDlg.cpp" />
+    <ClCompile Include="SpectralEvaluation\Fit\MessageLog.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Spectrometer.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -381,7 +384,6 @@
     <ResourceCompile Include="DMSpec.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BasicMath.h" />
     <ClInclude Include="CommentDlg.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="Common\DateTime.h" />
@@ -423,46 +425,6 @@
     <ClInclude Include="Evaluation\ReferenceFitResult.h" />
     <ClInclude Include="Evaluation\TraverseResult.h" />
     <ClInclude Include="ExportEvLogDlg.h" />
-    <ClInclude Include="Fit\ApertureFunction.h" />
-    <ClInclude Include="Fit\BandedMatrix.h" />
-    <ClInclude Include="Fit\BSplineF.h" />
-    <ClInclude Include="Fit\BSplineImpl.h" />
-    <ClInclude Include="Fit\ConstFunction.h" />
-    <ClInclude Include="Fit\ConvoluteFunction.h" />
-    <ClInclude Include="Fit\ConvolutionCoreFunction.h" />
-    <ClInclude Include="Fit\CubicBSplineFunction.h" />
-    <ClInclude Include="Fit\CubicSplineFunction.h" />
-    <ClInclude Include="Fit\DataSet.h" />
-    <ClInclude Include="Fit\DiscreteFunction.h" />
-    <ClInclude Include="Fit\DivFunction.h" />
-    <ClInclude Include="Fit\DOASVector.h" />
-    <ClInclude Include="Fit\ExpFunction.h" />
-    <ClInclude Include="Fit\Fit.h" />
-    <ClInclude Include="Fit\FitBasic.h" />
-    <ClInclude Include="Fit\FitException.h" />
-    <ClInclude Include="Fit\Function.h" />
-    <ClInclude Include="Fit\GaussFunction.h" />
-    <ClInclude Include="Fit\LeastSquareFit.h" />
-    <ClInclude Include="Fit\LevenbergMarquardtFit.h" />
-    <ClInclude Include="Fit\LinearInterpolateFunction.h" />
-    <ClInclude Include="Fit\LnFunction.h" />
-    <ClInclude Include="Fit\Matrix.h" />
-    <ClInclude Include="Fit\MessageLog.h" />
-    <ClInclude Include="Fit\Minimizer.h" />
-    <ClInclude Include="Fit\MulFunction.h" />
-    <ClInclude Include="Fit\NegateFunction.h" />
-    <ClInclude Include="Fit\NonlinearParameterFunction.h" />
-    <ClInclude Include="Fit\ParameterLinkItem.h" />
-    <ClInclude Include="Fit\ParameterVector.h" />
-    <ClInclude Include="Fit\ParamFunction.h" />
-    <ClInclude Include="Fit\PolynomialFunction.h" />
-    <ClInclude Include="Fit\ReferenceSpectrumFunction.h" />
-    <ClInclude Include="Fit\SimpleDOASFunction.h" />
-    <ClInclude Include="Fit\StandardFit.h" />
-    <ClInclude Include="Fit\StandardMetricFunction.h" />
-    <ClInclude Include="Fit\StatisticVector.h" />
-    <ClInclude Include="Fit\SumFunction.h" />
-    <ClInclude Include="Fit\Vector.h" />
     <ClInclude Include="Flux1.h" />
     <ClInclude Include="FluxPathListBox.h" />
     <ClInclude Include="Flux\Traverse.h" />
@@ -507,6 +469,48 @@
     <ClInclude Include="SerialConnection.h" />
     <ClInclude Include="SourceSelectionDlg.h" />
     <ClInclude Include="Spectra.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\ApertureFunction.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\BandedMatrix.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\BSpline.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\BSplineD.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\BSplineF.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\BSplineImpl.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\ConstFunction.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\ConvoluteFunction.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\ConvolutionCoreFunction.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\CubicBSplineFunction.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\CubicSplineFunction.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\DataSet.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\DiscreteFunction.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\DivFunction.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\DOASVector.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\ExpFunction.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\Fit.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\FitBasic.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\FitException.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\Function.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\GaussFunction.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\LeastSquareFit.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\LevenbergMarquardtFit.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\LinearInterpolateFunction.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\LnFunction.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\Matrix.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\MessageLog.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\Minimizer.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\MulFunction.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\NegateFunction.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\NonlinearParameterFunction.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\ParameterLinkItem.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\ParameterVector.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\ParamFunction.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\PolynomialFunction.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\ReferenceSpectrumFunction.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\SimpleDOASFunction.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\StandardFit.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\StandardMetricFunction.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\StatisticVector.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\SumFunction.h" />
+    <ClInclude Include="SpectralEvaluation\Fit\Vector.h" />
     <ClInclude Include="Spectrometer.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="Version.h" />
@@ -529,6 +533,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="res\DMSpec.rc2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="SpectralEvaluation\Fit\CMakeLists.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

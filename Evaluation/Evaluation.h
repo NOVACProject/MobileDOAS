@@ -10,7 +10,7 @@
 #endif // _MSC_VER > 1000
 
 #include "../BasicMath.h"
-#include "../FIT\Vector.h"	// Added by ClassView
+#include "../SpectralEvaluation/Fit/Vector.h"
 
 #include "FitWindow.h"
 #include "EvaluationResult.h"
