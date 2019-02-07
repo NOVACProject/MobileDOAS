@@ -274,27 +274,10 @@ int CSpectrometer::ScanUSB(int sumInComputer, int sumInSpectrometer, double pRes
 	memset(pResult, 0, MAX_N_CHANNELS * MAX_SPECTRUM_LENGTH * sizeof(double));
 
 	// Set the parameters for acquiring the spectrum
-	// TODO: do this somewhere else?
 	for (int chn = 0; chn < m_NChannels; ++chn)
 	{
-
-		//int newExpTime = m_integrationTime * 1000;
-		//m_wrapper.setIntegrationTime(m_spectrometerIndex, chn, newExpTime);
-		//m_wrapper.setScansToAverage(m_spectrometerIndex, chn, sumInSpectrometer);
-
-		// Set the exposure time to use (this function takes exp-time in micro-seconds)
-		int curExpTime = m_wrapper.getIntegrationTime(m_spectrometerIndex);
-		int newExpTime = m_integrationTime * 1000;
-		if (curExpTime != newExpTime) {
-			m_wrapper.setIntegrationTime(m_spectrometerIndex, chn, newExpTime);
-		}
-
-		// Set the number of co-adds
-		int scanToAvg = m_wrapper.getScansToAverage(m_spectrometerIndex);
-		if (scanToAvg != sumInSpectrometer) {
-			m_wrapper.setScansToAverage(m_spectrometerIndex, chn, sumInSpectrometer);
-		}
-
+		m_wrapper.setIntegrationTime(m_spectrometerIndex, chn, m_integrationTime * 1000);
+		m_wrapper.setScansToAverage(m_spectrometerIndex, chn, sumInSpectrometer);
 	}
 
 	// for each channel
@@ -1143,15 +1126,18 @@ void CSpectrometer::GetCurrentDateAndTime(std::string& currentDate, long& curren
 {
 	gpsData currentGpsInfo;
 	const bool couldReadValidGPSData = (m_useGps) ? UpdateGpsData(currentGpsInfo) : false;
-	if (!couldReadValidGPSData)
+	if (couldReadValidGPSData)
+	{
+		currentDate = GetDate(currentGpsInfo, '.');
+		currentTime = GetTime(currentGpsInfo);
+	}else
 	{
 		currentDate = GetCurrentDateFromComputerClock('.');
 		currentTime = GetCurrentTimeFromComputerClock();
 	}
-	else
-	{
-		currentDate = GetDate(currentGpsInfo, '.');
-		currentTime = GetTime(currentGpsInfo);
+
+	if (currentGpsInfo.date == 0) {
+		currentDate = GetCurrentDateFromComputerClock('.');
 	}
 }
 
@@ -1910,12 +1896,11 @@ void CSpectrometer::ShowMessageBox(CString message, CString label) const
 	}
 }
 
-CSpectrum CSpectrometer::CreateSpectrum(double spec[], std::string startDate, long startTime, long elapsedSecond) {
-	CSpectrum spectrum;
+void CSpectrometer::CreateSpectrum(CSpectrum &spectrum, const double *spec, const std::string &startDate, long startTime, long elapsedSecond) {
 	memcpy((void*)spectrum.I, (void*)spec, sizeof(double)*MAX_SPECTRUM_LENGTH);
 	spectrum.length = m_detectorSize;
 	spectrum.exposureTime = m_integrationTime;
-	spectrum.SetDate(startDate);
+	spectrum.date = startDate;
 	spectrum.spectrometerModel = m_spectrometerModel;
 	spectrum.spectrometerSerial = m_spectrometerName;
 	spectrum.scans = m_totalSpecNum;
@@ -1935,5 +1920,4 @@ CSpectrum CSpectrometer::CreateSpectrum(double spec[], std::string startDate, lo
 		spectrum.SetStartTime(startTime);
 		spectrum.SetStopTime(startTime + elapsedSecond);
 	}
-	return spectrum;
 }
