@@ -12,9 +12,6 @@ CMeasurement_Traverse::~CMeasurement_Traverse(void)
 }
 
 void CMeasurement_Traverse::Run(){
-	CString cfgFile;
-	double scanResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
-	double tmpSpec[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
 
 	std::string startDate;
 	long startTime,elapsedSecond;
@@ -33,7 +30,7 @@ void CMeasurement_Traverse::Run(){
 	ShowMessageBox("START", "NOTICE");
 
 	// Read configuration file
-	cfgFile = g_exePath + TEXT("cfg.xml");
+	CString cfgFile = g_exePath + TEXT("cfg.xml");
 	m_conf.reset(new Configuration::CMobileConfiguration(cfgFile));
 
 	// Convert the settings from the CMobileConfiuration-format to the internal CSpectrometer-format
@@ -125,6 +122,9 @@ void CMeasurement_Traverse::Run(){
 		return Run_Adaptive();
 	}
 
+	double scanResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
+	CSpectrum measuredSpectrum[MAX_N_CHANNELS];
+
 	// The various spectra to collect, this defines the order in which they are collected
 	int DARK_SPECTRUM = 1;
 	int SKY_SPECTRUM = 2;
@@ -177,8 +177,8 @@ void CMeasurement_Traverse::Run(){
 
 		/* ----------------  Get the spectrum --------------------  */
 		#ifdef _DEBUG
-		cFinish = clock();
-		gpsSecond = ((double)(cFinish - cStart) / (double)CLOCKS_PER_SEC);
+			cFinish = clock();
+			gpsSecond = ((double)(cFinish - cStart) / (double)CLOCKS_PER_SEC);
 		#endif
 
 		cStart = clock();
@@ -212,26 +212,13 @@ void CMeasurement_Traverse::Run(){
 
 		// Copy the spectrum to the local variables
 		for(int i = 0; i < m_NChannels; ++i){
-			memcpy((void*)tmpSpec[i], (void*)scanResult[i], sizeof(double)*MAX_SPECTRUM_LENGTH);
 			memcpy((void*)m_curSpectrum[i], (void*)scanResult[i], sizeof(double)*MAX_SPECTRUM_LENGTH);// for plot
 		}
 
 		/* ----------------- Save the spectrum(-a) -------------------- */
-		//for (int i = 0; i < m_NChannels; ++i) {
-		//	CSpectrum spectrum = CreateSpectrum(tmpSpec[i], startDate, startTime, elapsedSecond);
-		//	spectrum.WriteStdFile(m_stdfileName[i]);
-		//}
-
-		if (m_useGps) {
-			for (int i = 0; i < m_NChannels; ++i) {
-				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, m_spectrumGpsData[m_spectrumCounter].time, m_spectrumGpsData[m_spectrumCounter].time + elapsedSecond, m_spectrumGpsData[m_spectrumCounter], m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);
-			}
-		}
-		else {
-			for (int i = 0; i < m_NChannels; ++i) {
-				gpsData pos;
-				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, startTime, startTime + elapsedSecond, pos, m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);
-			}
+		for (int i = 0; i < m_NChannels; ++i) {
+			CreateSpectrum(measuredSpectrum[i], scanResult[i], startDate, startTime, elapsedSecond);
+			CSpectrumIO::WriteStdFile(m_stdfileName[i], measuredSpectrum[i]);
 		}
 
 		#ifdef _DEBUG
@@ -302,7 +289,7 @@ void CMeasurement_Traverse::Run(){
 			/* -------------- IF THE MEASURED SPECTRUM WAS A NORMAL SPECTRUM ------------- */
 
 			for(int i = 0; i < m_NChannels; ++i) {
-				m_averageSpectrumIntensity[i] = AverageIntens(tmpSpec[i],1);
+				m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i],1);
 			}
 
 			/* Get the information about the spectrum */
@@ -351,9 +338,8 @@ void CMeasurement_Traverse::Run(){
 }
 
 void CMeasurement_Traverse::Run_Adaptive(){
-	CString cfgFile;
 	double scanResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
-	double tmpSpec[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
+	CSpectrum measuredSpectrum[MAX_N_CHANNELS];
 
 	int roundResult[MAX_N_CHANNELS];
 	long serialDelay,gpsDelay;
@@ -425,22 +411,13 @@ void CMeasurement_Traverse::Run_Adaptive(){
 
 		// Copy the spectrum to the local variables
 		for(int i = 0; i < m_NChannels; ++i){
-			memcpy((void*)tmpSpec[i], (void*)scanResult[i], sizeof(double)*MAX_SPECTRUM_LENGTH);
 			memcpy((void*)m_curSpectrum[i], (void*)scanResult[i], sizeof(double)*MAX_SPECTRUM_LENGTH);// for plot
 		}
 
 		/* ----------------- Save the spectrum(-a) -------------------- */
-		if(m_useGps){
-			const gpsData& spectrumGpsData = m_spectrumGpsData[m_spectrumCounter];
-			for(int i = 0; i  < m_NChannels; ++i) {
-				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, spectrumGpsData.time, spectrumGpsData.time + elapsedSecond, 
-					spectrumGpsData, m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);
-			}
-		}else{
-			gpsData spectrumGpsData;
-			for(int i = 0; i < m_NChannels; ++i) {
-				CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, startTime, startTime+elapsedSecond, spectrumGpsData, m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);
-			}
+		for (int i = 0; i < m_NChannels; ++i) {
+			CreateSpectrum(measuredSpectrum[i], scanResult[i], startDate, startTime, elapsedSecond);
+			CSpectrumIO::WriteStdFile(m_stdfileName[i], measuredSpectrum[i]);
 		}
 
 		if(m_scanNum == OFFSET_SPECTRUM){
@@ -550,7 +527,7 @@ void CMeasurement_Traverse::Run_Adaptive(){
 		else if(m_scanNum > SKY_SPECTRUM){
 			/* -------------- IF THE MEASURED SPECTRUM WAS A NORMAL SPECTRUM ------------- */
 			for(int i = 0; i < m_NChannels; ++i) {
-				m_averageSpectrumIntensity[i] = AverageIntens(tmpSpec[i],1);
+				m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i],1);
 			}
 	
 			/* Get the information about the spectrum */

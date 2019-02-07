@@ -21,7 +21,7 @@ public:
 	double  lat;			// Latitude, in decimal degrees
 	double  lon;			// Longitude, in decimal degrees
 	double  altitude;		// Altitude, in meters above sea-level
-	int     date[3];		// The date the spectrum acquisition started. date[0] is the year, date[1] is the month and date[2] is the day
+	std::string date;		// The date the spectrum acquisition started (dd.mm.yy)
 	int     startTime[3];	// The local time-of-day when the spectrum acquisition started. [0] is hour, [1] is minute, [2] is seconds.
 	int     stopTime[3];	// The local time-of-day when the spectrum acquisition stopped. [0] is hour, [1] is minute, [2] is seconds.
 	bool    isDark;			// Set to true if this spectrum is dark.
@@ -58,13 +58,8 @@ public:
 	void    Clear();
 
 	// date functions
-	void SetDate(std::string startDate);
 	void SetStartTime(long startTime);
 	void SetStopTime(long stopTime);
-
-	// read and write from STD files
-	int readSTDFile(CString filename);
-	bool WriteStdFile(const CString &fileName);
 
 private:
 };
