@@ -248,7 +248,7 @@ void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum
 		int i;
 		for(i = 0; i < iNumSpec; i++){
 			// Get the name of the evaluated specie
-			m_result.m_ref[i].m_specieName.Format(m_window.ref[i].m_specieName);
+			m_result.m_ref[i].m_specieName = std::string((LPCSTR)m_window.ref[i].m_specieName);
 
 			// get the fit results (column, column error, shift, shift error, squeeze, squeeze error)
 			m_result.m_ref[i].m_column			= (double)ref[i].GetModelParameter(CReferenceSpectrumFunction::CONCENTRATION);

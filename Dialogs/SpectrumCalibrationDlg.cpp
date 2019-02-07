@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "../DMSpec.h"
 #include "SpectrumCalibrationDlg.h"
-#include "../BasicMath.h"
+#include "../SpectralEvaluation/Evaluation/BasicMath.h"
 
 using namespace Dialogs;
 

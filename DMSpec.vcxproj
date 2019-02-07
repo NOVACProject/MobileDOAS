@@ -277,7 +277,6 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BasicMath.cpp" />
     <ClCompile Include="CommentDlg.cpp" />
     <ClCompile Include="Common.cpp" />
     <ClCompile Include="Common\DateTime.cpp" />
@@ -321,7 +320,6 @@
     <ClCompile Include="Evaluation\EvaluationResult.cpp" />
     <ClCompile Include="Evaluation\FitWindow.cpp" />
     <ClCompile Include="Evaluation\ReferenceFile.cpp" />
-    <ClCompile Include="Evaluation\ReferenceFitResult.cpp" />
     <ClCompile Include="Evaluation\TraverseResult.cpp" />
     <ClCompile Include="ExportEvLogDlg.cpp" />
     <ClCompile Include="Flux1.cpp" />
@@ -365,6 +363,14 @@
     <ClCompile Include="SerialConnection.cpp" />
     <ClCompile Include="ShowFitDlg.cpp" />
     <ClCompile Include="SourceSelectionDlg.cpp" />
+    <ClCompile Include="SpectralEvaluation\Evaluation\BasicMath.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\Evaluation\ReferenceFitResult.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="SpectralEvaluation\Fit\MessageLog.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -422,7 +428,6 @@
     <ClInclude Include="Evaluation\EvaluationResult.h" />
     <ClInclude Include="Evaluation\FitWindow.h" />
     <ClInclude Include="Evaluation\ReferenceFile.h" />
-    <ClInclude Include="Evaluation\ReferenceFitResult.h" />
     <ClInclude Include="Evaluation\TraverseResult.h" />
     <ClInclude Include="ExportEvLogDlg.h" />
     <ClInclude Include="Flux1.h" />
@@ -469,6 +474,8 @@
     <ClInclude Include="SerialConnection.h" />
     <ClInclude Include="SourceSelectionDlg.h" />
     <ClInclude Include="Spectra.h" />
+    <ClInclude Include="SpectralEvaluation\Evaluation\BasicMath.h" />
+    <ClInclude Include="SpectralEvaluation\Evaluation\ReferenceFitResult.h" />
     <ClInclude Include="SpectralEvaluation\Fit\ApertureFunction.h" />
     <ClInclude Include="SpectralEvaluation\Fit\BandedMatrix.h" />
     <ClInclude Include="SpectralEvaluation\Fit\BSpline.h" />

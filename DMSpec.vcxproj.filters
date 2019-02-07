@@ -79,6 +79,12 @@
     <Filter Include="Source Files\SpectralEvaluation\Fit">
       <UniqueIdentifier>{845b7291-6738-464b-aa3b-937b04c6f5b5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\SpectralEvaluation\Evaluation">
+      <UniqueIdentifier>{b1aabf49-8a72-4332-a28d-5eefa63a2d7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SpectralEvaluation\Evaluation">
+      <UniqueIdentifier>{b15b5c15-4b0b-42e6-b6d0-87855de14232}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Common.cpp">
@@ -213,9 +219,6 @@
     <ClCompile Include="GridCtrl\TitleTip.cpp">
       <Filter>Source Files\GridCtrl</Filter>
     </ClCompile>
-    <ClCompile Include="BasicMath.cpp">
-      <Filter>Source Files\Fit</Filter>
-    </ClCompile>
     <ClCompile Include="CommentDlg.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
@@ -271,9 +274,6 @@
       <Filter>Source Files\Evaluation</Filter>
     </ClCompile>
     <ClCompile Include="Evaluation\ReferenceFile.cpp">
-      <Filter>Source Files\Evaluation</Filter>
-    </ClCompile>
-    <ClCompile Include="Evaluation\ReferenceFitResult.cpp">
       <Filter>Source Files\Evaluation</Filter>
     </ClCompile>
     <ClCompile Include="DualBeam\DualBeamCalculator.cpp">
@@ -347,6 +347,12 @@
     </ClCompile>
     <ClCompile Include="SpectralEvaluation\Fit\MessageLog.cpp">
       <Filter>Source Files\SpectralEvaluation\Fit</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\Evaluation\BasicMath.cpp">
+      <Filter>Source Files\SpectralEvaluation\Evaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\Evaluation\ReferenceFitResult.cpp">
+      <Filter>Source Files\SpectralEvaluation\Evaluation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -545,9 +551,6 @@
       <Filter>Header Files\Evaluation</Filter>
     </ClInclude>
     <ClInclude Include="Evaluation\ReferenceFile.h">
-      <Filter>Header Files\Evaluation</Filter>
-    </ClInclude>
-    <ClInclude Include="Evaluation\ReferenceFitResult.h">
       <Filter>Header Files\Evaluation</Filter>
     </ClInclude>
     <ClInclude Include="DualBeam\DualBeamCalculator.h">
@@ -750,6 +753,12 @@
     </ClInclude>
     <ClInclude Include="SpectralEvaluation\Fit\MessageLog.h">
       <Filter>Header Files\SpectralEvaluation\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Evaluation\BasicMath.h">
+      <Filter>Header Files\SpectralEvaluation\Evaluation</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\Evaluation\ReferenceFitResult.h">
+      <Filter>Header Files\SpectralEvaluation\Evaluation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
