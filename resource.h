@@ -122,6 +122,7 @@
 #define ID_ANALYSIS_VIEWMEASUREDSPECTRA 262
 #define ID_CONTROL_CALIBRATESPECTROMETER263 263
 #define IDD_SPECTRUM_CALIBRATION        264
+#define IDB_ROUTE_LEGEND                276
 #define IDC_EDIT1                       1000
 #define IDC_WINDSPEED                   1000
 #define IDC_DLG2WS                      1000
@@ -460,6 +461,11 @@
 #define IDC_LABEL_SLAVE                 1275
 #define IDC_BTN_BROWSE_EVALLOG_SERIES1  1276
 #define IDC_EDIT_EVALLOG_SERIES1        1277
+#define IDC_STATIC_REALTIME_PLOT        1280
+#define IDC_REALTIME_ROUTE_LEGEND       1282
+#define IDC_STATIC_MAXCOL               1283
+#define IDC_STATIC_MINCOL               1284
+#define IDC_STATIC_MIDCOL               1285
 #define ID_ANALYSIS_POSTFLUX            32771
 #define ID_CONTROL_STOP                 32772
 #define ID_CONTROL_START                32772
@@ -480,9 +486,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        270
+#define _APS_NEXT_RESOURCE_VALUE        278
 #define _APS_NEXT_COMMAND_VALUE         32801
-#define _APS_NEXT_CONTROL_VALUE         1278
+#define _APS_NEXT_CONTROL_VALUE         1287
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

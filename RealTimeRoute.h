@@ -2,7 +2,7 @@
 #ifndef _REALTIMEROUTE_
 #define _REALTIMEROUTE_
 
-#include "Graphs/GraphCtrl.h"
+#include "RouteGraph.h"
 #include "Common.h"
 #include "afxwin.h"
 #include "Spectrometer.h"
@@ -13,6 +13,10 @@ namespace Dialogs
 {
 	class CRealTimeRoute : public CDialog {
 		DECLARE_DYNAMIC(CRealTimeRoute)
+
+	private: 
+		CStatic m_plotArea;
+		int m_legendWidth;
 
 	public:
 		CRealTimeRoute(CWnd* pParent = nullptr);   // standard constructor
@@ -25,7 +29,7 @@ namespace Dialogs
 		virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	  /* the plot */
-		Graph::CGraphCtrl   m_gpsPlot;
+		::Graph::CRouteGraph   m_gpsPlot;
 
 		DECLARE_MESSAGE_MAP()
 	public:
