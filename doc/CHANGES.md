@@ -10,11 +10,13 @@ New features
 * Start GPS - for reading GPS data; in debug mode only
 * Multiple reference files can be addeded or removed simultaneously through evaluation configuration dialogs
 * Remove extended format attributes in STD that were previously coded with 0. (#71)
+* Update Plume Height and Wind Measurement dialogs to read two evaluation logs (#73)
 * Warn user (audio and visual) when GPS connection is lost (#78)
 * Reduce number of spectra collected for characterization of the offset in adaptive mode (#87)
 * Option to disable audio in spectrometer configuration (#88)
 * Alter pitch based on column density, instead of volume, if supported by audio device (#88)
 * Use same tone for negative column values (#88)
+* Support user configurable range for saturation ratio in adaptive mode (#109)
 
 Bug fixes
 * Ensure evaluation configuration dialog updates properly when adding/removing a new fit window
