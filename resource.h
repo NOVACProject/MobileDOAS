@@ -400,10 +400,13 @@
 #define IDC_RADIO_SHIFT_FIX             1215
 #define IDC_CHECK_USEGPS                1216
 #define IDC_RADIO_SQUEEZE_FREE          1216
+#define IDC_EDIT_SATURATION_LOW         1216
 #define IDC_CHECK1                      1217
 #define IDC_CHECK_EVALUATE_FOR_SPECIE   1217
 #define IDC_RADIO_SQUEEZE_FIX           1217
+#define IDC_EDIT_SATURATION_HIGH        1217
 #define IDC_RADIO_SHIFT_LINK            1218
+#define IDC_EDIT_SATURATION_LOW2        1218
 #define IDC_RADIO_SQUEEZE_LINK          1219
 #define IDC_FRAME_LANDMARKS             1220
 #define IDC_LABEL_SPECIE                1220
@@ -488,7 +491,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        278
 #define _APS_NEXT_COMMAND_VALUE         32801
-#define _APS_NEXT_CONTROL_VALUE         1287
+#define _APS_NEXT_CONTROL_VALUE         1288
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

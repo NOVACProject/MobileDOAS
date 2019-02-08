@@ -1742,9 +1742,9 @@ short CSpectrometer::AdjustIntegrationTime() {
 
 short CSpectrometer::AdjustIntegrationTimeToLastIntensity(long maximumIntensity)
 {
-	const double ratioTolerance     = 0.2;
-	const double minTolerableRatio  = std::max(0.0, m_percent - ratioTolerance);
-	const double maxTolerableRatio  = std::min(1.0, m_percent + ratioTolerance);
+	const double ratioTolerance     = 0.3;
+	const double minTolerableRatio  = std::max(0.0, (double)m_conf->m_saturationLow/100.0);
+	const double maxTolerableRatio  = std::min(1.0, (double)m_conf->m_saturationHigh/100.0);
 
 	const double curSaturationRatio = maximumIntensity / (double)m_spectrometerDynRange;
 	if (curSaturationRatio >= minTolerableRatio && curSaturationRatio <= maxTolerableRatio)

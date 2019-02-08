@@ -77,6 +77,10 @@ namespace Configuration{
 		/** The time-resolution, in ms */
 		long		m_timeResolution;
 
+		/** The saturation range */
+		int		m_saturationLow;
+		int		m_saturationHigh;
+
 		// ---------------- GPS-reciever -----------------
 		/** Equal to 1 if we want to use a gps-reciever */
 		int			m_useGPS;
