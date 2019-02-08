@@ -34,6 +34,10 @@ void CMobileConfiguration::Clear(){
 	m_percent = 70;
 	m_timeResolution	= 5000;
 
+	// saturation range
+	m_saturationLow = 60;
+	m_saturationHigh = 80;
+
 	// GPS
 	m_useGPS = 1;
 	m_gpsPort.Format("COM4");
@@ -253,6 +257,16 @@ int CMobileConfiguration::ParseIntensity(){
 		if(Equals(szToken, "Channel")){
 			Parse_LongItem(TEXT("/Channel"), m_specCenter);
 		continue;
+		}
+
+		// Saturation range for adaptive mode
+		if (Equals(szToken, "saturationLow")) {
+			Parse_IntItem("/saturationLow", m_saturationLow);
+			continue;
+		}
+		if (Equals(szToken, "saturationHigh")) {
+			Parse_IntItem("/saturationHigh", m_saturationHigh);
+			continue;
 		}
 	}
 	return 0;

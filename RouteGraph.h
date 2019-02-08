@@ -1,3 +1,5 @@
+#pragma once
+
 #include "afxwin.h"
 
 #include "Graphs/GraphCtrl.h"
