@@ -77,8 +77,6 @@ protected:
 		CVector						vColumn2[6]; /* The evaluation results from the slave channel (if there is any) [col, colError, shift, shiftError, squeeze, squeezeError] */
 	}FitRegion;
 
-	void CSpectrometer::SetDetectorSetPoint();
-
 public:
 	CSpectrometer();
 	virtual ~CSpectrometer();

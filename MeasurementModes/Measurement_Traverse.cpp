@@ -114,9 +114,6 @@ void CMeasurement_Traverse::Run(){
 		m_gps = new GpsAsyncReader(m_GPSPort, m_GPSBaudRate);
 	}
 
-	// Set point for CCD temperature
-	SetDetectorSetPoint();
-
 	// Check if we are to be running with adaptive or with fixed exposure-time
 	if(m_fixexptime < 0){
 		return Run_Adaptive();

@@ -63,9 +63,6 @@ void CMeasurement_View::Run(){
 	}
 	pView->PostMessage(WM_SHOWINTTIME);
 
-	// Set point for CCD temperature
-	SetDetectorSetPoint();
-
 	/** --------------------- THE MEASUREMENT LOOP -------------------------- */
 	while(m_isRunning){
 
