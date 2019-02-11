@@ -16,6 +16,7 @@ New features
 * Option to disable audio in spectrometer configuration (#88)
 * Alter pitch based on column density, instead of volume, if supported by audio device (#88)
 * Use same tone for negative column values (#88)
+* Support for QE65000 (#101)
 * Support user configurable range for saturation ratio in adaptive mode (#109)
 
 Bug fixes
