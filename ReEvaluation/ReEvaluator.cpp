@@ -821,15 +821,10 @@ bool CReEvaluator::WriteEvaluationLogHeader(int channel){
 	}
 
 	FILE *f = fopen(m_outputLog, "w");
-	if(f == 0)
+	if(f == 0){
 		return false;
-
-	if (CVersion::draft) {
-		fprintf(f, "***Desktop Mobile Program***\nVERSION=%1d.%1d DRAFT\nFILETYPE=ReEvaluationlog\n", CVersion::majorNumber, CVersion::minorNumber);
 	}
-	else {
-		fprintf(f, "***Desktop Mobile Program***\nVERSION=%1d.%1d\nFILETYPE=ReEvaluationlog\n", CVersion::majorNumber, CVersion::minorNumber);
-	}
+	fprintf(f, "***Desktop Mobile Program***\nVERSION=%1d.%1d\nFILETYPE=ReEvaluationlog\n", CVersion::majorNumber, CVersion::minorNumber);
 	fprintf(f, "Original EvaluationLog=%s\n", (LPCTSTR)m_evalLogFileName);
 	fprintf(f, "***Settings Used in the Evaluation***\n");
 	fprintf(f, "FitFrom=%d\nFitTo=%d\nPolynom=%d\n", m_settings.m_window.fitLow, m_settings.m_window.fitHigh, m_settings.m_window.polyOrder);
