@@ -177,7 +177,7 @@ END
 
 IDD_DMSPEC_FORM DIALOGEX 0, 0, 667, 419
 STYLE DS_SETFONT | WS_CHILD
-FONT 8, "MS Sans Serif", 0, 0, 0x0
+FONT 8, "MS Sans Serif", 400, 0, 0x0
 BEGIN
     LTEXT           "Wind Speed",IDC_STATIC,43,348,40,8
     LTEXT           "Wind Direction",IDC_STATIC,43,361,48,8
@@ -191,7 +191,6 @@ BEGIN
     LTEXT           "Column",IDC_STATIC,257,361,24,8
     LTEXT           "Shift",IDC_STATIC,257,374,15,8
     LTEXT           "Squeeze",IDC_STATIC,393,374,29,8
-    LTEXT           "",IDC_CONCENTRATION,310,361,65,8
     LTEXT           "",IDC_SH,310,374,45,8
     LTEXT           "",IDC_SQ,429,374,40,8
     LTEXT           "",IDC_LAT,551,361,82,8
@@ -222,6 +221,7 @@ BEGIN
     LTEXT           "Spectrum",IDC_LABEL_SPECTRUM2,129,321,59,8
     LTEXT           "Detector Temperature",IDC_STATIC,352,387,71,8
     LTEXT           "",IDC_TEMPERATURE,429,387,40,8
+    LTEXT           "",IDC_CONCENTRATION,310,361,65,8
 END
 
 IDD_REEVAL_EVALUATIONLOG DIALOGEX 0, 0, 433, 283
@@ -443,8 +443,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 5,0,0,0
- PRODUCTVERSION 5,0,0,0
+ FILEVERSION 6,1,0,0
+ PRODUCTVERSION 6,1,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -461,12 +461,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Chalmers University of Technology"
             VALUE "FileDescription", "MobileDOAS"
-            VALUE "FileVersion", "6, 0, 0, 0"
+            VALUE "FileVersion", "6.1.0.0"
             VALUE "InternalName", "MobileDOAS"
             VALUE "LegalCopyright", "Copyright (C) 2003-2017"
             VALUE "OriginalFilename", "MobileDOAS.EXE"
             VALUE "ProductName", "MobileDOAS"
-            VALUE "ProductVersion", "6, 0, 0, 0"
+            VALUE "ProductVersion", "6.1.0.0"
         END
     END
     BLOCK "VarFileInfo"
