@@ -136,12 +136,8 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
   CDialog::DoDataExchange(pDX);
   //{{AFX_DATA_MAP(CAboutDlg)
   //}}AFX_DATA_MAP
-  if (CVersion::draft) {
-	  version.Format("Mobile DOAS Version %1d.%1d DRAFT (Build %s)", CVersion::majorNumber, CVersion::minorNumber, __DATE__);
-  }
-  else {
-	  version.Format("Mobile DOAS Version %1d.%1d (Build %s)", CVersion::majorNumber, CVersion::minorNumber, __DATE__);
-  }
+	version.Format("Mobile DOAS Version %1d.%1d (Build %s)", CVersion::majorNumber, CVersion::minorNumber, __DATE__);
+
   DDX_Text(pDX, IDC_STATIC_VERSION, version);
 }
 
