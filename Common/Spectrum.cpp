@@ -246,8 +246,8 @@ void CSpectrum::Clear() {
 	spectrometerSerial.Format("");
 	spectrometerModel.Format("");
 	name.Format("");
-	fitHigh = std::numeric_limits<double>::quiet_NaN();
-	fitLow = std::numeric_limits<double>::quiet_NaN();
+	fitHigh = std::numeric_limits<int>::quiet_NaN();
+	fitLow = std::numeric_limits<int>::quiet_NaN();
 	boardTemperature = std::numeric_limits<double>::quiet_NaN();
 	detectorTemperature = std::numeric_limits<double>::quiet_NaN();
 
