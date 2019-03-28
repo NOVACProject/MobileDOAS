@@ -244,7 +244,7 @@ void CMeasurement_Wind::Run(){
 			memcpy((void*)m_dark, (void*)scanResult, sizeof(double)*MAX_N_CHANNELS*MAX_SPECTRUM_LENGTH);
 
 			pView->PostMessage(WM_DRAWSPECTRUM);//draw dark spectrum
-			for(i = 0; i < m_NChannels; ++i) {
+			for(int i = 0; i < m_NChannels; ++i) {
 				m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i],1);
 			}
 			m_statusMsg.Format("Average value around center channel(dark) %d: %d", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
@@ -300,7 +300,7 @@ void CMeasurement_Wind::Run(){
 		}else if(m_scanNum > SKY_SPECTRUM){
 			/* -------------- IF THE MEASURED SPECTRUM WAS A NORMAL SPECTRUM ------------- */
 
-			for(i = 0; i < m_NChannels; ++i) {
+			for(int i = 0; i < m_NChannels; ++i) {
 				m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i],1);
 			}
 
