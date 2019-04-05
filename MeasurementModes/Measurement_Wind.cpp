@@ -14,8 +14,7 @@ CMeasurement_Wind::~CMeasurement_Wind(void)
 void CMeasurement_Wind::Run(){
 	CString cfgFile;
 	double scanResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
-	double tmpSpec[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
-	int i, fitRgn;
+	CSpectrum measuredSpectrum[MAX_N_CHANNELS];
 
 	std::string startDate;
 	long startTime,elapsedSecond;
@@ -92,8 +91,8 @@ void CMeasurement_Wind::Run(){
 		}
 
 		/* Initialize the evaluator */
-		for(fitRgn = 0; fitRgn < m_fitRegionNum; ++fitRgn){
-			for(i = 0; i < m_NChannels; ++i){
+		for(int fitRgn = 0; fitRgn < m_fitRegionNum; ++fitRgn){
+			for(int i = 0; i < m_NChannels; ++i){
 				m_fitRegion[fitRgn].window.specLength = this->m_detectorSize;
 				m_fitRegion[fitRgn].eval[i]->SetFitWindow(m_fitRegion[fitRgn].window);
 			}
@@ -224,25 +223,14 @@ void CMeasurement_Wind::Run(){
 		#endif
 
 		// Copy the spectrum to the local variables
-		for(i = 0; i < m_NChannels; ++i){
-			memcpy((void*)tmpSpec[i], (void*)scanResult[i], sizeof(double)*MAX_SPECTRUM_LENGTH);
+		for(int i = 0; i < m_NChannels; ++i){
 			memcpy((void*)m_curSpectrum[i], (void*)scanResult[i], sizeof(double)*MAX_SPECTRUM_LENGTH);// for plot
 		}
 
 		/* ----------------- Save the spectrum(-a) -------------------- */
-		if(m_spectrometerMode != MODE_VIEW){
-			if(m_useGps){
-				const gpsData& spectrumGpsData = m_spectrumGpsData[m_spectrumCounter];
-				for(i = 0; i  < m_NChannels; ++i) {
-					CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, spectrumGpsData.time, spectrumGpsData .time + elapsedSecond, 
-						spectrumGpsData, m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);
-				}
-			}else{
-				gpsData spectrumGpsData;
-				for(i = 0; i < m_NChannels; ++i) {
-					CSpectrumIO::WriteStdFile(m_stdfileName[i], tmpSpec[i], m_detectorSize, startDate, startTime, startTime+elapsedSecond, spectrumGpsData, m_integrationTime, m_spectrometerName, m_measurementBaseName, m_totalSpecNum);
-				}
-			}
+		for (int i = 0; i < m_NChannels; ++i) {
+			CreateSpectrum(measuredSpectrum[i], scanResult[i], startDate, startTime, elapsedSecond);
+			CSpectrumIO::WriteStdFile(m_stdfileName[i], measuredSpectrum[i]);
 		}
 
 		#ifdef _DEBUG
@@ -256,7 +244,7 @@ void CMeasurement_Wind::Run(){
 			memcpy((void*)m_dark, (void*)scanResult, sizeof(double)*MAX_N_CHANNELS*MAX_SPECTRUM_LENGTH);
 
 			pView->PostMessage(WM_DRAWSPECTRUM);//draw dark spectrum
-			for(i = 0; i < m_NChannels; ++i) {
+			for(int i = 0; i < m_NChannels; ++i) {
 				m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i],1);
 			}
 			m_statusMsg.Format("Average value around center channel(dark) %d: %d", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
@@ -283,7 +271,7 @@ void CMeasurement_Wind::Run(){
 
 			pView->PostMessage(WM_DRAWSPECTRUM);//draw sky spectrum
 
-			for(i = 0; i < m_NChannels; ++i){
+			for(int i = 0; i < m_NChannels; ++i){
 				m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i],1);
 
 				// remove the dark spectrum
@@ -292,7 +280,7 @@ void CMeasurement_Wind::Run(){
 				}
 
 				// Tell the evaluator(s) that the dark-spectrum does not need to be subtracted from the sky-spectrum
-				for(fitRgn = 0; fitRgn < m_fitRegionNum; ++fitRgn){
+				for(int fitRgn = 0; fitRgn < m_fitRegionNum; ++fitRgn){
 					m_fitRegion[fitRgn].eval[i]->m_subtractDarkFromSky = false;
 				}
 			}
@@ -312,8 +300,8 @@ void CMeasurement_Wind::Run(){
 		}else if(m_scanNum > SKY_SPECTRUM){
 			/* -------------- IF THE MEASURED SPECTRUM WAS A NORMAL SPECTRUM ------------- */
 
-			for(i = 0; i < m_NChannels; ++i) {
-				m_averageSpectrumIntensity[i] = AverageIntens(tmpSpec[i],1);
+			for(int i = 0; i < m_NChannels; ++i) {
+				m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i],1);
 			}
 
 			/* Get the information about the spectrum */

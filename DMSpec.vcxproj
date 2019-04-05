@@ -536,6 +536,7 @@
     <Image Include="res\green1.bmp" />
     <Image Include="res\idr_main.ico" />
     <Image Include="res\Logo.ico" />
+    <Image Include="res\route_legend.bmp" />
     <Image Include="res\Toolbar.bmp" />
   </ItemGroup>
   <ItemGroup>

@@ -273,28 +273,18 @@ int CSpectrometer::ScanUSB(int sumInComputer, int sumInSpectrometer, double pRes
 	// clear the old spectrum
 	memset(pResult, 0, MAX_N_CHANNELS * MAX_SPECTRUM_LENGTH * sizeof(double));
 
+	// set point temperature for CCD if supported.
+	if (m_wrapper.isFeatureSupportedThermoElectric(m_spectrometerIndex)) {
+		ThermoElectricWrapper tew = m_wrapper.getFeatureControllerThermoElectric(m_spectrometerIndex);
+		tew.setTECEnable(true);
+		tew.setDetectorSetPointCelsius(m_conf->m_setPointTemperature);
+	}
+
 	// Set the parameters for acquiring the spectrum
-	// TODO: do this somewhere else?
 	for (int chn = 0; chn < m_NChannels; ++chn)
 	{
-
-		//int newExpTime = m_integrationTime * 1000;
-		//m_wrapper.setIntegrationTime(m_spectrometerIndex, chn, newExpTime);
-		//m_wrapper.setScansToAverage(m_spectrometerIndex, chn, sumInSpectrometer);
-
-		// Set the exposure time to use (this function takes exp-time in micro-seconds)
-		int curExpTime = m_wrapper.getIntegrationTime(m_spectrometerIndex);
-		int newExpTime = m_integrationTime * 1000;
-		if (curExpTime != newExpTime) {
-			m_wrapper.setIntegrationTime(m_spectrometerIndex, chn, newExpTime);
-		}
-
-		// Set the number of co-adds
-		int scanToAvg = m_wrapper.getScansToAverage(m_spectrometerIndex);
-		if (scanToAvg != sumInSpectrometer) {
-			m_wrapper.setScansToAverage(m_spectrometerIndex, chn, sumInSpectrometer);
-		}
-
+		m_wrapper.setIntegrationTime(m_spectrometerIndex, chn, m_integrationTime * 1000);
+		m_wrapper.setScansToAverage(m_spectrometerIndex, chn, sumInSpectrometer);
 	}
 
 	// for each channel
@@ -416,16 +406,6 @@ void CSpectrometer::ApplySettings() {
 	// Audio Settings
 	this->m_useAudio = m_conf->m_useAudio;
 	this->m_maxColumn = m_conf->m_maxColumn;
-}
-
-void CSpectrometer::SetDetectorSetPoint() {
-	// set point temperature for CCD if supported.  
-	// TODO: do this only once somewhere else.
-	if (m_wrapper.isFeatureSupportedThermoElectric(m_spectrometerIndex)) {
-		ThermoElectricWrapper tew = m_wrapper.getFeatureControllerThermoElectric(m_spectrometerIndex);
-		tew.setTECEnable(true);
-		tew.setDetectorSetPointCelsius(m_conf->m_setPointTemperature);
-	}
 }
 
 /* makes a test of the settings, returns 0 if all is ok, else 1 */
@@ -1143,15 +1123,18 @@ void CSpectrometer::GetCurrentDateAndTime(std::string& currentDate, long& curren
 {
 	gpsData currentGpsInfo;
 	const bool couldReadValidGPSData = (m_useGps) ? UpdateGpsData(currentGpsInfo) : false;
-	if (!couldReadValidGPSData)
+	if (couldReadValidGPSData)
+	{
+		currentDate = GetDate(currentGpsInfo, '.');
+		currentTime = GetTime(currentGpsInfo);
+	}else
 	{
 		currentDate = GetCurrentDateFromComputerClock('.');
 		currentTime = GetCurrentTimeFromComputerClock();
 	}
-	else
-	{
-		currentDate = GetDate(currentGpsInfo, '.');
-		currentTime = GetTime(currentGpsInfo);
+
+	if (currentGpsInfo.date == 0) {
+		currentDate = GetCurrentDateFromComputerClock('.');
 	}
 }
 
@@ -1176,12 +1159,8 @@ void CSpectrometer::WriteBeginEvFile(int fitRegion) {
 	// Write a copy of the old cfg-file into the evaluation-log
 	CString evPath = m_subFolder + "\\" + m_measurementBaseName + "_" + m_measurementStartTimeStr + TEXT("evaluationLog_" + m_fitRegion[fitRegion].window.name + ".txt");
 	CString str1, str2, str3, str4, str5, str6, str7, channelName;
-	if (CVersion::draft) {
-		str1.Format("***Desktop Mobile Program***\nVERSION=%1d.%1d DRAFT\nFILETYPE=evaluationlog\n", CVersion::majorNumber, CVersion::minorNumber);
-	}
-	else {
-		str1.Format("***Desktop Mobile Program***\nVERSION=%1d.%1d\nFILETYPE=evaluationlog\n", CVersion::majorNumber, CVersion::minorNumber);
-	}
+
+	str1.Format("***Desktop Mobile Program***\nVERSION=%1d.%1d\nFILETYPE=evaluationlog\n", CVersion::majorNumber, CVersion::minorNumber);
 	str2.Format("BASENAME=%s\nWINDSPEED=%f\nWINDDIRECTION=%f\n", (LPCSTR)m_measurementBaseName, m_windSpeed, m_windAngle);
 	str3 = TEXT("***copy of related configuration file ***\n");
 
@@ -1756,9 +1735,9 @@ short CSpectrometer::AdjustIntegrationTime() {
 
 short CSpectrometer::AdjustIntegrationTimeToLastIntensity(long maximumIntensity)
 {
-	const double ratioTolerance     = 0.2;
-	const double minTolerableRatio  = std::max(0.0, m_percent - ratioTolerance);
-	const double maxTolerableRatio  = std::min(1.0, m_percent + ratioTolerance);
+	const double ratioTolerance     = 0.3;
+	const double minTolerableRatio  = std::max(0.0, (double)m_conf->m_saturationLow/100.0);
+	const double maxTolerableRatio  = std::min(1.0, (double)m_conf->m_saturationHigh/100.0);
 
 	const double curSaturationRatio = maximumIntensity / (double)m_spectrometerDynRange;
 	if (curSaturationRatio >= minTolerableRatio && curSaturationRatio <= maxTolerableRatio)
@@ -1910,12 +1889,11 @@ void CSpectrometer::ShowMessageBox(CString message, CString label) const
 	}
 }
 
-CSpectrum CSpectrometer::CreateSpectrum(double spec[], std::string startDate, long startTime, long elapsedSecond) {
-	CSpectrum spectrum;
+void CSpectrometer::CreateSpectrum(CSpectrum &spectrum, const double *spec, const std::string &startDate, long startTime, long elapsedSecond) {
 	memcpy((void*)spectrum.I, (void*)spec, sizeof(double)*MAX_SPECTRUM_LENGTH);
 	spectrum.length = m_detectorSize;
 	spectrum.exposureTime = m_integrationTime;
-	spectrum.SetDate(startDate);
+	spectrum.date = startDate;
 	spectrum.spectrometerModel = m_spectrometerModel;
 	spectrum.spectrometerSerial = m_spectrometerName;
 	spectrum.scans = m_totalSpecNum;
@@ -1935,5 +1913,4 @@ CSpectrum CSpectrometer::CreateSpectrum(double spec[], std::string startDate, lo
 		spectrum.SetStartTime(startTime);
 		spectrum.SetStopTime(startTime + elapsedSecond);
 	}
-	return spectrum;
 }

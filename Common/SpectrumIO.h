@@ -16,7 +16,6 @@ public:
 
 	// ---------------- Writing spectra to file ---------------------
 	static bool WriteStdFile(const CString &fileName, const CSpectrum& spectrum);
-	static bool WriteStdFile(const CString &fileName, const double *spectrum, long specLength, const std::string& startdate, long starttime, long stoptime, const gpsData& position, long integrationTime, const CString &spectrometer, const CString &measName, long exposureNum);
 
 private:
 	CSpectrumIO();

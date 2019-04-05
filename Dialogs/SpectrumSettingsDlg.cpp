@@ -162,25 +162,16 @@ void CSpectrumSettingsDlg::SaveSpectrum(){
 	if(!Equals(stdFileName.Right(4), ".std"))
 		stdFileName.AppendFormat(".std");
 
-	// copy the data from the spectrometer
-	static double *spectrum = new double[MAX_SPECTRUM_LENGTH];
-
-	int spectrumLength       = m_Spectrometer->m_detectorSize;
-	gpsData gps;
-	char* startdate = "000000";
-	long starttime = 0; // <-- this we don't know anything about
-	long stoptime  = 0; // <-- this we don't know anything about
-
-	// Copy the spectrum(-a)
-	if(m_Spectrometer->m_spectrometerChannel == 0){
-		memcpy(spectrum, m_Spectrometer->GetSpectrum(0), sizeof(double)*spectrumLength);
-	}
-	else {
-		memcpy(spectrum, m_Spectrometer->GetSpectrum(1), sizeof(double)*spectrumLength);
-	}
+	// create CSpectrum data object
+	std::string startDate;
+	long startTime;
+	m_Spectrometer->GetCurrentDateAndTime(startDate, startTime);
+	CSpectrum spectrum;
+	int channel = m_Spectrometer->m_spectrometerChannel;
+	m_Spectrometer->CreateSpectrum(spectrum, m_Spectrometer->GetSpectrum(channel), startDate, startTime, 0);
 
 	// write the file
-	CSpectrumIO::WriteStdFile(stdFileName, spectrum, spectrumLength, startdate, starttime, stoptime, gps, m_Spectrometer->m_integrationTime, m_Spectrometer->m_spectrometerName, "...", m_Spectrometer->m_totalSpecNum);
+	CSpectrumIO::WriteStdFile(stdFileName, spectrum);
 }
 
 // Called when the user has pressed the spin button that controlls the exposure-time

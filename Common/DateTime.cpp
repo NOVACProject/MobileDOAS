@@ -17,7 +17,7 @@ std::string GetCurrentDateFromComputerClock(char separatorCharacter)
 	int year = tim->tm_year - 100; // only good for 21st century
 	sprintf(startDate, "%02d%c%02d%c%02d", day, separatorCharacter, mon, separatorCharacter, year);
 
-	return std::string(startDate, 6);
+	return std::string(startDate, 8);
 }
 
 void ExtractTime(const gpsData& gpsData, int& hours, int& minutes, int& seconds)

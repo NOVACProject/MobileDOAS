@@ -63,7 +63,6 @@ void CMeasurement_View::Run(){
 	}
 	pView->PostMessage(WM_SHOWINTTIME);
 
-
 	/** --------------------- THE MEASUREMENT LOOP -------------------------- */
 	while(m_isRunning){
 

@@ -44,9 +44,13 @@ void CConfigure_Spectrometer::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX,		IDC_EDIT_PERCENT,				m_conf->m_percent);
 	DDX_Text(pDX,		IDC_EDIT_FIXEXPTIME,		m_conf->m_fixExpTime);
 	DDX_Text(pDX,		IDC_EDIT_TIMERESOLUTION,m_conf->m_timeResolution);
+	DDX_Text(pDX, IDC_EDIT_SATURATION_LOW, m_conf->m_saturationLow);
+	DDX_Text(pDX, IDC_EDIT_SATURATION_HIGH, m_conf->m_saturationHigh);
 	DDX_Control(pDX,IDC_EDIT_SPECCENTER,		m_editSpecCenter);
 	DDX_Control(pDX,IDC_EDIT_PERCENT,				m_editPercent);
 	DDX_Control(pDX,IDC_EDIT_FIXEXPTIME,		m_editFixExpTime);
+	DDX_Control(pDX, IDC_EDIT_SATURATION_LOW, m_editSaturationLow);
+	DDX_Control(pDX, IDC_EDIT_SATURATION_HIGH, m_editSaturationHigh);
 
 	// Audio settings
 	DDX_Check(pDX, IDC_CHECK_USEAUDIO, m_conf->m_useAudio);
@@ -54,6 +58,10 @@ void CConfigure_Spectrometer::DoDataExchange(CDataExchange* pDX)
 
 	// The time resolution
 	DDX_Control(pDX,IDC_EDIT_TIMERESOLUTION,m_editTimeResolution);
+
+	// The saturation range for adaptive mode
+	//DDX_Control(pDX, IDC_EDIT_SATURATION_LOW, m_conf->m_saturationLow);
+	//DDX_Control(pDX, IDC_EDIT_SATURATION_HIGH, m_conf->m_saturationHigh);
 
 	// The removal of the offset
 	DDX_Control(pDX,	IDC_EDIT_OFFSETFROM,	m_editOffsetFrom);
@@ -66,6 +74,9 @@ void CConfigure_Spectrometer::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_COMBO_PORT,			m_specPort);
 	DDX_Control(pDX, IDC_COMBO_BAUDRATE,	m_specBaudrate);
 	DDX_Control(pDX, IDC_COMBO_NCHANNELS,	m_nChannels);
+
+
+	DDX_Control(pDX, IDC_EDIT_SETPOINT, m_editSetPoint);
 }
 
 
@@ -181,14 +192,20 @@ void CConfigure_Spectrometer::EnableControls(){
 		m_editSpecCenter.EnableWindow(TRUE);
 		m_editPercent.EnableWindow(TRUE);
 		m_editFixExpTime.EnableWindow(FALSE);
+		m_editSaturationLow.EnableWindow(FALSE);
+		m_editSaturationHigh.EnableWindow(FALSE);
 	}else if(m_conf->m_expTimeMode == CMobileConfiguration::EXPOSURETIME_FIXED){
 		m_editSpecCenter.EnableWindow(FALSE);
 		m_editPercent.EnableWindow(FALSE);
 		m_editFixExpTime.EnableWindow(TRUE);
+		m_editSaturationLow.EnableWindow(FALSE);
+		m_editSaturationHigh.EnableWindow(FALSE);
 	}else if(m_conf->m_expTimeMode == CMobileConfiguration::EXPOSURETIME_ADAPTIVE){
 		m_editSpecCenter.EnableWindow(TRUE);
 		m_editPercent.EnableWindow(TRUE);
 		m_editFixExpTime.EnableWindow(FALSE);
+		m_editSaturationLow.EnableWindow(TRUE);
+		m_editSaturationHigh.EnableWindow(TRUE);
 	}
 }
 
@@ -231,7 +248,6 @@ void CConfigure_Spectrometer::OnOK(){
 		fprintf(f, "\t<serialPort>USB</serialPort>\n");
 	}
 	fprintf(f, "\t<timeResolution>%ld</timeResolution>\n",	m_conf->m_timeResolution);
-
 	fprintf(f, "\t<nchannels>%d</nchannels>\n",					m_conf->m_nChannels);
 
 	fprintf(f, "\t<useAudio>%d</useAudio>\n", m_conf->m_useAudio);
@@ -249,6 +265,8 @@ void CConfigure_Spectrometer::OnOK(){
 	}else{
 		fprintf(f, "\t\t<FixExpTime>0</FixExpTime>\n");
 	}
+	fprintf(f, "\t\t<saturationLow>%ld</saturationLow>\n", m_conf->m_saturationLow);
+	fprintf(f, "\t\t<saturationHigh>%ld</saturationHigh>\n", m_conf->m_saturationHigh);
 	fprintf(f, "\t</Intensity>\n");
 
 	// ------------------- GPS-settings --------------------
@@ -318,13 +336,16 @@ void CConfigure_Spectrometer::InitToolTips(){
   if(!m_toolTip.Create(this)){
     TRACE0("Failed to create tooltip control\n"); 
   }
-	m_toolTip.AddTool(&m_specPort,							IDC_COMBO_PORT);
+	m_toolTip.AddTool(&m_specPort,						IDC_COMBO_PORT);
 	m_toolTip.AddTool(&m_specBaudrate,					IDC_COMBO_BAUDRATE);
-	m_toolTip.AddTool(&m_nChannels,							IDC_COMBO_NCHANNELS);
+	m_toolTip.AddTool(&m_nChannels,						IDC_COMBO_NCHANNELS);
+	m_toolTip.AddTool(&m_editSetPoint,					IDC_EDIT_SETPOINT);
 	m_toolTip.AddTool(&m_editSpecCenter,				IDC_EDIT_SPECCENTER);
-	m_toolTip.AddTool(&m_editPercent,						IDC_EDIT_PERCENT);
+	m_toolTip.AddTool(&m_editPercent,					IDC_EDIT_PERCENT);
 	m_toolTip.AddTool(&m_editFixExpTime,				IDC_EDIT_FIXEXPTIME);
-	m_toolTip.AddTool(&m_editTimeResolution,		IDC_EDIT_TIMERESOLUTION);
+	m_toolTip.AddTool(&m_editTimeResolution,			IDC_EDIT_TIMERESOLUTION);
+	m_toolTip.AddTool(&m_editSaturationLow,				IDC_EDIT_SATURATION_LOW);
+	m_toolTip.AddTool(&m_editSaturationHigh,			IDC_EDIT_SATURATION_HIGH);
 	m_toolTip.AddTool(&m_editOffsetTo,					IDC_EDIT_OFFSETTO);
 	m_toolTip.AddTool(&m_editOffsetFrom,				IDC_EDIT_OFFSETFROM);
 

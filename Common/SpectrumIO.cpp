@@ -211,64 +211,69 @@ bool CSpectrumIO::WriteStdFile(const CString &fileName, const CSpectrum& spectru
 	name.Format(fileName);
 	Common::GetFileName(name);
 
-	fprintf(f, "%s\n", (LPCTSTR)name);                /* The name of the spectrum */
-	fprintf(f, "%s\n", (LPCTSTR)spectrum.spectrometerModel);  /* The name of the spectrometer */
-	fprintf(f, "%s\n", (LPCTSTR)spectrum.spectrometerSerial); // why is there a second output of spectrometer name?
-
-	fprintf(f, "%02d.%02d.%02d\n", spectrum.date[2], spectrum.date[1], spectrum.date[2]);
+	fprintf(f, "%s\n", name);                /* The name of the spectrum */
+	fprintf(f, "%s\n", spectrum.spectrometerModel);  /* The name of the spectrometer */
+	fprintf(f, "%s\n", spectrum.spectrometerSerial); // why is there a second output of spectrometer name?
+	fprintf(f, "%s\n", spectrum.date.c_str()); 
+	//fprintf(f, "%02d.%02d.%02d\n", spectrum.date[2], spectrum.date[1], spectrum.date[0]);
 	fprintf(f, "%02d:%02d:%02d\n", spectrum.startTime[0], spectrum.startTime[1], spectrum.startTime[2]);
 	fprintf(f, "%02d:%02d:%02d\n", spectrum.stopTime[0], spectrum.stopTime[1], spectrum.stopTime[2]);
 	fprintf(f, "0.0\n");
 	fprintf(f, "0.0\n");
 	fprintf(f, "SCANS %ld\n", spectrum.scans);
 	fprintf(f, "INT_TIME %ld\n", spectrum.exposureTime);
-	fprintf(f, "SITE %s\n", (LPCTSTR)spectrum.name);
+	fprintf(f, "SITE %s\n", spectrum.name);
 	fprintf(f, "LONGITUDE %f\n", spectrum.lon);
 	fprintf(f, "LATITUDE %f\n", spectrum.lat);
 
 	if (extendedFormat) {
-		double minValue = 0.0, maxValue = 0.0, averageValue = 0.0, variance = 0.0;
+		double minValue, maxValue;
 		spectrum.GetMinMax(minValue, maxValue);
-		spectrum.GetAverage(averageValue, variance);
+		double average = spectrum.GetAverage();
 
 		fprintf(f, "Altitude = %.1lf\n", spectrum.altitude);
-		fprintf(f, "Author = \"\"\n");
-		fprintf(f, "Average = 0\n");
-		fprintf(f, "AzimuthAngle = 0\n");
-		fprintf(f, "Delta = 0\n");
-		fprintf(f, "DeltaRel = 0\n");
-		fprintf(f, "Deviation = 0\n");
-		fprintf(f, "Device = \"\"\n");
-		fprintf(f, "ElevationAngle = 90\n");
+		//fprintf(f, "Author = \"\"\n");
+		fprintf(f, "Average = %.1f\n", average);
+		//fprintf(f, "AzimuthAngle = 0\n");
+		//fprintf(f, "Delta = 0\n");
+		//fprintf(f, "DeltaRel = 0\n");
+		//fprintf(f, "Deviation = 0\n");
+		//fprintf(f, "Device = \"\"\n");
+		//fprintf(f, "ElevationAngle = 90\n");
 		fprintf(f, "ExposureTime = %ld\n", spectrum.exposureTime);
-		fprintf(f, "FileName = %s\n", (LPCTSTR)fileName);
-		fprintf(f, "FitHigh = 0\n");
-		fprintf(f, "FitLow = 0\n");
-		fprintf(f, "Gain = 0\n");
+		fprintf(f, "FileName = %s\n", fileName);
+		fprintf(f, "FitHigh = %d\n", spectrum.fitHigh);
+		fprintf(f, "FitLow = %d\n", spectrum.fitLow);
+		//fprintf(f, "Gain = 0\n");
 		fprintf(f, "Latitude = %.6lf\n", spectrum.lat);
-		fprintf(f, "LightPath = 0\n");
-		fprintf(f, "LightSource = \"\"\n");
+		//fprintf(f, "LightPath = 0\n");
+		//fprintf(f, "LightSource = \"\"\n");
 		fprintf(f, "Longitude = %.6lf\n", spectrum.lon);
 		fprintf(f, "Marker = %ld\n", spectrum.length / 2);
 		fprintf(f, "MathHigh = %ld\n", spectrum.length - 1);
-		fprintf(f, "MathLow = 0\n");
-		fprintf(f, "Max = 0\n");
-		fprintf(f, "MaxChannel = %ld\n", spectrum.length);
-		fprintf(f, "Min = 0\n");
-		fprintf(f, "MinChannel = 0\n");
-		fprintf(f, "MultiChannelCounter = 0\n");
-		fprintf(f, "Name = \"%s\"\n", (LPCTSTR)spectrum.name);
+		//fprintf(f, "MathLow = 0\n");
+		fprintf(f, "Max = %.1lf\n", maxValue);
+		//fprintf(f, "MaxChannel = %ld\n", spectrum.length);
+		fprintf(f, "Min = %.1lf\n", minValue);
+		//fprintf(f, "MinChannel = 0\n");
+		//fprintf(f, "MultiChannelCounter = 0\n");
+		fprintf(f, "Name = \"%s\"\n", spectrum.name);
 		fprintf(f, "NumScans = %ld\n", spectrum.scans);
-		fprintf(f, "OpticalDensity = 0\n");
-		fprintf(f, "OpticalDensityCenter = %ld\n", spectrum.length / 2);
-		fprintf(f, "OpticalDensityLeft = 0\n");
-		fprintf(f, "OpticalDensityRight = %ld\n", spectrum.length - 1);
-		fprintf(f, "Pressure = 0\n");
-		fprintf(f, "Remark = \"\"\n");
-		fprintf(f, "ScanGeometry = 0\n"); //(DoasCore.Math.ScanGeometry)SAZ: 137.41237083135 SZA: 31.5085943481828 LAZ: 298.523110145623 LAZ: 129.285101310559 Date: 1/5/2007 10:35:07 Lat.: 0 Lon.: 0\n");
-		fprintf(f, "ScanMax = 0\n");
-		fprintf(f, "Temperature = 0\n");
-		fprintf(f, "Variance = 0\n");
+		//fprintf(f, "OpticalDensity = 0\n");
+		//fprintf(f, "OpticalDensityCenter = %ld\n", spectrum.length / 2);
+		//fprintf(f, "OpticalDensityLeft = 0\n");
+		//fprintf(f, "OpticalDensityRight = %ld\n", spectrum.length - 1);
+		//fprintf(f, "Pressure = 0\n");
+		//fprintf(f, "Remark = \"\"\n");
+		//fprintf(f, "ScanGeometry = 0\n"); //(DoasCore.Math.ScanGeometry)SAZ: 137.41237083135 SZA: 31.5085943481828 LAZ: 298.523110145623 LAZ: 129.285101310559 Date: 1/5/2007 10:35:07 Lat.: 0 Lon.: 0\n");
+		//fprintf(f, "ScanMax = 0\n");	
+		if (!std::isnan(spectrum.boardTemperature)) {
+			fprintf(f, "BoardTemperature = %lf\n", spectrum.boardTemperature);
+		}
+		if (!std::isnan(spectrum.boardTemperature)) {
+			fprintf(f, "DetectorTemperature = %lf\n", spectrum.detectorTemperature);
+		}
+		//fprintf(f, "Variance = 0\n");
 	}
 
 	fclose(f);
@@ -276,89 +281,3 @@ bool CSpectrumIO::WriteStdFile(const CString &fileName, const CSpectrum& spectru
 	return SUCCESS;
 }
 
-bool CSpectrumIO::WriteStdFile(const CString &fileName, const double *spectrum, long specLength, const std::string& startdate, long starttime, long stoptime, const gpsData& position, long integrationTime, const CString &spectrometer, const CString &measName, long exposureNum){
-	int extendedFormat = 1;
-	long i;
-
-	const std::string startTimeStr = FormatTime(starttime, ':');
-	const std::string endTimeStr   = FormatTime(stoptime, ':');
-
-	FILE* f = fopen(fileName,"w");
-	if(f < (FILE*)1){
-		return FAIL;
-	}
-
-	fprintf(f,"GDBGMNUP\n");
-	fprintf(f,"1\n");
-	fprintf(f,"%ld\n",specLength);
-
-	for(i=0;i<specLength;i++)
-	{
-		fprintf(f,"%.9lf\n", spectrum[i]);
-	}
-
-	// Find the name of the file itself (removing the path)
-	CString name;
-	name.Format(fileName);
-	Common::GetFileName(name);
-
-	fprintf(f,"%s\n", (LPCTSTR)name);                /* The name of the spectrum */
-	fprintf(f,"%s\n", (LPCTSTR)spectrometer);  /* The name of the spectrometer */
-	fprintf(f,"%s\n", (LPCTSTR)spectrometer); // why is there a second output of spectrometer name?
-	
-	fprintf(f,"%s\n", startdate.c_str());
-	fprintf(f,"%s\n", startTimeStr.c_str());
-	fprintf(f,"%s\n", endTimeStr.c_str());
-	fprintf(f,"0.0\n");
-	fprintf(f,"0.0\n");
-	fprintf(f,"SCANS %ld\n",		exposureNum);
-	fprintf(f,"INT_TIME %ld\n",	integrationTime);
-	fprintf(f,"SITE %s\n",	(LPCTSTR)measName);
-	fprintf(f,"LONGITUDE %f\n", position.longitude);
-	fprintf(f,"LATITUDE %f\n", position.latitude);
-
-	if(extendedFormat){
-		fprintf(f, "Altitude = %.1lf\n", position.altitude);
-		fprintf(f, "Author = \"\"\n");
-		fprintf(f, "Average = 0\n");
-		fprintf(f, "AzimuthAngle = 0\n");
-		fprintf(f, "Delta = 0\n");
-		fprintf(f, "DeltaRel = 0\n");
-		fprintf(f, "Deviation = 0\n");
-		fprintf(f, "Device = \"\"\n");
-		fprintf(f, "ElevationAngle = 90\n");
-		fprintf(f, "ExposureTime = %ld\n",				integrationTime);
-		fprintf(f, "FileName = %s\n",					(LPCTSTR)fileName);
-		fprintf(f, "FitHigh = 0\n");
-		fprintf(f, "FitLow = 0\n");
-		fprintf(f, "Gain = 0\n");
-		fprintf(f, "Latitude = %.6lf\n",					position.latitude);
-		fprintf(f, "LightPath = 0\n");
-		fprintf(f, "LightSource = \"\"\n");
-		fprintf(f, "Longitude = %.6lf\n",					position.longitude);
-		fprintf(f, "Marker = %ld\n",						specLength / 2);
-		fprintf(f, "MathHigh = %ld\n",						specLength - 1);
-		fprintf(f, "MathLow = 0\n");
-		fprintf(f, "Max = 0\n");
-		fprintf(f, "MaxChannel = %ld\n",					specLength);
-		fprintf(f, "Min = 0\n");
-		fprintf(f, "MinChannel = 0\n");
-		fprintf(f, "MultiChannelCounter = 0\n");
-		fprintf(f, "Name = \"%s\"\n", (LPCTSTR)measName);
-		fprintf(f, "NumScans = %ld\n",						exposureNum);
-		fprintf(f, "OpticalDensity = 0\n");
-		fprintf(f, "OpticalDensityCenter = %ld\n",	specLength / 2);
-		fprintf(f, "OpticalDensityLeft = 0\n");
-		fprintf(f, "OpticalDensityRight = %ld\n",	specLength - 1);
-		fprintf(f, "Pressure = 0\n");
-		fprintf(f, "Remark = \"\"\n");
-		fprintf(f, "ScanGeometry = 0\n"); //(DoasCore.Math.ScanGeometry)SAZ: 137.41237083135 SZA: 31.5085943481828 LAZ: 298.523110145623 LAZ: 129.285101310559 Date: 1/5/2007 10:35:07 Lat.: 0 Lon.: 0\n");
-		fprintf(f, "ScanMax = 0\n");
-		fprintf(f, "Temperature = 0\n");
-		fprintf(f, "Variance = 0\n");
-	}
-
-	fclose(f);
-
-	return SUCCESS;
-}

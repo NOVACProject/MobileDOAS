@@ -56,6 +56,9 @@ namespace Configuration{
 		/** The number of channels to use on the spectrometer */
 		CComboBox	m_nChannels;
 
+		/** The set point for CCD temperature */
+		CEdit m_editSetPoint;
+
 		/** The edit-box for the spectrum-center*/
 		CEdit m_editSpecCenter;
 
@@ -64,6 +67,10 @@ namespace Configuration{
 
 		/** The edit-box for the fixed exposure-time */
 		CEdit m_editFixExpTime;
+
+		/** The edit boxes for tolerable saturation ratios */
+		CEdit m_editSaturationLow;
+		CEdit m_editSaturationHigh;
 
 		/** The tooltip control */
 		CToolTipCtrl m_toolTip;

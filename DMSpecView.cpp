@@ -356,7 +356,8 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam){
 	int fitRegionNum	= m_Spectrometer->GetFitRegionNum();
 
 	// --- Update the concentration, shift and squeeze ---
-	cCon.Format("%.2f ± %.2f",result[0], result[1]);
+	//cCon.Format("%.2lf ± %.2lf",result[0], result[1]);
+	cCon.Format("%.2lf \u00B1 %.2lf", result[0], result[1]);
 	cShift.Format("%.1f",result[2]);
 	cSqueeze.Format("%.1f", result[4]);
 	cScanNo.Format("%d",scanNo);

@@ -77,8 +77,6 @@ protected:
 		CVector						vColumn2[6]; /* The evaluation results from the slave channel (if there is any) [col, colError, shift, shiftError, squeeze, squeezeError] */
 	}FitRegion;
 
-	void CSpectrometer::SetDetectorSetPoint();
-
 public:
 	CSpectrometer();
 	virtual ~CSpectrometer();
@@ -344,6 +342,13 @@ public:
 		that we should write (one name for each channel). 
 		This is set by 'SetFileName()' */
 	CString m_stdfileName[MAX_N_CHANNELS];
+
+	/** Retrieves the current date and time either from the GPS or from the computer time (if no valid gps-data). */
+	void GetCurrentDateAndTime(std::string& currentDate, long& currentTime);
+
+	/* Create Spectrum data object. */
+	void CreateSpectrum(CSpectrum &spectrum, const double *spec, const std::string &startDate, long startTime, long elapsedSecond);
+
 
 	// ---------------------------------------------------------------
 	// ----------------------- The GPS -------------------------------
@@ -637,11 +642,6 @@ protected:
 
 	/** Shows a message box to the user (through the main window form) */
 	void ShowMessageBox(CString message, CString label) const;
-
-	CSpectrum CSpectrometer::CreateSpectrum(double spec[], std::string startDate, long startTime, long elapsedSecond);
-
-	/** Retrieves the current date and time either from the GPS or from the computer time (if no valid gps-data). */
-	void GetCurrentDateAndTime(std::string& currentDate, long& currentTime);
 
 private:
 

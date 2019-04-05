@@ -7,18 +7,27 @@ Critical changes
 * Removed support for text format configuration file.
 
 New features
+* Start GPS - for reading GPS data; in debug mode only
 * Multiple reference files can be addeded or removed simultaneously through evaluation configuration dialogs
+* Legend for real-time route dialog (#67)
+* Remove extended format attributes in STD that were previously coded with 0. (#71)
+* Update Plume Height and Wind Measurement dialogs to read two evaluation logs (#73)
 * Warn user (audio and visual) when GPS connection is lost (#78)
 * Reduce number of spectra collected for characterization of the offset in adaptive mode (#87)
 * Option to disable audio in spectrometer configuration (#88)
 * Alter pitch based on column density, instead of volume, if supported by audio device (#88)
 * Use same tone for negative column values (#88)
+* Limit maximum exposure time in 'adaptive' mode to time-resolution of measurement (#100)
+* Support for QE65000 (#101)
+* Support user configurable range for saturation ratio in adaptive mode (#109)
 
 Bug fixes
 * Ensure evaluation configuration dialog updates properly when adding/removing a new fit window
 * Attempt to reconnect when GPS connection is lost (#77)
 * Added GPS lat/lon validation (#81)
-* Potential fix for bad GPS date in STD files (#86)
+* Fix for bad GPS date in STD files (#86)
+* Fix date in STD file from View Spectrometer Output (#104)
+* Restore 'Dark' tab in ReEvaluate dialog (#116)
 
 -----------------------------------------------------
 Version 6.0 (April 2018)

@@ -27,6 +27,7 @@ CRealTimeRoute::~CRealTimeRoute()
 void CRealTimeRoute::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_STATIC_REALTIME_PLOT, m_plotArea);
 }
 
 
@@ -42,19 +43,24 @@ BOOL CRealTimeRoute::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
+	CRect dlgrect;
+	this->GetClientRect(&dlgrect);
+	
 	CRect rect;
-	this->GetClientRect(&rect);
+	m_plotArea.GetClientRect(&rect);
+	m_legendWidth = dlgrect.right - rect.right;
 
 	m_range.maxLat = 10.0f;
 	m_range.maxLon = 10.0f;
 	m_range.minLat = -10.0f;
 	m_range.minLon = -10.0f;
 
-	m_gpsPlot.Create(WS_VISIBLE | WS_CHILD, rect, this); 
+	m_gpsPlot.Create(WS_VISIBLE | WS_CHILD, rect, &m_plotArea);
+	m_gpsPlot.parentWnd = &m_plotArea;
 	m_gpsPlot.SetYUnits("Latitude");
 	m_gpsPlot.SetXUnits("Longitude");
-	m_gpsPlot.EnableGridLinesX();
-	m_gpsPlot.EnableGridLinesY();
+	m_gpsPlot.EnableGridLinesX(true);
+	m_gpsPlot.EnableGridLinesY(true);
 	m_gpsPlot.SetBackgroundColor(RGB(0, 0, 0));
 	m_gpsPlot.SetGridColor(RGB(255,255,255));
 	m_gpsPlot.SetAxisEqual();					// make sure that the latitude scale and the longitude scale are the same
@@ -82,12 +88,6 @@ void CRealTimeRoute::DrawRouteGraph()
 
 	// draw min/max col label
 	m_gpsPlot.SetPlotColor(RGB(255, 255, 255));
-	CString maxcol;
-	maxcol.Format("Max column: %d", (int)m_colmax);
-	m_gpsPlot.DrawTextBox(65, 40, maxcol);
-	CString mincol;
-	mincol.Format("Min column: %d", (int)m_colmin);
-	m_gpsPlot.DrawTextBox(65, 20, mincol);
 }
 
 void CRealTimeRoute::OnSize(UINT nType, int cx, int cy)
@@ -96,8 +96,10 @@ void CRealTimeRoute::OnSize(UINT nType, int cx, int cy)
 	if(nType != SIZE_RESTORED)
 		return;
 
-	if(IsWindow(m_gpsPlot.m_hWnd)){
-		m_gpsPlot.MoveWindow(0, 0, cx, cy, FALSE);
+	if (IsWindow(m_plotArea.m_hWnd)) {
+		int legendSpace = 70;
+		m_plotArea.MoveWindow(0, 0, cx - m_legendWidth, cy, FALSE);
+		m_gpsPlot.MoveWindow(0, 0, cx - m_legendWidth, cy, FALSE);
 		m_gpsPlot.CleanPlot();
 	}
 
@@ -150,8 +152,6 @@ void CRealTimeRoute::ReadData(){
 	m_colmax = m_col[0];
 	m_colmin = m_col[0];
 	for(int i = 0; i < sum; i++){
-		//m_lat[i] = m_lat[i];
-		//m_lon[i] = m_lon[i];	
 		m_range.maxLat = std::max(m_range.maxLat,m_lat[i]);
 		m_range.maxLon = std::max(m_range.maxLon,m_lon[i]);
 		m_range.minLat = std::min(m_range.minLat,m_lat[i]);
@@ -163,6 +163,16 @@ void CRealTimeRoute::ReadData(){
 			m_colmin = m_col[i];
 		}
 	}
+	// update legend max/min col
+	CString maxcol;
+	maxcol.Format("%d", m_colmax);
+	this->SetDlgItemText(IDC_STATIC_MAXCOL, maxcol);
+	CString mincol;
+	mincol.Format("%d", m_colmin);
+	this->SetDlgItemText(IDC_STATIC_MINCOL, mincol);
+	CString midcol;
+	midcol.Format("%d", (m_colmax + m_colmin) / 2);
+	this->SetDlgItemText(IDC_STATIC_MIDCOL, mincol);
 }
 
 void CRealTimeRoute::OnClose()
