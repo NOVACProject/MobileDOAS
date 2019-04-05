@@ -9,8 +9,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "../SpectralEvaluation/Evaluation/BasicMath.h"
-#include "../SpectralEvaluation/Fit/Vector.h"
+#include "../BasicMath.h"
+#include "../FIT\Vector.h"	// Added by ClassView
 
 #include "FitWindow.h"
 #include "EvaluationResult.h"

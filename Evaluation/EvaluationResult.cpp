@@ -27,7 +27,7 @@ CEvaluationResult::CEvaluationResult(const CEvaluationResult &b)
 		ref.m_shiftError = b.m_ref[i].m_shiftError;
 		ref.m_squeeze = b.m_ref[i].m_squeeze;
 		ref.m_squeezeError = b.m_ref[i].m_squeezeError;
-		ref.m_specieName   = b.m_ref[i].m_specieName;
+		ref.m_specieName.Format("%s", (LPCTSTR)b.m_ref[i].m_specieName);
 		this->m_ref.SetAt(i, ref);
 	}
 	memcpy(this->m_polynomial, b.m_polynomial, 5 * sizeof(double));
@@ -57,7 +57,7 @@ CEvaluationResult &CEvaluationResult::operator =(const CEvaluationResult &b) {
 		ref.m_shiftError = b.m_ref[i].m_shiftError;
 		ref.m_squeeze = b.m_ref[i].m_squeeze;
 		ref.m_squeezeError = b.m_ref[i].m_squeezeError;
-		ref.m_specieName   = b.m_ref[i].m_specieName;
+		ref.m_specieName.Format("%s", (LPCTSTR)b.m_ref[i].m_specieName);
 		this->m_ref.SetAt(i, ref);
 	}
 	memcpy(this->m_polynomial, b.m_polynomial, 5 * sizeof(double));
@@ -74,7 +74,7 @@ CEvaluationResult &CEvaluationResult::operator =(const CEvaluationResult &b) {
 
 bool CEvaluationResult::InsertSpecie(const CString &name) {
 	CReferenceFitResult ref;
-	ref.m_specieName = std::string((LPCSTR)name);
+	ref.m_specieName.Format(name);
 	m_ref.SetAtGrow(m_speciesNum, ref);
 	++m_speciesNum;
 	return SUCCESS;

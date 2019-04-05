@@ -8,20 +8,20 @@
 #include <iostream>
 #include <conio.h>
 // include all required fit objects
-#include "../SpectralEvaluation/Fit/ReferenceSpectrumFunction.h"
-#include "../SpectralEvaluation/Fit/SimpleDOASFunction.h"
-#include "../SpectralEvaluation/Fit/StandardMetricFunction.h"
-#include "../SpectralEvaluation/Fit/StandardFit.h"
-#include "../SpectralEvaluation/Fit/ExpFunction.h"
-#include "../SpectralEvaluation/Fit/LnFunction.h"
-#include "../SpectralEvaluation/Fit/PolynomialFunction.h"
-#include "../SpectralEvaluation/Fit/NegateFunction.h"
-#include "../SpectralEvaluation/Fit/MulFunction.h"
-#include "../SpectralEvaluation/Fit/DivFunction.h"
-#include "../SpectralEvaluation/Fit/GaussFunction.h"
-#include "../SpectralEvaluation/Fit/DiscreteFunction.h"
-#include "../SpectralEvaluation/Fit/DOASVector.h"
-#include "../SpectralEvaluation/Fit/NonlinearParameterFunction.h"
+#include "../Fit/ReferenceSpectrumFunction.h"
+#include "../Fit/SimpleDOASFunction.h"
+#include "../Fit/StandardMetricFunction.h"
+#include "../Fit/StandardFit.h"
+#include "../Fit/ExpFunction.h"
+#include "../Fit/LnFunction.h"
+#include "../Fit/PolynomialFunction.h"
+#include "../Fit/NegateFunction.h"
+#include "../Fit/MulFunction.h"
+#include "../Fit/DivFunction.h"
+#include "../Fit/GaussFunction.h"
+#include "../Fit/DiscreteFunction.h"
+#include "../Fit/DOASVector.h"
+#include "../Fit/NonlinearParameterFunction.h"
 
 #include "../Common.h"
 
@@ -248,7 +248,7 @@ void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum
 		int i;
 		for(i = 0; i < iNumSpec; i++){
 			// Get the name of the evaluated specie
-			m_result.m_ref[i].m_specieName = std::string((LPCSTR)m_window.ref[i].m_specieName);
+			m_result.m_ref[i].m_specieName.Format(m_window.ref[i].m_specieName);
 
 			// get the fit results (column, column error, shift, shift error, squeeze, squeeze error)
 			m_result.m_ref[i].m_column			= (double)ref[i].GetModelParameter(CReferenceSpectrumFunction::CONCENTRATION);

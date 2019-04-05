@@ -3,7 +3,7 @@
 #include <Afxtempl.h>
 
 #include "../Common.h"
-#include "../SpectralEvaluation/Evaluation/ReferenceFitResult.h"
+#include "ReferenceFitResult.h"
 
 namespace Evaluation
 {
