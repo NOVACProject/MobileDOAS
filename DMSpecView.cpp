@@ -1195,7 +1195,7 @@ LRESULT CDMSpecView::OnShowInformationDialog(WPARAM wParam,LPARAM lParam){
 
 	Dialogs::CInformationDialog infDlg;
 	if(wParam == DARK_DIALOG)
-		infDlg.informationString = "The offset level has dropped more than 20 counts since last dark spectrum was measured. Please cover the telescope to collect a new dark spectrum.";
+		infDlg.informationString = "The offset level has dropped more than 20 counts since last dark spectrum was measured. Please consider restarting the measurements when appropriate.";
 	else if(wParam == INVALID_GPS)
 		infDlg.informationString = "Lost contact with GPS-satellites, no valid GPS-data recived.";
 	else if(wParam == CHANGED_EXPOSURETIME)
