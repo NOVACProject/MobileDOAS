@@ -1,6 +1,6 @@
 MobileDOAS Release Notes
 -----------------------------------------------------
-Version 6.1 (TBD)
+Version 6.1 (April 2019)
 
 Critical changes
 * Enable configuration and evaluation of second channel for spectrometers that support it (#8)
