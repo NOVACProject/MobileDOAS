@@ -142,10 +142,11 @@ void CMeasurement_Traverse::Run(){
 	pView->PostMessage(WM_SHOWINTTIME);
 
 	/*  -- Collect the dark spectrum -- */
-	ShowMessageBox("Cover the spectrometer", "Notice");
-	m_statusMsg.Format("Measuring the dark spectrum");
-	pView->PostMessage(WM_STATUSMSG);
-
+	if (!m_conf->m_noDark) {
+		ShowMessageBox("Cover the spectrometer", "Notice");
+		m_statusMsg.Format("Measuring the dark spectrum");
+		pView->PostMessage(WM_STATUSMSG);
+	}
 
 	/** --------------------- THE MEASUREMENT LOOP -------------------------- */
 	while(m_isRunning){
@@ -188,15 +189,25 @@ void CMeasurement_Traverse::Run(){
 		}
 
 		// Get the next spectrum
-		if(Scan(m_sumInComputer,m_sumInSpectrometer,scanResult)){
-			if(!m_connectViaUsb) {
-				serial.CloseAll();
+		if (m_scanNum == DARK_SPECTRUM && m_conf->m_noDark) {
+			// don't bother with dark if skipping dark; just set all to 0
+			for (int i = 0; i < m_NChannels; ++i) {
+				for (int j = 0; j < MAX_SPECTRUM_LENGTH; j++) {
+					scanResult[i][j] = 0;
+				}
 			}
+		}
+		else {
+			if (Scan(m_sumInComputer, m_sumInSpectrometer, scanResult)) {
+				if (!m_connectViaUsb) {
+					serial.CloseAll();
+				}
 
-			// we have to call this before exiting the application otherwise we'll have trouble next time we start...
-			CloseUSBConnection();
-			
-			return;
+				// we have to call this before exiting the application otherwise we'll have trouble next time we start...
+				CloseUSBConnection();
+
+				return;
+			}
 		}
 
 		cFinish = clock();
@@ -208,7 +219,7 @@ void CMeasurement_Traverse::Run(){
 		#endif
 
 		// Copy the spectrum to the local variables
-		for(int i = 0; i < m_NChannels; ++i){
+		for (int i = 0; i < m_NChannels; ++i) {
 			memcpy((void*)m_curSpectrum[i], (void*)scanResult[i], sizeof(double)*MAX_SPECTRUM_LENGTH);// for plot
 		}
 
@@ -368,9 +379,12 @@ void CMeasurement_Traverse::Run_Adaptive(){
 	pView->PostMessage(WM_SHOWINTTIME);
 
 	/*  -- Collect the dark spectrum -- */
-	ShowMessageBox("Cover the spectrometer", "Notice");
-	m_statusMsg.Format("Measuring the offset spectrum");
-	pView->PostMessage(WM_STATUSMSG);
+
+	if (!m_conf->m_noDark) {
+		ShowMessageBox("Cover the spectrometer", "Notice");
+		m_statusMsg.Format("Measuring the offset spectrum");
+		pView->PostMessage(WM_STATUSMSG);
+	}
 
 	/** --------------------- THE MEASUREMENT LOOP -------------------------- */
 	while(m_isRunning){
@@ -389,18 +403,28 @@ void CMeasurement_Traverse::Run_Adaptive(){
 			}
 		}
 
-		// Get the next spectrum
-		if(Scan(m_sumInComputer,m_sumInSpectrometer,scanResult))
-		{
-			if(!m_connectViaUsb)
-			{
-				serial.CloseAll();
+		// Get the next spectrum		// Get the next spectrum
+		if (m_scanNum == DARKCURRENT_SPECTRUM && m_conf->m_noDark) {
+			// don't bother with dark if skipping dark; just set all to 0
+			for (int i = 0; i < m_NChannels; ++i) {
+				for (int j = 0; j < MAX_SPECTRUM_LENGTH; j++) {
+					scanResult[i][j] = 0;
+				}
 			}
+		}
+		else {
+			if (Scan(m_sumInComputer, m_sumInSpectrometer, scanResult))
+			{
+				if (!m_connectViaUsb)
+				{
+					serial.CloseAll();
+				}
 
-			// we have to call this before exiting the application otherwise we'll have trouble next time we start...
-			CloseUSBConnection();
+				// we have to call this before exiting the application otherwise we'll have trouble next time we start...
+				CloseUSBConnection();
 
-			return;
+				return;
+			}
 		}
 
 		cFinish       = clock();

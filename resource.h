@@ -461,6 +461,8 @@
 #define IDC_LABEL_POLYNOMIAL_0          1272
 #define IDC_CHECK_USEAUDIO              1273
 #define IDC_LABEL_MASTER                1274
+#define IDC_CHECK_USEAUDIO2             1274
+#define IDC_CHECK_NODARK                1274
 #define IDC_LABEL_SLAVE                 1275
 #define IDC_BTN_BROWSE_EVALLOG_SERIES1  1276
 #define IDC_EDIT_EVALLOG_SERIES1        1277

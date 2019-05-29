@@ -567,7 +567,7 @@ protected:
 	double m_tmpSky[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
 
 	/** a copy of the last measured spectrum, used for plotting on the screen */
-	double m_curSpectrum[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
+	double m_curSpectrum[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH] = { {0} };
 
 	/** The wavelengths for each pixel in the measured spectrum */
 	double m_wavelength[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];

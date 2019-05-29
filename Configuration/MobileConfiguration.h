@@ -116,6 +116,11 @@ namespace Configuration{
 
 		/** Offset to... */
 		int				m_offsetTo;
+
+
+		/** whether to skip dark measurement (1=true, 0=false)*/
+		int m_noDark = 0;
+
 	private:
 
 		// ------------------ PRIVATE METHODS -------------------

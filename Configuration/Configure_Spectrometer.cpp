@@ -66,6 +66,7 @@ void CConfigure_Spectrometer::DoDataExchange(CDataExchange* pDX)
 	// The removal of the offset
 	DDX_Control(pDX,	IDC_EDIT_OFFSETFROM,	m_editOffsetFrom);
 	DDX_Control(pDX,	IDC_EDIT_OFFSETTO,		m_editOffsetTo);
+	DDX_Check(pDX, IDC_CHECK_NODARK, m_conf->m_noDark);
 
 	DDX_Text(pDX,		IDC_EDIT_OFFSETFROM,		m_conf->m_offsetFrom);
 	DDX_Text(pDX,		IDC_EDIT_OFFSETTO,			m_conf->m_offsetTo);
@@ -103,8 +104,9 @@ BEGIN_MESSAGE_MAP(CConfigure_Spectrometer, CPropertyPage)
 	ON_EN_CHANGE(IDC_EDIT_SETPOINT,			SaveSettings)
 	ON_EN_CHANGE(IDC_EDIT_MAXCOLUMN,		SaveSettings)
 
-	// Changing wheather we should use the audio or not
+	// Changing the check box options
 	ON_BN_CLICKED(IDC_CHECK_USEAUDIO, SaveSettings)
+	ON_BN_CLICKED(IDC_CHECK_NODARK, SaveSettings)
 END_MESSAGE_MAP()
 
 
@@ -285,6 +287,7 @@ void CConfigure_Spectrometer::OnOK(){
 	fprintf(f, "\t\t<from>%d</from>\n",	m_conf->m_offsetFrom);
 	fprintf(f, "\t\t<to>%d</to>\n",			m_conf->m_offsetTo);
 	fprintf(f, "\t</Offset>\n");
+	fprintf(f, "\t<noDark>%d</noDark>", m_conf->m_noDark);
 
 	// ----------- Evaluation ----------------
 	for(int k = 0; k < m_conf->m_nFitWindows; ++k){

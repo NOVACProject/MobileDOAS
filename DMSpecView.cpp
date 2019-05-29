@@ -1038,8 +1038,9 @@ void CDMSpecView::DrawSpectrum()
 			return;
 		}else{
 			memcpy(spectrum2, m_Spectrometer->GetSpectrum(1), sizeof(double)*spectrumLength);
-			for(int k = 0; k < spectrumLength; ++k)
+			for (int k = 0; k < spectrumLength; ++k) {
 				spectrum2[k] *= dynRange_inv;
+			}
 
 			m_ColumnPlot.SetPlotColor(m_Spectrum1Color);
 			m_ColumnPlot.SetLineWidth(2);
@@ -1055,6 +1056,9 @@ void CDMSpecView::DrawSpectrum()
 		}
 		else {
 			// Plot slave spectrum
+			if (m_Spectrometer->m_NChannels < 2) {
+				return;
+			}
 			memcpy(spectrum2, m_Spectrometer->GetSpectrum(1), sizeof(double)*spectrumLength);
 			for (int k = 0; k < spectrumLength; ++k) {
 				spectrum2[k] *= dynRange_inv;
