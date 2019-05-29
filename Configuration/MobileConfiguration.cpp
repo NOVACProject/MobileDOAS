@@ -163,6 +163,12 @@ int CMobileConfiguration::Parse(){
 			continue;
 		}
 
+		// Whether to skip dark measurement
+		if (Equals(szToken, "noDark")) {
+			Parse_IntItem("/noDark", m_noDark);
+			continue;
+		}
+
 		// The Fit-window Settings
 		if(Equals(szToken, "FitWindow")){
 			ParseFitWindow();
