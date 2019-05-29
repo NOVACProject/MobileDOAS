@@ -289,5 +289,8 @@ void CSpectrumSettingsDlg::OnUserChangeSpectrometer(){
 		return;
 
 	// change the spectrometer to use...
+	if (m_channel == 1 && m_Spectrometer->m_NChannels < 2) {
+		MessageBox("Please set N Channels to 2 in configuration to view slave channel output.");
+	}
 	m_Spectrometer->ChangeSpectrometer(curSel, m_channel);
 }
