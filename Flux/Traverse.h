@@ -7,7 +7,7 @@
 namespace Flux
 {
 
-#define MAX_TRAVERSELENGTH 4096
+#define MAX_TRAVERSELENGTH 16384
 
 	class CTraverse
 	{

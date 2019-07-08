@@ -1,5 +1,13 @@
 MobileDOAS Release Notes
 -----------------------------------------------------
+Version 6.2 (TBD)
+
+New features
+* Warn user when trying to view spectrometer output from slave channel if second channel is not enabled in configuration (#126)
+* Option to skip dark measurement (#128)
+* Increase max traverse from 4096 to 16384 (#132)
+
+-----------------------------------------------------
 Version 6.1 (April 2019)
 
 Critical changes
