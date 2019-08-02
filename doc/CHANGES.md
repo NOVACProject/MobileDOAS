@@ -7,6 +7,9 @@ New features
 * Option to skip dark measurement (#128)
 * Increase max traverse from 4096 to 16384 (#132)
 
+Bug fixes
+* Fix reading of GPS altitude
+
 -----------------------------------------------------
 Version 6.1 (April 2019)
 
