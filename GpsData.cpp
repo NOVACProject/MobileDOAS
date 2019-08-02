@@ -228,7 +228,7 @@ void SetFixQuality(const std::string& curToken, gpsData& data)
 
 void SetAltitude(const std::string& curToken, gpsData& data)
 {
-	if (curToken.size() < 1 || curToken.size() > 2)
+	if (curToken.size() < 1)
 	{
 		return; // not enough information
 	}
