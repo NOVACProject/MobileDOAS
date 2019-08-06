@@ -1,6 +1,6 @@
 MobileDOAS Release Notes
 -----------------------------------------------------
-Version 6.2 (TBD)
+Version 6.2 (August 2019)
 
 New features
 * Warn user when trying to view spectrometer output from slave channel if second channel is not enabled in configuration (#126)
