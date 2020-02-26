@@ -32,6 +32,7 @@
 #include "MeasurementModes/Measurement_Traverse.h"
 #include "MeasurementModes/Measurement_Wind.h"
 #include "MeasurementModes/Measurement_View.h"
+#include "MeasurementModes/Measurement_Directory.h"
 #include "MeasurementModes/Measurement_Calibrate.h"
 #include <algorithm>
 #include <Mmsystem.h>	// used for PlaySound
@@ -66,6 +67,7 @@ BEGIN_MESSAGE_MAP(CDMSpecView, CFormView)
 
 	// Just view the spectra from the spectrometer without evaluations
 	ON_COMMAND(ID_CONTROL_VIEWSPECTRAFROMSPECTROMETER,	OnControlViewSpectra) // <-- view the output from the spectrometer
+	ON_COMMAND(ID_CONTROL_VIEWSPECTRAFROMDIRECTORY, OnControlViewSpectraFromDirectory) // <-- view latest spectra file in directory
 
 	// Calibrate a spectrometer
 	ON_COMMAND(ID_CONTROL_CALIBRATESPECTROMETER,		OnControlCalibrateSpectrometer)
@@ -492,7 +494,9 @@ LRESULT CDMSpecView::OnDrawSpectrum(WPARAM wParam,LPARAM lParam)
 	m_ColumnPlot.CleanPlot();
 	
 	// set the ranges for the plot
-	if(m_spectrometerMode == MODE_VIEW || m_spectrometerMode == MODE_CALIBRATE){
+	if(m_spectrometerMode == MODE_VIEW 
+		|| m_spectrometerMode == MODE_DIRECTORY
+		|| m_spectrometerMode == MODE_CALIBRATE){
 		m_ColumnPlot.SetRange(0.0, 2048, 0, m_minSaturationRatio, m_maxSaturationRatio, 0);
 	}else{
 		m_ColumnPlot.SetSecondRange(0.0, 200, 0, m_minSaturationRatio, m_maxSaturationRatio, 0);
@@ -859,6 +863,31 @@ void CDMSpecView::OnControlViewSpectra(){
 	}
 }
 
+/** Starts the viewing of latest spectra in a directory specified by config file. */
+void CDMSpecView::OnControlViewSpectraFromDirectory() {
+
+	if (!s_spectrometerAcquisitionThreadIsRunning)
+	{
+		CDMSpecDoc* pDoc = GetDocument();
+		CMeasurement_Directory *spec = new CMeasurement_Directory();
+		this->m_Spectrometer = (CSpectrometer *)spec;
+		m_Spectrometer->m_spectrometerMode = MODE_VIEW;
+
+		pSpecThread = AfxBeginThread(CollectSpectra, (LPVOID)(m_Spectrometer), THREAD_PRIORITY_LOWEST, 0, 0, NULL);
+		s_spectrometerAcquisitionThreadIsRunning = true;
+		m_spectrometerMode = MODE_DIRECTORY;
+
+		// Also set the column-plot to only show the measured spectrum
+		m_ColumnPlot.SetSecondYUnit("");
+		m_ColumnPlot.SetYUnits("Intensity [%]");
+		m_ColumnPlot.SetXUnits("Pixel");
+		m_ColumnPlot.EnableGridLinesX(false);
+		m_ColumnPlot.SetRange(0.0, 2048, 0, 0.0, 100.0, 0);
+	}
+	else {
+		MessageBox(TEXT("Spectra are collecting"), "Notice", MB_OK);
+	}
+}
 
 /** Starts the viewing of spectra from the spectrometer, 
 		without saving or evaluating them. */
@@ -1048,7 +1077,7 @@ void CDMSpecView::DrawSpectrum()
 		}
 		
 		return;
-	}else if(m_spectrometerMode == MODE_VIEW){
+	}else if(m_spectrometerMode == MODE_VIEW || m_spectrometerMode == MODE_DIRECTORY){
 		if(m_Spectrometer->m_spectrometerChannel == 0){
 			// Plot master spectrum
 			m_ColumnPlot.SetPlotColor(m_Spectrum0Color);

@@ -461,7 +461,6 @@
 #define IDC_LABEL_POLYNOMIAL_0          1272
 #define IDC_CHECK_USEAUDIO              1273
 #define IDC_LABEL_MASTER                1274
-#define IDC_CHECK_USEAUDIO2             1274
 #define IDC_CHECK_NODARK                1274
 #define IDC_LABEL_SLAVE                 1275
 #define IDC_BTN_BROWSE_EVALLOG_SERIES1  1276
@@ -485,6 +484,7 @@
 #define ID_CONFIGURATION_OPERATION      32788
 #define ID_START_GPS                    32799
 #define ID_CONTROL_STARTTHEGPS          32800
+#define ID_CONTROL_VIEWSPECTRAFROMDIRECTORY 32801
 
 // Next default values for new objects
 // 
@@ -492,7 +492,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        278
-#define _APS_NEXT_COMMAND_VALUE         32801
+#define _APS_NEXT_COMMAND_VALUE         32802
 #define _APS_NEXT_CONTROL_VALUE         1288
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

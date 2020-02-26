@@ -121,12 +121,16 @@ namespace Configuration{
 		/** whether to skip dark measurement (1=true, 0=false)*/
 		int m_noDark = 0;
 
+		// ------------------ Directory acquisition -------------------
+		/** whether to watch directory for acquired data (1=true, 0=false) */
+		int m_directoryMode = 1; 
+
+		/** the directory to watch for acquired data (STD files) */
+		CString		m_directory;
+
 	private:
 
 		// ------------------ PRIVATE METHODS -------------------
-
-		/** Reading in a configuration file in .txt file format */
-		void ReadCfgTxt(const CString &fileName);
 
 		/** Reading in a configuration file in .xml file format */
 		void ReadCfgXml(const CString &fileName);

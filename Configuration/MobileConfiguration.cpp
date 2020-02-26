@@ -60,6 +60,11 @@ void CMobileConfiguration::Clear(){
 	m_maxColumn							= 200.0;
 	m_offsetFrom						= 50;
 	m_offsetTo							= 200;
+
+	// Directory
+	m_directoryMode = 0;
+	m_directory.Format("");
+
 }
 
 /** Reading in a configuration file in .xml file format */
@@ -172,6 +177,18 @@ int CMobileConfiguration::Parse(){
 		// The Fit-window Settings
 		if(Equals(szToken, "FitWindow")){
 			ParseFitWindow();
+			continue;
+		}
+
+		// Directory Mode
+		if (Equals(szToken, "directoryMode")) {
+			Parse_IntItem("/directoryMode", m_directoryMode);
+			continue;
+		}
+
+		// Watch Directory
+		if (Equals(szToken, "directory")) {
+			Parse_StringItem("/directory", m_directory);
 			continue;
 		}
 	}

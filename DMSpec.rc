@@ -81,6 +81,7 @@ BEGIN
         MENUITEM "Stop",                        ID_CONTROL_STOP
         MENUITEM SEPARATOR
         MENUITEM "View Spectrometer Output",    ID_CONTROL_VIEWSPECTRAFROMSPECTROMETER
+        MENUITEM "View Spectra From Directory", ID_CONTROL_VIEWSPECTRAFROMDIRECTORY
         MENUITEM "Calibrate Spectrometer",      258
         MENUITEM "Start WindMeasurement",       ID_CONTROL_STARTWINDMEASUREMENT
         MENUITEM SEPARATOR
@@ -836,6 +837,12 @@ END
 STRINGTABLE
 BEGIN
     ID_HELP_ABOUTMOBILEDOAS "Shows information about MobileDOAS\nAbout"
+END
+
+STRINGTABLE
+BEGIN
+    ID_CONTROL_VIEWSPECTRAFROMDIRECTORY 
+                            "View latest spectra from .std files in a directory."
 END
 
 #endif    // English (United States) resources

@@ -114,6 +114,9 @@
     <ClCompile Include="MeasurementModes\Measurement_View.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MeasurementModes\Measurement_Directory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="MeasurementModes\Measurement_Wind.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -389,6 +392,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MeasurementModes\Measurement_View.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MeasurementModes\Measurement_Directory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MeasurementModes\Measurement_Wind.h">
@@ -775,6 +781,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\idr_main.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\route_legend.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
