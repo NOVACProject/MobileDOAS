@@ -21,10 +21,12 @@ void CConfigure_Directory::DoDataExchange(CDataExchange* pDX)
 
 	// The fit-parameters edit boxes
 	DDX_Text(pDX, IDC_EDIT_DIRECTORY, m_conf->m_directory);
+	DDX_Text(pDX, IDC_EDIT_SLEEP, m_conf->m_sleep);
 }
 
 BEGIN_MESSAGE_MAP(CConfigure_Directory, CPropertyPage)
 	ON_EN_KILLFOCUS(IDC_EDIT_DIRECTORY, SaveData)
+	ON_EN_KILLFOCUS(IDC_EDIT_SLEEP, SaveData)
 	ON_BN_CLICKED(IDC_BROWSE_DIRECTORY, &CConfigure_Directory::OnBnClickedBrowseDirectory)
 END_MESSAGE_MAP()
 

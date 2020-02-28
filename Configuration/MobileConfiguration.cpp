@@ -63,6 +63,7 @@ void CMobileConfiguration::Clear(){
 
 	// Directory
 	m_directory.Format("");
+	m_sleep = 500;
 
 }
 
@@ -182,6 +183,12 @@ int CMobileConfiguration::Parse(){
 		// Directory to watch for STD files in
 		if (Equals(szToken, "directory")) {
 			Parse_StringItem("/directory", m_directory);
+			continue;
+		}
+
+		// Sleep time in ms between directory check
+		if (Equals(szToken, "sleep")) {
+			Parse_IntItem("/sleep", m_sleep);
 			continue;
 		}
 	}

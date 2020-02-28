@@ -327,6 +327,7 @@ void CConfigure_Spectrometer::OnOK(){
 	}
 	// ----------- Directory ----------------
 	fprintf(f, "\t<directory>%s</directory>", m_conf->m_directory);
+	fprintf(f, "\t<sleep>%d</sleep>", m_conf->m_sleep);
 
 	fprintf(f, "</Configuration>\n");
 	fclose(f);

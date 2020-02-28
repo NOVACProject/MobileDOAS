@@ -125,6 +125,9 @@ namespace Configuration{
 		/** the directory to watch for acquired data (STD files) */
 		CString		m_directory;
 
+		/** time in ms to sleep between directory read */
+		int m_sleep;
+
 	private:
 
 		// ------------------ PRIVATE METHODS -------------------

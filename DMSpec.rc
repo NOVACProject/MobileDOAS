@@ -447,6 +447,8 @@ BEGIN
     LTEXT           "Select the directory to watch when using the menu option Control->View Spectra From Directory.  ",IDC_STATIC,10,15,325,12
     PUSHBUTTON      "Browse",IDC_BROWSE_DIRECTORY,297,35,50,14
     EDITTEXT        IDC_EDIT_DIRECTORY,10,35,283,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_SLEEP,10,59,40,14,ES_AUTOHSCROLL
+    LTEXT           "Time in ms to sleep between directory check.  ",IDC_STATIC,55,62,148,8
 END
 
 

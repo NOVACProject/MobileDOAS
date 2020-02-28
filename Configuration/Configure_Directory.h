@@ -19,7 +19,7 @@ namespace Configuration {
 		std::shared_ptr<CMobileConfiguration> m_conf;
 
 		CString m_directory;
-
+		
 	protected:
 		virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 

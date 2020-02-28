@@ -174,6 +174,6 @@ void CMeasurement_Directory::Run() {
 			m_statusMsg.Format("Showing spectra file %s", specfile);
 			pView->PostMessage(WM_STATUSMSG);
 		}
-		Sleep(500);
+		Sleep(m_conf->m_sleep);
 	}
 }

@@ -156,6 +156,7 @@
 #define IDC_EDIT_FITFROM                1001
 #define IDC_EDIT_PERCENT                1001
 #define IDC_EDIT_SPECSCALE_MIN          1001
+#define IDC_EDIT_SLEEP                  1001
 #define IDC_EDIT_O3                     1002
 #define IDC_REEVAL_WINDOW_POLYNOM       1002
 #define IDC_EDIT_MAXSHIFTTIME           1002
@@ -474,7 +475,6 @@
 #define IDC_STATIC_MAXCOL               1283
 #define IDC_STATIC_MINCOL               1284
 #define IDC_STATIC_MIDCOL               1285
-#define IDC_MFCBUTTON1                  1288
 #define ID_ANALYSIS_POSTFLUX            32771
 #define ID_CONTROL_STOP                 32772
 #define ID_CONTROL_START                32772
