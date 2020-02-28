@@ -439,6 +439,16 @@ BEGIN
     COMBOBOX        IDC_COMBO_GPS_BAUDRATE,57,41,51,167,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
 END
 
+IDD_CONFIGURE_DIRECTORY DIALOGEX 0, 0, 379, 203
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Directory"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Select the directory to watch when using the menu option Control->View Spectra From Directory.  ",IDC_STATIC,10,15,325,12
+    PUSHBUTTON      "Browse",IDC_BROWSE_DIRECTORY,297,35,50,14
+    EDITTEXT        IDC_EDIT_DIRECTORY,10,35,283,14,ES_AUTOHSCROLL
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -566,6 +576,14 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 103
     END
+
+    IDD_CONFIGURE_DIRECTORY, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 372
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 196
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -616,6 +634,11 @@ BEGIN
 END
 
 IDD_REEVAL_SKY AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_CONFIGURE_DIRECTORY AFX_DIALOG_LAYOUT
 BEGIN
     0
 END

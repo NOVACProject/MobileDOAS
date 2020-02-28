@@ -326,7 +326,6 @@ void CConfigure_Spectrometer::OnOK(){
 		fprintf(f, "\t</FitWindow>\n");
 	}
 	// ----------- Directory ----------------
-	fprintf(f, "\t<directoryMode>%d</directoryMode>", m_conf->m_directoryMode);
 	fprintf(f, "\t<directory>%s</directory>", m_conf->m_directory);
 
 	fprintf(f, "</Configuration>\n");

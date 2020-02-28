@@ -10,8 +10,9 @@ public:
 	~CMeasurement_Directory();
 
 
-	/** This is used to monitor directory for spectra collected and show the latest in the interface
-		without performing any data-analysis
+	/** 
+	    This is used to monitor directory for spectra collected and 
+	    show the latest in the interface.
 	*/
 	void Run();
 };

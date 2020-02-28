@@ -324,6 +324,9 @@
     <ClCompile Include="Configuration\Configure_Spectrometer.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
+    <ClCompile Include="Configuration\Configure_Directory.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
     <ClCompile Include="ExportEvLogDlg.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
@@ -707,6 +710,9 @@
       <Filter>Header Files\Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="Configuration\Configure_Spectrometer.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Configuration\Configure_Directory.h">
       <Filter>Header Files\Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="CommentDlg.h">

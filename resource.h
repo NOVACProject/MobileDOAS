@@ -118,11 +118,13 @@
 #define ID_CONTROL_CALIBRATESPECTROMETER 258
 #define IDD_SPECTRUM_SETTINGS_DLG       259
 #define IDD_SPECTRUM_SCALE_DLG          260
+#define IDD_CONFIGURE_EVALUATION2       260
 #define IDD_INSPECT_SPECTRA_DLG         261
 #define ID_ANALYSIS_VIEWMEASUREDSPECTRA 262
 #define ID_CONTROL_CALIBRATESPECTROMETER263 263
 #define IDD_SPECTRUM_CALIBRATION        264
 #define IDB_ROUTE_LEGEND                276
+#define IDD_CONFIGURE_DIRECTORY         278
 #define IDC_EDIT1                       1000
 #define IDC_WINDSPEED                   1000
 #define IDC_DLG2WS                      1000
@@ -140,6 +142,7 @@
 #define IDC_EDIT_EXPORTFILE             1000
 #define IDC_STRING_EDIT                 1000
 #define IDC_EDIT_SETTINGSFILE           1000
+#define IDC_EDIT_DIRECTORY              1000
 #define IDC_EDIT2                       1001
 #define IDC_WINDDIRECTION               1001
 #define IDC_FLUXDWD                     1001
@@ -236,6 +239,7 @@
 #define IDC_BROWSE_SETTINGSFILE         1062
 #define IDC_BUTTON_SAVESPEC             1062
 #define IDC_BROWSE_EVALLOG              1062
+#define IDC_BROWSE_DIRECTORY            1062
 #define IDC_SPECCHANNELS                1063
 #define IDC_BROWSE_O3                   1063
 #define IDC_BTN_SOURCE_LONG             1063
@@ -470,6 +474,7 @@
 #define IDC_STATIC_MAXCOL               1283
 #define IDC_STATIC_MINCOL               1284
 #define IDC_STATIC_MIDCOL               1285
+#define IDC_MFCBUTTON1                  1288
 #define ID_ANALYSIS_POSTFLUX            32771
 #define ID_CONTROL_STOP                 32772
 #define ID_CONTROL_START                32772
@@ -491,9 +496,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        278
+#define _APS_NEXT_RESOURCE_VALUE        280
 #define _APS_NEXT_COMMAND_VALUE         32802
-#define _APS_NEXT_CONTROL_VALUE         1288
+#define _APS_NEXT_CONTROL_VALUE         1289
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

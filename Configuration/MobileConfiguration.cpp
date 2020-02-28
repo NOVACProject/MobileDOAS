@@ -62,7 +62,6 @@ void CMobileConfiguration::Clear(){
 	m_offsetTo							= 200;
 
 	// Directory
-	m_directoryMode = 0;
 	m_directory.Format("");
 
 }
@@ -180,13 +179,7 @@ int CMobileConfiguration::Parse(){
 			continue;
 		}
 
-		// Directory Mode
-		if (Equals(szToken, "directoryMode")) {
-			Parse_IntItem("/directoryMode", m_directoryMode);
-			continue;
-		}
-
-		// Watch Directory
+		// Directory to watch for STD files in
 		if (Equals(szToken, "directory")) {
 			Parse_StringItem("/directory", m_directory);
 			continue;

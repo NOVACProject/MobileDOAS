@@ -122,9 +122,6 @@ namespace Configuration{
 		int m_noDark = 0;
 
 		// ------------------ Directory acquisition -------------------
-		/** whether to watch directory for acquired data (1=true, 0=false) */
-		int m_directoryMode = 1; 
-
 		/** the directory to watch for acquired data (STD files) */
 		CString		m_directory;
 

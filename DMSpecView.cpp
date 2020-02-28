@@ -28,6 +28,7 @@
 #include "Configuration/Configure_Evaluation.h"
 #include "Configuration/Configure_GPS.h"
 #include "Configuration/Configure_Spectrometer.h"
+#include "Configuration/Configure_Directory.h"
 
 #include "MeasurementModes/Measurement_Traverse.h"
 #include "MeasurementModes/Measurement_Wind.h"
@@ -427,7 +428,7 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam){
 	m_ColumnPlot.SetSecondRange(0.0, 200, 0, m_minSaturationRatio, m_maxSaturationRatio, 0);
 
 	// Draw the columns (don't change the scale again here...)
-	if(m_spectrometerMode == MODE_TRAVERSE){
+	if(m_spectrometerMode == MODE_TRAVERSE || m_spectrometerMode == MODE_DIRECTORY){
 		if(fitRegionNum == 1){
 			m_ColumnPlot.SetPlotColor(m_PlotColor[0]);
 			if(m_showErrorBar){
@@ -1056,7 +1057,9 @@ void CDMSpecView::DrawSpectrum()
 	}
 
 	// if we're using a normal measurement mode...
-	if(m_spectrometerMode == MODE_TRAVERSE || m_spectrometerMode == MODE_WIND){
+	if(m_spectrometerMode == MODE_TRAVERSE 
+		|| m_spectrometerMode == MODE_WIND 
+		|| m_spectrometerMode == MODE_DIRECTORY){
 
 		// Plot the spectrum
 		m_ColumnPlot.SetPlotColor(m_Spectrum0Color);
@@ -1077,7 +1080,7 @@ void CDMSpecView::DrawSpectrum()
 		}
 		
 		return;
-	}else if(m_spectrometerMode == MODE_VIEW || m_spectrometerMode == MODE_DIRECTORY){
+	}else if(m_spectrometerMode == MODE_VIEW){
 		if(m_Spectrometer->m_spectrometerChannel == 0){
 			// Plot master spectrum
 			m_ColumnPlot.SetPlotColor(m_Spectrum0Color);
@@ -1145,10 +1148,15 @@ void CDMSpecView::OnConfigurationOperation()
 	m_EvalPage.Construct(IDD_CONFIGURE_EVALUATION);
 	m_EvalPage.m_conf = configuration;
 
+	Configuration::CConfigure_Directory m_DirectoryPage;
+	m_DirectoryPage.Construct(IDD_CONFIGURE_DIRECTORY);
+	m_DirectoryPage.m_conf = configuration;
+
 	// Add the pages once they have been constructed
 	confDlg.AddPage(&m_specPage);
 	confDlg.AddPage(&m_gpsPage);
 	confDlg.AddPage(&m_EvalPage);
+	confDlg.AddPage(&m_DirectoryPage);
 
 	// Open the configuration dialog
 	confDlg.DoModal();
