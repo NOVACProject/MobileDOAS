@@ -13,7 +13,6 @@ CMeasurement_Directory::~CMeasurement_Directory()
 }
 
 void CMeasurement_Directory::Run() {
-
 	ShowMessageBox("START", "NOTICE");
 
 	// Read configuration file and apply settings
@@ -78,11 +77,10 @@ void CMeasurement_Directory::Run() {
 		pView->PostMessage(WM_STATUSMSG);
 	}
 	else {
-		// draw spectrum
-		memcpy((void*)m_sky[0], (void*)spec.I, sizeof(double)*MAX_SPECTRUM_LENGTH); // for plot
+		memcpy((void*)m_sky[0], (void*)spec.I, sizeof(double)*MAX_SPECTRUM_LENGTH); 
 	}
 
-	// get dark
+	// get dark (dark or darkcur)
 	filter = m_directory + "\\dark*0.STD";
 	hFind = FindFirstFile(filter.c_str(), &ffd);
 	if (INVALID_HANDLE_VALUE == hFind)
@@ -90,19 +88,64 @@ void CMeasurement_Directory::Run() {
 		ShowMessageBox("No dark file in directory.", "Error");
 		return;
 	}
-
 	specfile.Format("%s\\%s", m_directory.c_str(), ffd.cFileName);
 	if (CSpectrumIO::readSTDFile(specfile, &spec) == 1) {
 		m_statusMsg.Format("Error reading %s.", specfile);
 		pView->PostMessage(WM_STATUSMSG);
 	}
 	else {
-		// draw spectrum
-		memcpy((void*)m_dark[0], (void*)spec.I, sizeof(double)*MAX_SPECTRUM_LENGTH); // for plot
+		memcpy((void*)m_dark[0], (void*)spec.I, sizeof(double)*MAX_SPECTRUM_LENGTH);
+	}
+
+	// variables used for adaptive mode
+	int roundResult[MAX_N_CHANNELS];
+	long serialDelay, gpsDelay;
+	// get offset if in adaptive mode
+	if (m_conf->m_expTimeMode == m_conf->EXPOSURETIME_ADAPTIVE) {
+		filter = m_directory + "\\offset_0.STD";
+		hFind = FindFirstFile(filter.c_str(), &ffd);
+		if (INVALID_HANDLE_VALUE == hFind)
+		{
+			ShowMessageBox("No offset file in directory. Required for adaptive mode.", "Error");
+			return;
+		}
+		specfile.Format("%s\\%s", m_directory.c_str(), ffd.cFileName);
+		if (CSpectrumIO::readSTDFile(specfile, &spec) == 1) {
+			m_statusMsg.Format("Error reading %s.", specfile);
+			pView->PostMessage(WM_STATUSMSG);
+		}
+		else {
+			memcpy((void*)m_offset[0], (void*)spec.I, sizeof(double)*MAX_SPECTRUM_LENGTH); 
+			// subtrace offset from dark
+			for (int i = 0; i < MAX_SPECTRUM_LENGTH; ++i) {
+				m_dark[0][i] = m_dark[0][i] - m_offset[0][i];
+			}
+			m_averageSpectrumIntensity[0] = AverageIntens(m_sky[0], 1);
+
+			// remove the dark spectrum from sky
+			GetDark();
+			for (int iterator = 0; iterator < MAX_SPECTRUM_LENGTH; ++iterator) {
+				m_sky[0][iterator] -= m_tmpDark[0][iterator];
+			}
+
+			// Tell the evaluator(s) that the dark-spectrum does not need to be subtracted from the sky-spectrum
+			for (int fitRgn = 0; fitRgn < m_fitRegionNum; ++fitRgn) {
+				m_fitRegion[fitRgn].eval[0]->m_subtractDarkFromSky = false;
+			}
+
+			/* Set the delays and initialize the USB-Connection */
+			if (m_connectViaUsb) {
+				serialDelay = 10;
+			}
+			else {
+				serialDelay = 2300;
+			}
+			gpsDelay = 10;
+		}
 	}
 
 	CString lastShown;
-	while (m_isRunning) { //TODO: write code to break out
+	while (m_isRunning) { 
 		// get only normal spectrum files
 		filter = m_directory + "\\?????_?.STD";
 		hFind = FindFirstFile(filter.c_str(), &ffd);
@@ -116,17 +159,22 @@ void CMeasurement_Directory::Run() {
 		// loop through files to find latest
 		do
 		{
+			// double check it's not a directory (though shouldn't be with the filter)
 			if (!(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
 			{
 				FILETIME filetime = ffd.ftLastWriteTime;
 				CString filename = ffd.cFileName;
+				// compare file time
 				int comp = CompareFileTime(&filetime, &latestFiletime);
 				switch (comp) {
-				case 1:
+				case 1: 
+					// if file has a later timestamp than last spec file processed
 					latestFiletime = filetime;
 					latestSpectraFile = filename;
 					break;
 				case 0:
+					// if file has same time than last spec file processed,
+					// compare file names for spec number and use the larger
 					std::string fn = filename;
 					std::string lfn = latestSpectraFile;
 					int strcomp = fn.compare(lfn);
@@ -141,7 +189,7 @@ void CMeasurement_Directory::Run() {
 
 		if (latestSpectraFile.Compare(lastShown) == 0) { 
 			// skip processing if same as before
-			Sleep(500);
+			Sleep(m_conf->m_sleep);
 			continue;
 		}
 		specfile.Format("%s\\%s", m_directory.c_str(), latestSpectraFile);
@@ -173,6 +221,14 @@ void CMeasurement_Directory::Run() {
 			lastShown=latestSpectraFile; // update last shown spectra
 			m_statusMsg.Format("Showing spectra file %s", specfile);
 			pView->PostMessage(WM_STATUSMSG);
+
+			// Update the exposure-time if adaptive mode
+			if (m_conf->m_expTimeMode == m_conf->EXPOSURETIME_ADAPTIVE) {				
+				m_integrationTime = AdjustIntegrationTimeToLastIntensity(m_averageSpectrumIntensity[0]);
+				m_sumInComputer = CountRound(m_timeResolution, serialDelay, gpsDelay, roundResult);
+				m_sumInSpectrometer = roundResult[0];
+				m_totalSpecNum = m_sumInComputer * m_sumInSpectrometer;
+			}
 		}
 		Sleep(m_conf->m_sleep);
 	}
