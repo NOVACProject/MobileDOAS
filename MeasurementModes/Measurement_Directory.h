@@ -15,5 +15,12 @@ public:
 	    show the latest in the interface.
 	*/
 	void Run();
+
+private:
+
+	bool ReadSky();
+	bool ReadDark();
+	bool ReadDarkcur();
+	bool ReadOffset();
 };
 

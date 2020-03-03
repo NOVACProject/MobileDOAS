@@ -128,6 +128,12 @@ namespace Configuration{
 		/** time in ms to sleep between directory read */
 		int m_sleep;
 
+		/** default files for sky/dark/darkcur/offset */
+		CString m_defaultSkyFile;
+		CString m_defaultDarkFile;
+		CString m_defaultDarkcurFile;
+		CString m_defaultOffsetFile;
+
 	private:
 
 		// ------------------ PRIVATE METHODS -------------------
@@ -155,7 +161,9 @@ namespace Configuration{
 
 		/** Parses a shift or squeeze section */
 		int Parse_ShiftOrSqueeze(const CString &label, Evaluation::SHIFT_TYPE &option, double &lowValue /**, double &highValue*/);
-
+		
+		/** Parses directory mode section */
+		int	ParseDirectoryMode();
 		// ------------------ PRIVATE DATA -------------------
 
 	};

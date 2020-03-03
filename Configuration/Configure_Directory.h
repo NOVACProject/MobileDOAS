@@ -31,5 +31,9 @@ namespace Configuration {
 		afx_msg void SaveData();
 	public:
 		afx_msg void OnBnClickedBrowseDirectory();
+		afx_msg void OnBnClickedBrowseDirSky();
+		afx_msg void OnBnClickedBrowseDirDark();
+		afx_msg void OnBnClickedBrowseDirDarkcur();
+		afx_msg void OnBnClickedBrowseDirOffset();
 	};
 }

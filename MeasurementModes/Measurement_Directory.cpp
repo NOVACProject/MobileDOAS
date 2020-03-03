@@ -25,12 +25,11 @@ void CMeasurement_Directory::Run() {
 	}
 
 	// Get directory to watch
-	std::string m_directory = m_conf->m_directory;
-	if (m_directory == "") {
+	if (strlen(m_conf->m_directory) == 0) {
 		ShowMessageBox("<Directory> parameter not set in configuration file.", "Error");
 		return;
 	}
-	m_subFolder = m_directory.c_str();
+	m_subFolder = m_conf->m_directory;
 
 	// Update MobileLog.txt 
 	UpdateMobileLog();
@@ -57,103 +56,79 @@ void CMeasurement_Directory::Run() {
 		WriteBeginEvFile(j);
 	}
 
-	// Check directory for STD files
-	WIN32_FIND_DATA ffd;
-	HANDLE hFind = INVALID_HANDLE_VALUE;
-
 	// get sky 
-	std::string filter = m_directory + "\\sky_0.STD";
-	hFind = FindFirstFile(filter.c_str(), &ffd);
-	if (INVALID_HANDLE_VALUE == hFind)
-	{
-		ShowMessageBox("No sky file in directory.", "Error");
+	if (!ReadSky()) {
 		return;
-	}
-	CSpectrum spec;
-	CString specfile;
-	specfile.Format("%s\\%s", m_directory.c_str(), ffd.cFileName);
-	if (CSpectrumIO::readSTDFile(specfile, &spec) == 1) {
-		m_statusMsg.Format("Error reading %s.", specfile);
-		pView->PostMessage(WM_STATUSMSG);
-	}
-	else {
-		memcpy((void*)m_sky[0], (void*)spec.I, sizeof(double)*MAX_SPECTRUM_LENGTH); 
 	}
 
 	// get dark (dark or darkcur)
-	filter = m_directory + "\\dark*0.STD";
-	hFind = FindFirstFile(filter.c_str(), &ffd);
-	if (INVALID_HANDLE_VALUE == hFind)
-	{
-		ShowMessageBox("No dark file in directory.", "Error");
-		return;
-	}
-	specfile.Format("%s\\%s", m_directory.c_str(), ffd.cFileName);
-	if (CSpectrumIO::readSTDFile(specfile, &spec) == 1) {
-		m_statusMsg.Format("Error reading %s.", specfile);
-		pView->PostMessage(WM_STATUSMSG);
+	if (m_conf->m_expTimeMode == m_conf->EXPOSURETIME_ADAPTIVE) {
+		if (!ReadDarkcur()) {
+			return;
+		}
 	}
 	else {
-		memcpy((void*)m_dark[0], (void*)spec.I, sizeof(double)*MAX_SPECTRUM_LENGTH);
+		if (!ReadDark()) {
+			return;
+		}
+	}
+
+	// get offset if in adaptive mode
+	if (m_conf->m_expTimeMode == m_conf->EXPOSURETIME_ADAPTIVE) {
+		if (!ReadOffset()) {
+			return;
+		}
 	}
 
 	// variables used for adaptive mode
 	int roundResult[MAX_N_CHANNELS];
 	long serialDelay, gpsDelay;
-	// get offset if in adaptive mode
+	// other things to do in adaptive mode
 	if (m_conf->m_expTimeMode == m_conf->EXPOSURETIME_ADAPTIVE) {
-		filter = m_directory + "\\offset_0.STD";
-		hFind = FindFirstFile(filter.c_str(), &ffd);
-		if (INVALID_HANDLE_VALUE == hFind)
-		{
-			ShowMessageBox("No offset file in directory. Required for adaptive mode.", "Error");
-			return;
+		// subtrace offset from dark
+		for (int i = 0; i < MAX_SPECTRUM_LENGTH; ++i) {
+			m_darkCur[0][i] = m_darkCur[0][i] - m_offset[0][i];
 		}
-		specfile.Format("%s\\%s", m_directory.c_str(), ffd.cFileName);
-		if (CSpectrumIO::readSTDFile(specfile, &spec) == 1) {
-			m_statusMsg.Format("Error reading %s.", specfile);
-			pView->PostMessage(WM_STATUSMSG);
+		m_averageSpectrumIntensity[0] = AverageIntens(m_sky[0], 1);
+
+		// remove the dark spectrum from sky
+		GetDark();
+		for (int iterator = 0; iterator < MAX_SPECTRUM_LENGTH; ++iterator) {
+			m_sky[0][iterator] -= m_tmpDark[0][iterator];
+		}
+
+		// Tell the evaluator(s) that the dark-spectrum does not need to be subtracted from the sky-spectrum
+		for (int fitRgn = 0; fitRgn < m_fitRegionNum; ++fitRgn) {
+			m_fitRegion[fitRgn].eval[0]->m_subtractDarkFromSky = false;
+		}
+
+		/* Set the delays and initialize the USB-Connection */
+		if (m_connectViaUsb) {
+			serialDelay = 10;
 		}
 		else {
-			memcpy((void*)m_offset[0], (void*)spec.I, sizeof(double)*MAX_SPECTRUM_LENGTH); 
-			// subtrace offset from dark
-			for (int i = 0; i < MAX_SPECTRUM_LENGTH; ++i) {
-				m_dark[0][i] = m_dark[0][i] - m_offset[0][i];
-			}
-			m_averageSpectrumIntensity[0] = AverageIntens(m_sky[0], 1);
-
-			// remove the dark spectrum from sky
-			GetDark();
-			for (int iterator = 0; iterator < MAX_SPECTRUM_LENGTH; ++iterator) {
-				m_sky[0][iterator] -= m_tmpDark[0][iterator];
-			}
-
-			// Tell the evaluator(s) that the dark-spectrum does not need to be subtracted from the sky-spectrum
-			for (int fitRgn = 0; fitRgn < m_fitRegionNum; ++fitRgn) {
-				m_fitRegion[fitRgn].eval[0]->m_subtractDarkFromSky = false;
-			}
-
-			/* Set the delays and initialize the USB-Connection */
-			if (m_connectViaUsb) {
-				serialDelay = 10;
-			}
-			else {
-				serialDelay = 2300;
-			}
-			gpsDelay = 10;
+			serialDelay = 2300;
 		}
+		gpsDelay = 10;
 	}
 
+	WIN32_FIND_DATA ffd;
+	HANDLE hFind = INVALID_HANDLE_VALUE;
+	CString specfile;
+	CSpectrum spec;
 	CString lastShown;
+	CString filter;
 	while (m_isRunning) { 
 		// get only normal spectrum files
-		filter = m_directory + "\\?????_?.STD";
-		hFind = FindFirstFile(filter.c_str(), &ffd);
-		if (INVALID_HANDLE_VALUE == hFind)
-		{
-			ShowMessageBox("No measured spectrum files in directory.", "Error");
-			return;
-		}
+		filter.Format("%s\\?????_?.STD", m_conf->m_directory);
+		hFind = FindFirstFile(filter, &ffd);
+		while (INVALID_HANDLE_VALUE == hFind) {
+			m_statusMsg.Format("Waiting for spectra file...");
+			pView->PostMessage(WM_STATUSMSG);
+			Sleep(1000);
+			hFind = FindFirstFile(filter, &ffd);
+		} 
+
 		FILETIME latestFiletime=ffd.ftLastWriteTime;
 		CString latestSpectraFile=ffd.cFileName;
 		// loop through files to find latest
@@ -192,9 +167,7 @@ void CMeasurement_Directory::Run() {
 			Sleep(m_conf->m_sleep);
 			continue;
 		}
-		specfile.Format("%s\\%s", m_directory.c_str(), latestSpectraFile);
-		m_statusMsg.Format("Reading spectra file %s...", specfile);
-		pView->PostMessage(WM_STATUSMSG);
+		specfile.Format("%s\\%s", m_conf->m_directory, latestSpectraFile);
 		if (CSpectrumIO::readSTDFile(specfile, &spec) == 1) {
 			m_statusMsg.Format("Error reading %s", specfile);
 			pView->PostMessage(WM_STATUSMSG);			
@@ -206,10 +179,12 @@ void CMeasurement_Directory::Run() {
 
 			// copy data to current spectrum 
 			memcpy((void*)m_curSpectrum[channel], (void*)spec.I, sizeof(double)*MAX_SPECTRUM_LENGTH); // for plot
+			m_integrationTime=spec.exposureTime;
+			m_totalSpecNum = spec.scans;
 
 			// calculate average intensity
 			m_averageSpectrumIntensity[channel] = AverageIntens(m_curSpectrum[channel], 1);
-			vIntensity.Append(m_averageSpectrumIntensity[0]);
+			vIntensity.Append(m_averageSpectrumIntensity[channel]);
 
 			// get spectrum info
 			GetSpectrumInfo(m_curSpectrum);
@@ -221,15 +196,121 @@ void CMeasurement_Directory::Run() {
 			lastShown=latestSpectraFile; // update last shown spectra
 			m_statusMsg.Format("Showing spectra file %s", specfile);
 			pView->PostMessage(WM_STATUSMSG);
-
-			// Update the exposure-time if adaptive mode
-			if (m_conf->m_expTimeMode == m_conf->EXPOSURETIME_ADAPTIVE) {				
-				m_integrationTime = AdjustIntegrationTimeToLastIntensity(m_averageSpectrumIntensity[0]);
-				m_sumInComputer = CountRound(m_timeResolution, serialDelay, gpsDelay, roundResult);
-				m_sumInSpectrometer = roundResult[0];
-				m_totalSpecNum = m_sumInComputer * m_sumInSpectrometer;
-			}
 		}
 		Sleep(m_conf->m_sleep);
 	}
+}
+
+bool CMeasurement_Directory::ReadSky() {
+	WIN32_FIND_DATA ffd; // handle to spec file
+	CString specfile; // spec file name
+	CSpectrum spec; // spectrum object
+	CString filter; // spec file filter
+	filter.Format("%s\\sky_0.STD", m_conf->m_directory);
+	HANDLE hFind = FindFirstFile(filter, &ffd);
+	if (INVALID_HANDLE_VALUE == hFind)
+	{
+		if (strlen(m_conf->m_defaultSkyFile) == 0) {
+			ShowMessageBox("No sky file specified or in directory.", "Error");
+			return FAIL;
+		}
+		specfile.Format(m_conf->m_defaultSkyFile);
+	}
+	else {
+		specfile.Format("%s\\%s", m_conf->m_directory, ffd.cFileName);
+	}
+	if (CSpectrumIO::readSTDFile(specfile, &spec) == 1) {
+		m_statusMsg.Format("Error reading %s.", specfile);
+		pView->PostMessage(WM_STATUSMSG);
+	}
+	else {
+		memcpy((void*)m_sky[0], (void*)spec.I, sizeof(double)*MAX_SPECTRUM_LENGTH);
+		m_integrationTime = spec.exposureTime;
+		m_totalSpecNum = spec.scans;
+	}
+	return SUCCESS;
+}
+
+bool CMeasurement_Directory::ReadDark() {
+	WIN32_FIND_DATA ffd; // handle to spec file
+	CString specfile; // spec file name
+	CSpectrum spec; // spectrum object
+	CString filter; // spec file filter
+	filter.Format("%s\\dark_0.STD", m_conf->m_directory);
+	HANDLE hFind = FindFirstFile(filter, &ffd);
+	if (INVALID_HANDLE_VALUE == hFind)
+	{
+		if (strlen(m_conf->m_defaultDarkFile) == 0) {
+			ShowMessageBox("No dark file specified or in directory.", "Error");
+			return FAIL;
+		}
+		specfile.Format(m_conf->m_defaultDarkFile);
+	}
+	else {
+		specfile.Format("%s\\%s", m_conf->m_directory, ffd.cFileName);
+	}
+	if (CSpectrumIO::readSTDFile(specfile, &spec) == 1) {
+		m_statusMsg.Format("Error reading %s.", specfile);
+		pView->PostMessage(WM_STATUSMSG);
+	}
+	else {
+		memcpy((void*)m_dark[0], (void*)spec.I, sizeof(double)*MAX_SPECTRUM_LENGTH);
+	}
+	return SUCCESS;
+}
+
+bool CMeasurement_Directory::ReadDarkcur() {
+	WIN32_FIND_DATA ffd; // handle to spec file
+	CString specfile; // spec file name
+	CSpectrum spec; // spectrum object
+	CString filter; // spec file filter
+	filter.Format("%s\\darkcur_0.STD", m_conf->m_directory);
+	HANDLE hFind = FindFirstFile(filter, &ffd);
+	if (INVALID_HANDLE_VALUE == hFind)
+	{
+		if (strlen(m_conf->m_defaultDarkcurFile) == 0) {
+			ShowMessageBox("No darkcur file specified or in directory.", "Error");
+			return FAIL;
+		}
+		specfile.Format(m_conf->m_defaultDarkcurFile);
+	}
+	else {
+		specfile.Format("%s\\%s", m_conf->m_directory, ffd.cFileName);
+	}
+	if (CSpectrumIO::readSTDFile(specfile, &spec) == 1) {
+		m_statusMsg.Format("Error reading %s.", specfile);
+		pView->PostMessage(WM_STATUSMSG);
+	}
+	else {
+		memcpy((void*)m_darkCur[0], (void*)spec.I, sizeof(double)*MAX_SPECTRUM_LENGTH);
+	}
+	return SUCCESS;
+}
+
+bool CMeasurement_Directory::ReadOffset() {
+	WIN32_FIND_DATA ffd; // handle to spec file
+	CString specfile; // spec file name
+	CSpectrum spec; // spectrum object
+	CString filter; // spec file filter
+	filter.Format("%s\\offset_0.STD", m_conf->m_directory);
+	HANDLE hFind = FindFirstFile(filter, &ffd);
+	if (INVALID_HANDLE_VALUE == hFind)
+	{
+		if (strlen(m_conf->m_defaultOffsetFile) == 0) {
+			ShowMessageBox("No offset file specified or in directory.", "Error");
+			return FAIL;
+		}
+		specfile.Format(m_conf->m_defaultOffsetFile);
+	}
+	else {
+		specfile.Format("%s\\%s", m_conf->m_directory, ffd.cFileName);
+	}
+	if (CSpectrumIO::readSTDFile(specfile, &spec) == 1) {
+		m_statusMsg.Format("Error reading %s.", specfile);
+		pView->PostMessage(WM_STATUSMSG);
+	}
+	else {
+		memcpy((void*)m_offset[0], (void*)spec.I, sizeof(double)*MAX_SPECTRUM_LENGTH);
+	}
+	return SUCCESS;
 }

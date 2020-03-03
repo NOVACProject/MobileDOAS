@@ -64,7 +64,10 @@ void CMobileConfiguration::Clear(){
 	// Directory
 	m_directory.Format("");
 	m_sleep = 500;
-
+	m_defaultSkyFile.Format("");
+	m_defaultDarkFile.Format("");
+	m_defaultDarkcurFile.Format("");
+	m_defaultOffsetFile.Format("");
 }
 
 /** Reading in a configuration file in .xml file format */
@@ -180,15 +183,9 @@ int CMobileConfiguration::Parse(){
 			continue;
 		}
 
-		// Directory to watch for STD files in
-		if (Equals(szToken, "directory")) {
-			Parse_StringItem("/directory", m_directory);
-			continue;
-		}
-
-		// Sleep time in ms between directory check
-		if (Equals(szToken, "sleep")) {
-			Parse_IntItem("/sleep", m_sleep);
+		// The Directory Mode Settings
+		if (Equals(szToken, "DirectoryMode")) {
+			ParseDirectoryMode();
 			continue;
 		}
 	}
@@ -485,5 +482,51 @@ int CMobileConfiguration::Parse_ShiftOrSqueeze(const CString &label, Evaluation:
 			option = Evaluation::SHIFT_LINK;
 		}
 	}
+	return 0;
+}
+
+
+/** Parses the settings for the DirectoryMode */
+int CMobileConfiguration::ParseDirectoryMode() {
+
+	// the actual reading loop
+	while (szToken = NextToken()) {
+		// Directory to watch for STD files in
+		if (Equals(szToken, "directory")) {
+			Parse_StringItem("/directory", m_directory);
+			continue;
+		}
+
+		// Sleep time in ms between directory check
+		if (Equals(szToken, "sleep")) {
+			Parse_IntItem("/sleep", m_sleep);
+			continue;
+		}
+
+		// Default sky file
+		if (Equals(szToken, "defaultSkyFile")) {
+			Parse_StringItem("/defaultSkyFile", m_defaultSkyFile);
+			continue;
+		}
+
+		// Default dark file
+		if (Equals(szToken, "defaultDarkFile")) {
+			Parse_StringItem("/defaultDarkFile", m_defaultDarkFile);
+			continue;
+		}
+
+		// Default darkcur file
+		if (Equals(szToken, "defaultDarkcurFile")) {
+			Parse_StringItem("/defaultDarkcurFile", m_defaultDarkcurFile);
+			continue;
+		}
+
+		// Default sky file
+		if (Equals(szToken, "defaultOffsetFile")) {
+			Parse_StringItem("/defaultOffsetFile", m_defaultOffsetFile);
+			continue;
+		}
+	}
+
 	return 0;
 }
