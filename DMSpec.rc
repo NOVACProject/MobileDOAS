@@ -81,7 +81,7 @@ BEGIN
         MENUITEM "Stop",                        ID_CONTROL_STOP
         MENUITEM SEPARATOR
         MENUITEM "View Spectrometer Output",    ID_CONTROL_VIEWSPECTRAFROMSPECTROMETER
-        MENUITEM "View Spectra From Directory", ID_CONTROL_VIEWSPECTRAFROMDIRECTORY
+        MENUITEM "Real-Time Analysis From Directory", ID_CONTROL_VIEWSPECTRAFROMDIRECTORY
         MENUITEM "Calibrate Spectrometer",      258
         MENUITEM "Start WindMeasurement",       ID_CONTROL_STARTWINDMEASUREMENT
         MENUITEM SEPARATOR
@@ -444,7 +444,7 @@ STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Directory"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    LTEXT           "Select the directory to watch when using the menu option Control->View Spectra From Directory.  ",IDC_STATIC,14,15,325,12
+    LTEXT           "Select the directory to watch when using the menu option Control->Real-Time Analysis From Directory.  ",IDC_STATIC,14,15,348,12
     PUSHBUTTON      "Browse",IDC_BROWSE_DIRECTORY,301,26,50,14
     EDITTEXT        IDC_EDIT_DIRECTORY,14,26,283,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_EDIT_SLEEP,14,45,40,14,ES_AUTOHSCROLL

@@ -3,7 +3,7 @@ MobileDOAS Release Notes
 Version 6.3 (TBD)
 
 New features
-* Option to read and display spectra files from a directory (#12)
+* Option to read and analyze spectra files from a directory (#12)
 
 
 MobileDOAS Release Notes
