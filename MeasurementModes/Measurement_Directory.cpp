@@ -114,15 +114,13 @@ void CMeasurement_Directory::Run() {
 
 	WIN32_FIND_DATA ffd;
 	HANDLE hFind = INVALID_HANDLE_VALUE;
-	CString specfile;
-	CSpectrum spec;
 	CString lastShown;
 	CString filter;
 	while (m_isRunning) { 
 		// get only normal spectrum files
 		filter.Format("%s\\?????_?.STD", m_conf->m_directory);
 		hFind = FindFirstFile(filter, &ffd);
-		while (INVALID_HANDLE_VALUE == hFind) {
+		while (m_isRunning && INVALID_HANDLE_VALUE == hFind) {
 			m_statusMsg.Format("Waiting for spectra file...");
 			pView->PostMessage(WM_STATUSMSG);
 			Sleep(1000);
@@ -130,7 +128,7 @@ void CMeasurement_Directory::Run() {
 		} 
 
 		FILETIME latestFiletime=ffd.ftLastWriteTime;
-		CString latestSpectraFile=ffd.cFileName;
+		CString latestSpectrumFile=ffd.cFileName;
 		// loop through files to find latest
 		do
 		{
@@ -145,59 +143,83 @@ void CMeasurement_Directory::Run() {
 				case 1: 
 					// if file has a later timestamp than last spec file processed
 					latestFiletime = filetime;
-					latestSpectraFile = filename;
+					latestSpectrumFile = filename;
 					break;
 				case 0:
 					// if file has same time than last spec file processed,
 					// compare file names for spec number and use the larger
 					std::string fn = filename;
-					std::string lfn = latestSpectraFile;
+					std::string lfn = latestSpectrumFile;
 					int strcomp = fn.compare(lfn);
 					if (strcomp == 1) {
 						latestFiletime = filetime;
-						latestSpectraFile = filename;
+						latestSpectrumFile = filename;
 					}
 				}
 			}
 			
-		} while (FindNextFile(hFind, &ffd) != 0);
+		} while (m_isRunning && FindNextFile(hFind, &ffd) != 0);
 
-		if (latestSpectraFile.Compare(lastShown) == 0) { 
+		if (latestSpectrumFile.Compare(lastShown) == 0) { 
 			// skip processing if same as before
 			Sleep(m_conf->m_sleep);
 			continue;
 		}
-		specfile.Format("%s\\%s", m_conf->m_directory, latestSpectraFile);
-		if (CSpectrumIO::readSTDFile(specfile, &spec) == 1) {
-			m_statusMsg.Format("Error reading %s", specfile);
-			pView->PostMessage(WM_STATUSMSG);			
-		}
-		else {
-			// get spec number and channel num
-			m_scanNum = atoi(latestSpectraFile.Left(5)) + 2;
-			int channel = atoi(latestSpectraFile.Mid(7, 1));
 
-			// copy data to current spectrum 
-			memcpy((void*)m_curSpectrum[channel], (void*)spec.I, sizeof(double)*MAX_SPECTRUM_LENGTH); // for plot
-			m_integrationTime=spec.exposureTime;
-			m_totalSpecNum = spec.scans;
-
-			// calculate average intensity
-			m_averageSpectrumIntensity[channel] = AverageIntens(m_curSpectrum[channel], 1);
-			vIntensity.Append(m_averageSpectrumIntensity[channel]);
-
-			// get spectrum info
-			GetSpectrumInfo(m_curSpectrum);
-
-			// do the fit
-			GetDark();
-			GetSky();
-			DoEvaluation(m_tmpSky, m_tmpDark, m_curSpectrum);
-			lastShown=latestSpectraFile; // update last shown spectra
-			m_statusMsg.Format("Showing spectra file %s", specfile);
-			pView->PostMessage(WM_STATUSMSG);
+		if (ProcessSpectrum(latestSpectrumFile)) {
+			lastShown = latestSpectrumFile; // update last shown spectra
 		}
 		Sleep(m_conf->m_sleep);
+	}
+}
+
+bool CMeasurement_Directory::ProcessSpectrum(CString latestSpectrum) {
+	CString specfile;
+	CSpectrum spec;
+	specfile.Format("%s\\%s", m_conf->m_directory, latestSpectrum);
+	if (CSpectrumIO::readSTDFile(specfile, &spec) == 1) {
+		m_statusMsg.Format("Error reading %s", specfile);
+		pView->PostMessage(WM_STATUSMSG);
+		return FAIL;
+	}
+	else {
+		// get spec number and channel num
+		m_scanNum = atoi(latestSpectrum.Left(5)) + 2;
+		int channel = atoi(latestSpectrum.Mid(7, 1));
+
+		// copy data to current spectrum 
+		memcpy((void*)m_curSpectrum[channel], (void*)spec.I, sizeof(double)*MAX_SPECTRUM_LENGTH); // for plot
+
+		// extract spectrum integration time and total spec num
+		m_integrationTime = spec.exposureTime;
+		m_totalSpecNum = spec.scans;
+
+		// get spectrum date & time
+		m_spectrumGpsData[m_spectrumCounter].date
+			= stoi(spec.date.substr(7, 2) + spec.date.substr(3, 2) + spec.date.substr(0, 2));
+		char startTime[6];
+		snprintf(startTime, 6, "%02d%02d%02d", spec.startTime[0], spec.startTime[1], spec.startTime[2]);
+		m_spectrumGpsData[m_spectrumCounter].time = atoi(startTime);
+
+		// get spectrum coordinates
+		m_spectrumGpsData[m_spectrumCounter].latitude = spec.lat;
+		m_spectrumGpsData[m_spectrumCounter].longitude = spec.lon;
+		m_spectrumGpsData[m_spectrumCounter].altitude = spec.altitude;
+
+		// calculate average intensity
+		m_averageSpectrumIntensity[channel] = AverageIntens(m_curSpectrum[channel], 1);
+		vIntensity.Append(m_averageSpectrumIntensity[channel]);
+
+		// get spectrum info
+		GetSpectrumInfo(m_curSpectrum);
+
+		// do the fit
+		GetDark();
+		GetSky();
+		DoEvaluation(m_tmpSky, m_tmpDark, m_curSpectrum);
+		m_statusMsg.Format("Showing spectra file %s", specfile);
+		pView->PostMessage(WM_STATUSMSG);
+		return SUCCESS;
 	}
 }
 

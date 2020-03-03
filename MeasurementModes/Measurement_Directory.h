@@ -18,6 +18,7 @@ public:
 
 private:
 
+	bool ProcessSpectrum(CString latestSpectrum);
 	bool ReadSky();
 	bool ReadDark();
 	bool ReadDarkcur();
