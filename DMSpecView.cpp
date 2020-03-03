@@ -872,18 +872,22 @@ void CDMSpecView::OnControlViewSpectraFromDirectory() {
 		CDMSpecDoc* pDoc = GetDocument();
 		CMeasurement_Directory *spec = new CMeasurement_Directory();
 		this->m_Spectrometer = (CSpectrometer *)spec;
-		m_Spectrometer->m_spectrometerMode = MODE_VIEW;
+		m_Spectrometer->m_spectrometerMode = MODE_DIRECTORY;
 
 		pSpecThread = AfxBeginThread(CollectSpectra, (LPVOID)(m_Spectrometer), THREAD_PRIORITY_LOWEST, 0, 0, NULL);
 		s_spectrometerAcquisitionThreadIsRunning = true;
 		m_spectrometerMode = MODE_DIRECTORY;
 
-		// Also set the column-plot to only show the measured spectrum
-		m_ColumnPlot.SetSecondYUnit("");
-		m_ColumnPlot.SetYUnits("Intensity [%]");
-		m_ColumnPlot.SetXUnits("Pixel");
+		m_ColumnPlot.SetYUnits("Column [ppmm]");
+		m_ColumnPlot.SetSecondYUnit("Intensity [%]");
+		m_ColumnPlot.SetXUnits("Number");
 		m_ColumnPlot.EnableGridLinesX(false);
-		m_ColumnPlot.SetRange(0.0, 2048, 0, 0.0, 100.0, 0);
+		m_ColumnPlot.SetBackgroundColor(RGB(0, 0, 0));
+		m_ColumnPlot.SetGridColor(RGB(255, 255, 255));
+		m_ColumnPlot.SetPlotColor(m_PlotColor[0]);
+		m_ColumnPlot.SetRange(0, 200, 1, 0.0, 100.0, 1);
+		m_ColumnPlot.SetMinimumRangeX(200.0f);
+		m_ColumnPlot.SetSecondRange(0.0, 200, 0, 0.0, 100.0, 0);
 	}
 	else {
 		MessageBox(TEXT("Spectra are collecting"), "Notice", MB_OK);
