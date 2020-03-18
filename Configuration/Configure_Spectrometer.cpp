@@ -325,6 +325,15 @@ void CConfigure_Spectrometer::OnOK(){
 		}
 		fprintf(f, "\t</FitWindow>\n");
 	}
+	// ----------- Directory ----------------
+	fprintf(f, "\t<DirectoryMode>\n");
+	fprintf(f, "\t\t<directory>%s</directory>\n", m_conf->m_directory);
+	fprintf(f, "\t\t<sleep>%d</sleep>\n", m_conf->m_sleep);
+	fprintf(f, "\t\t<defaultSkyFile>%s</defaultSkyFile>\n", m_conf->m_defaultSkyFile);
+	fprintf(f, "\t\t<defaultDarkFile>%s</defaultDarkFile>\n", m_conf->m_defaultDarkFile);
+	fprintf(f, "\t\t<defaultDarkcurFile>%s</defaultDarkcurFile>\n", m_conf->m_defaultDarkcurFile);
+	fprintf(f, "\t\t<defaultOffsetFile>%s</defaultOffsetFile>\n", m_conf->m_defaultOffsetFile);
+	fprintf(f, "\t</DirectoryMode>\n");
 
 	fprintf(f, "</Configuration>\n");
 	fclose(f);

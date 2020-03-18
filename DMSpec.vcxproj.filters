@@ -114,6 +114,9 @@
     <ClCompile Include="MeasurementModes\Measurement_View.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MeasurementModes\Measurement_Directory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="MeasurementModes\Measurement_Wind.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -321,6 +324,9 @@
     <ClCompile Include="Configuration\Configure_Spectrometer.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
+    <ClCompile Include="Configuration\Configure_Directory.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
     <ClCompile Include="ExportEvLogDlg.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
@@ -389,6 +395,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MeasurementModes\Measurement_View.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MeasurementModes\Measurement_Directory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MeasurementModes\Measurement_Wind.h">
@@ -703,6 +712,9 @@
     <ClInclude Include="Configuration\Configure_Spectrometer.h">
       <Filter>Header Files\Dialogs</Filter>
     </ClInclude>
+    <ClInclude Include="Configuration\Configure_Directory.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
     <ClInclude Include="CommentDlg.h">
       <Filter>Header Files\Dialogs</Filter>
     </ClInclude>
@@ -775,6 +787,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\idr_main.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\route_legend.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

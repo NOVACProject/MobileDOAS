@@ -144,6 +144,10 @@ int CSpectrumIO::readSTDFile(CString filename, CSpectrum *curSpec){
 		curSpec->lat = tmpDouble;
 	}
 
+	if (0 < fscanf(f, "Altitude = %lf\n", &tmpDouble)) {
+		curSpec->altitude = tmpDouble;
+	}
+
 	fclose(f);
 	return 0;
 }
