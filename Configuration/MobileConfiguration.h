@@ -121,12 +121,22 @@ namespace Configuration{
 		/** whether to skip dark measurement (1=true, 0=false)*/
 		int m_noDark = 0;
 
+		// ------------------ Directory acquisition -------------------
+		/** the directory to watch for acquired data (STD files) */
+		CString		m_directory;
+
+		/** time in ms to sleep between directory read */
+		int m_sleep;
+
+		/** default files for sky/dark/darkcur/offset */
+		CString m_defaultSkyFile;
+		CString m_defaultDarkFile;
+		CString m_defaultDarkcurFile;
+		CString m_defaultOffsetFile;
+
 	private:
 
 		// ------------------ PRIVATE METHODS -------------------
-
-		/** Reading in a configuration file in .txt file format */
-		void ReadCfgTxt(const CString &fileName);
 
 		/** Reading in a configuration file in .xml file format */
 		void ReadCfgXml(const CString &fileName);
@@ -151,7 +161,9 @@ namespace Configuration{
 
 		/** Parses a shift or squeeze section */
 		int Parse_ShiftOrSqueeze(const CString &label, Evaluation::SHIFT_TYPE &option, double &lowValue /**, double &highValue*/);
-
+		
+		/** Parses directory mode section */
+		int	ParseDirectoryMode();
 		// ------------------ PRIVATE DATA -------------------
 
 	};

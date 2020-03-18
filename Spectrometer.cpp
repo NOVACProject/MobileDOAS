@@ -826,7 +826,8 @@ void CSpectrometer::CreateDirectories()
 	m_measurementStartTimeStr = TEXT(cDateTime);
 	m_subFolder = folderName + TEXT("\\") + m_measurementBaseName + TEXT("_") + TEXT(cDateTime);
 
-	if (0 == CreateDirectory(m_subFolder, NULL)) {
+	if (GetFileAttributes(m_subFolder) == INVALID_FILE_ATTRIBUTES
+		&& 0 == CreateDirectory(m_subFolder, NULL)) {
 		DWORD errorCode = GetLastError();
 		CString tmpStr, errorStr;
 		if (FormatErrorCode(errorCode, errorStr)) {

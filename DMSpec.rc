@@ -81,6 +81,7 @@ BEGIN
         MENUITEM "Stop",                        ID_CONTROL_STOP
         MENUITEM SEPARATOR
         MENUITEM "View Spectrometer Output",    ID_CONTROL_VIEWSPECTRAFROMSPECTROMETER
+        MENUITEM "Real-Time Analysis From Directory", ID_CONTROL_VIEWSPECTRAFROMDIRECTORY
         MENUITEM "Calibrate Spectrometer",      258
         MENUITEM "Start WindMeasurement",       ID_CONTROL_STARTWINDMEASUREMENT
         MENUITEM SEPARATOR
@@ -438,6 +439,30 @@ BEGIN
     COMBOBOX        IDC_COMBO_GPS_BAUDRATE,57,41,51,167,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
 END
 
+IDD_CONFIGURE_DIRECTORY DIALOGEX 0, 0, 379, 203
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Directory"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Select the directory to watch when using the menu option Control->Real-Time Analysis From Directory.  ",IDC_STATIC,14,15,348,12
+    PUSHBUTTON      "Browse",IDC_BROWSE_DIRECTORY,301,26,50,14
+    EDITTEXT        IDC_EDIT_DIRECTORY,14,26,283,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_SLEEP,14,45,40,14,ES_AUTOHSCROLL
+    LTEXT           "Time in ms to sleep between directory check.  ",IDC_STATIC,59,48,148,8
+    PUSHBUTTON      "Browse",IDC_BROWSE_DIR_SKY,301,83,50,14
+    PUSHBUTTON      "Browse",IDC_BROWSE_DIR_DARK,301,111,50,14
+    PUSHBUTTON      "Browse",IDC_BROWSE_DIR_DARKCUR,301,140,50,14
+    PUSHBUTTON      "Browse",IDC_BROWSE_DIR_OFFSET,301,169,50,14
+    EDITTEXT        IDC_EDIT_SKY_FILE,14,83,283,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_DARKCUR_FILE,14,140,283,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_OFFSET_FILE,14,169,283,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_DARK_FILE,14,111,283,14,ES_AUTOHSCROLL
+    LTEXT           "Default sky file:",IDC_STATIC,14,72,51,8
+    LTEXT           "Default dark file (automatic or fixed mode):",IDC_STATIC,14,102,139,8
+    LTEXT           "Default offset file (adaptive mode only):",IDC_STATIC,14,159,130,8
+    LTEXT           "Default darkcur file (adaptive mode only):",IDC_STATIC,14,130,134,8
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -565,6 +590,14 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 103
     END
+
+    IDD_CONFIGURE_DIRECTORY, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 372
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 196
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -615,6 +648,11 @@ BEGIN
 END
 
 IDD_REEVAL_SKY AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_CONFIGURE_DIRECTORY AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
@@ -836,6 +874,12 @@ END
 STRINGTABLE
 BEGIN
     ID_HELP_ABOUTMOBILEDOAS "Shows information about MobileDOAS\nAbout"
+END
+
+STRINGTABLE
+BEGIN
+    ID_CONTROL_VIEWSPECTRAFROMDIRECTORY 
+                            "View latest spectra from .std files in a directory."
 END
 
 #endif    // English (United States) resources
