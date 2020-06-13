@@ -90,6 +90,7 @@ BEGIN_MESSAGE_MAP(CConfigure_Spectrometer, CPropertyPage)
 	// Changing the selection using the radio-buttons:
 	ON_BN_CLICKED(IDC_RADIO_CONNECTION_USB,		SaveSettings)
 	ON_BN_CLICKED(IDC_RADIO_CONNECTION_SERIAL,	SaveSettings)
+	ON_BN_CLICKED(IDC_RADIO_CONNECTION_DIRECTORY, SaveSettings)
 	ON_BN_CLICKED(IDC_RADIO_EXPTIME_AUTOMATIC,	SaveSettings)
 	ON_BN_CLICKED(IDC_RADIO_EXPTIME_FIXED,		SaveSettings)
 	ON_BN_CLICKED(IDC_RADIO_EXPTIME_ADAPTIVE,	SaveSettings)
@@ -186,6 +187,9 @@ void CConfigure_Spectrometer::EnableControls(){
 	}else if(m_conf->m_spectrometerConnection == CMobileConfiguration::CONNECTION_RS232){
 		m_specPort.EnableWindow(TRUE);
 		m_specBaudrate.EnableWindow(TRUE);
+	}else if (m_conf->m_spectrometerConnection == CMobileConfiguration::CONNECTION_DIRECTORY) {
+		m_specPort.EnableWindow(FALSE);
+		m_specBaudrate.EnableWindow(FALSE);
 	}
 
 	// Enable or disable the edit-boxes based on the preferred method 
@@ -246,8 +250,12 @@ void CConfigure_Spectrometer::OnOK(){
 	if(m_conf->m_spectrometerConnection == CMobileConfiguration::CONNECTION_RS232){
 		fprintf(f, "\t<serialPort>%s</serialPort>\n", (LPCTSTR)(m_conf->m_serialPort));
 		fprintf(f, "\t<serialBaudrate>%d</serialBaudrate>\n",	m_conf->m_baudrate);
-	}else{
+	}
+	else if(m_conf->m_spectrometerConnection == CMobileConfiguration::CONNECTION_USB){
 		fprintf(f, "\t<serialPort>USB</serialPort>\n");
+	}
+	else if (m_conf->m_spectrometerConnection == CMobileConfiguration::CONNECTION_DIRECTORY) {
+		fprintf(f, "\t<serialPort>Directory</serialPort>\n");
 	}
 	fprintf(f, "\t<timeResolution>%ld</timeResolution>\n",	m_conf->m_timeResolution);
 	fprintf(f, "\t<nchannels>%d</nchannels>\n",					m_conf->m_nChannels);
@@ -326,14 +334,17 @@ void CConfigure_Spectrometer::OnOK(){
 		fprintf(f, "\t</FitWindow>\n");
 	}
 	// ----------- Directory ----------------
-	fprintf(f, "\t<DirectoryMode>\n");
-	fprintf(f, "\t\t<directory>%s</directory>\n", m_conf->m_directory);
-	fprintf(f, "\t\t<sleep>%d</sleep>\n", m_conf->m_sleep);
-	fprintf(f, "\t\t<defaultSkyFile>%s</defaultSkyFile>\n", m_conf->m_defaultSkyFile);
-	fprintf(f, "\t\t<defaultDarkFile>%s</defaultDarkFile>\n", m_conf->m_defaultDarkFile);
-	fprintf(f, "\t\t<defaultDarkcurFile>%s</defaultDarkcurFile>\n", m_conf->m_defaultDarkcurFile);
-	fprintf(f, "\t\t<defaultOffsetFile>%s</defaultOffsetFile>\n", m_conf->m_defaultOffsetFile);
-	fprintf(f, "\t</DirectoryMode>\n");
+	if (m_conf->m_spectrometerConnection == CMobileConfiguration::CONNECTION_DIRECTORY) {
+		fprintf(f, "\t<DirectoryMode>\n");
+		fprintf(f, "\t\t<directory>%s</directory>\n", m_conf->m_directory);
+		fprintf(f, "\t\t<spectrometerDynamicRange>%d</spectrometerDynamicRange>\n", m_conf->m_spectrometerDyanmicRange);
+		fprintf(f, "\t\t<sleep>%d</sleep>\n", m_conf->m_sleep);
+		fprintf(f, "\t\t<defaultSkyFile>%s</defaultSkyFile>\n", m_conf->m_defaultSkyFile);
+		fprintf(f, "\t\t<defaultDarkFile>%s</defaultDarkFile>\n", m_conf->m_defaultDarkFile);
+		fprintf(f, "\t\t<defaultDarkcurFile>%s</defaultDarkcurFile>\n", m_conf->m_defaultDarkcurFile);
+		fprintf(f, "\t\t<defaultOffsetFile>%s</defaultOffsetFile>\n", m_conf->m_defaultOffsetFile);
+		fprintf(f, "\t</DirectoryMode>\n");
+	}
 
 	fprintf(f, "</Configuration>\n");
 	fclose(f);

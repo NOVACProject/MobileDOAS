@@ -81,7 +81,6 @@ BEGIN
         MENUITEM "Stop",                        ID_CONTROL_STOP
         MENUITEM SEPARATOR
         MENUITEM "View Spectrometer Output",    ID_CONTROL_VIEWSPECTRAFROMSPECTROMETER
-        MENUITEM "Real-Time Analysis From Directory", ID_CONTROL_VIEWSPECTRAFROMDIRECTORY
         MENUITEM "Calibrate Spectrometer",      258
         MENUITEM "Start WindMeasurement",       ID_CONTROL_STARTWINDMEASUREMENT
         MENUITEM SEPARATOR
@@ -381,30 +380,32 @@ STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Spectrometer"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    CONTROL         "USB-Connection",IDC_RADIO_CONNECTION_USB,"Button",BS_AUTORADIOBUTTON | WS_GROUP,15,22,67,10
-    CONTROL         "Serial-Connection",IDC_RADIO_CONNECTION_SERIAL,"Button",BS_AUTORADIOBUTTON,15,33,72,10
-    COMBOBOX        IDC_COMBO_PORT,63,47,68,222,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    COMBOBOX        IDC_COMBO_BAUDRATE,63,62,68,190,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    COMBOBOX        IDC_COMBO_NCHANNELS,63,78,37,188,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "Automatic",IDC_RADIO_EXPTIME_AUTOMATIC,"Button",BS_AUTORADIOBUTTON | WS_GROUP,155,21,48,10
-    CONTROL         "Fixed to:",IDC_RADIO_EXPTIME_FIXED,"Button",BS_AUTORADIOBUTTON,155,62,45,10
+    CONTROL         "USB-Connection",IDC_RADIO_CONNECTION_USB,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,15,22,67,10
+    CONTROL         "Directory polling",IDC_RADIO_CONNECTION_DIRECTORY,
+                    "Button",BS_AUTORADIOBUTTON,15,34,67,10
+    CONTROL         "Serial-Connection",IDC_RADIO_CONNECTION_SERIAL,"Button",BS_AUTORADIOBUTTON,15,46,72,10
+    COMBOBOX        IDC_COMBO_PORT,63,60,68,222,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_BAUDRATE,63,75,68,190,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_NCHANNELS,63,95,37,188,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Automatic",IDC_RADIO_EXPTIME_AUTOMATIC,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,156,32,48,10
+    CONTROL         "Fixed to:",IDC_RADIO_EXPTIME_FIXED,"Button",BS_AUTORADIOBUTTON,156,19,45,10
     CONTROL         "Adaptive [N.B: Requires stable temperature]",IDC_RADIO_EXPTIME_ADAPTIVE,
-                    "Button",BS_AUTORADIOBUTTON,155,76,159,10
-    EDITTEXT        IDC_EDIT_SPECCENTER,237,30,50,12,ES_AUTOHSCROLL | ES_NUMBER
-    EDITTEXT        IDC_EDIT_PERCENT,205,45,50,12,ES_AUTOHSCROLL | ES_NUMBER
-    EDITTEXT        IDC_EDIT_FIXEXPTIME,205,60,50,12,ES_AUTOHSCROLL | ES_NUMBER
+                    "Button",BS_AUTORADIOBUTTON,156,46,159,10
+    EDITTEXT        IDC_EDIT_SPECCENTER,237,59,50,12,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_EDIT_PERCENT,205,75,50,12,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_EDIT_FIXEXPTIME,206,18,50,12,ES_AUTOHSCROLL | ES_NUMBER
     EDITTEXT        IDC_EDIT_TIMERESOLUTION,239,110,42,12,ES_AUTOHSCROLL | ES_NUMBER
     EDITTEXT        IDC_EDIT_OFFSETFROM,60,146,66,12,ES_AUTOHSCROLL | ES_NUMBER
     EDITTEXT        IDC_EDIT_OFFSETTO,60,159,66,12,ES_AUTOHSCROLL | ES_NUMBER
-    LTEXT           "Port:",IDC_STATIC,25,49,17,8
-    LTEXT           "Baudrate:",IDC_STATIC,25,64,33,8
-    LTEXT           "N Channels:",IDC_STATIC,15,80,40,8
+    LTEXT           "Port:",IDC_STATIC,25,63,17,8
+    LTEXT           "Baudrate:",IDC_STATIC,25,78,33,8
+    LTEXT           "N Channels:",IDC_STATIC,15,97,40,8
     GROUPBOX        "Spectrometer",IDC_STATIC,7,7,137,125
     GROUPBOX        "ExposureTime:",IDC_STATIC,149,7,185,125
-    LTEXT           "Intensity at channel:",IDC_STATIC,169,33,68,8
-    LTEXT           "Should be:",IDC_STATIC,169,48,35,8
-    LTEXT           "% of maximum",IDC_STATIC,261,48,66,8
-    LTEXT           "[ms]",IDC_STATIC,260,63,15,8
+    LTEXT           "Intensity at channel:",IDC_STATIC,169,61,68,8
+    LTEXT           "Should be:",IDC_STATIC,169,77,35,8
+    LTEXT           "% of maximum",IDC_STATIC,260,77,66,8
+    LTEXT           "[ms]",IDC_STATIC,261,20,15,8
     LTEXT           "Save a spectrum every:",IDC_STATIC,158,112,78,8
     LTEXT           "[ms]",IDC_STATIC,286,112,15,8
     GROUPBOX        "Offset Removal",IDC_STATIC,7,134,137,72
@@ -415,14 +416,14 @@ BEGIN
     LTEXT           "[ppmm]",IDC_STATIC,291,160,30,8
     EDITTEXT        IDC_EDIT_MAXCOLUMN,251,158,35,12,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Use Audio",IDC_CHECK_USEAUDIO,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,159,147,48,10
-    LTEXT           "Set Point Temperature:",IDC_STATIC,15,97,43,18
-    LTEXT           "[Celsius]",IDC_STATIC,110,103,28,8
-    EDITTEXT        IDC_EDIT_SETPOINT,63,101,38,12,ES_AUTOHSCROLL | ES_NUMBER
-    LTEXT           "Saturation range:",IDC_STATIC,170,91,56,8
-    EDITTEXT        IDC_EDIT_SATURATION_LOW,229,89,32,12,ES_AUTOHSCROLL | ES_NUMBER
-    EDITTEXT        IDC_EDIT_SATURATION_HIGH,283,89,32,12,ES_AUTOHSCROLL | ES_NUMBER
-    LTEXT           "% to",IDC_STATIC,264,90,17,8
-    LTEXT           "%",IDC_STATIC,318,91,11,8
+    LTEXT           "Set Point Temperature:",IDC_STATIC,15,110,43,18
+    LTEXT           "[Celsius]",IDC_STATIC,110,116,28,8
+    EDITTEXT        IDC_EDIT_SETPOINT,63,114,38,12,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Saturation range:",IDC_STATIC,170,93,35,8
+    EDITTEXT        IDC_EDIT_SATURATION_LOW,207,91,32,12,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_EDIT_SATURATION_HIGH,265,91,32,12,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "% to",IDC_STATIC,242,93,17,8
+    LTEXT           "%",IDC_STATIC,300,93,11,8
     CONTROL         "Skip dark measurement ",IDC_CHECK_NODARK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,22,177,116,14
     LTEXT           "(e.g. airplane mode)",IDC_STATIC,33,190,66,8
 END
@@ -444,11 +445,11 @@ STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Directory"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    LTEXT           "Select the directory to watch when using the menu option Control->Real-Time Analysis From Directory.  ",IDC_STATIC,14,15,348,12
+    LTEXT           "Select the directory to watch when using the spectrometer option 'Directory polling'.  ",IDC_STATIC,14,15,348,12
     PUSHBUTTON      "Browse",IDC_BROWSE_DIRECTORY,301,26,50,14
     EDITTEXT        IDC_EDIT_DIRECTORY,14,26,283,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_EDIT_SLEEP,14,45,40,14,ES_AUTOHSCROLL
-    LTEXT           "Time in ms to sleep between directory check.  ",IDC_STATIC,59,48,148,8
+    EDITTEXT        IDC_EDIT_SLEEP,161,46,40,14,ES_AUTOHSCROLL
+    LTEXT           "Time in ms to sleep between directory check.  ",IDC_STATIC,206,49,148,8
     PUSHBUTTON      "Browse",IDC_BROWSE_DIR_SKY,301,83,50,14
     PUSHBUTTON      "Browse",IDC_BROWSE_DIR_DARK,301,111,50,14
     PUSHBUTTON      "Browse",IDC_BROWSE_DIR_DARKCUR,301,140,50,14
@@ -457,10 +458,12 @@ BEGIN
     EDITTEXT        IDC_EDIT_DARKCUR_FILE,14,140,283,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_EDIT_OFFSET_FILE,14,169,283,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_EDIT_DARK_FILE,14,111,283,14,ES_AUTOHSCROLL
-    LTEXT           "Default sky file:",IDC_STATIC,14,72,51,8
-    LTEXT           "Default dark file (automatic or fixed mode):",IDC_STATIC,14,102,139,8
-    LTEXT           "Default offset file (adaptive mode only):",IDC_STATIC,14,159,130,8
-    LTEXT           "Default darkcur file (adaptive mode only):",IDC_STATIC,14,130,134,8
+    LTEXT           "Sky file, if sky_0.std does not exist:",IDC_STATIC,14,72,116,8
+    LTEXT           "Dark file, if dark_0.std does not exist (automatic or fixed mode):",IDC_STATIC,14,102,207,8
+    LTEXT           "Default offset file, if offset_0.std does not exist (adaptive mode only):",IDC_STATIC,14,159,228,8
+    LTEXT           "Default darkcur file, if darkcur_0.std does not exist (adaptive mode only):",IDC_STATIC,14,130,237,8
+    EDITTEXT        IDC_EDIT_DYNAMIC_RANGE,14,46,40,14,ES_AUTOHSCROLL
+    LTEXT           "Spectrometer Dynamic Range",IDC_STATIC,59,49,96,8
 END
 
 

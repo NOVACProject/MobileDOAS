@@ -64,6 +64,7 @@ void CMobileConfiguration::Clear(){
 	// Directory
 	m_directory.Format("");
 	m_sleep = 500;
+	m_spectrometerDyanmicRange = 4096;
 	m_defaultSkyFile.Format("");
 	m_defaultDarkFile.Format("");
 	m_defaultDarkcurFile.Format("");
@@ -113,6 +114,10 @@ int CMobileConfiguration::Parse(){
 			// If the serial-port begins with 'COM' then we're using the RS232-port
 			if(Equals(m_serialPort, "COM", 3)){
 				m_spectrometerConnection = CONNECTION_RS232;
+			}
+			// Directory mode enabled
+			if (Equals(m_serialPort, "Directory", 3)) {
+				m_spectrometerConnection = CONNECTION_DIRECTORY;
 			}
 			continue;
 		}
@@ -494,6 +499,12 @@ int CMobileConfiguration::ParseDirectoryMode() {
 		// Directory to watch for STD files in
 		if (Equals(szToken, "directory")) {
 			Parse_StringItem("/directory", m_directory);
+			continue;
+		}
+
+		// Spectrometer range
+		if (Equals(szToken, "spectrometerDynamicRange")) {
+			Parse_LongItem("/spectrometerDynamicRange", m_spectrometerDyanmicRange);
 			continue;
 		}
 
