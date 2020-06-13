@@ -162,6 +162,8 @@
 #define IDC_EDIT_MAXSHIFTTIME           1002
 #define IDC_EDIT_FITTO                  1002
 #define IDC_EDIT_SPECSCALE_MAX          1002
+#define IDC_EDIT_SLEEP2                 1002
+#define IDC_EDIT_DYNAMIC_RANGE          1002
 #define IDC_SETBUTTON                   1003
 #define IDC_EDIT_RING                   1003
 #define IDC_EDIT_EVALLOG_SERIES2        1003
@@ -369,7 +371,6 @@
 #define IDC_RADIO_EXPTIME_FIXED         1184
 #define IDC_RADIO_CHANNEL1              1184
 #define IDC_CHECK_SHOW_INTERPOLATED_WINDFIELD 1185
-#define IDC_RADIO_EXPTIME_FIXED2        1186
 #define IDC_RADIO_EXPTIME_ADAPTIVE      1186
 #define IDC_ROUTDLG_POINTSIZEEDIT       1187
 #define IDC_ROUTEDLG_POINTSIZESPIN      1188
@@ -420,6 +421,7 @@
 #define IDC_EDIT_SATURATION_HIGH        1217
 #define IDC_RADIO_SHIFT_LINK            1218
 #define IDC_EDIT_SATURATION_LOW2        1218
+#define IDC_RADIO_CONNECTION_DIRECTORY  1218
 #define IDC_RADIO_SQUEEZE_LINK          1219
 #define IDC_FRAME_LANDMARKS             1220
 #define IDC_LABEL_SPECIE                1220

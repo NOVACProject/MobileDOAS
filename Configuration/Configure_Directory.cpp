@@ -22,6 +22,7 @@ void CConfigure_Directory::DoDataExchange(CDataExchange* pDX)
 	// The fit-parameters edit boxes
 	DDX_Text(pDX, IDC_EDIT_DIRECTORY, m_conf->m_directory);
 	DDX_Text(pDX, IDC_EDIT_SLEEP, m_conf->m_sleep);
+	DDX_Text(pDX, IDC_EDIT_DYNAMIC_RANGE, m_conf->m_spectrometerDyanmicRange);
 	DDX_Text(pDX, IDC_EDIT_SKY_FILE, m_conf->m_defaultSkyFile);
 	DDX_Text(pDX, IDC_EDIT_DARK_FILE, m_conf->m_defaultDarkFile);
 	DDX_Text(pDX, IDC_EDIT_DARKCUR_FILE, m_conf->m_defaultDarkcurFile);
@@ -31,6 +32,7 @@ void CConfigure_Directory::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CConfigure_Directory, CPropertyPage)
 	ON_EN_KILLFOCUS(IDC_EDIT_DIRECTORY, SaveData)
 	ON_EN_KILLFOCUS(IDC_EDIT_SLEEP, SaveData)
+	ON_EN_KILLFOCUS(IDC_EDIT_DYNAMIC_RANGE, SaveData)
 	ON_EN_KILLFOCUS(IDC_EDIT_SKY_FILE, SaveData)
 	ON_EN_KILLFOCUS(IDC_EDIT_DARK_FILE, SaveData)
 	ON_EN_KILLFOCUS(IDC_EDIT_DARKCUR_FILE, SaveData)

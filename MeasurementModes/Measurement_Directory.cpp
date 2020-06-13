@@ -23,6 +23,7 @@ void CMeasurement_Directory::Run() {
 		ShowMessageBox("Error in configuration settings.", "Error");
 		return;
 	}
+	m_spectrometerDynRange = m_conf->m_spectrometerDyanmicRange;
 
 	// Get directory to watch
 	if (strlen(m_conf->m_directory) == 0) {
@@ -184,7 +185,12 @@ bool CMeasurement_Directory::ProcessSpectrum(CString latestSpectrum) {
 	}
 	else {
 		// get spec number and channel num
-		m_scanNum = atoi(latestSpectrum.Left(5)) + 2;
+		if (m_conf->m_expTimeMode == m_conf->EXPOSURETIME_ADAPTIVE) {
+			m_scanNum = atoi(latestSpectrum.Left(5)) + 3;
+		}
+		else {
+			m_scanNum = atoi(latestSpectrum.Left(5)) + 2;
+		}
 		int channel = atoi(latestSpectrum.Mid(7, 1));
 
 		// copy data to current spectrum 
@@ -242,8 +248,8 @@ bool CMeasurement_Directory::ReadSky() {
 		specfile.Format("%s\\%s", m_conf->m_directory, ffd.cFileName);
 	}
 	if (CSpectrumIO::readSTDFile(specfile, &spec) == 1) {
-		m_statusMsg.Format("Error reading %s.", specfile);
-		pView->PostMessage(WM_STATUSMSG);
+		ShowMessageBox("Error reading sky file.", "Error");
+		return FAIL;
 	}
 	else {
 		memcpy((void*)m_sky[0], (void*)spec.I, sizeof(double)*MAX_SPECTRUM_LENGTH);
@@ -272,8 +278,8 @@ bool CMeasurement_Directory::ReadDark() {
 		specfile.Format("%s\\%s", m_conf->m_directory, ffd.cFileName);
 	}
 	if (CSpectrumIO::readSTDFile(specfile, &spec) == 1) {
-		m_statusMsg.Format("Error reading %s.", specfile);
-		pView->PostMessage(WM_STATUSMSG);
+		ShowMessageBox("Error reading dark file.", "Error");
+		return FAIL;
 	}
 	else {
 		memcpy((void*)m_dark[0], (void*)spec.I, sizeof(double)*MAX_SPECTRUM_LENGTH);
@@ -300,8 +306,8 @@ bool CMeasurement_Directory::ReadDarkcur() {
 		specfile.Format("%s\\%s", m_conf->m_directory, ffd.cFileName);
 	}
 	if (CSpectrumIO::readSTDFile(specfile, &spec) == 1) {
-		m_statusMsg.Format("Error reading %s.", specfile);
-		pView->PostMessage(WM_STATUSMSG);
+		ShowMessageBox("Error reading darkcur file.", "Error");
+		return FAIL;
 	}
 	else {
 		memcpy((void*)m_darkCur[0], (void*)spec.I, sizeof(double)*MAX_SPECTRUM_LENGTH);
@@ -328,8 +334,8 @@ bool CMeasurement_Directory::ReadOffset() {
 		specfile.Format("%s\\%s", m_conf->m_directory, ffd.cFileName);
 	}
 	if (CSpectrumIO::readSTDFile(specfile, &spec) == 1) {
-		m_statusMsg.Format("Error reading %s.", specfile);
-		pView->PostMessage(WM_STATUSMSG);
+		ShowMessageBox("Error reading offset file.", "Error");
+		return FAIL;
 	}
 	else {
 		memcpy((void*)m_offset[0], (void*)spec.I, sizeof(double)*MAX_SPECTRUM_LENGTH);

@@ -126,7 +126,7 @@ public:
 	afx_msg void OnControlViewSpectra();
 
 	/** Starts the viewing of latest spectra from STD files sent to a directory. */
-	afx_msg void OnControlViewSpectraFromDirectory();
+	afx_msg void OnControlProcessSpectraFromDirectory();
 
 	/** Starts viewing spectra from the spectrometer, this makes 
 		easier for the user to make a calibration of the spectrometer */

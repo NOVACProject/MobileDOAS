@@ -68,7 +68,7 @@ BEGIN_MESSAGE_MAP(CDMSpecView, CFormView)
 
 	// Just view the spectra from the spectrometer without evaluations
 	ON_COMMAND(ID_CONTROL_VIEWSPECTRAFROMSPECTROMETER,	OnControlViewSpectra) // <-- view the output from the spectrometer
-	ON_COMMAND(ID_CONTROL_VIEWSPECTRAFROMDIRECTORY, OnControlViewSpectraFromDirectory) // <-- view latest spectra file in directory
+	ON_COMMAND(ID_CONTROL_VIEWSPECTRAFROMDIRECTORY, OnControlProcessSpectraFromDirectory) // <-- view latest spectra file in directory
 
 	// Calibrate a spectrometer
 	ON_COMMAND(ID_CONTROL_CALIBRATESPECTROMETER,		OnControlCalibrateSpectrometer)
@@ -762,6 +762,15 @@ void CDMSpecView::OnControlStart()
 {
 	if(!s_spectrometerAcquisitionThreadIsRunning)
 	{
+
+		CString cfgFile = g_exePath + TEXT("cfg.xml");
+		std::unique_ptr<Configuration::CMobileConfiguration> conf;
+		conf.reset(new Configuration::CMobileConfiguration(cfgFile));
+		if (conf->m_spectrometerConnection == conf->CONNECTION_DIRECTORY) {
+			OnControlProcessSpectraFromDirectory();
+			return;
+		}
+
 		/* Check that the base name does not contain any illegal characters */
 		CString tmpStr;
 		this->GetDlgItemText(IDC_BASEEDIT, tmpStr);
@@ -865,33 +874,26 @@ void CDMSpecView::OnControlViewSpectra(){
 }
 
 /** Starts the viewing of latest spectra in a directory specified by config file. */
-void CDMSpecView::OnControlViewSpectraFromDirectory() {
+void CDMSpecView::OnControlProcessSpectraFromDirectory() {
 
-	if (!s_spectrometerAcquisitionThreadIsRunning)
-	{
-		CDMSpecDoc* pDoc = GetDocument();
-		CMeasurement_Directory *spec = new CMeasurement_Directory();
-		this->m_Spectrometer = (CSpectrometer *)spec;
-		m_Spectrometer->m_spectrometerMode = MODE_DIRECTORY;
+	CDMSpecDoc* pDoc = GetDocument();
+	CMeasurement_Directory *spec = new CMeasurement_Directory();
+	this->m_Spectrometer = (CSpectrometer *)spec;
 
-		pSpecThread = AfxBeginThread(CollectSpectra, (LPVOID)(m_Spectrometer), THREAD_PRIORITY_LOWEST, 0, 0, NULL);
-		s_spectrometerAcquisitionThreadIsRunning = true;
-		m_spectrometerMode = MODE_DIRECTORY;
+	pSpecThread = AfxBeginThread(CollectSpectra, (LPVOID)(m_Spectrometer), THREAD_PRIORITY_LOWEST, 0, 0, NULL);
+	s_spectrometerAcquisitionThreadIsRunning = true;
+	m_spectrometerMode = MODE_DIRECTORY;
 
-		m_ColumnPlot.SetYUnits("Column [ppmm]");
-		m_ColumnPlot.SetSecondYUnit("Intensity [%]");
-		m_ColumnPlot.SetXUnits("Number");
-		m_ColumnPlot.EnableGridLinesX(false);
-		m_ColumnPlot.SetBackgroundColor(RGB(0, 0, 0));
-		m_ColumnPlot.SetGridColor(RGB(255, 255, 255));
-		m_ColumnPlot.SetPlotColor(m_PlotColor[0]);
-		m_ColumnPlot.SetRange(0, 200, 1, 0.0, 100.0, 1);
-		m_ColumnPlot.SetMinimumRangeX(200.0f);
-		m_ColumnPlot.SetSecondRange(0.0, 200, 0, 0.0, 100.0, 0);
-	}
-	else {
-		MessageBox(TEXT("Spectra are collecting"), "Notice", MB_OK);
-	}
+	m_ColumnPlot.SetYUnits("Column [ppmm]");
+	m_ColumnPlot.SetSecondYUnit("Intensity [%]");
+	m_ColumnPlot.SetXUnits("Number");
+	m_ColumnPlot.EnableGridLinesX(false);
+	m_ColumnPlot.SetBackgroundColor(RGB(0, 0, 0));
+	m_ColumnPlot.SetGridColor(RGB(255, 255, 255));
+	m_ColumnPlot.SetPlotColor(m_PlotColor[0]);
+	m_ColumnPlot.SetRange(0, 200, 1, 0.0, 100.0, 1);
+	m_ColumnPlot.SetMinimumRangeX(200.0f);
+	m_ColumnPlot.SetSecondRange(0.0, 200, 0, 0.0, 100.0, 0);
 }
 
 /** Starts the viewing of spectra from the spectrometer, 
