@@ -55,9 +55,10 @@ void CConfigure_Directory::SaveData() {
 void Configuration::CConfigure_Directory::OnBnClickedBrowseDirectory()
 {
 	Common common;
-	CString dir = common.BrowseForDirectory();
-	if (!dir.IsEmpty()) {
-		m_conf->m_directory = dir;
+	CString folder = m_conf->m_directory;
+	bool result = common.BrowseForDirectory(folder);
+	if (result) {
+		m_conf->m_directory = folder;
 		UpdateData(FALSE);
 	}
 }
