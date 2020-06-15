@@ -347,6 +347,52 @@ double GetWindFactor(double lat1,double lon1,double lat2,double lon2, double win
 	
 	return windFactor;
 }
+CString Common::BrowseForDirectory()
+{
+
+	CString filename;
+	IFileOpenDialog *pfd;
+	// CoCreate the dialog object.
+	HRESULT hr = CoCreateInstance(CLSID_FileOpenDialog,
+		NULL,
+		CLSCTX_INPROC_SERVER,
+		IID_PPV_ARGS(&pfd));
+
+	if (SUCCEEDED(hr))
+	{
+		DWORD dwOptions;
+		// Specify multiselect.
+		hr = pfd->GetOptions(&dwOptions);
+
+		if (SUCCEEDED(hr))
+		{
+			hr = pfd->SetOptions(dwOptions | FOS_PICKFOLDERS);
+		}
+
+		if (SUCCEEDED(hr))
+		{
+			// Show the Open dialog.
+			hr = pfd->Show(NULL);
+
+			if (SUCCEEDED(hr))
+			{
+				// Obtain the result of the user interaction.
+				IShellItem *file;
+				hr = pfd->GetResult(&file);
+
+				if (SUCCEEDED(hr))
+				{
+					LPWSTR dn;
+					file->GetDisplayName(SIGDN_FILESYSPATH, &dn);
+					filename = dn;
+					file->Release();
+				}
+			}
+		}
+		pfd->Release();
+	}
+	return filename;
+}
 
 std::vector<CString> Common::BrowseForFiles()
 {

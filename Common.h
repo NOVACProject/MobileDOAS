@@ -155,6 +155,10 @@ public:
 			@return false otherwise */
 	static bool BrowseForDirectory(CString &folderName);
 
+	/** Opens a dialog window to let user browse for a directory. 
+	    Use this one to default open to last selected directory. */
+	static CString BrowseForDirectory();
+
 	// ---------------- MATHEMATICAL FUNCTIONS --------------------
 	/** Rounds a given float value to the nearest integer. */
 	long  Round(double d);
