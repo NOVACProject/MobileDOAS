@@ -29,6 +29,7 @@ namespace Configuration {
 		virtual BOOL OnInitDialog();
 
 		afx_msg void SaveData();
+		BOOL OnSetActive();
 	public:
 		afx_msg void OnBnClickedBrowseDirectory();
 		afx_msg void OnBnClickedBrowseDirSky();
