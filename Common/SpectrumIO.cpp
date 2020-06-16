@@ -144,7 +144,13 @@ int CSpectrumIO::readSTDFile(CString filename, CSpectrum *curSpec){
 		curSpec->lat = tmpDouble;
 	}
 
-	if (0 < fscanf(f, "Altitude = %lf\n", &tmpDouble)) {
+	// redundant read of numscans
+	fscanf(f, "NumScans = %d\n", &tmpInt);
+
+	// redundant read of exposure time
+	fscanf(f, "ExposureTime = %d\n", &tmpInt);
+
+    if (1 == fscanf(f, "Altitude = %lf\n", &tmpDouble)) {
 		curSpec->altitude = tmpDouble;
 	}
 
