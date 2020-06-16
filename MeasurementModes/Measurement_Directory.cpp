@@ -199,6 +199,7 @@ bool CMeasurement_Directory::ProcessSpectrum(CString latestSpectrum) {
 		// extract spectrum integration time and total spec num
 		m_integrationTime = spec.exposureTime;
 		m_totalSpecNum = spec.scans;
+		pView->PostMessage(WM_SHOWINTTIME);
 
 		// get spectrum date & time
 		m_spectrumGpsData[m_spectrumCounter].date
@@ -211,6 +212,7 @@ bool CMeasurement_Directory::ProcessSpectrum(CString latestSpectrum) {
 		m_spectrumGpsData[m_spectrumCounter].latitude = spec.lat;
 		m_spectrumGpsData[m_spectrumCounter].longitude = spec.lon;
 		m_spectrumGpsData[m_spectrumCounter].altitude = spec.altitude;
+		pView->PostMessage(WM_READGPS);
 
 		// calculate average intensity
 		m_averageSpectrumIntensity[channel] = AverageIntens(m_curSpectrum[channel], 1);

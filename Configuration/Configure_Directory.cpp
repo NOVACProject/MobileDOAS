@@ -48,6 +48,7 @@ BOOL CConfigure_Directory::OnInitDialog() {
 	CPropertyPage::OnInitDialog();
 	return TRUE;
 }
+
 void CConfigure_Directory::SaveData() {
 	UpdateData(TRUE);
 }
@@ -105,4 +106,26 @@ void Configuration::CConfigure_Directory::OnBnClickedBrowseDirOffset()
 		m_conf->m_defaultOffsetFile = m_file;
 		UpdateData(FALSE);
 	}
+}
+
+BOOL CConfigure_Directory::OnSetActive() {
+	if (m_conf->m_spectrometerConnection == CMobileConfiguration::CONNECTION_DIRECTORY) {
+		GetDlgItem(IDC_EDIT_DIRECTORY)->EnableWindow(TRUE);
+		GetDlgItem(IDC_EDIT_DYNAMIC_RANGE)->EnableWindow(TRUE);
+		GetDlgItem(IDC_EDIT_SLEEP)->EnableWindow(TRUE);
+		GetDlgItem(IDC_EDIT_SKY_FILE)->EnableWindow(TRUE);
+		GetDlgItem(IDC_EDIT_DARK_FILE)->EnableWindow(TRUE);
+		GetDlgItem(IDC_EDIT_DARKCUR_FILE)->EnableWindow(TRUE);
+		GetDlgItem(IDC_EDIT_OFFSET_FILE)->EnableWindow(TRUE);
+	}
+	else {
+		GetDlgItem(IDC_EDIT_DIRECTORY)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_DYNAMIC_RANGE)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_SLEEP)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_SKY_FILE)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_DARK_FILE)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_DARKCUR_FILE)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_OFFSET_FILE)->EnableWindow(FALSE);
+	}
+	return CPropertyPage::OnSetActive();
 }

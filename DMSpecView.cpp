@@ -533,8 +533,13 @@ LRESULT CDMSpecView::OnShowIntTime(WPARAM wParam, LPARAM lParam){
 	expTime.Format("%d  ms",m_Spectrometer->RequestIntTime());
 	this->SetDlgItemText(IDC_INTTIME,expTime);
 
-	m_Spectrometer->GetNSpecAverage(averageInSpectrometer, averageInComputer);
-	nAverage.Format("%dx%d", averageInSpectrometer, averageInComputer);
+	if (m_spectrometerMode == MODE_DIRECTORY) {
+		nAverage.Format("%d", m_Spectrometer->m_totalSpecNum);
+	}
+	else {
+		m_Spectrometer->GetNSpecAverage(averageInSpectrometer, averageInComputer);
+		nAverage.Format("%dx%d", averageInSpectrometer, averageInComputer);
+	}
 	this->SetDlgItemText(IDC_SPECNO, nAverage);
 
 	// Update the legend
@@ -659,7 +664,7 @@ LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 	this->SetDlgItemText(IDC_NGPSSAT, nSat);
 
 
-	if (!m_Spectrometer->m_gps->GotContact())
+	if (!(m_spectrometerMode == MODE_DIRECTORY) &&!m_Spectrometer->m_gps->GotContact())
 	{
 		// If the communication with the GPS is broken (e.g. device unplugged)
 		COLORREF warning = RGB(255, 75, 75);
