@@ -198,7 +198,9 @@ bool CMeasurement_Directory::ProcessSpectrum(CString latestSpectrum) {
 
 		// extract spectrum integration time and total spec num
 		m_integrationTime = spec.exposureTime;
+		pView->PostMessage(WM_SHOWINTTIME);
 		m_totalSpecNum = spec.scans;
+		pView->PostMessage(WM_SHOWNOSPEC);
 
 		// get spectrum date & time
 		m_spectrumGpsData[m_spectrumCounter].date

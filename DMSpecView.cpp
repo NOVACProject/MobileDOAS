@@ -93,6 +93,7 @@ BEGIN_MESSAGE_MAP(CDMSpecView, CFormView)
 	ON_MESSAGE(WM_STATUSMSG,						OnShowStatus)
 	ON_MESSAGE(WM_READGPS,							OnReadGPS)
 	ON_MESSAGE(WM_SHOWINTTIME,						OnShowIntTime)
+	ON_MESSAGE(WM_SHOWNOSPEC,						OnShowNoSpec)
 	ON_MESSAGE(WM_CHANGEDSPEC,						OnChangeSpectrometer)
 	ON_MESSAGE(WM_DRAWSPECTRUM,						OnDrawSpectrum)
 	ON_MESSAGE(WM_CHANGEDSPECSCALE,					OnChangedSpectrumScale)
@@ -545,6 +546,13 @@ LRESULT CDMSpecView::OnShowIntTime(WPARAM wParam, LPARAM lParam){
 		m_specSettingsDlg.PostMessage(WM_SHOWINTTIME);
 	}
 
+	return 0;
+}
+
+LRESULT CDMSpecView::OnShowNoSpec(WPARAM wParam, LPARAM lParam) {
+	CString specno;
+	specno.Format("%d", m_Spectrometer->m_totalSpecNum);
+	this->SetDlgItemText(IDC_SPECNO, specno);
 	return 0;
 }
 

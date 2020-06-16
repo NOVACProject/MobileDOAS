@@ -168,6 +168,10 @@ public:
 	/** Called to update the integration time shown in the bottom part of the screen */
 	afx_msg LRESULT OnShowIntTime(WPARAM wParam, LPARAM lParam);
 
+	/** Called to update the total number of specs shown in the bottom part of the screen.
+	    Used for directory polling option only. */
+	afx_msg LRESULT OnShowNoSpec(WPARAM wParam, LPARAM lParam);
+
 	/** Called when the selected spectrometer has changed (very seldom!!) */
 	afx_msg LRESULT OnChangeSpectrometer(WPARAM wParam, LPARAM lParam);
 
