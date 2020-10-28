@@ -295,7 +295,7 @@ void CConfigure_Spectrometer::OnOK(){
 	fprintf(f, "\t\t<from>%d</from>\n",	m_conf->m_offsetFrom);
 	fprintf(f, "\t\t<to>%d</to>\n",			m_conf->m_offsetTo);
 	fprintf(f, "\t</Offset>\n");
-	fprintf(f, "\t<noDark>%d</noDark>", m_conf->m_noDark);
+	fprintf(f, "\t<noDark>%d</noDark>\n", m_conf->m_noDark);
 
 	// ----------- Evaluation ----------------
 	for(int k = 0; k < m_conf->m_nFitWindows; ++k){
