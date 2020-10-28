@@ -680,6 +680,8 @@ private:
 		NB: Called from the function 'AdjustIntegrationTime' !!! */
 	short	AdjustIntegrationTime_Calculate(long minExpTime, long maxExpTime);
 
+	/** Check if spectrum is dark **/
+	bool CSpectrometer::CheckIfDark(double spectrum[MAX_SPECTRUM_LENGTH]);
 };
 
 #endif // !defined(AFX_COMMUNICATION_H__7C04DDEA_2314_405E_A09D_02B403AC7762__INCLUDED_)
