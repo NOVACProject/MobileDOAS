@@ -1458,10 +1458,13 @@ void	CGraphCtrl::PrintNumber(double number, int nDecimals, NUMBER_FORMAT format,
 
 	// -------- printing a time of day ------------
 	if(FORMAT_TIME == format){
-		// interpret the number as seconds after midnight.
+		// interpret the number as seconds after midnight.;
+		if (number > 3600 * 24) {
+			number -= 3600 * 24;
+		}
 		int number_int = (int)number;
 
-		int hours			= (int)(number / 3600.0);
+		int hours		= (int)(number / 3600.0);
 		int minutes		= (number_int - hours * 3600) / 60;
 		int seconds		= number_int % 60;
 		str.Format("%02d:%02d:%02d", hours, minutes, seconds);

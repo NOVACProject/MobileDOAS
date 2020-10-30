@@ -5,6 +5,9 @@ Version 6.3 (TBD)
 New features
 * Option to read and analyze spectra files from a directory (#12)
 
+Bug fixes
+* Fix traverse display in postflux dialog when passing midnight UTC (#148)
+
 Other
 * Improved method to determine whether spectrum is dark (#146)
 

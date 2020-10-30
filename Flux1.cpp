@@ -252,6 +252,11 @@ long CFlux::GetTime(double *pBuffer){
 	for(long k = 0; k < m_traverse[m_curTraverse]->m_recordNum; ++k){
 		Time &t = m_traverse[m_curTraverse]->time[k];
 		pBuffer[k] = 3600 * t.hour + 60 * t.minute + t.second;
+		if (k > 0) {
+		  if (pBuffer[k] < pBuffer[k - 1]) {
+			pBuffer[k] += 3600 * 24;
+		  }
+		}
 	}
 	return m_traverse[m_curTraverse]->m_recordNum;
 }
