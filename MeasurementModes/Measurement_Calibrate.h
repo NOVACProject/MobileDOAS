@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../Spectrometer.h"
-#include "../WavelengthCalibration.h"
+#include "../CWavelengthCalibration.h"
 
 /** The class <b>CMeasurement_View</b> is the implementation of the viewing of 
 	spectra from the spectrometer. It extends the functions found in CSpectrometer

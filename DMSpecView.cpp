@@ -11,7 +11,7 @@
 #include "DMSpecDoc.h"
 #include "DMSpecView.h"
 #include "MainFrm.h"
-#include "Common/DateTime.h"
+#include "Common/CDateTime.h"
 
 #include "PostFluxDlg.h"
 #include "Flux1.h"

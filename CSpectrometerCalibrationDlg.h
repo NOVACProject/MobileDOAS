@@ -6,18 +6,18 @@
 class CSpectrometerCalibrationDlg : public CPropertySheet
 {
 public:
-	CSpectrometerCalibrationDlg();   // standard constructor
-	virtual ~CSpectrometerCalibrationDlg();
+    CSpectrometerCalibrationDlg();   // standard constructor
+    virtual ~CSpectrometerCalibrationDlg();
 
-	virtual BOOL OnInitDialog();
+    virtual BOOL OnInitDialog();
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+    virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 
 private:
-	CPropertyPage* m_calibrateInstrumentLineShape;
-	CPropertyPage* m_calibratePixelToWavelength;
+    CPropertyPage* m_calibrateInstrumentLineShape;
+    CPropertyPage* m_calibratePixelToWavelength;
 
 };

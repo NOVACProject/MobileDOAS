@@ -236,7 +236,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>%JAVA_HOME%\include\win32;%JAVA_HOME%\include;%OMNIDRIVER_HOME%\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PROJECT_DIR)SpectralEvaluation\include;%JAVA_HOME%\include\win32;%JAVA_HOME%\include;%OMNIDRIVER_HOME%\include</AdditionalIncludeDirectories>
       <StringPooling>true</StringPooling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <SmallerTypeCheck>false</SmallerTypeCheck>
@@ -278,13 +278,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BasicMath.cpp" />
+    <ClCompile Include="Calibration\WavelengthCalibrationController.cpp" />
     <ClCompile Include="CCalibrateInstrumentLineShape.cpp" />
     <ClCompile Include="CCalibrationWavelength.cpp" />
+    <ClCompile Include="CGpsData.cpp" />
     <ClCompile Include="CommentDlg.cpp" />
     <ClCompile Include="Common.cpp" />
-    <ClCompile Include="Common\DateTime.cpp" />
+    <ClCompile Include="Common\CDateTime.cpp" />
+    <ClCompile Include="Common\CSpectrum.cpp" />
     <ClCompile Include="Common\KMLFileHandler.cpp" />
-    <ClCompile Include="Common\Spectrum.cpp" />
     <ClCompile Include="Common\SpectrumIO.cpp" />
     <ClCompile Include="Common\XMLFileReader.cpp" />
     <ClCompile Include="Configuration\ConfigurationDialog.cpp" />
@@ -297,6 +299,7 @@
     <ClCompile Include="Controls\Label.cpp" />
     <ClCompile Include="Controls\ReferenceFileControl.cpp" />
     <ClCompile Include="CSpectrometerCalibrationDlg.cpp" />
+    <ClCompile Include="CWavelengthCalibration.cpp" />
     <ClCompile Include="Dialogs\QueryStringDialog.cpp" />
     <ClCompile Include="Dialogs\ReferencePlotDlg.cpp" />
     <ClCompile Include="Dialogs\ReferencePropertiesDlg.cpp" />
@@ -334,7 +337,6 @@
     <ClCompile Include="Flux\Traverse.cpp" />
     <ClCompile Include="Flux\WindField.cpp" />
     <ClCompile Include="GPS.cpp" />
-    <ClCompile Include="GpsData.cpp" />
     <ClCompile Include="Graphs\ColumnGraph.cpp" />
     <ClCompile Include="Graphs\GraphCtrl.cpp" />
     <ClCompile Include="Graphs\SpectrumGraph.cpp" />
@@ -371,6 +373,57 @@
     <ClCompile Include="SerialConnection.cpp" />
     <ClCompile Include="ShowFitDlg.cpp" />
     <ClCompile Include="SourceSelectionDlg.cpp" />
+    <ClCompile Include="SpectralEvaluation\src\Calibration\ReferenceSpectrumConvolution.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Calibration\WavelengthCalibration.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Calibration\WavelengthCalibrationByRansac.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\DateTime.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Evaluation\CrossSectionData.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\File\File.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\File\STDFile.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\File\TXTFile.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\GPSData.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Interpolation.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Math\FFT.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Spectra\SpectrometerModel.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Spectra\Spectrum.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Spectra\SpectrumInfo.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Spectra\SpectrumUtils.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\StringUtils.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\VectorUtils.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Spectrometer.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -379,7 +432,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Version.cpp" />
-    <ClCompile Include="WavelengthCalibration.cpp" />
     <ClCompile Include="WindFieldDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -387,13 +439,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BasicMath.h" />
+    <ClInclude Include="Calibration\WavelengthCalibrationController.h" />
     <ClInclude Include="CCalibrateInstrumentLineShape.h" />
     <ClInclude Include="CCalibrationWavelength.h" />
+    <ClInclude Include="CGpsData.h" />
     <ClInclude Include="CommentDlg.h" />
     <ClInclude Include="Common.h" />
-    <ClInclude Include="Common\DateTime.h" />
+    <ClInclude Include="Common\CDateTime.h" />
+    <ClInclude Include="Common\CSpectrum.h" />
     <ClInclude Include="Common\KMLFileHandler.h" />
-    <ClInclude Include="Common\Spectrum.h" />
     <ClInclude Include="Common\SpectrumIO.h" />
     <ClInclude Include="Common\XMLFileReader.h" />
     <ClInclude Include="Configuration\ConfigurationDialog.h" />
@@ -406,6 +460,7 @@
     <ClInclude Include="Controls\Label.h" />
     <ClInclude Include="Controls\ReferenceFileControl.h" />
     <ClInclude Include="CSpectrometerCalibrationDlg.h" />
+    <ClInclude Include="CWavelengthCalibration.h" />
     <ClInclude Include="Dialogs\QueryStringDialog.h" />
     <ClInclude Include="Dialogs\ReferencePlotDlg.h" />
     <ClInclude Include="Dialogs\ReferencePropertiesDlg.h" />
@@ -477,7 +532,6 @@
     <ClInclude Include="Flux\Traverse.h" />
     <ClInclude Include="Flux\WindField.h" />
     <ClInclude Include="GPS.h" />
-    <ClInclude Include="GpsData.h" />
     <ClInclude Include="Graphs\ColumnGraph.h" />
     <ClInclude Include="Graphs\GraphCtrl.h" />
     <ClInclude Include="Graphs\SpectrumGraph.h" />
@@ -520,7 +574,6 @@
     <ClInclude Include="Spectrometer.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="Version.h" />
-    <ClInclude Include="WavelengthCalibration.h" />
     <ClInclude Include="WindFieldDlg.h" />
   </ItemGroup>
   <ItemGroup>

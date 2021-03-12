@@ -70,6 +70,15 @@
       <UniqueIdentifier>{5bac7d2f-4a40-499f-9edd-d25c584d8f43}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
+    <Filter Include="Header Files\Calibration">
+      <UniqueIdentifier>{3d7b2252-7a85-400b-acb4-beb503fe79c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SpectralEvaluation">
+      <UniqueIdentifier>{ff1e10bd-323c-4272-8eb2-2529411ae4fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SpectralEvaluation\File">
+      <UniqueIdentifier>{65768821-0fa2-45ea-8711-40cd98793418}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Common.cpp">
@@ -82,9 +91,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DMSpecView.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Common\DateTime.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="EvaluationLogFileHandler.cpp">
@@ -132,9 +138,6 @@
     <ClCompile Include="Spectrometer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Common\Spectrum.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Common\SpectrumIO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -145,9 +148,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Version.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WavelengthCalibration.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Common\XMLFileReader.cpp">
@@ -342,9 +342,6 @@
     <ClCompile Include="Dialogs\SpectrumSettingsDlg.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
-    <ClCompile Include="GpsData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CSpectrometerCalibrationDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -353,6 +350,72 @@
     </ClCompile>
     <ClCompile Include="CCalibrateInstrumentLineShape.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Calibration\WavelengthCalibrationController.cpp">
+      <Filter>Header Files\Calibration</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Spectra\Spectrum.cpp">
+      <Filter>Source Files\SpectralEvaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Spectra\SpectrumInfo.cpp">
+      <Filter>Source Files\SpectralEvaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Spectra\SpectrumUtils.cpp">
+      <Filter>Source Files\SpectralEvaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Spectra\SpectrometerModel.cpp">
+      <Filter>Source Files\SpectralEvaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Calibration\ReferenceSpectrumConvolution.cpp">
+      <Filter>Source Files\SpectralEvaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Calibration\WavelengthCalibration.cpp">
+      <Filter>Source Files\SpectralEvaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Calibration\WavelengthCalibrationByRansac.cpp">
+      <Filter>Source Files\SpectralEvaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\GPSData.cpp">
+      <Filter>Source Files\SpectralEvaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\DateTime.cpp">
+      <Filter>Source Files\SpectralEvaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\StringUtils.cpp">
+      <Filter>Source Files\SpectralEvaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\CDateTime.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CGpsData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CWavelengthCalibration.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\CSpectrum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Evaluation\CrossSectionData.cpp">
+      <Filter>Source Files\SpectralEvaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\VectorUtils.cpp">
+      <Filter>Source Files\SpectralEvaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Math\FFT.cpp">
+      <Filter>Source Files\SpectralEvaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\File\File.cpp">
+      <Filter>Source Files\SpectralEvaluation\File</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\File\STDFile.cpp">
+      <Filter>Source Files\SpectralEvaluation\File</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\File\TXTFile.cpp">
+      <Filter>Source Files\SpectralEvaluation\File</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Interpolation.cpp">
+      <Filter>Source Files\SpectralEvaluation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -371,9 +434,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DMSpecView.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\DateTime.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EvaluationLogFileHandler.h">
@@ -430,9 +490,6 @@
     <ClInclude Include="Spectrometer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Common\Spectrum.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Common\SpectrumIO.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -443,9 +500,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Version.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WavelengthCalibration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Common\XMLFileReader.h">
@@ -757,9 +811,6 @@
     <ClInclude Include="RouteGraph.h">
       <Filter>Header Files\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="GpsData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CSpectrometerCalibrationDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -767,6 +818,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CCalibrateInstrumentLineShape.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Calibration\WavelengthCalibrationController.h">
+      <Filter>Header Files\Calibration</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CDateTime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CGpsData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CWavelengthCalibration.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CSpectrum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

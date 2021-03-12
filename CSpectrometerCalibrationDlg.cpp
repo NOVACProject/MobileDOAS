@@ -35,49 +35,49 @@ void CSpectrometerCalibrationDlg::DoDataExchange(CDataExchange* pDX)
 
 BOOL CSpectrometerCalibrationDlg::OnInitDialog()
 {
-	BOOL bResult = CPropertySheet::OnInitDialog();
+    BOOL bResult = CPropertySheet::OnInitDialog();
 
-	CRect rectAppl, rectCancel, rectWindow;
+    CRect rectAppl, rectCancel, rectWindow;
 
-	// Add the menu
-	// CMenu* pMenu = new CMenu();
-	// pMenu->LoadMenu(IDR_REEVAL_DLG_MENU);
-	// this->SetMenu(pMenu);
+    // Add the menu
+    // CMenu* pMenu = new CMenu();
+    // pMenu->LoadMenu(IDR_REEVAL_DLG_MENU);
+    // this->SetMenu(pMenu);
 
-	// Make the window a little bit bigger, this is needed since
-	//	adding the menu will destry the layout...
-	GetWindowRect(rectWindow);
-	rectWindow.bottom = rectWindow.bottom + 20;
-	MoveWindow(rectWindow);
+    // Make the window a little bit bigger, this is needed since
+    //	adding the menu will destry the layout...
+    GetWindowRect(rectWindow);
+    rectWindow.bottom = rectWindow.bottom + 20;
+    MoveWindow(rectWindow);
 
 
-	// ------------ Get the buttons ---------------
-	CWnd* pApply = this->GetDlgItem(ID_APPLY_NOW);
-	CWnd* pCancel = this->GetDlgItem(IDCANCEL);
-	CWnd* pOk = this->GetDlgItem(IDOK);
+    // ------------ Get the buttons ---------------
+    CWnd* pApply = this->GetDlgItem(ID_APPLY_NOW);
+    CWnd* pCancel = this->GetDlgItem(IDCANCEL);
+    CWnd* pOk = this->GetDlgItem(IDOK);
 
-	// Get the position of the 'Apply'-button, and then remove it
-	if (pApply) {
-		pApply->GetWindowRect(rectAppl);
-		ScreenToClient(rectAppl);
-		pApply->DestroyWindow();
-	}
+    // Get the position of the 'Apply'-button, and then remove it
+    if (pApply) {
+        pApply->GetWindowRect(rectAppl);
+        ScreenToClient(rectAppl);
+        pApply->DestroyWindow();
+    }
 
-	// Get the position of the 'Cancel'-button and then remove it
-	if (pCancel) {
-		pCancel->GetWindowRect(rectCancel);
-		ScreenToClient(rectCancel);
-		pCancel->DestroyWindow();
-	}
+    // Get the position of the 'Cancel'-button and then remove it
+    if (pCancel) {
+        pCancel->GetWindowRect(rectCancel);
+        ScreenToClient(rectCancel);
+        pCancel->DestroyWindow();
+    }
 
-	// Change the 'OK'-button to a 'Save'-button and move it to where
-	//	the 'apply'-button was
-	if (pOk) {
-		pOk->SetWindowText("Close");
-		pOk->MoveWindow(rectAppl);
-	}
+    // Change the 'OK'-button to a 'Save'-button and move it to where
+    //	the 'apply'-button was
+    if (pOk) {
+        pOk->SetWindowText("Close");
+        pOk->MoveWindow(rectAppl);
+    }
 
-	return bResult;
+    return bResult;
 }
 
 BEGIN_MESSAGE_MAP(CSpectrometerCalibrationDlg, CPropertySheet)

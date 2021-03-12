@@ -17,7 +17,7 @@
 
 #include "Common.h"
 #include "Controls/Label.h"
-#include "WavelengthCalibration.h"
+#include "CWavelengthCalibration.h"
 
 #include "afxcmn.h"
 #include "afxwin.h"

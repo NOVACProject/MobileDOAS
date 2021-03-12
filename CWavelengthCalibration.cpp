@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "wavelengthcalibration.h"
+#include "CWavelengthCalibration.h"
 #include <math.h>
 
 const double CWavelengthCalibration::HgLines[] = {226.22, 237.83, 248.20, 253.652, 265.20, 275.28, 280.35, 289.36, 

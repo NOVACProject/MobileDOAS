@@ -9,7 +9,7 @@
 #include <Mmsystem.h>	// used for PlaySound
 #include "DMSpec.h"
 #include "Spectrometer.h"
-#include "Common/DateTime.h"
+#include "Common/CDateTime.h"
 #include <algorithm>
 #include "Dialogs/SelectionDialog.h"
 #include <numeric>
