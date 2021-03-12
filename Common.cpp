@@ -347,6 +347,59 @@ double GetWindFactor(double lat1,double lon1,double lat2,double lon2, double win
 	
 	return windFactor;
 }
+bool Common::BrowseForDirectory(CString &folder)
+{
+
+	IFileOpenDialog *pfd;
+	// CoCreate the dialog object.
+	HRESULT hr = CoCreateInstance(CLSID_FileOpenDialog,
+		NULL,
+		CLSCTX_INPROC_SERVER,
+		IID_PPV_ARGS(&pfd));
+	bool success = false;
+
+	if (SUCCEEDED(hr))
+	{
+		DWORD dwOptions;
+		hr = pfd->GetOptions(&dwOptions);
+
+		if (SUCCEEDED(hr))
+		{
+			hr = pfd->SetOptions(dwOptions | FOS_PICKFOLDERS);
+		}
+
+		if (SUCCEEDED(hr))
+		{
+			// Show the Open dialog.
+			if (!folder.IsEmpty()) {
+				IShellItem*dir;
+				hr = SHCreateItemFromParsingName(CT2CW(folder), NULL, IID_IShellItem, (void**)&dir);
+				if (SUCCEEDED(hr)) {
+				  pfd->SetFolder(dir);
+				}
+			}
+			hr = pfd->Show(NULL);
+
+			if (SUCCEEDED(hr))
+			{
+				// Obtain the result of the user interaction.
+				IShellItem *file;
+				hr = pfd->GetResult(&file);
+
+				if (SUCCEEDED(hr))
+				{
+					LPWSTR dn;
+					file->GetDisplayName(SIGDN_FILESYSPATH, &dn);
+					folder = dn;
+					success = true;
+					file->Release();
+				}
+			}
+		}
+		pfd->Release();
+	}
+	return success;
+}
 
 std::vector<CString> Common::BrowseForFiles()
 {
@@ -483,42 +536,6 @@ bool Common::BrowseForFile_SaveAs(TCHAR *filter, CString &fileName){
 	}
 	fileName.Format("");
 	return false;
-}
-
-bool Common::BrowseForDirectory(CString &folderName){
-	BROWSEINFO bi;
-	char tmp_FolderName[MAX_PATH ];       // temporary buffer for folder name
-	char title[] = "Select Directory";
-
-	// Initialize BROWSEINFO
-	ZeroMemory(&bi, sizeof(BROWSEINFO));
-	bi.hwndOwner      = nullptr;
-	bi.pidlRoot       = nullptr;
-	bi.pszDisplayName = tmp_FolderName;
-	bi.lpszTitle      = title;
-	bi.ulFlags        = BIF_USENEWUI | BIF_VALIDATE | BIF_RETURNONLYFSDIRS;
-
-	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
-	if(nullptr != pidl){
-		// get the name of the folder
-		TCHAR path[MAX_PATH];
-		if ( SHGetPathFromIDList ( pidl, path ) )
-		{
-			folderName.Format("%s", path);
-		}
-
-		// free memory used
-		IMalloc * imalloc = 0;
-		if ( SUCCEEDED( SHGetMalloc ( &imalloc )) )
-		{
-			imalloc->Free ( pidl );
-			imalloc->Release ( );
-		}
-		return true;
-	}else{
-		/* Error */
-		return false;
-	}
 }
 
 long Common::Round(double d){

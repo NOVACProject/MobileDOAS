@@ -12,7 +12,7 @@
 #include <math.h>
 #include <vector>
 
-#define MAX_TRAVERSE_SHOWN 4096
+#define MAX_TRAVERSE_SHOWN 16384
 
 /** Not initialized values are set to 'NOT_A_NUMBER' to indicate
 	that a value is missing. 
@@ -153,8 +153,8 @@ public:
 	/** Opens a dialog window and lets the user browse for a directory.
 			@return true if all is ok,
 			@return false otherwise */
-	static bool BrowseForDirectory(CString &folderName);
-
+	static bool BrowseForDirectory(CString &folder);
+	
 	// ---------------- MATHEMATICAL FUNCTIONS --------------------
 	/** Rounds a given float value to the nearest integer. */
 	long  Round(double d);

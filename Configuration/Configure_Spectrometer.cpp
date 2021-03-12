@@ -66,6 +66,7 @@ void CConfigure_Spectrometer::DoDataExchange(CDataExchange* pDX)
 	// The removal of the offset
 	DDX_Control(pDX,	IDC_EDIT_OFFSETFROM,	m_editOffsetFrom);
 	DDX_Control(pDX,	IDC_EDIT_OFFSETTO,		m_editOffsetTo);
+	DDX_Check(pDX, IDC_CHECK_NODARK, m_conf->m_noDark);
 
 	DDX_Text(pDX,		IDC_EDIT_OFFSETFROM,		m_conf->m_offsetFrom);
 	DDX_Text(pDX,		IDC_EDIT_OFFSETTO,			m_conf->m_offsetTo);
@@ -89,6 +90,7 @@ BEGIN_MESSAGE_MAP(CConfigure_Spectrometer, CPropertyPage)
 	// Changing the selection using the radio-buttons:
 	ON_BN_CLICKED(IDC_RADIO_CONNECTION_USB,		SaveSettings)
 	ON_BN_CLICKED(IDC_RADIO_CONNECTION_SERIAL,	SaveSettings)
+	ON_BN_CLICKED(IDC_RADIO_CONNECTION_DIRECTORY, SaveSettings)
 	ON_BN_CLICKED(IDC_RADIO_EXPTIME_AUTOMATIC,	SaveSettings)
 	ON_BN_CLICKED(IDC_RADIO_EXPTIME_FIXED,		SaveSettings)
 	ON_BN_CLICKED(IDC_RADIO_EXPTIME_ADAPTIVE,	SaveSettings)
@@ -103,8 +105,9 @@ BEGIN_MESSAGE_MAP(CConfigure_Spectrometer, CPropertyPage)
 	ON_EN_CHANGE(IDC_EDIT_SETPOINT,			SaveSettings)
 	ON_EN_CHANGE(IDC_EDIT_MAXCOLUMN,		SaveSettings)
 
-	// Changing wheather we should use the audio or not
+	// Changing the check box options
 	ON_BN_CLICKED(IDC_CHECK_USEAUDIO, SaveSettings)
+	ON_BN_CLICKED(IDC_CHECK_NODARK, SaveSettings)
 END_MESSAGE_MAP()
 
 
@@ -184,6 +187,9 @@ void CConfigure_Spectrometer::EnableControls(){
 	}else if(m_conf->m_spectrometerConnection == CMobileConfiguration::CONNECTION_RS232){
 		m_specPort.EnableWindow(TRUE);
 		m_specBaudrate.EnableWindow(TRUE);
+	}else if (m_conf->m_spectrometerConnection == CMobileConfiguration::CONNECTION_DIRECTORY) {
+		m_specPort.EnableWindow(FALSE);
+		m_specBaudrate.EnableWindow(FALSE);
 	}
 
 	// Enable or disable the edit-boxes based on the preferred method 
@@ -244,8 +250,12 @@ void CConfigure_Spectrometer::OnOK(){
 	if(m_conf->m_spectrometerConnection == CMobileConfiguration::CONNECTION_RS232){
 		fprintf(f, "\t<serialPort>%s</serialPort>\n", (LPCTSTR)(m_conf->m_serialPort));
 		fprintf(f, "\t<serialBaudrate>%d</serialBaudrate>\n",	m_conf->m_baudrate);
-	}else{
+	}
+	else if(m_conf->m_spectrometerConnection == CMobileConfiguration::CONNECTION_USB){
 		fprintf(f, "\t<serialPort>USB</serialPort>\n");
+	}
+	else if (m_conf->m_spectrometerConnection == CMobileConfiguration::CONNECTION_DIRECTORY) {
+		fprintf(f, "\t<serialPort>Directory</serialPort>\n");
 	}
 	fprintf(f, "\t<timeResolution>%ld</timeResolution>\n",	m_conf->m_timeResolution);
 	fprintf(f, "\t<nchannels>%d</nchannels>\n",					m_conf->m_nChannels);
@@ -285,6 +295,7 @@ void CConfigure_Spectrometer::OnOK(){
 	fprintf(f, "\t\t<from>%d</from>\n",	m_conf->m_offsetFrom);
 	fprintf(f, "\t\t<to>%d</to>\n",			m_conf->m_offsetTo);
 	fprintf(f, "\t</Offset>\n");
+	fprintf(f, "\t<noDark>%d</noDark>\n", m_conf->m_noDark);
 
 	// ----------- Evaluation ----------------
 	for(int k = 0; k < m_conf->m_nFitWindows; ++k){
@@ -321,6 +332,18 @@ void CConfigure_Spectrometer::OnOK(){
 			fprintf(f, "\t\t</Reference>\n");
 		}
 		fprintf(f, "\t</FitWindow>\n");
+	}
+	// ----------- Directory ----------------
+	if (m_conf->m_spectrometerConnection == CMobileConfiguration::CONNECTION_DIRECTORY) {
+		fprintf(f, "\t<DirectoryMode>\n");
+		fprintf(f, "\t\t<directory>%s</directory>\n", m_conf->m_directory);
+		fprintf(f, "\t\t<spectrometerDynamicRange>%d</spectrometerDynamicRange>\n", m_conf->m_spectrometerDyanmicRange);
+		fprintf(f, "\t\t<sleep>%d</sleep>\n", m_conf->m_sleep);
+		fprintf(f, "\t\t<defaultSkyFile>%s</defaultSkyFile>\n", m_conf->m_defaultSkyFile);
+		fprintf(f, "\t\t<defaultDarkFile>%s</defaultDarkFile>\n", m_conf->m_defaultDarkFile);
+		fprintf(f, "\t\t<defaultDarkcurFile>%s</defaultDarkcurFile>\n", m_conf->m_defaultDarkcurFile);
+		fprintf(f, "\t\t<defaultOffsetFile>%s</defaultOffsetFile>\n", m_conf->m_defaultOffsetFile);
+		fprintf(f, "\t</DirectoryMode>\n");
 	}
 
 	fprintf(f, "</Configuration>\n");

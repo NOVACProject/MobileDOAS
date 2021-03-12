@@ -118,11 +118,13 @@
 #define ID_CONTROL_CALIBRATESPECTROMETER 258
 #define IDD_SPECTRUM_SETTINGS_DLG       259
 #define IDD_SPECTRUM_SCALE_DLG          260
+#define IDD_CONFIGURE_EVALUATION2       260
 #define IDD_INSPECT_SPECTRA_DLG         261
 #define ID_ANALYSIS_VIEWMEASUREDSPECTRA 262
 #define ID_CONTROL_CALIBRATESPECTROMETER263 263
 #define IDD_SPECTRUM_CALIBRATION        264
 #define IDB_ROUTE_LEGEND                276
+#define IDD_CONFIGURE_DIRECTORY         278
 #define IDC_EDIT1                       1000
 #define IDC_WINDSPEED                   1000
 #define IDC_DLG2WS                      1000
@@ -140,6 +142,7 @@
 #define IDC_EDIT_EXPORTFILE             1000
 #define IDC_STRING_EDIT                 1000
 #define IDC_EDIT_SETTINGSFILE           1000
+#define IDC_EDIT_DIRECTORY              1000
 #define IDC_EDIT2                       1001
 #define IDC_WINDDIRECTION               1001
 #define IDC_FLUXDWD                     1001
@@ -153,11 +156,14 @@
 #define IDC_EDIT_FITFROM                1001
 #define IDC_EDIT_PERCENT                1001
 #define IDC_EDIT_SPECSCALE_MIN          1001
+#define IDC_EDIT_SLEEP                  1001
 #define IDC_EDIT_O3                     1002
 #define IDC_REEVAL_WINDOW_POLYNOM       1002
 #define IDC_EDIT_MAXSHIFTTIME           1002
 #define IDC_EDIT_FITTO                  1002
 #define IDC_EDIT_SPECSCALE_MAX          1002
+#define IDC_EDIT_SLEEP2                 1002
+#define IDC_EDIT_DYNAMIC_RANGE          1002
 #define IDC_SETBUTTON                   1003
 #define IDC_EDIT_RING                   1003
 #define IDC_EDIT_EVALLOG_SERIES2        1003
@@ -165,12 +171,16 @@
 #define IDC_EDIT_SKY                    1004
 #define IDC_EDIT_TESTLENGTH             1004
 #define IDC_REEVAL_WINDOW_POLYNOM2      1004
+#define IDC_EDIT_SKY_FILE               1004
 #define IDC_EDIT_PLUMEHEIGHT            1005
 #define IDC_CONCENTRATION               1006
 #define IDC_EDIT_WINDDIRECTION          1006
 #define IDC_SH                          1007
+#define IDC_EDIT_DARKCUR_FILE           1007
 #define IDC_SQ                          1008
+#define IDC_EDIT_OFFSET_FILE            1008
 #define IDC_LAT                         1009
+#define IDC_EDIT_DARK_FILE              1009
 #define IDC_LON                         1010
 #define IDC_INTTIME                     1011
 #define IDC_GPSTIME                     1012
@@ -236,6 +246,7 @@
 #define IDC_BROWSE_SETTINGSFILE         1062
 #define IDC_BUTTON_SAVESPEC             1062
 #define IDC_BROWSE_EVALLOG              1062
+#define IDC_BROWSE_DIRECTORY            1062
 #define IDC_SPECCHANNELS                1063
 #define IDC_BROWSE_O3                   1063
 #define IDC_BTN_SOURCE_LONG             1063
@@ -244,14 +255,18 @@
 #define IDC_BTN_SOURCE_LON              1063
 #define IDC_BUTTON_BROWSE_REFERENCE     1063
 #define IDC_BTN_BROWSE_EVALLOG_SERIES2  1063
+#define IDC_BROWSE_DIR_SKY              1063
 #define IDC_GPSCOM                      1064
 #define IDC_BROWSE_NO2                  1064
 #define IDC_REFERENCE_PROPERTIES        1064
+#define IDC_BROWSE_DIR_DARK             1064
 #define IDC_GPSBAUD                     1065
 #define IDC_BROWSE_RING                 1065
 #define IDC_REFERENCE_VIEW              1065
+#define IDC_BROWSE_DIR_DARKCUR          1065
 #define IDC_SPECCENTER                  1066
 #define IDC_BROWSE_SKY                  1066
+#define IDC_BROWSE_DIR_OFFSET           1066
 #define IDC_PERCENT                     1067
 #define IDC_REFFILE                     1068
 #define IDC_FITFROM                     1069
@@ -356,7 +371,6 @@
 #define IDC_RADIO_EXPTIME_FIXED         1184
 #define IDC_RADIO_CHANNEL1              1184
 #define IDC_CHECK_SHOW_INTERPOLATED_WINDFIELD 1185
-#define IDC_RADIO_EXPTIME_FIXED2        1186
 #define IDC_RADIO_EXPTIME_ADAPTIVE      1186
 #define IDC_ROUTDLG_POINTSIZEEDIT       1187
 #define IDC_ROUTEDLG_POINTSIZESPIN      1188
@@ -407,6 +421,7 @@
 #define IDC_EDIT_SATURATION_HIGH        1217
 #define IDC_RADIO_SHIFT_LINK            1218
 #define IDC_EDIT_SATURATION_LOW2        1218
+#define IDC_RADIO_CONNECTION_DIRECTORY  1218
 #define IDC_RADIO_SQUEEZE_LINK          1219
 #define IDC_FRAME_LANDMARKS             1220
 #define IDC_LABEL_SPECIE                1220
@@ -461,6 +476,7 @@
 #define IDC_LABEL_POLYNOMIAL_0          1272
 #define IDC_CHECK_USEAUDIO              1273
 #define IDC_LABEL_MASTER                1274
+#define IDC_CHECK_NODARK                1274
 #define IDC_LABEL_SLAVE                 1275
 #define IDC_BTN_BROWSE_EVALLOG_SERIES1  1276
 #define IDC_EDIT_EVALLOG_SERIES1        1277
@@ -483,15 +499,16 @@
 #define ID_CONFIGURATION_OPERATION      32788
 #define ID_START_GPS                    32799
 #define ID_CONTROL_STARTTHEGPS          32800
+#define ID_CONTROL_VIEWSPECTRAFROMDIRECTORY 32801
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        278
-#define _APS_NEXT_COMMAND_VALUE         32801
-#define _APS_NEXT_CONTROL_VALUE         1288
+#define _APS_NEXT_RESOURCE_VALUE        280
+#define _APS_NEXT_COMMAND_VALUE         32802
+#define _APS_NEXT_CONTROL_VALUE         1289
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

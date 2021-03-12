@@ -165,14 +165,14 @@ void CRealTimeRoute::ReadData(){
 	}
 	// update legend max/min col
 	CString maxcol;
-	maxcol.Format("%d", m_colmax);
+	maxcol.Format("%.1f", m_colmax);
 	this->SetDlgItemText(IDC_STATIC_MAXCOL, maxcol);
 	CString mincol;
-	mincol.Format("%d", m_colmin);
+	mincol.Format("%.1f", m_colmin);
 	this->SetDlgItemText(IDC_STATIC_MINCOL, mincol);
 	CString midcol;
-	midcol.Format("%d", (m_colmax + m_colmin) / 2);
-	this->SetDlgItemText(IDC_STATIC_MIDCOL, mincol);
+	midcol.Format("%.1f", (m_colmax + m_colmin) / 2);
+	this->SetDlgItemText(IDC_STATIC_MIDCOL, midcol);
 }
 
 void CRealTimeRoute::OnClose()

@@ -48,7 +48,7 @@
 #define MIN_EXPOSURETIME 3
 
 // Possible modes for the spectrometer
-const enum SPECTROMETER_MODE {MODE_TRAVERSE, MODE_WIND, MODE_VIEW, MODE_CALIBRATE};
+const enum SPECTROMETER_MODE {MODE_TRAVERSE, MODE_WIND, MODE_VIEW, MODE_CALIBRATE, MODE_DIRECTORY};
 
 extern CFormView* pView;
 
@@ -567,7 +567,7 @@ protected:
 	double m_tmpSky[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
 
 	/** a copy of the last measured spectrum, used for plotting on the screen */
-	double m_curSpectrum[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
+	double m_curSpectrum[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH] = { {0} };
 
 	/** The wavelengths for each pixel in the measured spectrum */
 	double m_wavelength[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
@@ -680,6 +680,8 @@ private:
 		NB: Called from the function 'AdjustIntegrationTime' !!! */
 	short	AdjustIntegrationTime_Calculate(long minExpTime, long maxExpTime);
 
+	/** Check if spectrum is dark **/
+	bool CSpectrometer::CheckIfDark(double spectrum[MAX_SPECTRUM_LENGTH]);
 };
 
 #endif // !defined(AFX_COMMUNICATION_H__7C04DDEA_2314_405E_A09D_02B403AC7762__INCLUDED_)

@@ -144,6 +144,20 @@ int CSpectrumIO::readSTDFile(CString filename, CSpectrum *curSpec){
 		curSpec->lat = tmpDouble;
 	}
 
+	// ----------- EXTENDED STD ------------------
+	// - if the file is in the extended STD-format then we can continue here... -
+	char szLine[8192];
+	while (fgets(szLine, 8192, f))
+	{
+		// Read in scanAngle
+		if (nullptr != strstr(szLine, "Altitude = "))
+		{
+			if (1 == fscanf(f, "Altitude = %lf\n", &tmpDouble)) {
+				curSpec->altitude = tmpDouble;
+			}
+		}
+	}
+
 	fclose(f);
 	return 0;
 }
@@ -245,6 +259,7 @@ bool CSpectrumIO::WriteStdFile(const CString &fileName, const CSpectrum& spectru
 		fprintf(f, "FitHigh = %d\n", spectrum.fitHigh);
 		fprintf(f, "FitLow = %d\n", spectrum.fitLow);
 		//fprintf(f, "Gain = 0\n");
+		fprintf(f, "IntegrationMethod = Average\n");
 		fprintf(f, "Latitude = %.6lf\n", spectrum.lat);
 		//fprintf(f, "LightPath = 0\n");
 		//fprintf(f, "LightSource = \"\"\n");

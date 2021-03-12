@@ -207,7 +207,7 @@ END_MESSAGE_MAP()
 // CPostFluxDlg message handlers
 
 void CPostFluxDlg::OnBtnOpenLogFile(){
-	static char szFile[8192];
+	static char szFile[16384];
 	szFile[0] = 0;
 
 	OPENFILENAME ofn;       // common dialog box structure

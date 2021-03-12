@@ -12,6 +12,8 @@
 #include "Common/DateTime.h"
 #include <algorithm>
 #include "Dialogs/SelectionDialog.h"
+#include <numeric>
+
 
 extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
 
@@ -826,7 +828,8 @@ void CSpectrometer::CreateDirectories()
 	m_measurementStartTimeStr = TEXT(cDateTime);
 	m_subFolder = folderName + TEXT("\\") + m_measurementBaseName + TEXT("_") + TEXT(cDateTime);
 
-	if (0 == CreateDirectory(m_subFolder, NULL)) {
+	if (GetFileAttributes(m_subFolder) == INVALID_FILE_ATTRIBUTES
+		&& 0 == CreateDirectory(m_subFolder, NULL)) {
 		DWORD errorCode = GetLastError();
 		CString tmpStr, errorStr;
 		if (FormatErrorCode(errorCode, errorStr)) {
@@ -1486,11 +1489,13 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 		m_specInfo[n].offset = GetOffset(spectrum[n]);
 
 		// Check if this spectrum is dark
-		bool isDark = false;
+		/*bool isDark = false;
 		if (fabs(m_averageSpectrumIntensity[n] - m_specInfo[n].offset) < 4.0) {
 			isDark = true;
-		}
+		}*/
 		
+		bool isDark = CheckIfDark(spectrum[n]);
+
 		if (isDark) {
 			m_specInfo[n].isDark = true;
 			m_lastDarkOffset[n] = m_specInfo[n].offset;
@@ -1640,6 +1645,43 @@ void CSpectrometer::UpdateMobileLog() {
 		fprintf(f, "WINDDIRECTION=%.2lf\n", m_windAngle);
 
 		fclose(f);
+	}
+}
+
+bool CSpectrometer::CheckIfDark(double spectrum[MAX_SPECTRUM_LENGTH]) {
+	// consider pixels 50 to 70. Remove the highest 3 in case they are 'hot'. Then calculate the average:
+	std::vector<double> vec;
+	int i;
+	double m_darkIntensity;
+	double m_spectrumIntensity;
+
+	for (int i = 50; i < 70; i++){
+		vec.push_back(spectrum[i]);
+	}
+	for (int i = 0; i < 3; i++){
+		vec.erase(max_element(vec.begin(), vec.end()));
+	}
+	m_darkIntensity = std::accumulate(vec.begin(), vec.end(), 0.0) / vec.size();
+
+	// now calculate the average of the middle 20 pixels, again excluding the 3 highest intensities.	
+	vec.clear();
+	int start = floor(m_detectorSize / 2) - 10;
+	int end = floor(m_detectorSize / 2) + 10;
+	for (int i = start; i < end; i++)	{
+		vec.push_back(spectrum[i]);
+	}
+	for (int i = 0; i < 3; i++)	{
+		vec.erase(max_element(vec.begin(), vec.end()));
+	}
+	m_spectrumIntensity = std::accumulate(vec.begin(), vec.end(), 0.0) / vec.size(); 
+
+	// the spectrum is considered dark if the center intensity is less than twice as high as the dark intensity.
+	// this should be applicable to any spectrometer, as long as pixels 50 to 70 are dark (which is true for NOVAC spectrometers).
+	double ratio = m_spectrumIntensity / m_darkIntensity;
+	if (ratio > 2.0){
+		return false;
+	}else{
+		return true;
 	}
 }
 

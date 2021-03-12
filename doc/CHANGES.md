@@ -1,6 +1,31 @@
 MobileDOAS Release Notes
 -----------------------------------------------------
-Version 6.1 (TBD)
+Version 6.3 (TBD)
+
+New features
+* Option to read and analyze spectra files from a directory (#12)
+
+Bug fixes
+* Fix traverse display in postflux dialog when passing midnight UTC (#148)
+
+Other
+* Improved method to determine whether spectrum is dark (#146)
+
+
+MobileDOAS Release Notes
+-----------------------------------------------------
+Version 6.2 (August 2019)
+
+New features
+* Warn user when trying to view spectrometer output from slave channel if second channel is not enabled in configuration (#126)
+* Option to skip dark measurement (#128)
+* Increase max traverse from 4096 to 16384 (#132)
+
+Bug fixes
+* Fix reading of GPS altitude
+
+-----------------------------------------------------
+Version 6.1 (April 2019)
 
 Critical changes
 * Enable configuration and evaluation of second channel for spectrometers that support it (#8)

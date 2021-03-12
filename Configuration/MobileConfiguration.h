@@ -12,7 +12,8 @@ namespace Configuration{
 	public:
 		// The options for how to connect to the spectrometer
 		static const int CONNECTION_USB		= 0;
-		static const int CONNECTION_RS232	= 1;
+		static const int CONNECTION_DIRECTORY = 1;
+		static const int CONNECTION_RS232	= 2;
 
 		// The options for how to determine the exposure-time
 		static const int EXPOSURETIME_AUTOMATIC	= 0;
@@ -96,7 +97,7 @@ namespace Configuration{
 		Evaluation::CFitWindow	m_fitWindow[MAX_FIT_WINDOWS];
 
 		/** How many fit-windows have been defined */
-		int						m_nFitWindows;
+		int			m_nFitWindows;
 
 		// ------------------ Audio -------------------
 		
@@ -116,12 +117,29 @@ namespace Configuration{
 
 		/** Offset to... */
 		int				m_offsetTo;
+
+		/** whether to skip dark measurement (1=true, 0=false)*/
+		int m_noDark = 0;
+
+		// ------------------ Directory acquisition -------------------
+		/** the directory to watch for acquired data (STD files) */
+		CString		m_directory;
+
+		/** dyanmic range of the spectrometer */
+		long m_spectrometerDyanmicRange;
+
+		/** time in ms to sleep between directory read */
+		int m_sleep;
+
+		/** default files for sky/dark/darkcur/offset */
+		CString m_defaultSkyFile;
+		CString m_defaultDarkFile;
+		CString m_defaultDarkcurFile;
+		CString m_defaultOffsetFile;
+
 	private:
 
 		// ------------------ PRIVATE METHODS -------------------
-
-		/** Reading in a configuration file in .txt file format */
-		void ReadCfgTxt(const CString &fileName);
 
 		/** Reading in a configuration file in .xml file format */
 		void ReadCfgXml(const CString &fileName);
@@ -146,7 +164,9 @@ namespace Configuration{
 
 		/** Parses a shift or squeeze section */
 		int Parse_ShiftOrSqueeze(const CString &label, Evaluation::SHIFT_TYPE &option, double &lowValue /**, double &highValue*/);
-
+		
+		/** Parses directory mode section */
+		int	ParseDirectoryMode();
 		// ------------------ PRIVATE DATA -------------------
 
 	};
