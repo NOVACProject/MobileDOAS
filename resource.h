@@ -125,6 +125,8 @@
 #define IDD_SPECTRUM_CALIBRATION        264
 #define IDB_ROUTE_LEGEND                276
 #define IDD_CONFIGURE_DIRECTORY         278
+#define IDD_CALIBRATE_LINESHAPE_DIALOG  282
+#define IDD_CALIBRATE_WAVELENGTH_DIALOG 284
 #define IDC_EDIT1                       1000
 #define IDC_WINDSPEED                   1000
 #define IDC_DLG2WS                      1000
@@ -485,6 +487,17 @@
 #define IDC_STATIC_MAXCOL               1283
 #define IDC_STATIC_MINCOL               1284
 #define IDC_STATIC_MIDCOL               1285
+#define IDC_STATIC_SPECTRUM             1294
+#define IDC_EDIT_SPECTRUM               1295
+#define IDC_BUTTON_BROWSE_SPECTRUM      1296
+#define IDC_STATIC_GRAPH                1297
+#define IDC_BUTTON_RUN                  1297
+#define IDC_BUTTON_BROWSE_RUN           1298
+#define IDC_STATIC_SETTINGS             1298
+#define IDC_STATIC_SOLAR_ATLAS          1299
+#define IDC_EDIT_SPECTRUM_SOLAR         1300
+#define IDC_EDIT_SOLAR_SPECTRUM         1300
+#define IDC_BUTTON_BROWSE_SOLAR_SPECTRUM 1301
 #define ID_ANALYSIS_POSTFLUX            32771
 #define ID_CONTROL_STOP                 32772
 #define ID_CONTROL_START                32772
@@ -500,15 +513,16 @@
 #define ID_START_GPS                    32799
 #define ID_CONTROL_STARTTHEGPS          32800
 #define ID_CONTROL_VIEWSPECTRAFROMDIRECTORY 32801
+#define ID_CONFIGURATION_               32802
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        280
-#define _APS_NEXT_COMMAND_VALUE         32802
-#define _APS_NEXT_CONTROL_VALUE         1289
+#define _APS_NEXT_RESOURCE_VALUE        286
+#define _APS_NEXT_COMMAND_VALUE         32803
+#define _APS_NEXT_CONTROL_VALUE         1300
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

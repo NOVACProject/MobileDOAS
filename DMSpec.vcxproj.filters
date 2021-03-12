@@ -345,6 +345,15 @@
     <ClCompile Include="GpsData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CSpectrometerCalibrationDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CCalibrationWavelength.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CCalibrateInstrumentLineShape.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DMSpec.rc">
@@ -749,6 +758,15 @@
       <Filter>Header Files\Controls</Filter>
     </ClInclude>
     <ClInclude Include="GpsData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CSpectrometerCalibrationDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CCalibrationWavelength.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CCalibrateInstrumentLineShape.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

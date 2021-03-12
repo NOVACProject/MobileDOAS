@@ -17,7 +17,7 @@
 #include "Flux1.h"
 #include "DualBeam/PostWindDlg.h"
 #include "DualBeam/PostPlumeHeightDlg.h"
-
+#include "CSpectrometerCalibrationDlg.h"
 #include "CommentDlg.h"
 #include "InformationDialog.h"
 #include "Dialogs/SpectrumInspectionDlg.h"
@@ -124,6 +124,7 @@ BEGIN_MESSAGE_MAP(CDMSpecView, CFormView)
 	
 	ON_WM_CLOSE()
 	ON_WM_DESTROY()
+	ON_COMMAND(ID_CONFIGURATION_, &CDMSpecView::OnDoSpectrometerCalibration)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1608,4 +1609,10 @@ void CDMSpecView::SoundAlarm()
 	fileToPlay.Format("%s\\Media\\Windows Error.wav", windowsDir);
 
 	PlaySound(fileToPlay, 0, SND_SYNC);
+}
+
+void CDMSpecView::OnDoSpectrometerCalibration()
+{
+	CSpectrometerCalibrationDlg dlg;
+	dlg.DoModal();
 }

@@ -4,7 +4,7 @@
 #include "../MeasurementModes/Measurement_Calibrate.h"
 #include "../Graphs/GraphCtrl.h"
 
-// CSpectrumCalibrationDlg dialog
+// This is the old spectrometer calibration dialog, to be replaced
 namespace Dialogs{
 
 	class CSpectrumCalibrationDlg : public CDialog
