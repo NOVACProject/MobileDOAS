@@ -3,7 +3,8 @@ MobileDOAS Release Notes
 Version 6.3 (TBD)
 
 New features
-* Option to read and analyze spectra files from a directory (#12)
+* Option to read and analyze spectra files from a directory (#137)
+* Add GPS status, course, and speed to STD files (#151)
 
 Bug fixes
 * Fix traverse display in postflux dialog when passing midnight UTC (#148)

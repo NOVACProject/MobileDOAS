@@ -1950,6 +1950,9 @@ void CSpectrometer::CreateSpectrum(CSpectrum &spectrum, const double *spec, cons
 		spectrum.lat = m_spectrumGpsData[m_spectrumCounter].latitude;
 		spectrum.lon = m_spectrumGpsData[m_spectrumCounter].longitude;
 		spectrum.altitude = m_spectrumGpsData[m_spectrumCounter].altitude;
+		spectrum.gpsStatus = m_spectrumGpsData[m_spectrumCounter].status;
+		spectrum.speed = m_spectrumGpsData[m_spectrumCounter].speed;
+		spectrum.course = m_spectrumGpsData[m_spectrumCounter].course;
 	}
 	else {
 		spectrum.SetStartTime(startTime);

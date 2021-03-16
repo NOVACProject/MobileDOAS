@@ -46,6 +46,15 @@ struct gpsData {
 	/* Date (in the format ddmmyy) */
 	int date = 0;
 
+	/* GPS status. A=active, V=void */
+	std::string status;
+
+	/* Speed over ground in m/s */
+	double speed;
+
+	/* Track angle in degrees */
+	double course;
+
 	/* The quality of the GPS-fix */
 	GpsFixQuality fixQuality = GpsFixQuality::INVALID;
 };
