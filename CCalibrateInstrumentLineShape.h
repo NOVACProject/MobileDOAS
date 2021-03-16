@@ -1,7 +1,10 @@
 #pragma once
 
+#include "Graphs/GraphCtrl.h"
 
 // CCalibrateInstrumentLineShape dialog
+
+class InstrumentLineshapeCalibrationController;
 
 class CCalibrateInstrumentLineShape : public CPropertyPage
 {
@@ -10,6 +13,9 @@ class CCalibrateInstrumentLineShape : public CPropertyPage
 public:
     CCalibrateInstrumentLineShape(CWnd* pParent = nullptr);   // standard constructor
     virtual ~CCalibrateInstrumentLineShape();
+
+    /** Initializes the controls and the dialog */
+    virtual BOOL OnInitDialog();
 
     // Dialog Data
 #ifdef AFX_DESIGN_TIME
@@ -21,6 +27,32 @@ protected:
 
     DECLARE_MESSAGE_MAP()
 public:
-    afx_msg void OnBnClickedButtonBrowseSpectrum();
+
     CString m_inputSpectrum;
+    CString m_darkSpectrum;
+    CListBox m_peaksList;
+    Graph::CGraphCtrl m_spectrumPlot; // The plot for the spectrum
+    CStatic m_graphHolder; // Holder for the plot, for easy ui access
+
+    afx_msg void OnBnClickedButtonBrowseSpectrum();
+    afx_msg void OnBnClickedBrowseSpectrumDark();
+    afx_msg void OnLbnSelchangeFoundPeak();
+
+private:
+    InstrumentLineshapeCalibrationController* m_controller;
+
+    /// <summary>
+    /// Updates the controller with a new spectrum or new set of options
+    /// </summary>
+    void UpdateLineShape();
+
+    /// <summary>
+    /// Updates the m_peaksList with the found peaks
+    /// </summary>
+    void UpdateListOfPeaksFound();
+
+    /// <summary>
+    /// Updates m_spectrumPlot with the measured spectrum
+    /// </summary>
+    void UpdateGraph(bool reset = true);
 };

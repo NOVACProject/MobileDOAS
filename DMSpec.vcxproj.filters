@@ -417,6 +417,9 @@
     <ClCompile Include="SpectralEvaluation\src\Interpolation.cpp">
       <Filter>Source Files\SpectralEvaluation</Filter>
     </ClCompile>
+    <ClCompile Include="Calibration\InstrumentLineshapeCalibrationController.cpp">
+      <Filter>Header Files\Calibration</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DMSpec.rc">
@@ -834,6 +837,9 @@
     </ClInclude>
     <ClInclude Include="Common\CSpectrum.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Calibration\InstrumentLineshapeCalibrationController.h">
+      <Filter>Header Files\Calibration</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

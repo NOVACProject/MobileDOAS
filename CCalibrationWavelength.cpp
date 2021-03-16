@@ -78,17 +78,17 @@ void CCalibrationWavelength::OnClickedButtonRun()
 {
     if (!IsExistingFile(m_inputSpectrum))
     {
-        MessageBox("Please select a spectrum to calibrate", "Missig input", MB_OK);
+        MessageBox("Please select a spectrum to calibrate", "Missing input", MB_OK);
         return;
     }
     if (!IsExistingFile(m_solarSpectrum))
     {
-        MessageBox("Please select a high resolved solar spectrum to use in the calibration", "Missig input", MB_OK);
+        MessageBox("Please select a high resolved solar spectrum to use in the calibration", "Missing input", MB_OK);
         return;
     }
     if (!IsExistingFile(m_initialCalibrationFile))
     {
-        MessageBox("Please select a file which contains an initial guess for the wavelength calibration of the spectrometer", "Missig input", MB_OK);
+        MessageBox("Please select a file which contains an initial guess for the wavelength calibration of the spectrometer", "Missing input", MB_OK);
         return;
     }
 

@@ -278,6 +278,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BasicMath.cpp" />
+    <ClCompile Include="Calibration\InstrumentLineshapeCalibrationController.cpp" />
     <ClCompile Include="Calibration\WavelengthCalibrationController.cpp" />
     <ClCompile Include="CCalibrateInstrumentLineShape.cpp" />
     <ClCompile Include="CCalibrationWavelength.cpp" />
@@ -439,6 +440,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BasicMath.h" />
+    <ClInclude Include="Calibration\InstrumentLineshapeCalibrationController.h" />
     <ClInclude Include="Calibration\WavelengthCalibrationController.h" />
     <ClInclude Include="CCalibrateInstrumentLineShape.h" />
     <ClInclude Include="CCalibrationWavelength.h" />
