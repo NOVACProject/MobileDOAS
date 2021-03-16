@@ -24,6 +24,9 @@ CSpectrum::CSpectrum(const CSpectrum& other) {
 	this->lat = other.lat;
 	this->lon = other.lon;
 	this->altitude = other.altitude;
+	this->gpsStatus = other.gpsStatus;
+	this->speed = other.speed;
+	this->course = other.course;
 	this->scans = other.scans;
 	this->spectrometerSerial.Format(other.spectrometerSerial);
 	this->spectrometerModel.Format(other.spectrometerModel);
@@ -56,6 +59,9 @@ void swap(CSpectrum & first, CSpectrum & second)
 	swap(first.lat, second.lat);
 	swap(first.lon, second.lon);
 	swap(first.altitude, second.altitude);
+	swap(first.gpsStatus, second.gpsStatus);
+	swap(first.speed, second.speed);
+	swap(first.course, second.course);
 	swap(first.scans, second.scans);
 	swap(first.spectrometerSerial, second.spectrometerSerial);
 	swap(first.spectrometerModel, second.spectrometerModel);
@@ -243,6 +249,9 @@ void CSpectrum::Clear() {
 	lat = 0.0;
 	lon = 0.0;
 	altitude = 0.0;
+	gpsStatus = "V";
+	speed = 0.0;
+	course = 0.0;
 	spectrometerSerial.Format("");
 	spectrometerModel.Format("");
 	name.Format("");

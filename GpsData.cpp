@@ -18,6 +18,9 @@ gpsData::gpsData(const gpsData& other)
 	this->nSatellitesSeen = other.nSatellitesSeen;
 	this->date = other.date;
 	this->fixQuality = other.fixQuality;
+	this->status = other.status;
+	this->speed = other.speed;
+	this->course = other.course;
 }
 
 gpsData& gpsData::operator=(gpsData other)
@@ -37,6 +40,9 @@ void swap(gpsData & first, gpsData & second)
 	swap(first.nSatellitesSeen, second.nSatellitesSeen);
 	swap(first.date, second.date);
 	swap(first.fixQuality, second.fixQuality);
+	swap(first.status, second.status);
+	swap(first.speed, second.speed);
+	swap(first.course, second.course);
 }
 
 bool IsValidGpsData(const gpsData& data)
@@ -257,6 +263,39 @@ void SetAltitudeUnit(const std::string& curToken, gpsData& data)
 
 }
 
+void SetStatus(const std::string& curToken, gpsData& data) {
+	if (curToken.length() == 1)
+	{
+		data.status = curToken;
+	}
+	else {
+		return; // invalid status format.
+	}
+
+}
+
+
+void SetSpeed(const std::string& curToken, gpsData& data) {
+	if (curToken.length() == 5)
+	{
+		data.speed = std::atof(curToken.c_str()); // get speed in knots
+		data.course /= 1.94384; // convert to m/s
+	}
+	else {
+		return; // invalid speed format.
+	}
+}
+
+void SetCourse(const std::string& curToken, gpsData& data) {
+	if (curToken.length() == 5)
+	{
+		data.course = std::atof(curToken.c_str()); 
+	}
+	else {
+		return; // invalid course format.
+	}
+}
+
 bool ExtractMessage(const char* gpsString, const char* messageType, std::string& result)
 {
 	const char* pt = strstr(gpsString, messageType);
@@ -312,7 +351,8 @@ bool ParseRMC(char *gpsString, gpsData& data)
 		{
 			case 1:
 				SetTime(curToken, data); break;
-			case 2: /* fix status */ break;
+			case 2: 
+				SetStatus(curToken, data); break;
 			case 3:
 				SetLatitude(curToken, data); break;
 			case 4:
@@ -322,9 +362,9 @@ bool ParseRMC(char *gpsString, gpsData& data)
 			case 6:
 				SetHemisphere(curToken, data); break;
 			case 7:
-				/* ground speed */; break;
+				SetSpeed(curToken, data); break;
 			case 8:
-				/* Track angle */; break;
+				SetCourse(curToken, data); break;
 			case 9:
 				SetDate(curToken, data); break;
 			case 10:
