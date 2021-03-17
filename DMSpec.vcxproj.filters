@@ -79,6 +79,9 @@
     <Filter Include="Source Files\SpectralEvaluation\File">
       <UniqueIdentifier>{65768821-0fa2-45ea-8711-40cd98793418}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\SpectralEvaluation\Calibration">
+      <UniqueIdentifier>{cbab2705-d57e-4893-bd0a-ccba5c903e38}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Common.cpp">
@@ -366,15 +369,6 @@
     <ClCompile Include="SpectralEvaluation\src\Spectra\SpectrometerModel.cpp">
       <Filter>Source Files\SpectralEvaluation</Filter>
     </ClCompile>
-    <ClCompile Include="SpectralEvaluation\src\Calibration\ReferenceSpectrumConvolution.cpp">
-      <Filter>Source Files\SpectralEvaluation</Filter>
-    </ClCompile>
-    <ClCompile Include="SpectralEvaluation\src\Calibration\WavelengthCalibration.cpp">
-      <Filter>Source Files\SpectralEvaluation</Filter>
-    </ClCompile>
-    <ClCompile Include="SpectralEvaluation\src\Calibration\WavelengthCalibrationByRansac.cpp">
-      <Filter>Source Files\SpectralEvaluation</Filter>
-    </ClCompile>
     <ClCompile Include="SpectralEvaluation\src\GPSData.cpp">
       <Filter>Source Files\SpectralEvaluation</Filter>
     </ClCompile>
@@ -419,6 +413,18 @@
     </ClCompile>
     <ClCompile Include="Calibration\InstrumentLineshapeCalibrationController.cpp">
       <Filter>Header Files\Calibration</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Calibration\InstrumentLineShape.cpp">
+      <Filter>Source Files\SpectralEvaluation\Calibration</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Calibration\ReferenceSpectrumConvolution.cpp">
+      <Filter>Source Files\SpectralEvaluation\Calibration</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Calibration\WavelengthCalibration.cpp">
+      <Filter>Source Files\SpectralEvaluation\Calibration</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Calibration\WavelengthCalibrationByRansac.cpp">
+      <Filter>Source Files\SpectralEvaluation\Calibration</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -656,9 +662,6 @@
       <Filter>Header Files\Fit</Filter>
     </ClInclude>
     <ClInclude Include="Fit\ParameterLinkItem.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\ParameterVector.h">
       <Filter>Header Files\Fit</Filter>
     </ClInclude>
     <ClInclude Include="Fit\PolynomialFunction.h">

@@ -374,6 +374,10 @@
     <ClCompile Include="SerialConnection.cpp" />
     <ClCompile Include="ShowFitDlg.cpp" />
     <ClCompile Include="SourceSelectionDlg.cpp" />
+    <ClCompile Include="SpectralEvaluation\src\Calibration\InstrumentLineShape.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="SpectralEvaluation\src\Calibration\ReferenceSpectrumConvolution.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -519,7 +523,6 @@
     <ClInclude Include="Fit\NegateFunction.h" />
     <ClInclude Include="Fit\NonlinearParameterFunction.h" />
     <ClInclude Include="Fit\ParameterLinkItem.h" />
-    <ClInclude Include="Fit\ParameterVector.h" />
     <ClInclude Include="Fit\ParamFunction.h" />
     <ClInclude Include="Fit\PolynomialFunction.h" />
     <ClInclude Include="Fit\ReferenceSpectrumFunction.h" />

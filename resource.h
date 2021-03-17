@@ -495,17 +495,19 @@
 #define IDC_STATIC_SETTINGS             1298
 #define IDC_BUTTON_SAVE                 1298
 #define IDC_STATIC_SOLAR_ATLAS          1299
-#define IDC_EDIT_SPECTRUM2              1299
+#define IDC_EDIT_SPECTRUM_DARK          1299
 #define IDC_EDIT_SOLAR_SPECTRUM         1300
 #define IDC_BUTTON_BROWSE_SPECTRUM_DARK 1300
 #define IDC_BUTTON_BROWSE_SOLAR_SPECTRUM 1301
 #define IDC_STATIC_DARK_SPECTRUM        1301
 #define IDC_STATIC_INITIAL_CALIBRATION  1302
-#define IDC_LIST1                       1302
 #define IDC_LIST_FOUND_PEAKS            1302
 #define IDC_EDIT_INITIAL_CALIBRATION    1303
 #define IDC_STATIC_GRAPH_HOLDER         1303
 #define IDC_BUTTON_BROWSE_INITIAL_CALIBRATION 1304
+#define IDC_RADIO_FIT_GAUSSIAN          1304
+#define IDC_RADIO_FIT_SUPER_GAUSSIAN    1305
+#define IDC_RADIO_FIT_NOTHING           1306
 #define ID_ANALYSIS_POSTFLUX            32771
 #define ID_CONTROL_STOP                 32772
 #define ID_CONTROL_START                32772
@@ -530,7 +532,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        286
 #define _APS_NEXT_COMMAND_VALUE         32803
-#define _APS_NEXT_CONTROL_VALUE         1304
+#define _APS_NEXT_CONTROL_VALUE         1305
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif
