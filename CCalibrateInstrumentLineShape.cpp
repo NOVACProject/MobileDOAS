@@ -65,6 +65,8 @@ BEGIN_MESSAGE_MAP(CCalibrateInstrumentLineShape, CPropertyPage)
     ON_BN_CLICKED(IDC_BUTTON_BROWSE_SPECTRUM_DARK, &CCalibrateInstrumentLineShape::OnBnClickedBrowseSpectrumDark)
     ON_LBN_SELCHANGE(IDC_LIST_FOUND_PEAKS, &CCalibrateInstrumentLineShape::OnLbnSelchangeFoundPeak)
     ON_BN_CLICKED(IDC_RADIO_FIT_GAUSSIAN, &CCalibrateInstrumentLineShape::OnBnClickedRadioFitGaussian)
+    ON_BN_CLICKED(IDC_RADIO_FIT_SUPER_GAUSSIAN, &CCalibrateInstrumentLineShape::OnBnClickedRadioFitGaussian)
+    ON_BN_CLICKED(IDC_RADIO_FIT_NOTHING, &CCalibrateInstrumentLineShape::OnBnClickedRadioFitGaussian)
 END_MESSAGE_MAP()
 
 // CCalibrateInstrumentLineShape message handlers

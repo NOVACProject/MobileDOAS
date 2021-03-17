@@ -59,4 +59,11 @@ public:
 
 private:
     void ClearFittedLineShape();
+
+    /// <summary>
+    /// Subtracts the baseline from the provided spectrum. 
+    /// </summary>
+    /// <param name="spectrum">The spectrum to modify</param>
+    /// <returns>The baseline which was subtracted.</returns>
+    double SubtractBaseline(novac::CSpectrum& spectrum);
 };

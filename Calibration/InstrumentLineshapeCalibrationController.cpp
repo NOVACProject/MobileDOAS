@@ -8,6 +8,7 @@
 #include "InstrumentLineshapeCalibrationController.h"
 #include <SpectralEvaluation/File/File.h>
 #include <SpectralEvaluation/Calibration/InstrumentLineShape.h>
+#include <SpectralEvaluation/VectorUtils.h>
 
 InstrumentLineshapeCalibrationController::InstrumentLineshapeCalibrationController()
     : m_inputSpectrumPath(""), m_darkSpectrumPath(""), m_fittedLineShape(LineShapeFunction::None, nullptr)
@@ -50,9 +51,24 @@ void InstrumentLineshapeCalibrationController::Update()
     novac::FindPeaks(hgSpectrum, minimumIntensity, m_peaksFound);
 }
 
+double InstrumentLineshapeCalibrationController::SubtractBaseline(novac::CSpectrum& spectrum)
+{
+    std::vector<double> data{ spectrum.m_data, spectrum.m_data + spectrum.m_length };
+    std::vector<double> fiveLowestValues;
+    FindNLowest(data, 5, fiveLowestValues);
+    const double baseline = Average(fiveLowestValues);
+
+    for (long ii = 0; ii < spectrum.m_length; ++ii)
+    {
+        spectrum.m_data[ii] -= baseline;
+    }
+
+    return baseline;
+}
+
 void InstrumentLineshapeCalibrationController::FitFunctionToLineShape(size_t peakIdx, LineShapeFunction function)
 {
-    if (peakIdx >= this->m_peaksFound.size())
+    if (peakIdx >= this->m_peaksFound.size() || function == LineShapeFunction::None)
     {
         ClearFittedLineShape();
         return;
@@ -65,15 +81,12 @@ void InstrumentLineshapeCalibrationController::FitFunctionToLineShape(size_t pea
     std::vector<double> pixelData(spectralDataLength);
     std::iota(begin(pixelData), end(pixelData), (double)spectrumStartIdx);
 
-    if (function == LineShapeFunction::None)
-    {
-        ClearFittedLineShape();
-        return;
-    }
-    else if (function == LineShapeFunction::Gaussian)
-    {
-        novac::CSpectrum hgLine{ pixelData.data(), spectralData, spectralDataLength };
+    // Construct the spectrum we want to fit to
+    novac::CSpectrum hgLine{ pixelData.data(), spectralData, spectralDataLength };
+    const double baseline = SubtractBaseline(hgLine);
 
+    if (function == LineShapeFunction::Gaussian)
+    {
         auto gaussian = new novac::GaussianLineShape();
         novac::FitInstrumentLineShape(hgLine, *gaussian);
 
@@ -84,13 +97,11 @@ void InstrumentLineshapeCalibrationController::FitFunctionToLineShape(size_t pea
         {
             highResPixelData[ii] = (double)spectrumStartIdx + 0.25 * ii;
         }
-        const std::vector<double> sampledLineShape = novac::SampleInstrumentLineShape(*gaussian, highResPixelData, m_peaksFound[peakIdx].pixel, this->m_peaksFound[peakIdx].intensity);
+        const std::vector<double> sampledLineShape = novac::SampleInstrumentLineShape(*gaussian, highResPixelData, m_peaksFound[peakIdx].pixel, this->m_peaksFound[peakIdx].intensity, baseline);
         this->m_sampledLineShapeFunction = std::make_unique<novac::CSpectrum>(highResPixelData, sampledLineShape);
     }
     else if (function == LineShapeFunction::SuperGauss)
     {
-        novac::CSpectrum hgLine{ pixelData.data(), spectralData, spectralDataLength };
-
         auto superGaussian = new novac::SuperGaussianLineShape();
         novac::FitInstrumentLineShape(hgLine, *superGaussian);
 
@@ -101,7 +112,7 @@ void InstrumentLineshapeCalibrationController::FitFunctionToLineShape(size_t pea
         {
             highResPixelData[ii] = (double)spectrumStartIdx + 0.25 * ii;
         }
-        const std::vector<double> sampledLineShape = novac::SampleInstrumentLineShape(*superGaussian, highResPixelData, m_peaksFound[peakIdx].pixel, this->m_peaksFound[peakIdx].intensity);
+        const std::vector<double> sampledLineShape = novac::SampleInstrumentLineShape(*superGaussian, highResPixelData, m_peaksFound[peakIdx].pixel, this->m_peaksFound[peakIdx].intensity, baseline);
         this->m_sampledLineShapeFunction = std::make_unique<novac::CSpectrum>(highResPixelData, sampledLineShape);
     }
     else
