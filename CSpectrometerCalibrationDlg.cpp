@@ -5,7 +5,7 @@
 #include "afxdialogex.h"
 #include "resource.h"
 #include "CCalibrateInstrumentLineShape.h"
-#include "CCalibrationWavelength.h"
+#include "CCalibratePixelToWavelengthDialog.h"
 
 // CSpectrometerCalibrationDlg dialog
 
@@ -15,7 +15,7 @@ CSpectrometerCalibrationDlg::CSpectrometerCalibrationDlg()
     m_calibrateInstrumentLineShape = new CCalibrateInstrumentLineShape();
     m_calibrateInstrumentLineShape->Construct(IDD_CALIBRATE_LINESHAPE_DIALOG);
 
-    m_calibratePixelToWavelength = new CCalibrationWavelength();
+    m_calibratePixelToWavelength = new CCalibratePixelToWavelengthDialog();
     m_calibratePixelToWavelength->Construct(IDD_CALIBRATE_WAVELENGTH_DIALOG);
 
     AddPage(m_calibrateInstrumentLineShape);

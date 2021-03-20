@@ -348,9 +348,6 @@
     <ClCompile Include="CSpectrometerCalibrationDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CCalibrationWavelength.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CCalibrateInstrumentLineShape.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -425,6 +422,9 @@
     </ClCompile>
     <ClCompile Include="SpectralEvaluation\src\Calibration\WavelengthCalibrationByRansac.cpp">
       <Filter>Source Files\SpectralEvaluation\Calibration</Filter>
+    </ClCompile>
+    <ClCompile Include="CCalibratePixelToWavelengthDialog.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -820,9 +820,6 @@
     <ClInclude Include="CSpectrometerCalibrationDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CCalibrationWavelength.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CCalibrateInstrumentLineShape.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -843,6 +840,9 @@
     </ClInclude>
     <ClInclude Include="Calibration\InstrumentLineshapeCalibrationController.h">
       <Filter>Header Files\Calibration</Filter>
+    </ClInclude>
+    <ClInclude Include="CCalibratePixelToWavelengthDialog.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

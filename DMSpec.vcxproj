@@ -281,7 +281,7 @@
     <ClCompile Include="Calibration\InstrumentLineshapeCalibrationController.cpp" />
     <ClCompile Include="Calibration\WavelengthCalibrationController.cpp" />
     <ClCompile Include="CCalibrateInstrumentLineShape.cpp" />
-    <ClCompile Include="CCalibrationWavelength.cpp" />
+    <ClCompile Include="CCalibratePixelToWavelengthDialog.cpp" />
     <ClCompile Include="CGpsData.cpp" />
     <ClCompile Include="CommentDlg.cpp" />
     <ClCompile Include="Common.cpp" />
@@ -447,7 +447,7 @@
     <ClInclude Include="Calibration\InstrumentLineshapeCalibrationController.h" />
     <ClInclude Include="Calibration\WavelengthCalibrationController.h" />
     <ClInclude Include="CCalibrateInstrumentLineShape.h" />
-    <ClInclude Include="CCalibrationWavelength.h" />
+    <ClInclude Include="CCalibratePixelToWavelengthDialog.h" />
     <ClInclude Include="CGpsData.h" />
     <ClInclude Include="CommentDlg.h" />
     <ClInclude Include="Common.h" />
