@@ -12,6 +12,7 @@
 #include <SpectralEvaluation/Calibration/WavelengthCalibrationByRansac.h>
 
 WavelengthCalibrationController::WavelengthCalibrationController()
+    : m_calibrationDebug(0U)
 {
 }
 
@@ -37,8 +38,29 @@ void WavelengthCalibrationController::RunCalibration()
     novac::WavelengthCalibrationSetup setup{ settings };
     auto result = setup.DoWavelengthCalibration(measuredSpectrum, measuredInstrumentLineShape);
 
+    // Copy out the result
     this->m_resultingPixelToWavelengthMapping = result.pixelToWavelengthMapping;
     this->m_resultingPixelToWavelengthMappingCoefficients = result.pixelToWavelengthMappingCoefficients;
 
-    // TODO: We need to be able to display something regarding the setup here, such as the used keypoints ...
+    // Also copy out some debug information, which makes it possible for the user to inspect the calibration
+    {
+        const auto& calibrationDebug = setup.GetLastCalibrationSetup();
+        this->m_calibrationDebug = WavelengthCalibrationDebugState(calibrationDebug.allCorrespondences.size());
+
+        for (size_t correspondenceIdx = 0; correspondenceIdx < calibrationDebug.allCorrespondences.size(); ++correspondenceIdx)
+        {
+            const auto& corr = calibrationDebug.allCorrespondences[correspondenceIdx]; // easier syntax.
+
+            if (calibrationDebug.correspondenceIsInlier[correspondenceIdx])
+            {
+                this->m_calibrationDebug.inlierCorrespondencePixels.push_back(corr.measuredValue);
+                this->m_calibrationDebug.inlierCorrespondenceWavelengths.push_back(corr.theoreticalValue);
+            }
+            else
+            {
+                this->m_calibrationDebug.outlierCorrespondencePixels.push_back(corr.measuredValue);
+                this->m_calibrationDebug.outlierCorrespondenceWavelengths.push_back(corr.theoreticalValue);
+            }
+        }
+    }
 }

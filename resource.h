@@ -127,6 +127,7 @@
 #define IDD_CONFIGURE_DIRECTORY         278
 #define IDD_CALIBRATE_LINESHAPE_DIALOG  282
 #define IDD_CALIBRATE_WAVELENGTH_DIALOG 284
+#define IDD_CALIBRATE_REFERENCES        286
 #define IDC_EDIT1                       1000
 #define IDC_WINDSPEED                   1000
 #define IDC_DLG2WS                      1000
@@ -493,6 +494,7 @@
 #define IDC_STATIC_GRAPH                1297
 #define IDC_BUTTON_RUN                  1297
 #define IDC_BUTTON_SAVE                 1298
+#define IDC_BUTTON_RUN2                 1298
 #define IDC_STATIC_SOLAR_ATLAS          1299
 #define IDC_EDIT_SPECTRUM_DARK          1299
 #define IDC_EDIT_SOLAR_SPECTRUM         1300
@@ -509,7 +511,6 @@
 #define IDC_EDIT_SPECTRUM_DARK2         1305
 #define IDC_RADIO_FIT_NOTHING           1306
 #define IDC_BUTTON_BROWSE_SPECTRUM_DARK2 1306
-#define IDC_STATIC_DARK_SPECTRUM2       1307
 #define IDC_STATIC_DARK                 1307
 #define IDC_STATIC_LINEHSHAPE           1308
 #define IDC_EDIT_INITIAL_CALIBRATION2   1309
@@ -537,7 +538,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        286
+#define _APS_NEXT_RESOURCE_VALUE        288
 #define _APS_NEXT_COMMAND_VALUE         32803
 #define _APS_NEXT_CONTROL_VALUE         1312
 #define _APS_NEXT_SYMED_VALUE           104

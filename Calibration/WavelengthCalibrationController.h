@@ -42,6 +42,25 @@ public:
     /// </summary>
     std::vector<double> m_resultingPixelToWavelengthMappingCoefficients;
 
+    struct WavelengthCalibrationDebugState
+    {
+        WavelengthCalibrationDebugState(size_t estimatedSize)
+        {
+            inlierCorrespondencePixels.reserve(estimatedSize);
+            inlierCorrespondenceWavelengths.reserve(estimatedSize);
+            outlierCorrespondencePixels.reserve(estimatedSize);
+            outlierCorrespondenceWavelengths.reserve(estimatedSize);
+        }
+
+        std::vector<double> inlierCorrespondencePixels;
+        std::vector<double> inlierCorrespondenceWavelengths;
+
+        std::vector<double> outlierCorrespondencePixels;
+        std::vector<double> outlierCorrespondenceWavelengths;
+    };
+
+    WavelengthCalibrationDebugState m_calibrationDebug;
+
     /// <summary>
     /// Performs the actual wavelength calibration
     /// </summary>

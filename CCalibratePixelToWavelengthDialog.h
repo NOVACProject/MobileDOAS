@@ -4,6 +4,8 @@
 
 // CCalibratePixelToWavelengthDialog dialog
 
+class WavelengthCalibrationController;
+
 class CCalibratePixelToWavelengthDialog : public CPropertyPage
 {
     DECLARE_DYNAMIC(CCalibratePixelToWavelengthDialog)
@@ -46,19 +48,27 @@ public:
 
     CalibratePixelToWavelengthDialogSetup m_setup;
 
+    CButton m_runButton;
+    CButton m_saveButton;
+
     Graph::CGraphCtrl m_graph; // The plot where we can display the final calibration
     CStatic m_graphHolder; // holder for the graph, for easy ui access
 
-    afx_msg void OnBnClickedButtonBrowseSpectrum();
+    afx_msg void OnClickedButtonBrowseSpectrum();
     afx_msg void OnClickedButtonBrowseSolarSpectrum();
     afx_msg void OnClickedButtonRun();
     afx_msg void OnClickedButtonBrowseInitialCalibration();
-    afx_msg void OnBnClickedButtonBrowseSpectrumDark();
-    afx_msg void OnBnClickedButtonBrowseLineShape();
+    afx_msg void OnClickedButtonBrowseSpectrumDark();
+    afx_msg void OnClickedButtonBrowseLineShape();
+    afx_msg void OnClickedButtonSave();
 
 private:
     std::string SetupFilePath();
     void SaveSetup();
     void LoadSetup();
+
+    void UpdateGraph();
+
+    WavelengthCalibrationController* m_controller;
 
 };
