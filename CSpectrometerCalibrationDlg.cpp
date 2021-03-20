@@ -6,6 +6,7 @@
 #include "resource.h"
 #include "CCalibrateInstrumentLineShape.h"
 #include "CCalibratePixelToWavelengthDialog.h"
+#include "CCalibrateReferencesDialog.h"
 
 // CSpectrometerCalibrationDlg dialog
 
@@ -18,8 +19,12 @@ CSpectrometerCalibrationDlg::CSpectrometerCalibrationDlg()
     m_calibratePixelToWavelength = new CCalibratePixelToWavelengthDialog();
     m_calibratePixelToWavelength->Construct(IDD_CALIBRATE_WAVELENGTH_DIALOG);
 
+    m_calibrateReferences = new CCalibrateReferencesDialog();
+    m_calibrateReferences->Construct(IDD_CALIBRATE_REFERENCES);
+
     AddPage(m_calibrateInstrumentLineShape);
     AddPage(m_calibratePixelToWavelength);
+    AddPage(m_calibrateReferences);
 }
 
 CSpectrometerCalibrationDlg::~CSpectrometerCalibrationDlg()
