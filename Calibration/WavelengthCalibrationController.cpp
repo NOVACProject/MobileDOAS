@@ -22,20 +22,20 @@ void WavelengthCalibrationController::RunCalibration()
     settings.initialPixelToWavelengthMapping = novac::GetPixelToWavelengthMappingFromFile(this->m_initialWavelengthCalibrationFile);
     // So far no cross sections provided...
 
-    std::unique_ptr<novac::CSpectrum> measuredSpectrum;
-    if (!novac::ReadSpectrum(this->m_inputSpectrumFile, *measuredSpectrum))
+    novac::CSpectrum measuredSpectrum;
+    if (!novac::ReadSpectrum(this->m_inputSpectrumFile, measuredSpectrum))
     {
         throw std::invalid_argument("Cannot read the provided input spectrum file");
     }
 
-    std::unique_ptr<novac::CCrossSectionData> measuredInstrumentLineShape;
-    if (!novac::ReadCrossSectionFile(this->m_initialLineShapeFile, *measuredInstrumentLineShape))
+    novac::CCrossSectionData measuredInstrumentLineShape;
+    if (!novac::ReadCrossSectionFile(this->m_initialLineShapeFile, measuredInstrumentLineShape))
     {
         throw std::invalid_argument("Cannot read the provided input spectrum file");
     }
 
     novac::WavelengthCalibrationSetup setup{ settings };
-    auto result = setup.DoWavelengthCalibration(*measuredSpectrum, *measuredInstrumentLineShape);
+    auto result = setup.DoWavelengthCalibration(measuredSpectrum, measuredInstrumentLineShape);
 
     this->m_resultingPixelToWavelengthMapping = result.pixelToWavelengthMapping;
     this->m_resultingPixelToWavelengthMappingCoefficients = result.pixelToWavelengthMappingCoefficients;

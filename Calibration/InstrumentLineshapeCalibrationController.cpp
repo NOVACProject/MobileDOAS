@@ -43,8 +43,17 @@ void InstrumentLineshapeCalibrationController::Update()
         hgSpectrum.Sub(darkSpectrum);
     }
 
-    // TODO: Don't we also need to make sure that the spectrum contains wavelength data ? 
     this->m_inputSpectrum = std::vector<double>(hgSpectrum.m_data, hgSpectrum.m_data + hgSpectrum.m_length);
+
+    if (hgSpectrum.m_wavelength.size() != 0)
+    {
+        this->m_inputSpectrumWavelength = hgSpectrum.m_wavelength;
+    }
+    else
+    {
+        this->m_inputSpectrumWavelength.resize(hgSpectrum.m_length);
+        std::iota(begin(m_inputSpectrumWavelength), end(m_inputSpectrumWavelength), 0.0);
+    }
 
     // Find the peaks in the measured spectrum
     double minimumIntensity = 1000; // TODO: Input
@@ -66,6 +75,35 @@ double InstrumentLineshapeCalibrationController::SubtractBaseline(novac::CSpectr
     return baseline;
 }
 
+std::unique_ptr<novac::CSpectrum> InstrumentLineshapeCalibrationController::GetMercuryPeak(size_t peakIdx, double* baselinePtr, size_t* startIdx)
+{
+    if (peakIdx >= this->m_peaksFound.size())
+    {
+        throw std::invalid_argument("Invalid index of mercury peak, please select a peak and try again");
+    }
+
+    // Extract the data surrounding the peak
+    const size_t spectrumStartIdx = static_cast<size_t>(std::max(0, static_cast<int>(std::round(this->m_peaksFound[peakIdx].pixel - 50))));
+    const size_t spectralDataLength = std::min(this->m_inputSpectrum.size() - spectrumStartIdx, 100LLU);
+    const double* spectralData = this->m_inputSpectrum.data() + spectrumStartIdx;
+    const double* wavelengthData = this->m_inputSpectrumWavelength.data() + spectrumStartIdx;
+
+    // Construct the spectrum we want to fit to
+    std::unique_ptr<novac::CSpectrum> hgLine = std::make_unique<novac::CSpectrum>(wavelengthData, spectralData, spectralDataLength);
+    const double baseline = SubtractBaseline(*hgLine);
+
+    if (baselinePtr != nullptr)
+    {
+        *baselinePtr = baseline;
+    }
+    if (startIdx != nullptr)
+    {
+        *startIdx = spectrumStartIdx;
+    }
+
+    return hgLine;
+}
+
 void InstrumentLineshapeCalibrationController::FitFunctionToLineShape(size_t peakIdx, LineShapeFunction function)
 {
     if (peakIdx >= this->m_peaksFound.size() || function == LineShapeFunction::None)
@@ -74,45 +112,41 @@ void InstrumentLineshapeCalibrationController::FitFunctionToLineShape(size_t pea
         return;
     }
 
-    // Extract the data surrounding the peak
-    const size_t spectrumStartIdx = static_cast<size_t>(std::max(0, static_cast<int>(std::round(this->m_peaksFound[peakIdx].pixel - 50))));
-    const size_t spectralDataLength = std::min(this->m_inputSpectrum.size() - spectrumStartIdx, 100LLU);
-    const double* spectralData = this->m_inputSpectrum.data() + spectrumStartIdx;
-    std::vector<double> pixelData(spectralDataLength);
-    std::iota(begin(pixelData), end(pixelData), (double)spectrumStartIdx);
-
     // Construct the spectrum we want to fit to
-    novac::CSpectrum hgLine{ pixelData.data(), spectralData, spectralDataLength };
-    const double baseline = SubtractBaseline(hgLine);
+    double baseline = 0.0;
+    size_t spectrumStartIdx = 0;
+    auto hgLine = GetMercuryPeak(peakIdx, &baseline, &spectrumStartIdx);
 
     if (function == LineShapeFunction::Gaussian)
     {
         auto gaussian = new novac::GaussianLineShape();
-        novac::FitInstrumentLineShape(hgLine, *gaussian);
+        novac::FitInstrumentLineShape(*hgLine, *gaussian);
 
         this->m_fittedLineShape = std::pair<LineShapeFunction, void*>(function, gaussian);
 
-        std::vector<double> highResPixelData(4 * spectralDataLength); // super-sample with four points per pixel
+        std::vector<double> highResPixelData(4 * hgLine->m_length); // super-sample with four points per pixel
+        const double range = hgLine->m_wavelength[hgLine->m_wavelength.size() - 1] - hgLine->m_wavelength[0];
         for (size_t ii = 0; ii < highResPixelData.size(); ++ii)
         {
-            highResPixelData[ii] = (double)spectrumStartIdx + 0.25 * ii;
+            highResPixelData[ii] = hgLine->m_wavelength[0] + ii * range / (double)(highResPixelData.size() - 1);
         }
-        const std::vector<double> sampledLineShape = novac::SampleInstrumentLineShape(*gaussian, highResPixelData, m_peaksFound[peakIdx].pixel, this->m_peaksFound[peakIdx].intensity, baseline);
+        const std::vector<double> sampledLineShape = novac::SampleInstrumentLineShape(*gaussian, highResPixelData, m_peaksFound[peakIdx].wavelength, this->m_peaksFound[peakIdx].intensity - baseline, baseline);
         this->m_sampledLineShapeFunction = std::make_unique<novac::CSpectrum>(highResPixelData, sampledLineShape);
     }
     else if (function == LineShapeFunction::SuperGauss)
     {
         auto superGaussian = new novac::SuperGaussianLineShape();
-        novac::FitInstrumentLineShape(hgLine, *superGaussian);
+        novac::FitInstrumentLineShape(*hgLine, *superGaussian);
 
         this->m_fittedLineShape = std::pair<LineShapeFunction, void*>(function, superGaussian);
 
-        std::vector<double> highResPixelData(4 * spectralDataLength); // super-sample with four points per pixel
+        std::vector<double> highResPixelData(4 * hgLine->m_length); // super-sample with four points per pixel
+        const double range = hgLine->m_wavelength[hgLine->m_wavelength.size() - 1] - hgLine->m_wavelength[0];
         for (size_t ii = 0; ii < highResPixelData.size(); ++ii)
         {
-            highResPixelData[ii] = (double)spectrumStartIdx + 0.25 * ii;
+            highResPixelData[ii] = hgLine->m_wavelength[0] + ii * range / (double)(highResPixelData.size() - 1);
         }
-        const std::vector<double> sampledLineShape = novac::SampleInstrumentLineShape(*superGaussian, highResPixelData, m_peaksFound[peakIdx].pixel, this->m_peaksFound[peakIdx].intensity, baseline);
+        const std::vector<double> sampledLineShape = novac::SampleInstrumentLineShape(*superGaussian, highResPixelData, m_peaksFound[peakIdx].wavelength, this->m_peaksFound[peakIdx].intensity - baseline, baseline);
         this->m_sampledLineShapeFunction = std::make_unique<novac::CSpectrum>(highResPixelData, sampledLineShape);
     }
     else

@@ -36,6 +36,11 @@ public:
     std::vector<double> m_inputSpectrum;
 
     /// <summary>
+    /// Output: The read in mercury spectrum wavlengths
+    /// </summary>
+    std::vector<double> m_inputSpectrumWavelength;
+
+    /// <summary>
     /// Output: The fitted line shape function.
     /// </summary>
     std::pair<LineShapeFunction, void*> m_fittedLineShape;
@@ -56,6 +61,12 @@ public:
     /// This updates m_fittedLineShape and m_sampledLineShapeFunction
     /// </summary>
     void FitFunctionToLineShape(size_t peakIdx, LineShapeFunction function);
+
+    /// <summary>
+    /// Extracts the peak with the provided index from the read in spectrum file.
+    /// The peak will be normalized and have its baseline subtracted
+    /// </summary>
+    std::unique_ptr<novac::CSpectrum> GetMercuryPeak(size_t peakIdx, double* baseline = nullptr, size_t* startIdx = nullptr);
 
 private:
     void ClearFittedLineShape();

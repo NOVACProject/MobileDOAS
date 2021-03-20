@@ -7,6 +7,11 @@
 #include "resource.h"
 #include "Common.h"
 #include "Calibration/InstrumentLineshapeCalibrationController.h"
+#include <SpectralEvaluation/File/File.h>
+#include <algorithm>
+
+#undef min
+#undef max
 
 // CCalibrateInstrumentLineShape dialog
 
@@ -24,7 +29,6 @@ CCalibrateInstrumentLineShape::~CCalibrateInstrumentLineShape()
     delete this->m_controller;
 }
 
-
 BOOL CCalibrateInstrumentLineShape::OnInitDialog() {
     CPropertyPage::OnInitDialog();
 
@@ -38,12 +42,10 @@ BOOL CCalibrateInstrumentLineShape::OnInitDialog() {
     m_spectrumPlot.Create(WS_VISIBLE | WS_CHILD, rect, &m_graphHolder);
     m_spectrumPlot.SetRange(0, 500, 1, -100.0, 100.0, 1);
     m_spectrumPlot.SetYUnits("Intensity");
-    m_spectrumPlot.SetXUnits("Pixel");
+    m_spectrumPlot.SetXUnits("Wavelength");
     m_spectrumPlot.SetBackgroundColor(RGB(0, 0, 0));
     m_spectrumPlot.SetGridColor(RGB(255, 255, 255));
     m_spectrumPlot.SetPlotColor(RGB(255, 0, 0));
-    // m_spectrumPlot.SetSecondYUnit("Intensity");
-    // m_spectrumPlot.SetSecondRangeY(0, 100, 0);
     m_spectrumPlot.CleanPlot();
 
     return TRUE;  // return TRUE unless you set the focus to a control
@@ -67,6 +69,7 @@ BEGIN_MESSAGE_MAP(CCalibrateInstrumentLineShape, CPropertyPage)
     ON_BN_CLICKED(IDC_RADIO_FIT_GAUSSIAN, &CCalibrateInstrumentLineShape::OnBnClickedRadioFitGaussian)
     ON_BN_CLICKED(IDC_RADIO_FIT_SUPER_GAUSSIAN, &CCalibrateInstrumentLineShape::OnBnClickedRadioFitGaussian)
     ON_BN_CLICKED(IDC_RADIO_FIT_NOTHING, &CCalibrateInstrumentLineShape::OnBnClickedRadioFitGaussian)
+    ON_BN_CLICKED(IDC_BUTTON_SAVE, &CCalibrateInstrumentLineShape::OnBnClickedSave)
 END_MESSAGE_MAP()
 
 // CCalibrateInstrumentLineShape message handlers
@@ -177,7 +180,10 @@ void CCalibrateInstrumentLineShape::OnLbnSelchangeFoundPeak()
     {
         // zoom in on the selected peak
         const novac::SpectrumDataPoint selectedPeak = this->m_controller->m_peaksFound[selectedElement];
-        m_spectrumPlot.SetRangeX(selectedPeak.pixel - 50, selectedPeak.pixel + 50, 1, false);
+        const double lambdaMin = this->m_controller->m_inputSpectrumWavelength[std::max(static_cast<size_t>(selectedPeak.pixel - 50), 0LLU)];
+        const double lambdaMax = this->m_controller->m_inputSpectrumWavelength[std::min(static_cast<size_t>(selectedPeak.pixel + 50), this->m_controller->m_inputSpectrumWavelength.size() - 1)];
+
+        m_spectrumPlot.SetRangeX(lambdaMin, lambdaMax, 1, false);
         m_spectrumPlot.SetRangeY(
             Min(m_controller->m_inputSpectrum.data() + (int)(selectedPeak.pixel - 50), 100),
             Max(m_controller->m_inputSpectrum.data() + (int)(selectedPeak.pixel - 50), 100),
@@ -186,7 +192,7 @@ void CCalibrateInstrumentLineShape::OnLbnSelchangeFoundPeak()
     else
     {
         // zoom out to show the entire graph
-        m_spectrumPlot.SetRangeX(0.0, static_cast<double>(this->m_controller->m_inputSpectrum.size()), 0, true);
+        m_spectrumPlot.SetRangeX(this->m_controller->m_inputSpectrumWavelength.front(), this->m_controller->m_inputSpectrumWavelength.back(), 0, true);
     }
 
     UpdateGraph(false);
@@ -199,9 +205,9 @@ void CCalibrateInstrumentLineShape::UpdateGraph(bool reset)
     /* Draw the spectrum */
     if (m_controller->m_inputSpectrum.size() > 0)
     {
-        int plotOption = (reset) ? Graph::CGraphCtrl::PLOT_CONNECTED : Graph::CGraphCtrl::PLOT_FIXED_AXIS;
+        int plotOption = (reset) ? Graph::CGraphCtrl::PLOT_CONNECTED : Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED;
         m_spectrumPlot.SetPlotColor(RGB(255, 0, 0));
-        m_spectrumPlot.Plot(m_controller->m_inputSpectrum.data(), static_cast<int>(m_controller->m_inputSpectrum.size()), plotOption);
+        m_spectrumPlot.XYPlot(m_controller->m_inputSpectrumWavelength.data(), m_controller->m_inputSpectrum.data(), static_cast<int>(m_controller->m_inputSpectrum.size()), plotOption);
     }
 
     /* Draw the peaks */
@@ -212,7 +218,7 @@ void CCalibrateInstrumentLineShape::UpdateGraph(bool reset)
 
         for each (auto peak in m_controller->m_peaksFound)
         {
-            peakX.push_back(peak.pixel);
+            peakX.push_back(peak.wavelength);
             peakY.push_back(peak.intensity);
         }
         m_spectrumPlot.DrawCircles(peakX.data(), peakY.data(), static_cast<int>(m_controller->m_peaksFound.size()), Graph::CGraphCtrl::PLOT_FIXED_AXIS);
@@ -235,4 +241,37 @@ void CCalibrateInstrumentLineShape::OnBnClickedRadioFitGaussian()
     UpdateFittedLineShape();
 
     UpdateGraph(false);
+}
+
+void CCalibrateInstrumentLineShape::OnBnClickedSave()
+{
+    try
+    {
+        // Extract the currently selected line shape
+        const int selectedPeak = this->m_peaksList.GetCurSel();
+        if (selectedPeak < 0 || selectedPeak >= static_cast<int>(m_controller->m_peaksFound.size()))
+        {
+            MessageBox("Please select a peak to save in the list box to the left", "No peak selected", MB_OK);
+            return;
+        }
+
+        const auto hgLine = m_controller->GetMercuryPeak(selectedPeak);
+
+        // Differentiate the wavelengths against the center value
+        const double centerWavelength = m_controller->m_peaksFound[selectedPeak].wavelength;
+        for (double& lambda : hgLine->m_wavelength)
+        {
+            lambda -= centerWavelength;
+        }
+
+        CString destinationFileName = L"";
+        if (Common::BrowseForFile_SaveAs("Instrument Line Shape Files\0*.slf\0", destinationFileName))
+        {
+            novac::SaveCrossSectionFile(std::string(destinationFileName), *hgLine);
+        }
+    }
+    catch (std::exception& e)
+    {
+        MessageBox(e.what(), "Failed to save instrument line shape", MB_OK);
+    }
 }

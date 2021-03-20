@@ -63,4 +63,6 @@ private:
     /// peak and type of function
     /// </summary>
     void UpdateFittedLineShape();
+public:
+    afx_msg void OnBnClickedSave();
 };
