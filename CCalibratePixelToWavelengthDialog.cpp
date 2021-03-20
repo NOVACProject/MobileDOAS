@@ -174,7 +174,7 @@ void CCalibratePixelToWavelengthDialog::OnBnClickedButtonBrowseSpectrumDark()
 
 void CCalibratePixelToWavelengthDialog::OnBnClickedButtonBrowseLineShape()
 {
-    if (!Common::BrowseForFile("Spectrum Files\0*.txt;*.xs\0", this->m_setup.m_instrumentLineshapeFile))
+    if (!Common::BrowseForFile("Instrument Line Shape Files\0*.slf\0Spectrum Files\0*.txt;*.xs\0", this->m_setup.m_instrumentLineshapeFile))
     {
         return;
     }
