@@ -267,7 +267,8 @@ void CCalibrateInstrumentLineShape::OnBnClickedSave()
         CString destinationFileName = L"";
         if (Common::BrowseForFile_SaveAs("Instrument Line Shape Files\0*.slf\0", destinationFileName))
         {
-            novac::SaveCrossSectionFile(std::string(destinationFileName), *hgLine);
+            std::string dstFileName = novac::EnsureFilenameHasSuffix(std::string(destinationFileName), "slf");
+            novac::SaveCrossSectionFile(dstFileName, *hgLine);
         }
     }
     catch (std::exception& e)

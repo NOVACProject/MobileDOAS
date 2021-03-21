@@ -429,6 +429,9 @@
     <ClCompile Include="CCalibrateReferencesDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Calibration\ReferenceCreationController.cpp">
+      <Filter>Header Files\Calibration</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DMSpec.rc">
@@ -849,6 +852,9 @@
     </ClInclude>
     <ClInclude Include="CCalibrateReferencesDialog.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Calibration\ReferenceCreationController.h">
+      <Filter>Header Files\Calibration</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

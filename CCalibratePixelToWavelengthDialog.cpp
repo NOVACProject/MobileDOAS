@@ -80,7 +80,7 @@ std::string CCalibratePixelToWavelengthDialog::SetupFilePath()
     Common common;
     common.GetExePath();
     CString path;
-    path.Format("%sCalibrateWavelengthDlg.xml", common.m_exePath);
+    path.Format("%sCalibrateWavelengthDlg.config", common.m_exePath);
     return std::string(path);
 }
 
@@ -102,9 +102,10 @@ void CCalibratePixelToWavelengthDialog::SaveSetup()
 
 CString ParseXmlString(const char* startTag, const char* stopTag, const std::string& line)
 {
-    const size_t start = line.find(startTag) + strlen(startTag);
+    const size_t firstIdx = line.find(startTag);
+    const size_t start = firstIdx + strlen(startTag);
     const size_t stop = line.find(stopTag);
-    if (stop > start)
+    if (stop > start && firstIdx != line.npos && stop != line.npos)
     {
         return CString(line.c_str() + start, static_cast<int>(stop - start));
     }
@@ -299,7 +300,8 @@ void CCalibratePixelToWavelengthDialog::OnClickedButtonSave()
         CString destinationFileName = L"";
         if (Common::BrowseForFile_SaveAs("Instrument Calibration Files\0*.clb\0", destinationFileName))
         {
-            novac::SaveDataToFile(std::string(destinationFileName), this->m_controller->m_resultingPixelToWavelengthMapping);
+            std::string dstFileName = novac::EnsureFilenameHasSuffix(std::string(destinationFileName), "clb");
+            novac::SaveDataToFile(dstFileName, this->m_controller->m_resultingPixelToWavelengthMapping);
         }
     }
     catch (std::exception& e)
