@@ -191,12 +191,19 @@ void CCalibratePixelToWavelengthDialog::UpdateGraph()
 {
     this->m_graph.CleanPlot();
 
+    // the old (initial) calibration polynomial
+    this->m_graph.SetPlotColor(RGB(128, 0, 0));
+    this->m_graph.Plot(
+        m_controller->m_calibrationDebug.initialPixelToWavelengthMapping.data(),
+        static_cast<int>(m_controller->m_calibrationDebug.initialPixelToWavelengthMapping.size()),
+        Graph::CGraphCtrl::PLOT_CONNECTED);
+
     // the calibration polynomial
     this->m_graph.SetPlotColor(RGB(255, 0, 0));
     this->m_graph.Plot(
         m_controller->m_resultingPixelToWavelengthMapping.data(),
         static_cast<int>(m_controller->m_resultingPixelToWavelengthMapping.size()),
-        Graph::CGraphCtrl::PLOT_CONNECTED);
+        Graph::CGraphCtrl::PLOT_CONNECTED | Graph::CGraphCtrl::PLOT_FIXED_AXIS);
 
     // outliers
     this->m_graph.SetCircleColor(RGB(128, 128, 128));

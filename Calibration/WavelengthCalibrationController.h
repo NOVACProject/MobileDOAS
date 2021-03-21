@@ -52,6 +52,8 @@ public:
             outlierCorrespondenceWavelengths.reserve(estimatedSize);
         }
 
+        std::vector<double> initialPixelToWavelengthMapping;
+
         std::vector<double> inlierCorrespondencePixels;
         std::vector<double> inlierCorrespondenceWavelengths;
 

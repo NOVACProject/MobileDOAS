@@ -46,6 +46,7 @@ void WavelengthCalibrationController::RunCalibration()
     {
         const auto& calibrationDebug = setup.GetLastCalibrationSetup();
         this->m_calibrationDebug = WavelengthCalibrationDebugState(calibrationDebug.allCorrespondences.size());
+        this->m_calibrationDebug.initialPixelToWavelengthMapping = settings.initialPixelToWavelengthMapping;
 
         for (size_t correspondenceIdx = 0; correspondenceIdx < calibrationDebug.allCorrespondences.size(); ++correspondenceIdx)
         {
