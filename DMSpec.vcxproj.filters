@@ -82,6 +82,9 @@
     <Filter Include="Source Files\SpectralEvaluation\Calibration">
       <UniqueIdentifier>{cbab2705-d57e-4893-bd0a-ccba5c903e38}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\SpectralEvaluation\Math">
+      <UniqueIdentifier>{0d4c2c64-a512-4842-8313-dd28c9dd1db8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Common.cpp">
@@ -431,6 +434,9 @@
     </ClCompile>
     <ClCompile Include="Calibration\ReferenceCreationController.cpp">
       <Filter>Header Files\Calibration</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Math\FunctionFit.cpp">
+      <Filter>Source Files\SpectralEvaluation\Math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

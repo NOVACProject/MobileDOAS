@@ -180,13 +180,15 @@ void CCalibrateInstrumentLineShape::OnLbnSelchangeFoundPeak()
     {
         // zoom in on the selected peak
         const novac::SpectrumDataPoint selectedPeak = this->m_controller->m_peaksFound[selectedElement];
-        const double lambdaMin = this->m_controller->m_inputSpectrumWavelength[std::max(static_cast<size_t>(selectedPeak.pixel - 50), 0LLU)];
-        const double lambdaMax = this->m_controller->m_inputSpectrumWavelength[std::min(static_cast<size_t>(selectedPeak.pixel + 50), this->m_controller->m_inputSpectrumWavelength.size() - 1)];
+        const int firstPixel = std::max(static_cast<int>(selectedPeak.pixel - 50), 0);
+        const int lastPixel = std::min(static_cast<int>(selectedPeak.pixel + 50), static_cast<int>(this->m_controller->m_inputSpectrumWavelength.size()) - 1);
+        const double lambdaMin = this->m_controller->m_inputSpectrumWavelength[firstPixel];
+        const double lambdaMax = this->m_controller->m_inputSpectrumWavelength[lastPixel];
 
         m_spectrumPlot.SetRangeX(lambdaMin, lambdaMax, 1, false);
         m_spectrumPlot.SetRangeY(
-            Min(m_controller->m_inputSpectrum.data() + (int)(selectedPeak.pixel - 50), 100),
-            Max(m_controller->m_inputSpectrum.data() + (int)(selectedPeak.pixel - 50), 100),
+            Min(m_controller->m_inputSpectrum.data() + firstPixel, lastPixel - firstPixel),
+            Max(m_controller->m_inputSpectrum.data() + firstPixel, lastPixel - firstPixel),
             true);
     }
     else
