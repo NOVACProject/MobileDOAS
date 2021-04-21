@@ -1,6 +1,6 @@
 MobileDOAS Release Notes
 -----------------------------------------------------
-Version 6.3 (TBD)
+Version 6.3 (April 2021)
 
 New features
 * Option to read and analyze spectra files from a directory (#137)
