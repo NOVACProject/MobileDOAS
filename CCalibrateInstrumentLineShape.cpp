@@ -194,7 +194,15 @@ void CCalibrateInstrumentLineShape::OnLbnSelchangeFoundPeak()
     else
     {
         // zoom out to show the entire graph
-        m_spectrumPlot.SetRangeX(this->m_controller->m_inputSpectrumWavelength.front(), this->m_controller->m_inputSpectrumWavelength.back(), 0, true);
+        m_spectrumPlot.SetRangeX(
+            this->m_controller->m_inputSpectrumWavelength.front(),
+            this->m_controller->m_inputSpectrumWavelength.back(),
+            0,
+            false);
+        m_spectrumPlot.SetRangeY(
+            Min(m_controller->m_inputSpectrum.data(), static_cast<long>(m_controller->m_inputSpectrum.size())),
+            Max(m_controller->m_inputSpectrum.data(), static_cast<long>(m_controller->m_inputSpectrum.size())),
+            true);
     }
 
     UpdateGraph(false);
