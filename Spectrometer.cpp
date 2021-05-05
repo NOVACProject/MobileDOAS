@@ -1163,7 +1163,7 @@ void CSpectrometer::WriteBeginEvFile(int fitRegion) {
 	CString evPath = m_subFolder + "\\" + m_measurementBaseName + "_" + m_measurementStartTimeStr + TEXT("evaluationLog_" + m_fitRegion[fitRegion].window.name + ".txt");
 	CString str1, str2, str3, str4, str5, str6, str7, channelName;
 
-	str1.Format("***Desktop Mobile Program***\nVERSION=%1d.%1d\nFILETYPE=evaluationlog\n", CVersion::majorNumber, CVersion::minorNumber);
+	str1.Format("***Desktop Mobile Program***\nVERSION=%1d.%1d.%1d\nFILETYPE=evaluationlog\n", CVersion::majorNumber, CVersion::minorNumber, CVersion::patchNumber);
 	str2.Format("BASENAME=%s\nWINDSPEED=%f\nWINDDIRECTION=%f\n", (LPCSTR)m_measurementBaseName, m_windSpeed, m_windAngle);
 	str3 = TEXT("***copy of related configuration file ***\n");
 
