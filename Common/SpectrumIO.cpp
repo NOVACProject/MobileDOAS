@@ -160,7 +160,7 @@ int CSpectrumIO::readSTDFile(CString filename, CSpectrum *curSpec){
 		}
 
 		// Read in GPS status
-		if (pt = strstr(szLine, "GPS Status ="))
+		if (pt = strstr(szLine, "GPSStatus ="))
 		{
 			pt = strstr(szLine, "=");
 			if (0 < sscanf(&pt[1], "%s", &tmpStr)) {
@@ -213,16 +213,16 @@ int CSpectrumIO::readTextFile(CString filename, CSpectrum *curSpec){
 			
 			ret = sscanf(szToken, "%lf\t%lf", &tmpDouble1, &tmpDouble2);
 
-		if(ret == 1){
-			curSpec->I[tmpInt] = tmpDouble1;
-		}else if(ret == 2){
-			curSpec->I[tmpInt] = tmpDouble2;
-		}else{
+			if(ret == 1){
+				curSpec->I[tmpInt] = tmpDouble1;
+			}else if(ret == 2){
+				curSpec->I[tmpInt] = tmpDouble2;
+			}else{
 
-		}
-		curSpec->length = ++tmpInt;
+			}
+			curSpec->length = ++tmpInt;
 
-		szToken = NULL;
+			szToken = NULL;
 		}
 	}
 
@@ -279,7 +279,9 @@ bool CSpectrumIO::WriteStdFile(const CString &fileName, const CSpectrum& spectru
 		//fprintf(f, "Author = \"\"\n");
 		fprintf(f, "Average = %.1f\n", average);
 		//fprintf(f, "AzimuthAngle = 0\n");
-		fprintf(f, "Course = %.1lf\n", spectrum.course);
+		if (!std::isnan(spectrum.course)) {
+			fprintf(f, "Course = %.1lf\n", spectrum.course);
+		}
 		//fprintf(f, "Delta = 0\n");
 		//fprintf(f, "DeltaRel = 0\n");
 		//fprintf(f, "Deviation = 0\n");
@@ -290,7 +292,9 @@ bool CSpectrumIO::WriteStdFile(const CString &fileName, const CSpectrum& spectru
 		fprintf(f, "FitHigh = %d\n", spectrum.fitHigh);
 		fprintf(f, "FitLow = %d\n", spectrum.fitLow);
 		//fprintf(f, "Gain = 0\n");
-		fprintf(f, "GPS Status = %s\n", spectrum.gpsStatus.c_str());
+		if (spectrum.gpsStatus.c_str() != "") {
+			fprintf(f, "GPSStatus = %s\n", spectrum.gpsStatus.c_str());
+		}
 		fprintf(f, "IntegrationMethod = Average\n");
 		fprintf(f, "Latitude = %.6lf\n", spectrum.lat);
 		//fprintf(f, "LightPath = 0\n");
@@ -314,7 +318,9 @@ bool CSpectrumIO::WriteStdFile(const CString &fileName, const CSpectrum& spectru
 		//fprintf(f, "Remark = \"\"\n");
 		//fprintf(f, "ScanGeometry = 0\n"); //(DoasCore.Math.ScanGeometry)SAZ: 137.41237083135 SZA: 31.5085943481828 LAZ: 298.523110145623 LAZ: 129.285101310559 Date: 1/5/2007 10:35:07 Lat.: 0 Lon.: 0\n");
 		//fprintf(f, "ScanMax = 0\n");	
-		fprintf(f, "Speed = %.1lf m/s\n", spectrum.speed);
+		if (!std::isnan(spectrum.speed)) {
+			fprintf(f, "Speed = %.1lf\n", spectrum.speed);
+		}
 		if (!std::isnan(spectrum.boardTemperature)) {
 			fprintf(f, "BoardTemperature = %lf\n", spectrum.boardTemperature);
 		}

@@ -114,6 +114,7 @@ bool CGPS::ReadGPS()
 			std::cerr << "timeout in getting gps." << std::endl;
 			serial.FlushSerialPort(1);
 			m_gotContact = false;
+			this->m_gpsInfo.status = "NA";
 			return false;
 		}
 	}while(!Parse(gpstxt, localGpsInfo));

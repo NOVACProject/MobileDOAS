@@ -46,7 +46,7 @@ struct gpsData {
 	/* Date (in the format ddmmyy) */
 	int date = 0;
 
-	/* GPS status. A=active, V=void */
+	/* GPS status. A=active, V=void, NA=not available (i.e. not connected) */
 	std::string status;
 
 	/* Speed over ground in m/s */

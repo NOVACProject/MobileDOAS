@@ -404,10 +404,11 @@ void CSpectrumInspectionDlg::FillInSpectrumPropertiesList(const CSpectrum *spec)
 		str.Format("%.1lf", spec->altitude);
 		m_propertyList.SetItemText(index++, 1, str);
 
+		str.Format("Not Available");
 		if (spec->gpsStatus == "A") {
 			str.Format("%s", "Active");
 		}
-		else {
+		if (spec->gpsStatus == "V") {
 			str.Format("%s", "Void");
 		}
 		m_propertyList.SetItemText(index++, 1, str);

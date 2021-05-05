@@ -1,5 +1,8 @@
 MobileDOAS Release Notes
 -----------------------------------------------------
+Version 6.3.1 (May 2021)
+* Revisions to new attributes added to STD files in 6.3 (#154)
+
 Version 6.3 (April 2021)
 
 New features
