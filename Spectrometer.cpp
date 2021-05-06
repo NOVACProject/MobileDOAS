@@ -1790,8 +1790,8 @@ short CSpectrometer::AdjustIntegrationTimeToLastIntensity(long maximumIntensity)
 
 	// Adjust the integration time
 	long desiredIntegrationTime = (curSaturationRatio < minTolerableRatio) ? 
-		(long)(m_integrationTime * (1.0 + ratioTolerance)) : 
-		(long)(m_integrationTime / (1.0 + ratioTolerance));
+		(long)round(m_integrationTime * (1.0 + ratioTolerance)) : 
+		(long)round(m_integrationTime / (1.0 + ratioTolerance));
 
 	m_integrationTime = std::max((long)MIN_EXPOSURETIME, std::min(m_timeResolution, desiredIntegrationTime));
 
