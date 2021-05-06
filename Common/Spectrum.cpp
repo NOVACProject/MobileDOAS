@@ -249,7 +249,7 @@ void CSpectrum::Clear() {
 	lat = 0.0;
 	lon = 0.0;
 	altitude = 0.0;
-	gpsStatus = "V";
+	gpsStatus = "NA";
 	speed = 0.0;
 	course = 0.0;
 	spectrometerSerial.Format("");

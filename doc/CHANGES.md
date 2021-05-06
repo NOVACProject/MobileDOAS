@@ -1,5 +1,11 @@
 MobileDOAS Release Notes
 -----------------------------------------------------
+Version 6.3.1 (May 2021)
+
+* Revisions to new attributes added to STD files in 6.3 (#154)
+* Fix rounding issue in integration time adjustments (#155)
+
+-----------------------------------------------------
 Version 6.3 (April 2021)
 
 New features
@@ -12,8 +18,6 @@ Bug fixes
 Other
 * Improved method to determine whether spectrum is dark (#146)
 
-
-MobileDOAS Release Notes
 -----------------------------------------------------
 Version 6.2 (August 2019)
 

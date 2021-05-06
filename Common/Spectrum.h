@@ -21,7 +21,7 @@ public:
 	double  lat;			// Latitude, in decimal degrees
 	double  lon;			// Longitude, in decimal degrees
 	double  altitude;		// Altitude, in meters above sea-level
-	std::string gpsStatus;  // GPS Status, A=active, V=void
+	std::string gpsStatus;  // GPS Status, A=active, V=void, NA=not available
 	double  speed;			// GPS speed in m/s
 	double  course;         // GPS tracking direction in degrees
 	std::string date;		// The date the spectrum acquisition started (dd.mm.yy)

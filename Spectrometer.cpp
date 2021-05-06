@@ -1163,7 +1163,7 @@ void CSpectrometer::WriteBeginEvFile(int fitRegion) {
 	CString evPath = m_subFolder + "\\" + m_measurementBaseName + "_" + m_measurementStartTimeStr + TEXT("evaluationLog_" + m_fitRegion[fitRegion].window.name + ".txt");
 	CString str1, str2, str3, str4, str5, str6, str7, channelName;
 
-	str1.Format("***Desktop Mobile Program***\nVERSION=%1d.%1d\nFILETYPE=evaluationlog\n", CVersion::majorNumber, CVersion::minorNumber);
+	str1.Format("***Desktop Mobile Program***\nVERSION=%1d.%1d.%1d\nFILETYPE=evaluationlog\n", CVersion::majorNumber, CVersion::minorNumber, CVersion::patchNumber);
 	str2.Format("BASENAME=%s\nWINDSPEED=%f\nWINDDIRECTION=%f\n", (LPCSTR)m_measurementBaseName, m_windSpeed, m_windAngle);
 	str3 = TEXT("***copy of related configuration file ***\n");
 
@@ -1553,6 +1553,9 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 
 	if (!IsExistingFile(fileName)) {
 		f = fopen(fileName, "w");
+		if (f == nullptr) {
+			return;
+		}
 		fprintf(f, "#--Additional log file to the Mobile DOAS program---\n");
 		fprintf(f, "#This file has only use as test file for further development of the Mobile DOAS program\n\n");
 		fprintf(f, "#SpectrumNumber\t");
@@ -1790,8 +1793,8 @@ short CSpectrometer::AdjustIntegrationTimeToLastIntensity(long maximumIntensity)
 
 	// Adjust the integration time
 	long desiredIntegrationTime = (curSaturationRatio < minTolerableRatio) ? 
-		(long)(m_integrationTime * (1.0 + ratioTolerance)) : 
-		(long)(m_integrationTime / (1.0 + ratioTolerance));
+		(long)round(m_integrationTime * (1.0 + ratioTolerance)) : 
+		(long)round(m_integrationTime / (1.0 + ratioTolerance));
 
 	m_integrationTime = std::max((long)MIN_EXPOSURETIME, std::min(m_timeResolution, desiredIntegrationTime));
 
@@ -1944,6 +1947,7 @@ void CSpectrometer::CreateSpectrum(CSpectrum &spectrum, const double *spec, cons
 	spectrum.fitLow = m_conf->m_fitWindow->fitLow;
 	spectrum.boardTemperature = boardTemperature;
 	spectrum.detectorTemperature = detectorTemperature;
+	spectrum.gpsStatus = "NA";
 	if (m_useGps) {
 		spectrum.SetStartTime(m_spectrumGpsData[m_spectrumCounter].time);
 		spectrum.SetStopTime(m_spectrumGpsData[m_spectrumCounter].time + elapsedSecond);
