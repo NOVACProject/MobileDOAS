@@ -86,6 +86,8 @@ void CMeasurement_View::Run(){
 			return;
 		}
 
+		GetSpectrumInfo(scanResult);
+
 		// Copy the spectrum to the local variables
 		for(int i = 0; i < m_NChannels; ++i){
 			memcpy((void*)tmpSpec[i], (void*)scanResult[i], sizeof(double)*MAX_SPECTRUM_LENGTH);

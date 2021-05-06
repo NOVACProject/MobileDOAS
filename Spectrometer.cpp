@@ -1553,6 +1553,9 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 
 	if (!IsExistingFile(fileName)) {
 		f = fopen(fileName, "w");
+		if (f == nullptr) {
+			return;
+		}
 		fprintf(f, "#--Additional log file to the Mobile DOAS program---\n");
 		fprintf(f, "#This file has only use as test file for further development of the Mobile DOAS program\n\n");
 		fprintf(f, "#SpectrumNumber\t");
@@ -1944,6 +1947,7 @@ void CSpectrometer::CreateSpectrum(CSpectrum &spectrum, const double *spec, cons
 	spectrum.fitLow = m_conf->m_fitWindow->fitLow;
 	spectrum.boardTemperature = boardTemperature;
 	spectrum.detectorTemperature = detectorTemperature;
+	spectrum.gpsStatus = "NA";
 	if (m_useGps) {
 		spectrum.SetStartTime(m_spectrumGpsData[m_spectrumCounter].time);
 		spectrum.SetStopTime(m_spectrumGpsData[m_spectrumCounter].time + elapsedSecond);
