@@ -441,6 +441,12 @@
     <ClCompile Include="SpectralEvaluation\src\Math\PolynomialFit.cpp">
       <Filter>Source Files\SpectralEvaluation\Math</Filter>
     </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Calibration\FraunhoferSpectrumGeneration.cpp">
+      <Filter>Source Files\SpectralEvaluation\Calibration</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Calibration\InstrumentLineShapeEstimation.cpp">
+      <Filter>Source Files\SpectralEvaluation\Calibration</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DMSpec.rc">

@@ -21,6 +21,7 @@ void WavelengthCalibrationController::RunCalibration()
     novac::WavelengthCalibrationSettings settings;
     settings.highResSolarAtlas = this->m_solarSpectrumFile;
     settings.initialPixelToWavelengthMapping = novac::GetPixelToWavelengthMappingFromFile(this->m_initialWavelengthCalibrationFile);
+    settings.estimateInstrumentLineShape = novac::InstrumentLineshapeEstimationOption::None; // So far...
     // So far no cross sections provided...
 
     novac::CSpectrum measuredSpectrum;
@@ -32,11 +33,12 @@ void WavelengthCalibrationController::RunCalibration()
     novac::CCrossSectionData measuredInstrumentLineShape;
     if (!novac::ReadCrossSectionFile(this->m_initialLineShapeFile, measuredInstrumentLineShape))
     {
-        throw std::invalid_argument("Cannot read the provided input spectrum file");
+        throw std::invalid_argument("Cannot read the provided instrument lineshape file");
     }
+    settings.initialInstrumentLineShape = measuredInstrumentLineShape;
 
     novac::WavelengthCalibrationSetup setup{ settings };
-    auto result = setup.DoWavelengthCalibration(measuredSpectrum, measuredInstrumentLineShape);
+    auto result = setup.DoWavelengthCalibration(measuredSpectrum);
 
     // Copy out the result
     this->m_resultingPixelToWavelengthMapping = result.pixelToWavelengthMapping;
