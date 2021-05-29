@@ -7,6 +7,8 @@
 #include <SpectralEvaluation/Spectra/Spectrum.h>
 #include <SpectralEvaluation/File/File.h>
 #include <SpectralEvaluation/Calibration/WavelengthCalibration.h>
+#include <SpectralEvaluation/Calibration/InstrumentLineShapeEstimation.h>
+#include <SpectralEvaluation/Calibration/FraunhoferSpectrumGeneration.h>
 
 // TODO: It should be possible to remove this header...
 #include <SpectralEvaluation/Calibration/WavelengthCalibrationByRansac.h>
@@ -30,12 +32,30 @@ void WavelengthCalibrationController::RunCalibration()
         throw std::invalid_argument("Cannot read the provided input spectrum file");
     }
 
-    novac::CCrossSectionData measuredInstrumentLineShape;
-    if (!novac::ReadCrossSectionFile(this->m_initialLineShapeFile, measuredInstrumentLineShape))
+    if (this->m_initialLineShapeFile.size() > 0)
     {
-        throw std::invalid_argument("Cannot read the provided instrument lineshape file");
+        novac::CCrossSectionData measuredInstrumentLineShape;
+        if (!novac::ReadCrossSectionFile(this->m_initialLineShapeFile, measuredInstrumentLineShape))
+        {
+            throw std::invalid_argument("Cannot read the provided instrument lineshape file");
+        }
+        settings.initialInstrumentLineShape = measuredInstrumentLineShape;
+        settings.estimateInstrumentLineShape = novac::InstrumentLineshapeEstimationOption::None;
     }
-    settings.initialInstrumentLineShape = measuredInstrumentLineShape;
+    else
+    {
+        // The user has not supplied an instrument-line-shape, create a guess for one.
+        std::vector<std::pair<std::string, double>> noCrossSections;
+        novac::FraunhoferSpectrumGeneration fraunhoferSpectrumGen{ this->m_solarSpectrumFile, noCrossSections };
+
+        novac::InstrumentLineShapeEstimation ilsEstimation{ settings.initialPixelToWavelengthMapping };
+
+        double resultInstrumentFwhm;
+        ilsEstimation.EstimateInstrumentLineShape(fraunhoferSpectrumGen, measuredSpectrum, settings.initialInstrumentLineShape, resultInstrumentFwhm);
+
+        // no need to estimate further (or is it?)
+        settings.estimateInstrumentLineShape = novac::InstrumentLineshapeEstimationOption::None;
+    }
 
     novac::WavelengthCalibrationSetup setup{ settings };
     auto result = setup.DoWavelengthCalibration(measuredSpectrum);

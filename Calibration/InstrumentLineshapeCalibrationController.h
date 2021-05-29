@@ -41,6 +41,13 @@ public:
     std::vector<double> m_inputSpectrumWavelength;
 
     /// <summary>
+    /// Output: This is set to true (when reading the input spectrum) 
+    /// if the read in spectrum already contains a pixel-to-wavelength calibration.
+    /// Otherwise false.
+    /// </summary>
+    bool m_inputSpectrumContainsWavelength = false;
+
+    /// <summary>
     /// Output: The fitted line shape function.
     /// </summary>
     std::pair<LineShapeFunction, void*> m_fittedLineShape;

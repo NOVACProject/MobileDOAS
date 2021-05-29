@@ -8,10 +8,12 @@
 #include "InstrumentLineshapeCalibrationController.h"
 #include <SpectralEvaluation/File/File.h>
 #include <SpectralEvaluation/Calibration/InstrumentLineShape.h>
+#include <SpectralEvaluation/Calibration/WavelengthCalibration.h>
 #include <SpectralEvaluation/VectorUtils.h>
+#include <SpectralEvaluation/Interpolation.h>
 
 InstrumentLineshapeCalibrationController::InstrumentLineshapeCalibrationController()
-    : m_inputSpectrumPath(""), m_darkSpectrumPath(""), m_fittedLineShape(LineShapeFunction::None, nullptr)
+    : m_inputSpectrumPath(""), m_darkSpectrumPath(""), m_inputSpectrumContainsWavelength(false), m_fittedLineShape(LineShapeFunction::None, nullptr)
 {
 }
 
@@ -45,19 +47,43 @@ void InstrumentLineshapeCalibrationController::Update()
 
     this->m_inputSpectrum = std::vector<double>(hgSpectrum.m_data, hgSpectrum.m_data + hgSpectrum.m_length);
 
-    if (hgSpectrum.m_wavelength.size() != 0)
+    const double minimumWavelength = (hgSpectrum.m_wavelength.size() != 0) ? hgSpectrum.m_wavelength.front() : 280.0;
+    const double maximumWavelength = (hgSpectrum.m_wavelength.size() != 0) ? hgSpectrum.m_wavelength.back() : 420.0;
+
+    if (false) // if (hgSpectrum.m_wavelength.size() != 0) // TODO: Option from the user
     {
+        this->m_inputSpectrumContainsWavelength = true;
         this->m_inputSpectrumWavelength = hgSpectrum.m_wavelength;
+
+        // Find the peaks in the measured spectrum
+        novac::FindEmissionLines(hgSpectrum, m_peaksFound);
     }
     else
     {
-        this->m_inputSpectrumWavelength.resize(hgSpectrum.m_length);
-        std::iota(begin(m_inputSpectrumWavelength), end(m_inputSpectrumWavelength), 0.0);
-    }
+        this->m_inputSpectrumContainsWavelength = false;
 
-    // Find the peaks in the measured spectrum
-    double minimumIntensity = 1000; // TODO: Input
-    novac::FindPeaks(hgSpectrum, minimumIntensity, m_peaksFound);
+        // If the measured spectrum does _not_ contain a pixel-to-wavelength calibration already
+        // then make a guess for this from the distance of the peaks
+        novac::SpectrometerCalibrationResult wavelengthCalibrationResult;
+        novac::MercurySpectrumCalibrationState wavelengthCalibrationState;
+        if (novac::MercuryCalibration(hgSpectrum, 3, minimumWavelength, maximumWavelength, wavelengthCalibrationResult, &wavelengthCalibrationState))
+        {
+            this->m_inputSpectrumWavelength = wavelengthCalibrationResult.pixelToWavelengthMapping;
+            this->m_peaksFound = wavelengthCalibrationState.peaks;
+        }
+        else
+        {
+            this->m_inputSpectrumWavelength.resize(hgSpectrum.m_length);
+            std::iota(begin(m_inputSpectrumWavelength), end(m_inputSpectrumWavelength), 0.0);
+        }
+
+        // Remap the points from the (possible) wavelength calibration of the measured spectrum to
+        //  our own (home brewn) pixel-to-wavelength calibration.   
+        for (auto& peak : m_peaksFound)
+        {
+            novac::LinearInterpolation(this->m_inputSpectrumWavelength, peak.pixel, peak.wavelength);
+        }
+    }
 }
 
 double InstrumentLineshapeCalibrationController::SubtractBaseline(novac::CSpectrum& spectrum)

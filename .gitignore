@@ -9,3 +9,8 @@ Release/
 /.vs/DMSpec/v15
 /.vs/DMSpec/v16
 /Data
+.vs/VSWorkspaceState.json
+.vs/MobileDoas_GitHub/v15/.suo
+*.db
+*.sqlite
+cfg.xml
