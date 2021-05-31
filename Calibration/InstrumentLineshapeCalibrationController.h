@@ -16,14 +16,21 @@ public:
     };
 
     /// <summary>
-    /// The full path to the mercury spectrum to retreive the line shape from.
+    /// Input: The full path to the mercury spectrum to retreive the line shape from.
     /// </summary>
     std::string m_inputSpectrumPath;
 
     /// <summary>
-    /// The full path to the dark to use (if any)
+    /// Input: The full path to the dark to use (if any)
     /// </summary>
     std::string m_darkSpectrumPath;
+
+    /// <summary>
+    /// Input: set to true if we should read the wavelength calibration
+    /// from file (if available). Set to false to attempt to auto-determine
+    /// the wavelength calibration from the mercury emission lines.
+    /// </summary>
+    bool m_readWavelengthCalibrationFromFile = true;
 
     /// <summary>
     /// Output: this is our list of found peaks in the m_inputSpectrum.
@@ -46,6 +53,13 @@ public:
     /// Otherwise false.
     /// </summary>
     bool m_inputSpectrumContainsWavelength = false;
+
+    /// <summary>
+    /// Output: this is set to true if we are to perform a wavelength calibration ourselves
+    /// (i.e. if m_readWavelengthCalibrationFromFile==false or m_inputSpectrumContainsWavelength==false)
+    /// but the wavelength calibration failed.
+    /// </summary>
+    bool m_wavelengthCalibrationSucceeded = false;
 
     /// <summary>
     /// Output: The fitted line shape function.

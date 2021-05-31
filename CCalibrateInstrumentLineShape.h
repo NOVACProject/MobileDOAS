@@ -33,12 +33,17 @@ public:
     CListBox m_peaksList;
     Graph::CGraphCtrl m_spectrumPlot; // The plot for the spectrum
     CStatic m_graphHolder; // Holder for the plot, for easy ui access
-    int m_fitFunctionOption; // The option for which function to fit to the line shape. 
+    int m_fitFunctionOption = 0; // The option for which function to fit to the line shape. 
+    int m_calibrationOption = 1; // The option for if we should read the calibration from file or estimate from emission lines
+    CStatic m_labelSpectrumContainsNoWavelengthCalibration;
 
     afx_msg void OnBnClickedButtonBrowseSpectrum();
     afx_msg void OnBnClickedBrowseSpectrumDark();
     afx_msg void OnLbnSelchangeFoundPeak();
     afx_msg void OnBnClickedRadioFitGaussian();
+    afx_msg void OnBnClickedSave();
+    afx_msg void OnBnClickedRadioCalibrationFromFile();
+    afx_msg void OnBnClickedRadioCalibrationFromMercuryLines();
 
 private:
     InstrumentLineshapeCalibrationController* m_controller;
@@ -63,6 +68,9 @@ private:
     /// peak and type of function
     /// </summary>
     void UpdateFittedLineShape();
-public:
-    afx_msg void OnBnClickedSave();
+
+    /// <summary>
+    /// Updates the wavelength calibration according to the users choice.
+    /// </summary>
+    void UpdateWavelengthCalibrationOption();
 };
