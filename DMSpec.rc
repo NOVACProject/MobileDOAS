@@ -1503,12 +1503,10 @@ BEGIN
     GROUPBOX        "",IDC_STATIC_GRAPH_HOLDER,110,87,573,238
     LTEXT           "Peaks found",IDC_STATIC,24,94,40,8
     LTEXT           "Fit",IDC_STATIC,23,277,9,8
-    GROUPBOX        "Wavelength Calibration",IDC_STATIC,450,7,247,59
-    CONTROL         "Use calibration in spectrum file",IDC_CALIBRATION_FROM_FILE,
-                    "Button",BS_AUTORADIOBUTTON,465,22,117,10
-    CONTROL         "Auto determine from Mercury spectrum",IDC_CALIBRATION_FROM_MERCURY_LINES,
-                    "Button",BS_AUTORADIOBUTTON,465,44,145,10
-    LTEXT           "No Wavelength calibration in file",IDC_LABEL_MISSING_CALIBRATION,588,23,106,13
+    GROUPBOX        "Wavelength Calibration",IDC_STATIC,451,7,247,59
+    LTEXT           "No Wavelength calibration in file",IDC_LABEL_MISSING_CALIBRATION,483,41,203,13
+    CONTROL         "Auto determine from Mercury lines",IDC_CALIBRATION_FROM_MERCURY_LINES,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,467,22,154,10
 END
 
 IDD_CALIBRATE_WAVELENGTH_DIALOG DIALOGEX 0, 0, 721, 371

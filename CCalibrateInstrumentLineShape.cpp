@@ -20,6 +20,7 @@ IMPLEMENT_DYNAMIC(CCalibrateInstrumentLineShape, CPropertyPage)
 CCalibrateInstrumentLineShape::CCalibrateInstrumentLineShape(CWnd* pParent /*=nullptr*/)
     : CPropertyPage(IDD_CALIBRATE_LINESHAPE_DIALOG)
     , m_inputSpectrum(_T(""))
+    , m_autoDetermineCalibration(FALSE)
 {
     this->m_controller = new InstrumentLineshapeCalibrationController();
 }
@@ -62,7 +63,7 @@ void CCalibrateInstrumentLineShape::DoDataExchange(CDataExchange* pDX)
     DDX_Control(pDX, IDC_STATIC_GRAPH_HOLDER, m_graphHolder);
     DDX_Radio(pDX, IDC_RADIO_FIT_GAUSSIAN, m_fitFunctionOption);
     DDX_Control(pDX, IDC_LABEL_MISSING_CALIBRATION, m_labelSpectrumContainsNoWavelengthCalibration);
-    // DDX_Radio(pDX, IDC_CALIBRATION_FROM_FILE, m_calibrationOption); // TODO: Try to uncomment! This line gives a assert failure during setup. Cannot find why atm
+    DDX_Check(pDX, IDC_CALIBRATION_FROM_MERCURY_LINES, m_autoDetermineCalibration);
 }
 
 
@@ -74,8 +75,7 @@ BEGIN_MESSAGE_MAP(CCalibrateInstrumentLineShape, CPropertyPage)
     ON_BN_CLICKED(IDC_RADIO_FIT_SUPER_GAUSSIAN, &CCalibrateInstrumentLineShape::OnBnClickedRadioFitGaussian)
     ON_BN_CLICKED(IDC_RADIO_FIT_NOTHING, &CCalibrateInstrumentLineShape::OnBnClickedRadioFitGaussian)
     ON_BN_CLICKED(IDC_BUTTON_SAVE, &CCalibrateInstrumentLineShape::OnBnClickedSave)
-    ON_BN_CLICKED(IDC_CALIBRATION_FROM_FILE, &CCalibrateInstrumentLineShape::OnBnClickedRadioCalibrationFromFile)
-    ON_BN_CLICKED(IDC_CALIBRATION_FROM_MERCURY_LINES, &CCalibrateInstrumentLineShape::OnBnClickedRadioCalibrationFromMercuryLines)
+    ON_BN_CLICKED(IDC_CALIBRATION_FROM_MERCURY_LINES, &CCalibrateInstrumentLineShape::OnBnClickedToggleCalibrationFromMercuryLines)
 END_MESSAGE_MAP()
 
 // CCalibrateInstrumentLineShape message handlers
@@ -107,7 +107,26 @@ void CCalibrateInstrumentLineShape::UpdateLineShape()
 {
     try
     {
+        this->m_controller->m_readWavelengthCalibrationFromFile = this->m_autoDetermineCalibration == 0;
+
         m_controller->Update();
+
+        {
+            if (this->m_autoDetermineCalibration == FALSE && !this->m_controller->m_inputSpectrumContainsWavelength)
+            {
+                m_labelSpectrumContainsNoWavelengthCalibration.SetWindowTextA("No calibration in file, using pixels");
+                m_labelSpectrumContainsNoWavelengthCalibration.ShowWindow(SW_SHOW);
+            }
+            else if (!this->m_controller->m_wavelengthCalibrationSucceeded)
+            {
+                m_labelSpectrumContainsNoWavelengthCalibration.SetWindowTextA("Wavelength calibration failed, using default");
+                m_labelSpectrumContainsNoWavelengthCalibration.ShowWindow(SW_SHOW);
+            }
+            else
+            {
+                m_labelSpectrumContainsNoWavelengthCalibration.ShowWindow(SW_HIDE);
+            }
+        }
     }
     catch (std::invalid_argument& e)
     {
@@ -304,12 +323,7 @@ void CCalibrateInstrumentLineShape::UpdateWavelengthCalibrationOption()
             return;
         }
 
-        this->m_controller->m_readWavelengthCalibrationFromFile = this->m_calibrationOption == 0;
-
-        this->m_controller->Update();
-
-        int showCalibrationWarning = (this->m_calibrationOption == 0 && this->m_controller->m_inputSpectrumContainsWavelength) ? SW_SHOW : SW_HIDE;
-        m_labelSpectrumContainsNoWavelengthCalibration.ShowWindow(showCalibrationWarning);
+        UpdateLineShape();
     }
     catch (std::invalid_argument& e)
     {
@@ -321,12 +335,7 @@ void CCalibrateInstrumentLineShape::UpdateWavelengthCalibrationOption()
     }
 }
 
-void CCalibrateInstrumentLineShape::OnBnClickedRadioCalibrationFromFile()
+void CCalibrateInstrumentLineShape::OnBnClickedToggleCalibrationFromMercuryLines()
 {
-    UpdateWavelengthCalibrationOption();
-}
-
-void CCalibrateInstrumentLineShape::OnBnClickedRadioCalibrationFromMercuryLines()
-{
-    UpdateWavelengthCalibrationOption();
+    this->UpdateWavelengthCalibrationOption();
 }

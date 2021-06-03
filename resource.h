@@ -523,10 +523,8 @@
 #define IDC_STATIC_DARK2                1312
 #define IDC_EDIT_CALIBRATION            1313
 #define IDC_EDIT_WAVELENGTH_CALIBRATION 1314
-#define IDC_CALIBRATION_FROM_FILE       1315
-#define IDC_RADIO3                      1316
-#define IDC_CALIBRATION_FROM_MERCURY_LINES 1316
 #define IDC_LABEL_MISSING_CALIBRATION   1317
+#define IDC_CALIBRATION_FROM_MERCURY_LINES 1319
 #define ID_ANALYSIS_POSTFLUX            32771
 #define ID_CONTROL_STOP                 32772
 #define ID_CONTROL_START                32772
@@ -551,7 +549,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        288
 #define _APS_NEXT_COMMAND_VALUE         32803
-#define _APS_NEXT_CONTROL_VALUE         1318
+#define _APS_NEXT_CONTROL_VALUE         1319
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif
