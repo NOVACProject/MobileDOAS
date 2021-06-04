@@ -51,13 +51,27 @@ void InstrumentLineshapeCalibrationController::Update()
     const double minimumWavelength = (hgSpectrum.m_wavelength.size() != 0) ? hgSpectrum.m_wavelength.front() : 280.0;
     const double maximumWavelength = (hgSpectrum.m_wavelength.size() != 0) ? hgSpectrum.m_wavelength.back() : 420.0;
 
-    if (this->m_readWavelengthCalibrationFromFile && this->m_inputSpectrumContainsWavelength)
+    if (this->m_readWavelengthCalibrationFromFile)
     {
-        this->m_inputSpectrumWavelength = hgSpectrum.m_wavelength;
-        this->m_wavelengthCalibrationSucceeded = true;
-
         // Find the peaks in the measured spectrum
         novac::FindEmissionLines(hgSpectrum, m_peaksFound);
+
+        if (this->m_inputSpectrumContainsWavelength)
+        {
+            this->m_inputSpectrumWavelength = hgSpectrum.m_wavelength;
+            this->m_wavelengthCalibrationSucceeded = true;
+        }
+        else
+        {
+            this->m_inputSpectrumWavelength.resize(hgSpectrum.m_length);
+            std::iota(begin(m_inputSpectrumWavelength), end(m_inputSpectrumWavelength), 0.0);
+            this->m_wavelengthCalibrationSucceeded = false;
+
+            for (auto& peak : m_peaksFound)
+            {
+                peak.wavelength = peak.pixel;
+            }
+        }
     }
     else
     {
@@ -124,6 +138,26 @@ std::unique_ptr<novac::CSpectrum> InstrumentLineshapeCalibrationController::GetM
     return hgLine;
 }
 
+std::unique_ptr<novac::CSpectrum> InstrumentLineshapeCalibrationController::GetInstrumentLineShape(size_t peakIdx)
+{
+    if (peakIdx >= this->m_peaksFound.size())
+    {
+        throw std::invalid_argument("Invalid index of mercury peak, please select a peak and try again");
+    }
+
+    if (m_sampledLineShapeFunction)
+    {
+        std::unique_ptr<novac::CSpectrum> hgLine = std::make_unique<novac::CSpectrum>(*m_sampledLineShapeFunction);
+        novac::Normalize(*hgLine);
+
+        return hgLine;
+    }
+    else
+    {
+        return this->GetMercuryPeak(peakIdx);
+    }
+}
+
 void InstrumentLineshapeCalibrationController::FitFunctionToLineShape(size_t peakIdx, LineShapeFunction function)
 {
     if (peakIdx >= this->m_peaksFound.size() || function == LineShapeFunction::None)
@@ -137,6 +171,7 @@ void InstrumentLineshapeCalibrationController::FitFunctionToLineShape(size_t pea
     size_t spectrumStartIdx = 0;
     auto hgLine = GetMercuryPeak(peakIdx, &baseline, &spectrumStartIdx);
 
+    const size_t superSamplingRate = 4;
     if (function == LineShapeFunction::Gaussian)
     {
         auto gaussian = new novac::GaussianLineShape();
@@ -144,7 +179,7 @@ void InstrumentLineshapeCalibrationController::FitFunctionToLineShape(size_t pea
 
         this->m_fittedLineShape = std::pair<LineShapeFunction, void*>(function, gaussian);
 
-        std::vector<double> highResPixelData(4 * hgLine->m_length); // super-sample with four points per pixel
+        std::vector<double> highResPixelData(superSamplingRate * hgLine->m_length); // super-sample with more points per pixel
         const double range = hgLine->m_wavelength[hgLine->m_wavelength.size() - 1] - hgLine->m_wavelength[0];
         for (size_t ii = 0; ii < highResPixelData.size(); ++ii)
         {
@@ -160,7 +195,7 @@ void InstrumentLineshapeCalibrationController::FitFunctionToLineShape(size_t pea
 
         this->m_fittedLineShape = std::pair<LineShapeFunction, void*>(function, superGaussian);
 
-        std::vector<double> highResPixelData(4 * hgLine->m_length); // super-sample with four points per pixel
+        std::vector<double> highResPixelData(superSamplingRate * hgLine->m_length); // super-sample with more points per pixel
         const double range = hgLine->m_wavelength[hgLine->m_wavelength.size() - 1] - hgLine->m_wavelength[0];
         for (size_t ii = 0; ii < highResPixelData.size(); ++ii)
         {
@@ -174,3 +209,4 @@ void InstrumentLineshapeCalibrationController::FitFunctionToLineShape(size_t pea
         throw std::invalid_argument("Invalid type of function selected");
     }
 }
+

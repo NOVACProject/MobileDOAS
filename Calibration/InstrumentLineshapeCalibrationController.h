@@ -85,9 +85,16 @@ public:
 
     /// <summary>
     /// Extracts the peak with the provided index from the read in spectrum file.
-    /// The peak will be normalized and have its baseline subtracted
+    /// The peak will be normalized and have its baseline subtracted.
     /// </summary>
     std::unique_ptr<novac::CSpectrum> GetMercuryPeak(size_t peakIdx, double* baseline = nullptr, size_t* startIdx = nullptr);
+
+    /// <summary>
+    /// Extracts the instrument line shape based on the peak with the provided index.
+    /// If a line shape function has been fitted, then this will be sampled and returned
+    /// otherwise the spectrum itself will be returned.
+    /// </summary>
+    std::unique_ptr<novac::CSpectrum> GetInstrumentLineShape(size_t peakIdx);
 
 private:
     void ClearFittedLineShape();

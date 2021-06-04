@@ -290,7 +290,7 @@ void CCalibrateInstrumentLineShape::OnBnClickedSave()
             return;
         }
 
-        const auto hgLine = m_controller->GetMercuryPeak(selectedPeak);
+        const auto hgLine = m_controller->GetInstrumentLineShape(selectedPeak);
 
         // Differentiate the wavelengths against the center value
         const double centerWavelength = m_controller->m_peaksFound[selectedPeak].wavelength;
@@ -299,11 +299,12 @@ void CCalibrateInstrumentLineShape::OnBnClickedSave()
             lambda -= centerWavelength;
         }
 
+        // Save the instrument line shape and the pixel-to-wavelength calibration to file
         CString destinationFileName = L"";
-        if (Common::BrowseForFile_SaveAs("Instrument Line Shape Files\0*.slf\0", destinationFileName))
+        if (Common::BrowseForFile_SaveAs("Novac Instrument Calibration Files\0*.json\0", destinationFileName))
         {
-            std::string dstFileName = novac::EnsureFilenameHasSuffix(std::string(destinationFileName), "slf");
-            novac::SaveCrossSectionFile(dstFileName, *hgLine);
+            std::string dstFileName = novac::EnsureFilenameHasSuffix(std::string(destinationFileName), "json");
+            novac::SaveInstrumentCalibration(dstFileName, *hgLine, this->m_controller->m_inputSpectrumWavelength);
         }
     }
     catch (std::exception& e)
