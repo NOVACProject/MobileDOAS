@@ -23,12 +23,15 @@ public:
     std::string m_solarSpectrumFile;
 
     /// <summary>
-    /// The full path to a file which contains an initial wavelength calibration
+    /// The full path to a file which contains an initial calibration
+    /// This can be either a full calibration file, as saved from another novac program,
+    /// or just the pixel-to-wavelength mapping file.
     /// </summary>
-    std::string m_initialWavelengthCalibrationFile;
+    std::string m_initialCalibrationFile;
 
     /// <summary>
-    /// The full path to a file which contains an initial measured line shape
+    /// The full path to a file which contains an initial measured line shape.
+    /// This may be left out if m_initialCalibrationFile does contain an instrument line shape.
     /// </summary>
     std::string m_initialLineShapeFile;
 

@@ -162,7 +162,7 @@ void CCalibratePixelToWavelengthDialog::OnClickedButtonBrowseSolarSpectrum()
 
 void CCalibratePixelToWavelengthDialog::OnClickedButtonBrowseInitialCalibration()
 {
-    if (!Common::BrowseForFile("Spectrum Files\0*.txt;*.xs\0", this->m_setup.m_initialCalibrationFile))
+    if (!Common::BrowseForFile("Novac Instrument Calibration Files\0*.xml\0Spectrum Files\0*.txt;*.xs\0", this->m_setup.m_initialCalibrationFile))
     {
         return;
     }
@@ -266,7 +266,7 @@ void CCalibratePixelToWavelengthDialog::OnClickedButtonRun()
     this->m_controller->m_inputSpectrumFile = this->m_inputSpectrumFile;
     this->m_controller->m_darkSpectrumFile = this->m_darkSpectrumFile;
     this->m_controller->m_solarSpectrumFile = this->m_setup.m_solarSpectrumFile;
-    this->m_controller->m_initialWavelengthCalibrationFile = this->m_setup.m_initialCalibrationFile;
+    this->m_controller->m_initialCalibrationFile = this->m_setup.m_initialCalibrationFile;
     this->m_controller->m_initialLineShapeFile = this->m_setup.m_instrumentLineshapeFile;
 
     CString runButtonOriginalText;
