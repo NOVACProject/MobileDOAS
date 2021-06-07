@@ -54,6 +54,8 @@ public:
     Graph::CGraphCtrl m_graph; // The plot where we can display the final calibration
     CStatic m_graphHolder; // holder for the graph, for easy ui access
 
+    CComboBox m_graphTypeCombo; // Selecting the type of plot
+
     afx_msg void OnClickedButtonBrowseSpectrum();
     afx_msg void OnClickedButtonBrowseSolarSpectrum();
     afx_msg void OnClickedButtonRun();
@@ -61,6 +63,7 @@ public:
     afx_msg void OnClickedButtonBrowseSpectrumDark();
     afx_msg void OnClickedButtonBrowseLineShape();
     afx_msg void OnClickedButtonSave();
+    afx_msg void OnSelchangeComboGraphType();
 
 private:
     std::string SetupFilePath();
@@ -69,6 +72,20 @@ private:
 
     void UpdateGraph();
 
-    WavelengthCalibrationController* m_controller;
+    /// <summary>
+    /// Updates the graph with inliers / outliers of the correspondences + the fitted polynomial
+    /// </summary>
+    void DrawPolynomialAndInliers();
 
+    /// <summary>
+    /// Draws the measured spectrum + keypoints
+    /// </summary>
+    void DrawMeasuredSpectrumAndKeypoints();
+
+    /// <summary>
+    /// Draws the fraunhofer spectrum + keypoints
+    /// </summary>
+    void DrawFraunhoferSpectrumAndKeypoints();
+
+    WavelengthCalibrationController* m_controller;
 };

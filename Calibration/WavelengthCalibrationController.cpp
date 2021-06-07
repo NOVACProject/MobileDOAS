@@ -62,9 +62,15 @@ void WavelengthCalibrationController::RunCalibration()
         throw std::invalid_argument("Cannot read the provided input spectrum file");
     }
 
-    if (novac::GetFileExtension(this->m_initialCalibrationFile).compare(".xml") == 0)
+    // subtract the dark-spectrum (if this has been provided)
+    novac::CSpectrum darkSpectrum;
+    if (novac::ReadSpectrum(this->m_darkSpectrumFile, darkSpectrum))
     {
-        // TODO: Implement this properly
+        measuredSpectrum.Sub(darkSpectrum);
+    }
+
+    if (novac::GetFileExtension(this->m_initialCalibrationFile).compare(".json") == 0)
+    {
         novac::CSpectrum measuredInstrumentLineShapeSpectrum;
         if (!novac::ReadInstrumentCalibration(this->m_initialCalibrationFile, measuredInstrumentLineShapeSpectrum, settings.initialPixelToWavelengthMapping))
         {
@@ -120,6 +126,21 @@ void WavelengthCalibrationController::RunCalibration()
                 this->m_calibrationDebug.outlierCorrespondencePixels.push_back(corr.measuredValue);
                 this->m_calibrationDebug.outlierCorrespondenceWavelengths.push_back(corr.theoreticalValue);
             }
+        }
+
+        this->m_calibrationDebug.measuredSpectrum = std::vector<double>(calibrationDebug.measuredSpectrum->m_data, calibrationDebug.measuredSpectrum->m_data + calibrationDebug.measuredSpectrum->m_length);
+        this->m_calibrationDebug.fraunhoferSpectrum = std::vector<double>(calibrationDebug.fraunhoferSpectrum->m_data, calibrationDebug.fraunhoferSpectrum->m_data + calibrationDebug.fraunhoferSpectrum->m_length);
+
+        for (const auto& pt : calibrationDebug.measuredKeypoints)
+        {
+            this->m_calibrationDebug.measuredSpectrumKeypointPixels.push_back(pt.pixel);
+            this->m_calibrationDebug.measuredSpectrumKeypointIntensities.push_back(pt.intensity);
+        }
+
+        for (const auto& pt : calibrationDebug.fraunhoferKeypoints)
+        {
+            this->m_calibrationDebug.fraunhoferSpectrumKeypointPixels.push_back(pt.pixel);
+            this->m_calibrationDebug.fraunhoferSpectrumKeypointIntensities.push_back(pt.intensity);
         }
     }
 }

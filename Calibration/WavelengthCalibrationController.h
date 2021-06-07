@@ -62,6 +62,15 @@ public:
 
         std::vector<double> outlierCorrespondencePixels;
         std::vector<double> outlierCorrespondenceWavelengths;
+
+        std::vector<double> measuredSpectrum;
+
+        std::vector<double> measuredSpectrumKeypointPixels;
+        std::vector<double> measuredSpectrumKeypointIntensities;
+
+        std::vector<double> fraunhoferSpectrum;
+        std::vector<double> fraunhoferSpectrumKeypointPixels;
+        std::vector<double> fraunhoferSpectrumKeypointIntensities;
     };
 
     WavelengthCalibrationDebugState m_calibrationDebug;

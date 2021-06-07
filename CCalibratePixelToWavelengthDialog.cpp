@@ -48,6 +48,8 @@ BOOL CCalibratePixelToWavelengthDialog::OnInitDialog() {
     m_graph.SetPlotColor(RGB(255, 0, 0));
     m_graph.CleanPlot();
 
+    m_graphTypeCombo.SetCurSel(0);
+
     return TRUE;  // return TRUE unless you set the focus to a control
 }
 
@@ -62,6 +64,7 @@ void CCalibratePixelToWavelengthDialog::DoDataExchange(CDataExchange* pDX)
     DDX_Control(pDX, IDC_STATIC_GRAPH_HOLDER_PANEL, m_graphHolder);
     DDX_Control(pDX, IDC_BUTTON_RUN, m_runButton);
     DDX_Control(pDX, IDC_BUTTON_SAVE, m_saveButton);
+    DDX_Control(pDX, IDC_COMBO_GRAPH_TYPE, m_graphTypeCombo);
 }
 
 BEGIN_MESSAGE_MAP(CCalibratePixelToWavelengthDialog, CPropertyPage)
@@ -72,6 +75,7 @@ BEGIN_MESSAGE_MAP(CCalibratePixelToWavelengthDialog, CPropertyPage)
     ON_BN_CLICKED(IDC_BUTTON_BROWSE_LINE_SHAPE, &CCalibratePixelToWavelengthDialog::OnClickedButtonBrowseLineShape)
     ON_BN_CLICKED(IDC_BUTTON_RUN, &CCalibratePixelToWavelengthDialog::OnClickedButtonRun)
     ON_BN_CLICKED(IDC_BUTTON_SAVE, &CCalibratePixelToWavelengthDialog::OnClickedButtonSave)
+    ON_CBN_SELCHANGE(IDC_COMBO_GRAPH_TYPE, &CCalibratePixelToWavelengthDialog::OnSelchangeComboGraphType)
 END_MESSAGE_MAP()
 
 // Persisting the setup to file
@@ -162,7 +166,7 @@ void CCalibratePixelToWavelengthDialog::OnClickedButtonBrowseSolarSpectrum()
 
 void CCalibratePixelToWavelengthDialog::OnClickedButtonBrowseInitialCalibration()
 {
-    if (!Common::BrowseForFile("Novac Instrument Calibration Files\0*.xml\0Spectrum Files\0*.txt;*.xs\0", this->m_setup.m_initialCalibrationFile))
+    if (!Common::BrowseForFile("Novac Instrument Calibration Files\0*.json\0Spectrum Files\0*.txt;*.xs\0", this->m_setup.m_initialCalibrationFile))
     {
         return;
     }
@@ -188,6 +192,23 @@ void CCalibratePixelToWavelengthDialog::OnClickedButtonBrowseLineShape()
 }
 
 void CCalibratePixelToWavelengthDialog::UpdateGraph()
+{
+    const int currentGraph = this->m_graphTypeCombo.GetCurSel();
+    if (currentGraph == 2)
+    {
+        DrawFraunhoferSpectrumAndKeypoints();
+    }
+    else if (currentGraph == 1)
+    {
+        DrawMeasuredSpectrumAndKeypoints();
+    }
+    else
+    {
+        DrawPolynomialAndInliers();
+    }
+}
+
+void CCalibratePixelToWavelengthDialog::DrawPolynomialAndInliers()
 {
     this->m_graph.CleanPlot();
 
@@ -219,6 +240,46 @@ void CCalibratePixelToWavelengthDialog::UpdateGraph()
         m_controller->m_calibrationDebug.inlierCorrespondencePixels.data(),
         m_controller->m_calibrationDebug.inlierCorrespondenceWavelengths.data(),
         static_cast<int>(m_controller->m_calibrationDebug.inlierCorrespondencePixels.size()),
+        Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+}
+
+void CCalibratePixelToWavelengthDialog::DrawMeasuredSpectrumAndKeypoints()
+{
+    this->m_graph.CleanPlot();
+
+    // the measured spectrum
+    this->m_graph.SetPlotColor(RGB(255, 0, 0));
+    this->m_graph.Plot(
+        m_controller->m_calibrationDebug.measuredSpectrum.data(),
+        static_cast<int>(m_controller->m_calibrationDebug.measuredSpectrum.size()),
+        Graph::CGraphCtrl::PLOT_CONNECTED);
+
+    // keypoints found
+    this->m_graph.SetCircleColor(RGB(255, 255, 255));
+    this->m_graph.DrawCircles(
+        m_controller->m_calibrationDebug.measuredSpectrumKeypointPixels.data(),
+        m_controller->m_calibrationDebug.measuredSpectrumKeypointIntensities.data(),
+        static_cast<int>(m_controller->m_calibrationDebug.measuredSpectrumKeypointIntensities.size()),
+        Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+}
+
+void CCalibratePixelToWavelengthDialog::DrawFraunhoferSpectrumAndKeypoints()
+{
+    this->m_graph.CleanPlot();
+
+    // the measured spectrum
+    this->m_graph.SetPlotColor(RGB(255, 0, 0));
+    this->m_graph.Plot(
+        m_controller->m_calibrationDebug.fraunhoferSpectrum.data(),
+        static_cast<int>(m_controller->m_calibrationDebug.fraunhoferSpectrum.size()),
+        Graph::CGraphCtrl::PLOT_CONNECTED);
+
+    // keypoints found
+    this->m_graph.SetCircleColor(RGB(255, 255, 255));
+    this->m_graph.DrawCircles(
+        m_controller->m_calibrationDebug.fraunhoferSpectrumKeypointPixels.data(),
+        m_controller->m_calibrationDebug.fraunhoferSpectrumKeypointIntensities.data(),
+        static_cast<int>(m_controller->m_calibrationDebug.fraunhoferSpectrumKeypointIntensities.size()),
         Graph::CGraphCtrl::PLOT_FIXED_AXIS);
 }
 
@@ -315,4 +376,9 @@ void CCalibratePixelToWavelengthDialog::OnClickedButtonSave()
     {
         MessageBox(e.what(), "Failed to save pixel to wavelength mapping to file", MB_OK);
     }
+}
+
+void CCalibratePixelToWavelengthDialog::OnSelchangeComboGraphType()
+{
+    UpdateGraph();
 }
