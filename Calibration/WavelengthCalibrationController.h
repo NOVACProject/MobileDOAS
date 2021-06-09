@@ -1,11 +1,18 @@
 #pragma once
+
 #include <string>
 #include <vector>
+
+namespace novac
+{
+class CSpectrum;
+}
 
 class WavelengthCalibrationController
 {
 public:
     WavelengthCalibrationController();
+    ~WavelengthCalibrationController();
 
     /// <summary>
     /// The full path to the spectrum to calibrate
@@ -45,6 +52,16 @@ public:
     /// </summary>
     std::vector<double> m_resultingPixelToWavelengthMappingCoefficients;
 
+    /// <summary>
+    /// If we have read the instrument line shape from file then the result is saved here
+    /// </summary>
+    novac::CSpectrum* m_measuredInstrumentLineShapeSpectrum = nullptr;
+
+    /// <summary>
+    /// If the calibration fails, for some reason, then this message should be set to indicate why.
+    /// </summary>
+    std::string m_errorMessage;
+
     struct WavelengthCalibrationDebugState
     {
         WavelengthCalibrationDebugState(size_t estimatedSize)
@@ -65,12 +82,23 @@ public:
 
         std::vector<double> measuredSpectrum;
 
+        // All the keypoints from the measured spectrum
         std::vector<double> measuredSpectrumKeypointPixels;
         std::vector<double> measuredSpectrumKeypointIntensities;
 
+        // The inlier keypoints from the measured spectrum
+        std::vector<double> measuredSpectrumInlierKeypointPixels;
+        std::vector<double> measuredSpectrumInlierKeypointIntensities;
+
         std::vector<double> fraunhoferSpectrum;
+
+        // All the keypoints from the Fraunhofer spectrum
         std::vector<double> fraunhoferSpectrumKeypointPixels;
         std::vector<double> fraunhoferSpectrumKeypointIntensities;
+
+        // The inlier keypoints from the Fraunhofer spectrum
+        std::vector<double> fraunhoferSpectrumInlierKeypointPixels;
+        std::vector<double> fraunhoferSpectrumInlierKeypointIntensities;
     };
 
     WavelengthCalibrationDebugState m_calibrationDebug;

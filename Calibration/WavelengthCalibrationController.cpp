@@ -18,6 +18,13 @@ WavelengthCalibrationController::WavelengthCalibrationController()
 {
 }
 
+WavelengthCalibrationController::~WavelengthCalibrationController()
+{
+    if (m_measuredInstrumentLineShapeSpectrum != nullptr)
+    {
+        delete m_measuredInstrumentLineShapeSpectrum;
+    }
+}
 
 /// <summary>
 /// Reads and parses m_initialLineShapeFile and saves the result to the provided settings
@@ -69,16 +76,21 @@ void WavelengthCalibrationController::RunCalibration()
         measuredSpectrum.Sub(darkSpectrum);
     }
 
-    if (novac::GetFileExtension(this->m_initialCalibrationFile).compare(".json") == 0)
+    if (novac::GetFileExtension(this->m_initialCalibrationFile).compare(".xml") == 0)
     {
-        novac::CSpectrum measuredInstrumentLineShapeSpectrum;
-        if (!novac::ReadInstrumentCalibration(this->m_initialCalibrationFile, measuredInstrumentLineShapeSpectrum, settings.initialPixelToWavelengthMapping))
+        if (m_measuredInstrumentLineShapeSpectrum != nullptr)
+        {
+            delete m_measuredInstrumentLineShapeSpectrum;
+        }
+
+        this->m_measuredInstrumentLineShapeSpectrum = new novac::CSpectrum();
+        if (!novac::ReadInstrumentCalibration(this->m_initialCalibrationFile, *m_measuredInstrumentLineShapeSpectrum, settings.initialPixelToWavelengthMapping))
         {
             throw std::invalid_argument("Failed to read the instrument calibration file");
         }
 
         // Convert CSpectrum to CCrossSectionData
-        novac::CCrossSectionData measuredInstrumentLineShape(measuredInstrumentLineShapeSpectrum);
+        novac::CCrossSectionData measuredInstrumentLineShape(*m_measuredInstrumentLineShapeSpectrum);
 
         settings.initialInstrumentLineShape = measuredInstrumentLineShape;
         settings.estimateInstrumentLineShape = novac::InstrumentLineshapeEstimationOption::None;
@@ -120,6 +132,12 @@ void WavelengthCalibrationController::RunCalibration()
             {
                 this->m_calibrationDebug.inlierCorrespondencePixels.push_back(corr.measuredValue);
                 this->m_calibrationDebug.inlierCorrespondenceWavelengths.push_back(corr.theoreticalValue);
+
+                this->m_calibrationDebug.measuredSpectrumInlierKeypointPixels.push_back(calibrationDebug.measuredKeypoints[corr.measuredIdx].pixel);
+                this->m_calibrationDebug.measuredSpectrumInlierKeypointIntensities.push_back(calibrationDebug.measuredKeypoints[corr.measuredIdx].intensity);
+
+                this->m_calibrationDebug.fraunhoferSpectrumInlierKeypointPixels.push_back(calibrationDebug.fraunhoferKeypoints[corr.theoreticalIdx].pixel);
+                this->m_calibrationDebug.fraunhoferSpectrumInlierKeypointIntensities.push_back(calibrationDebug.fraunhoferKeypoints[corr.theoreticalIdx].intensity);
             }
             else
             {

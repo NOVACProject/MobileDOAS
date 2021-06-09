@@ -29,19 +29,20 @@ protected:
     DECLARE_MESSAGE_MAP()
 public:
     CComboBox m_crossSectionsCombo;
-    CString m_instrumentLineshapeFile;
-    CString m_wavelengthCalibrationFile;
+    CString m_calibrationFile;  //< the full calibration file, in the new xml-based format
     BOOL m_highPassFilterReference;
     BOOL m_inputInVacuum;
+
+    CButton m_saveButton;
 
     Graph::CGraphCtrl m_graph; // The plot for the spectrum
     CStatic m_graphHolder;
 
     afx_msg void OnConvolutionOptionChanged();
-    afx_msg void OnBnClickedBrowseLineShape();
     afx_msg void OnBnClickedBrowseCalibration();
     afx_msg void OnBnClickedBrowseCrossSection();
     afx_msg void OnBnClickedButtonRunCreateReference();
+    afx_msg void OnClickedButtonSave();
 
 private:
     std::string SetupFilePath();
@@ -53,7 +54,4 @@ private:
     void UpdateGraph();
 
     ReferenceCreationController* m_controller;
-public:
-    CButton m_saveButton;
-    afx_msg void OnClickedButtonSave();
 };

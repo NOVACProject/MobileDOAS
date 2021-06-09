@@ -166,7 +166,7 @@ void CCalibratePixelToWavelengthDialog::OnClickedButtonBrowseSolarSpectrum()
 
 void CCalibratePixelToWavelengthDialog::OnClickedButtonBrowseInitialCalibration()
 {
-    if (!Common::BrowseForFile("Novac Instrument Calibration Files\0*.json\0Spectrum Files\0*.txt;*.xs\0", this->m_setup.m_initialCalibrationFile))
+    if (!Common::BrowseForFile("Novac Instrument Calibration Files\0*.xml\0Spectrum Files\0*.txt;*.xs\0", this->m_setup.m_initialCalibrationFile))
     {
         return;
     }
@@ -212,6 +212,9 @@ void CCalibratePixelToWavelengthDialog::DrawPolynomialAndInliers()
 {
     this->m_graph.CleanPlot();
 
+    m_graph.SetXUnits("Pixel");
+    m_graph.SetYUnits("Wavelength [nm]");
+
     // the old (initial) calibration polynomial
     this->m_graph.SetPlotColor(RGB(128, 0, 0));
     this->m_graph.Plot(
@@ -247,6 +250,9 @@ void CCalibratePixelToWavelengthDialog::DrawMeasuredSpectrumAndKeypoints()
 {
     this->m_graph.CleanPlot();
 
+    m_graph.SetXUnits("Pixel");
+    m_graph.SetYUnits("Intensity");
+
     // the measured spectrum
     this->m_graph.SetPlotColor(RGB(255, 0, 0));
     this->m_graph.Plot(
@@ -254,18 +260,29 @@ void CCalibratePixelToWavelengthDialog::DrawMeasuredSpectrumAndKeypoints()
         static_cast<int>(m_controller->m_calibrationDebug.measuredSpectrum.size()),
         Graph::CGraphCtrl::PLOT_CONNECTED);
 
-    // keypoints found
-    this->m_graph.SetCircleColor(RGB(255, 255, 255));
+    // all the keypoints found
+    this->m_graph.SetCircleColor(RGB(128, 128, 128));
     this->m_graph.DrawCircles(
         m_controller->m_calibrationDebug.measuredSpectrumKeypointPixels.data(),
         m_controller->m_calibrationDebug.measuredSpectrumKeypointIntensities.data(),
         static_cast<int>(m_controller->m_calibrationDebug.measuredSpectrumKeypointIntensities.size()),
+        Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+
+    // all the keypoints used
+    this->m_graph.SetCircleColor(RGB(255, 255, 255));
+    this->m_graph.DrawCircles(
+        m_controller->m_calibrationDebug.measuredSpectrumInlierKeypointPixels.data(),
+        m_controller->m_calibrationDebug.measuredSpectrumInlierKeypointIntensities.data(),
+        static_cast<int>(m_controller->m_calibrationDebug.measuredSpectrumInlierKeypointIntensities.size()),
         Graph::CGraphCtrl::PLOT_FIXED_AXIS);
 }
 
 void CCalibratePixelToWavelengthDialog::DrawFraunhoferSpectrumAndKeypoints()
 {
     this->m_graph.CleanPlot();
+
+    m_graph.SetXUnits("Pixel");
+    m_graph.SetYUnits("Intensity");
 
     // the measured spectrum
     this->m_graph.SetPlotColor(RGB(255, 0, 0));
@@ -274,14 +291,23 @@ void CCalibratePixelToWavelengthDialog::DrawFraunhoferSpectrumAndKeypoints()
         static_cast<int>(m_controller->m_calibrationDebug.fraunhoferSpectrum.size()),
         Graph::CGraphCtrl::PLOT_CONNECTED);
 
-    // keypoints found
-    this->m_graph.SetCircleColor(RGB(255, 255, 255));
+    // all the keypoints found
+    this->m_graph.SetCircleColor(RGB(128, 128, 128));
     this->m_graph.DrawCircles(
         m_controller->m_calibrationDebug.fraunhoferSpectrumKeypointPixels.data(),
         m_controller->m_calibrationDebug.fraunhoferSpectrumKeypointIntensities.data(),
         static_cast<int>(m_controller->m_calibrationDebug.fraunhoferSpectrumKeypointIntensities.size()),
         Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+
+    // all the keypoints used
+    this->m_graph.SetCircleColor(RGB(255, 255, 255));
+    this->m_graph.DrawCircles(
+        m_controller->m_calibrationDebug.fraunhoferSpectrumInlierKeypointPixels.data(),
+        m_controller->m_calibrationDebug.fraunhoferSpectrumInlierKeypointIntensities.data(),
+        static_cast<int>(m_controller->m_calibrationDebug.fraunhoferSpectrumInlierKeypointIntensities.size()),
+        Graph::CGraphCtrl::PLOT_FIXED_AXIS);
 }
+
 
 /// <summary>
 /// This is the calibration background thread.
@@ -291,17 +317,20 @@ void CCalibratePixelToWavelengthDialog::DrawFraunhoferSpectrumAndKeypoints()
 /// <return>Zero on successful calibration</return>
 UINT RunCalibration(void* pParam)
 {
+    WavelengthCalibrationController* controller = static_cast<WavelengthCalibrationController*>(pParam);
+
     try
     {
-        WavelengthCalibrationController* controller = static_cast<WavelengthCalibrationController*>(pParam);
+        controller->m_errorMessage = "";
 
         controller->RunCalibration();
 
         return 0;
     }
-    catch (std::exception&)
+    catch (std::exception& e)
     {
-        // TODO: Logging of some sorts...
+        controller->m_errorMessage = e.what();
+
         return 1;
     }
 }
@@ -343,6 +372,13 @@ void CCalibratePixelToWavelengthDialog::OnClickedButtonRun()
         auto pSpecThread = AfxBeginThread(RunCalibration, (LPVOID)(this->m_controller), THREAD_PRIORITY_NORMAL, 0, 0, NULL);
         WaitForSingleObject(pSpecThread->m_hThread, INFINITE);
 
+        if (this->m_controller->m_errorMessage.size() > 0)
+        {
+            HandleCalibrationFailure(m_controller->m_errorMessage.c_str());
+            this->m_runButton.SetWindowTextA(runButtonOriginalText);
+            return;
+        }
+
         SaveSetup();
 
         UpdateGraph();
@@ -353,23 +389,34 @@ void CCalibratePixelToWavelengthDialog::OnClickedButtonRun()
     }
     catch (std::exception& e)
     {
-        MessageBox(e.what(), "Failed to calibrate", MB_OK);
-
-        this->m_saveButton.EnableWindow(FALSE);
-        this->m_runButton.EnableWindow(TRUE);
+        HandleCalibrationFailure(e.what());
         this->m_runButton.SetWindowTextA(runButtonOriginalText);
     }
+}
+
+void CCalibratePixelToWavelengthDialog::HandleCalibrationFailure(const char* errorMessage)
+{
+    MessageBox(errorMessage, "Failed to calibrate", MB_OK);
+
+    this->m_saveButton.EnableWindow(FALSE);
+    this->m_runButton.EnableWindow(TRUE);
 }
 
 void CCalibratePixelToWavelengthDialog::OnClickedButtonSave()
 {
     try
     {
-        CString destinationFileName = L"";
-        if (Common::BrowseForFile_SaveAs("Instrument Calibration Files\0*.clb\0", destinationFileName))
+        if (m_controller->m_measuredInstrumentLineShapeSpectrum == nullptr)
         {
-            std::string dstFileName = novac::EnsureFilenameHasSuffix(std::string(destinationFileName), "clb");
-            novac::SaveDataToFile(dstFileName, this->m_controller->m_resultingPixelToWavelengthMapping);
+            throw std::exception("Cannot find the instrument line shape");
+        }
+
+        // Save the (initial) instrument line shape and the pixel-to-wavelength calibration to file
+        CString destinationFileName = L"";
+        if (Common::BrowseForFile_SaveAs("Novac Instrument Calibration Files\0*.xml\0", destinationFileName))
+        {
+            std::string dstFileName = novac::EnsureFilenameHasSuffix(std::string(destinationFileName), "xml");
+            novac::SaveInstrumentCalibration(dstFileName, *m_controller->m_measuredInstrumentLineShapeSpectrum, this->m_controller->m_resultingPixelToWavelengthMapping);
         }
     }
     catch (std::exception& e)

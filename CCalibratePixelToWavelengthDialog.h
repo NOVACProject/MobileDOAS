@@ -87,5 +87,7 @@ private:
     /// </summary>
     void DrawFraunhoferSpectrumAndKeypoints();
 
+    void HandleCalibrationFailure(const char* errorMessage);
+
     WavelengthCalibrationController* m_controller;
 };

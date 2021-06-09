@@ -18,8 +18,7 @@ IMPLEMENT_DYNAMIC(CCalibrateReferencesDialog, CPropertyPage)
 CCalibrateReferencesDialog::CCalibrateReferencesDialog(CWnd* pParent /*=nullptr*/)
     : CPropertyPage(IDD_CALIBRATE_REFERENCES)
     , m_highPassFilterReference(TRUE)
-    , m_instrumentLineshapeFile(_T(""))
-    , m_wavelengthCalibrationFile(_T(""))
+    , m_calibrationFile(_T(""))
     , m_inputInVacuum(FALSE)
 {
     this->m_controller = new ReferenceCreationController();
@@ -59,16 +58,14 @@ void CCalibrateReferencesDialog::DoDataExchange(CDataExchange* pDX)
     CPropertyPage::DoDataExchange(pDX);
     DDX_Control(pDX, IDC_COMBO_HIGH_RES_CROSSSECTION, m_crossSectionsCombo);
     DDX_Check(pDX, IDC_CHECK_HIGH_PASS_FILTER, m_highPassFilterReference);
-    DDX_Text(pDX, IDC_EDIT_CALIBRATION, m_instrumentLineshapeFile);
-    DDX_Text(pDX, IDC_EDIT_WAVELENGTH_CALIBRATION, m_wavelengthCalibrationFile);
+    DDX_Text(pDX, IDC_EDIT_CALIBRATION, m_calibrationFile);
     DDX_Control(pDX, IDC_STATIC_GRAPH_HOLDER2, m_graphHolder);
     DDX_Check(pDX, IDC_CHECK_INPUT_IN_VACUUM, m_inputInVacuum);
     DDX_Control(pDX, IDC_BUTTON_SAVE, m_saveButton);
 }
 
 BEGIN_MESSAGE_MAP(CCalibrateReferencesDialog, CPropertyPage)
-    ON_BN_CLICKED(IDC_BUTTON_BROWSE_LINE_SHAPE, &CCalibrateReferencesDialog::OnBnClickedBrowseLineShape)
-    ON_BN_CLICKED(IDC_BUTTON_BROWSE_INITIAL_CALIBRATION2, &CCalibrateReferencesDialog::OnBnClickedBrowseCalibration)
+    ON_BN_CLICKED(IDC_BUTTON_BROWSE_CALIBRATION_FILE, &CCalibrateReferencesDialog::OnBnClickedBrowseCalibration)
     ON_BN_CLICKED(IDC_BUTTON_BROWSE_SOLAR_SPECTRUM, &CCalibrateReferencesDialog::OnBnClickedBrowseCrossSection)
     ON_CBN_SELCHANGE(IDC_COMBO_HIGH_RES_CROSSSECTION, &CCalibrateReferencesDialog::OnConvolutionOptionChanged)
     ON_BN_CLICKED(IDC_CHECK_HIGH_PASS_FILTER, &CCalibrateReferencesDialog::OnConvolutionOptionChanged)
@@ -141,22 +138,13 @@ void CCalibrateReferencesDialog::LoadSetup()
 
 // CCalibrateReferenes message handlers
 
-void CCalibrateReferencesDialog::OnBnClickedBrowseLineShape()
-{
-    if (!Common::BrowseForFile("Instrument Line Shape Files\0*.slf\0Spectrum Files\0*.txt;*.xs\0", this->m_instrumentLineshapeFile))
-    {
-        return;
-    }
-    UpdateData(FALSE);
-    UpdateReference();
-}
-
 void CCalibrateReferencesDialog::OnBnClickedBrowseCalibration()
 {
-    if (!Common::BrowseForFile("Spectrum Files\0*.txt;*.xs\0", this->m_wavelengthCalibrationFile))
+    if (!Common::BrowseForFile("Novac Instrument Calibration Files\0*.xml\0", this->m_calibrationFile))
     {
         return;
     }
+
     UpdateData(FALSE);
     UpdateReference();
 }
@@ -210,18 +198,12 @@ void CCalibrateReferencesDialog::UpdateReference()
     {
         UpdateData(TRUE); // get the selections from the user interface
 
-        if (this->m_instrumentLineshapeFile.IsEmpty() ||
-            this->m_wavelengthCalibrationFile.IsEmpty() ||
+        if (this->m_calibrationFile.IsEmpty() ||
             this->m_crossSectionsCombo.GetCurSel() < 0)
         {
             return;
         }
-        if (!IsExistingFile(this->m_instrumentLineshapeFile))
-        {
-            MessageBox("Please select an existing instrument line shape file", "Missing input", MB_OK);
-            return;
-        }
-        if (!IsExistingFile(this->m_wavelengthCalibrationFile))
+        if (!IsExistingFile(this->m_calibrationFile))
         {
             MessageBox("Please select an existing wavelength calibration file", "Missing input", MB_OK);
             return;
@@ -237,8 +219,8 @@ void CCalibrateReferencesDialog::UpdateReference()
             return;
         }
 
-        this->m_controller->m_instrumentLineshapeFile = this->m_instrumentLineshapeFile;
-        this->m_controller->m_wavelengthCalibrationFile = this->m_wavelengthCalibrationFile;
+        // this->m_controller->m_instrumentLineshapeFile = this->m_instrumentLineshapeFile;
+        this->m_controller->m_calibrationFile = this->m_calibrationFile;
         this->m_controller->m_highPassFilter = this->m_highPassFilterReference;
         this->m_controller->m_convertToAir = this->m_inputInVacuum;
         this->m_controller->m_highResolutionCrossSection = crossSectionFilePath;
@@ -252,7 +234,7 @@ void CCalibrateReferencesDialog::UpdateReference()
     }
     catch (std::exception& e)
     {
-        MessageBox("Failed to convolve reference.");
+        MessageBox(e.what(), "Failed to convolve reference.", MB_OK);
 
         this->UpdateGraph();
 

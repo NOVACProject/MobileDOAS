@@ -14,14 +14,9 @@ public:
     ReferenceCreationController();
 
     /// <summary>
-    /// Input: the full file path to the line-shape file
+    /// Input: the full file path to the full calibration file.
     /// </summary>
-    std::string m_instrumentLineshapeFile;
-
-    /// <summary>
-    /// Input: the full file path to the wavelength calibration file
-    /// </summary>
-    std::string m_wavelengthCalibrationFile;
+    std::string m_calibrationFile;
 
     /// <summary>
     /// Input: the full file path to the high resolved cross section file to use.
