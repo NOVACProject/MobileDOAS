@@ -528,6 +528,7 @@
 #define IDC_COMBO_GRAPH_TYPE            1322
 #define IDC_STATIC_CALIBRATION_FILE     1323
 #define IDC_BUTTON_BROWSE_CALIBRATION_FILE 1325
+#define IDC_COMBO_INITIAL_DATA_TYPE     1326
 #define ID_ANALYSIS_POSTFLUX            32771
 #define ID_CONTROL_STOP                 32772
 #define ID_CONTROL_START                32772
@@ -552,7 +553,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        289
 #define _APS_NEXT_COMMAND_VALUE         32803
-#define _APS_NEXT_CONTROL_VALUE         1326
+#define _APS_NEXT_CONTROL_VALUE         1327
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

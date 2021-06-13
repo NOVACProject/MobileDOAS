@@ -142,7 +142,7 @@ public:
 	static std::vector<CString> BrowseForFiles();
 
 	/** Opens a browser window and lets the user select one file which matches the provided filter. */
-	static bool BrowseForFile(char *filter, CString &fileName);
+	static bool BrowseForFile(const char *filter, CString &fileName);
 
 	/** Specialization of BrowseForFile, only allows for browsing of evaluation-logs (.txt) */
 	static bool BrowseForEvaluationLog(CString &fileName);

@@ -17,19 +17,28 @@ public:
     /** Initializes the controls and the dialog */
     virtual BOOL OnInitDialog();
 
+    enum class InstrumentCalibrationInputOption
+    {
+        NovacInstrumentCalibrationFile = 0, // i.e. input is one file containing both wavelength calibration and instrument line shape
+        WavelengthAndSlitFunctionFile = 1,  // i.e. input is two files containing the wavelength calibration and instrument line shape respectively
+        WavelengthCalibrationFile = 2       // i.e. input is one file containing both wavelength calibration. The instrument line shape needs to be determined from the measurement.
+    };
+
     struct CalibratePixelToWavelengthDialogSetup
     {
     public:
         CalibratePixelToWavelengthDialogSetup() :
             m_initialCalibrationFile(""),
             m_instrumentLineshapeFile(""),
-            m_solarSpectrumFile("")
+            m_solarSpectrumFile(""),
+            m_calibrationOption(0)
         {
         }
 
         CString m_initialCalibrationFile;
         CString m_instrumentLineshapeFile;
         CString m_solarSpectrumFile;
+        int m_calibrationOption;
     };
 
     // Dialog Data
@@ -56,6 +65,13 @@ public:
 
     CComboBox m_graphTypeCombo; // Selecting the type of plot
 
+    CComboBox m_instrumentCalibrationTypeCombo; // Selecting the type of calibration input
+
+    CStatic m_wavelengthCalibrationLabel;
+    CStatic m_instrumentLineShapeCalibrationLabel;
+    CEdit m_instrumentLineShapeCalibrationEdit;
+    CButton m_instrumentLineShapeCalibrationBrowseButton;
+
     afx_msg void OnClickedButtonBrowseSpectrum();
     afx_msg void OnClickedButtonBrowseSolarSpectrum();
     afx_msg void OnClickedButtonRun();
@@ -64,6 +80,9 @@ public:
     afx_msg void OnClickedButtonBrowseLineShape();
     afx_msg void OnClickedButtonSave();
     afx_msg void OnSelchangeComboGraphType();
+    afx_msg void OnSelchangeComboInitialDataType();
+
+    afx_msg LRESULT OnCalibrationDone(WPARAM wParam, LPARAM lParam);
 
 private:
     std::string SetupFilePath();
@@ -90,4 +109,6 @@ private:
     void HandleCalibrationFailure(const char* errorMessage);
 
     WavelengthCalibrationController* m_controller;
+
+    char* m_initialCalibrationFileTypeFilter = nullptr;
 };

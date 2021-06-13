@@ -473,7 +473,7 @@ std::vector<CString> Common::BrowseForFiles()
 }
 
 // open a browser window and let the user search for a file
-bool Common::BrowseForFile(char *filter, CString &fileName){
+bool Common::BrowseForFile(const char *filter, CString &fileName){
 	static char szFile[4096];
 	szFile[0] = 0;
 
