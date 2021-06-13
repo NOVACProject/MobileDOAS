@@ -33,14 +33,14 @@ CCalibrateInstrumentLineShape::~CCalibrateInstrumentLineShape()
 BOOL CCalibrateInstrumentLineShape::OnInitDialog() {
     CPropertyPage::OnInitDialog();
 
-    CRect rect;
+    CRect mainGraphRect;
     int margin = 2;
-    m_graphHolder.GetWindowRect(&rect);
-    rect.bottom -= rect.top + margin;
-    rect.right -= rect.left + margin;
-    rect.top = margin + 7;
-    rect.left = margin;
-    m_spectrumPlot.Create(WS_VISIBLE | WS_CHILD, rect, &m_graphHolder);
+    m_graphHolder.GetWindowRect(&mainGraphRect);
+    mainGraphRect.bottom -= mainGraphRect.top + margin;
+    mainGraphRect.right -= mainGraphRect.left + margin;
+    mainGraphRect.top = margin + 7;
+    mainGraphRect.left = margin;
+    m_spectrumPlot.Create(WS_VISIBLE | WS_CHILD, mainGraphRect, &m_graphHolder);
     m_spectrumPlot.SetRange(0, 500, 1, -100.0, 100.0, 1);
     m_spectrumPlot.SetYUnits("Intensity");
     m_spectrumPlot.SetXUnits("Wavelength");
@@ -48,6 +48,22 @@ BOOL CCalibrateInstrumentLineShape::OnInitDialog() {
     m_spectrumPlot.SetGridColor(RGB(255, 255, 255));
     m_spectrumPlot.SetPlotColor(RGB(255, 0, 0));
     m_spectrumPlot.CleanPlot();
+
+    CRect minimapRect;
+    margin = 0;
+    m_minimapHolder.GetWindowRect(&minimapRect);
+    minimapRect.bottom -= minimapRect.top + margin;
+    minimapRect.right -= minimapRect.left + margin;
+    minimapRect.top = margin + 7;
+    minimapRect.left = margin;
+    m_minimapPlot.Create(WS_VISIBLE | WS_CHILD, minimapRect, &m_minimapHolder);
+    m_minimapPlot.SetRange(0, 500, 1, -100.0, 100.0, 1);
+    m_minimapPlot.SetBackgroundColor(RGB(0, 0, 0));
+    m_minimapPlot.SetGridColor(RGB(255, 255, 255));
+    m_minimapPlot.SetPlotColor(RGB(255, 0, 0));
+    m_minimapPlot.HideXScale();
+    m_minimapPlot.HideYScale();
+    m_minimapPlot.CleanPlot();
 
     m_labelSpectrumContainsNoWavelengthCalibration.ShowWindow(SW_HIDE);
 
@@ -64,6 +80,7 @@ void CCalibrateInstrumentLineShape::DoDataExchange(CDataExchange* pDX)
     DDX_Radio(pDX, IDC_RADIO_FIT_GAUSSIAN, m_fitFunctionOption);
     DDX_Control(pDX, IDC_LABEL_MISSING_CALIBRATION, m_labelSpectrumContainsNoWavelengthCalibration);
     DDX_Check(pDX, IDC_CALIBRATION_FROM_MERCURY_LINES, m_autoDetermineCalibration);
+    DDX_Control(pDX, IDC_STATIC_MINIMAP_HOLDER, m_minimapHolder);
 }
 
 
@@ -205,8 +222,10 @@ void CCalibrateInstrumentLineShape::OnLbnSelchangeFoundPeak()
     {
         // zoom in on the selected peak
         const novac::SpectrumDataPoint selectedPeak = this->m_controller->m_peaksFound[selectedElement];
-        const int firstPixel = std::max(static_cast<int>(selectedPeak.pixel - 50), 0);
-        const int lastPixel = std::min(static_cast<int>(selectedPeak.pixel + 50), static_cast<int>(this->m_controller->m_inputSpectrumWavelength.size()) - 1);
+        const double leftWidth = selectedPeak.pixel - selectedPeak.leftPixel;
+        const double rightWidth = selectedPeak.rightPixel - selectedPeak.pixel;
+        const int firstPixel = std::max(static_cast<int>(selectedPeak.pixel - 3 * leftWidth), 0);
+        const int lastPixel = std::min(static_cast<int>(selectedPeak.pixel + 3 * rightWidth), static_cast<int>(this->m_controller->m_inputSpectrumWavelength.size()) - 1);
         const double lambdaMin = this->m_controller->m_inputSpectrumWavelength[firstPixel];
         const double lambdaMax = this->m_controller->m_inputSpectrumWavelength[lastPixel];
 
@@ -243,6 +262,9 @@ void CCalibrateInstrumentLineShape::UpdateGraph(bool reset)
         int plotOption = (reset) ? Graph::CGraphCtrl::PLOT_CONNECTED : Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED;
         m_spectrumPlot.SetPlotColor(RGB(255, 0, 0));
         m_spectrumPlot.XYPlot(m_controller->m_inputSpectrumWavelength.data(), m_controller->m_inputSpectrum.data(), static_cast<int>(m_controller->m_inputSpectrum.size()), plotOption);
+
+        m_minimapPlot.SetPlotColor(RGB(255, 0, 0));
+        m_minimapPlot.XYPlot(m_controller->m_inputSpectrumWavelength.data(), m_controller->m_inputSpectrum.data(), static_cast<int>(m_controller->m_inputSpectrum.size()), plotOption);
     }
 
     /* Draw the peaks */
@@ -257,6 +279,7 @@ void CCalibrateInstrumentLineShape::UpdateGraph(bool reset)
             peakY.push_back(peak.intensity);
         }
         m_spectrumPlot.DrawCircles(peakX.data(), peakY.data(), static_cast<int>(m_controller->m_peaksFound.size()), Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+        m_minimapPlot.DrawCircles(peakX.data(), peakY.data(), static_cast<int>(m_controller->m_peaksFound.size()), Graph::CGraphCtrl::PLOT_FIXED_AXIS);
     }
 
     /* Draw the fitted line shape (if any) */
@@ -268,6 +291,15 @@ void CCalibrateInstrumentLineShape::UpdateGraph(bool reset)
             m_controller->m_sampledLineShapeFunction->m_data,
             m_controller->m_sampledLineShapeFunction->m_length,
             Graph::CGraphCtrl::PLOT_CONNECTED | Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+    }
+
+    // Display the zoomed region in the minimap
+    {
+        constexpr int ORANGE = RGB(255, 128, 0);
+        m_minimapPlot.DrawLine(Graph::VERTICAL, m_spectrumPlot.GetXMin(), ORANGE, Graph::STYLE_DASHED);
+        m_minimapPlot.DrawLine(Graph::VERTICAL, m_spectrumPlot.GetXMax(), ORANGE, Graph::STYLE_DASHED);
+        m_minimapPlot.ShadeFilledSquare(m_minimapPlot.GetXMin(), m_spectrumPlot.GetXMin(), m_minimapPlot.GetYMin(), m_minimapPlot.GetYMax(), 0.5);
+        m_minimapPlot.ShadeFilledSquare(m_spectrumPlot.GetXMax(), m_minimapPlot.GetXMax(), m_minimapPlot.GetYMin(), m_minimapPlot.GetYMax(), 0.5);
     }
 }
 

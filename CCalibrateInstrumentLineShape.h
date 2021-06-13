@@ -31,8 +31,10 @@ public:
     CString m_inputSpectrum;
     CString m_darkSpectrum;
     CListBox m_peaksList;
-    Graph::CGraphCtrl m_spectrumPlot; // The plot for the spectrum
-    CStatic m_graphHolder; // Holder for the plot, for easy ui access
+    Graph::CGraphCtrl m_spectrumPlot; // The large plot for the spectrum
+    Graph::CGraphCtrl m_minimapPlot; // The minimap for the spectrum, showing where we have zoomed in
+    CStatic m_graphHolder;   // Holder for the plot, for easy ui access
+    CStatic m_minimapHolder; // Holder for the zoomed out graph (minimap)
     int m_fitFunctionOption = 0; // The option for which function to fit to the line shape. 
     CStatic m_labelSpectrumContainsNoWavelengthCalibration;
     BOOL m_autoDetermineCalibration;
@@ -42,6 +44,7 @@ public:
     afx_msg void OnLbnSelchangeFoundPeak();
     afx_msg void OnBnClickedRadioFitGaussian();
     afx_msg void OnBnClickedSave();
+    afx_msg void OnBnClickedToggleCalibrationFromMercuryLines();
 
 private:
     InstrumentLineshapeCalibrationController* m_controller;
@@ -71,6 +74,4 @@ private:
     /// Updates the wavelength calibration according to the users choice.
     /// </summary>
     void UpdateWavelengthCalibrationOption();
-public:
-    afx_msg void OnBnClickedToggleCalibrationFromMercuryLines();
 };

@@ -117,8 +117,12 @@ std::unique_ptr<novac::CSpectrum> InstrumentLineshapeCalibrationController::GetM
     }
 
     // Extract the data surrounding the peak
-    const size_t spectrumStartIdx = static_cast<size_t>(std::max(0, static_cast<int>(std::round(this->m_peaksFound[peakIdx].pixel - 50))));
-    const size_t spectralDataLength = std::min(this->m_inputSpectrum.size() - spectrumStartIdx, 100LLU);
+    const novac::SpectrumDataPoint selectedPeak = this->m_peaksFound[peakIdx];
+    const double leftWidth = selectedPeak.pixel - selectedPeak.leftPixel;
+    const double rightWidth = selectedPeak.rightPixel - selectedPeak.pixel;
+
+    const size_t spectrumStartIdx = static_cast<size_t>(std::max(0, static_cast<int>(std::round(selectedPeak.pixel - 3 * leftWidth))));
+    const size_t spectralDataLength = std::min(this->m_inputSpectrum.size() - spectrumStartIdx, static_cast<size_t>(std::round(3 * (leftWidth + rightWidth))));
     const double* spectralData = this->m_inputSpectrum.data() + spectrumStartIdx;
     const double* wavelengthData = this->m_inputSpectrumWavelength.data() + spectrumStartIdx;
 

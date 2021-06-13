@@ -1500,14 +1500,14 @@ BEGIN
     GROUPBOX        "Spectrum",IDC_STATIC_SPECTRUM,7,7,438,59
     GROUPBOX        "Spectrum",IDC_STATIC_GRAPH,7,75,689,260
     LTEXT           "Dark",IDC_STATIC_DARK_SPECTRUM,23,45,16,8
-    GROUPBOX        "",IDC_STATIC_GRAPH_HOLDER,110,87,573,238
+    GROUPBOX        "",IDC_STATIC_GRAPH_HOLDER,110,87,573,205
     LTEXT           "Peaks found",IDC_STATIC,24,94,40,8
     LTEXT           "Fit",IDC_STATIC,23,277,9,8
     GROUPBOX        "Wavelength Calibration",IDC_STATIC,451,7,247,59
     LTEXT           "No Wavelength calibration in file",IDC_LABEL_MISSING_CALIBRATION,483,41,203,13
     CONTROL         "Auto determine from Mercury lines",IDC_CALIBRATION_FROM_MERCURY_LINES,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,467,22,154,10
-    LTEXT           "TODO: The saved slf is unnecessarily wide, we could zoom in further to save more significant values and fewer all-zero points",IDC_STATIC,199,342,414,8
+    GROUPBOX        "",IDC_STATIC_MINIMAP_HOLDER,110,287,573,41
 END
 
 IDD_CALIBRATE_WAVELENGTH_DIALOG DIALOGEX 0, 0, 721, 371
@@ -1536,7 +1536,7 @@ BEGIN
     PUSHBUTTON      "Save",IDC_BUTTON_SAVE,620,334,76,19,WS_DISABLED
     RTEXT           "Spectrum",IDC_STATIC_DARK2,22,22,32,8
     COMBOBOX        IDC_COMBO_GRAPH_TYPE,17,131,77,68,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "TODO: Add more options of what to display here, such that the user can understand if the result was good or not...   Also, currently the UI freezes when running the calibration - need to fix that..",IDC_STATIC,28,157,62,137
+    LTEXT           "TODO: Add more options of what to display here, such that the user can understand if the result was good or not...",IDC_STATIC,28,157,62,137
     GROUPBOX        "Initial Instrument Calibration",IDC_STATIC,7,65,707,54
     COMBOBOX        IDC_COMBO_INITIAL_DATA_TYPE,22,94,149,72,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Type of calibration input",IDC_STATIC,22,80,149,8

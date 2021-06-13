@@ -415,6 +415,8 @@ void CCalibratePixelToWavelengthDialog::OnClickedButtonRun()
         this->m_runButton.EnableWindow(FALSE);
         this->m_saveButton.EnableWindow(FALSE);
 
+        CCmdTarget::BeginWaitCursor();
+
         // Run the calibration in a background thread and wait for the calibration to finish (continues in OnCalibrationDone below)
         auto pSpecThread = AfxBeginThread(RunCalibration, (LPVOID)(this->m_controller), THREAD_PRIORITY_NORMAL, 0, 0, NULL);
     }
@@ -429,6 +431,8 @@ LRESULT CCalibratePixelToWavelengthDialog::OnCalibrationDone(WPARAM wParam, LPAR
 {
     try
     {
+        CCmdTarget::EndWaitCursor();
+
         if (this->m_controller->m_errorMessage.size() > 0)
         {
             HandleCalibrationFailure(m_controller->m_errorMessage.c_str());
