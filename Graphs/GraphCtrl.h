@@ -11,7 +11,7 @@
 
 
 // Signals a zooming event
-#define WM_ZOOM										WM_USER + 33
+#define WM_ZOOM WM_USER + 33
 
 namespace Graph
 {
@@ -40,23 +40,23 @@ protected:
     class CFontOption {
     public:
         CFontOption();
-        int				height;
-        int				width;
+        int height;
+        int width;
     };
 
     typedef struct GridOptions {
         typedef struct GridLineOptions {
-            double	lowestGridLine;   // The X- (or Y-) value for the lowest grid line
-            double	gridSpacing;      // The distance between the grid lines
-            bool	active;           // true if the grid is active
-            bool	autoScale;        // If true then the scale will be set to match the grid-lines
+            double  lowestGridLine;   // The X- (or Y-) value for the lowest grid line
+            double  gridSpacing;      // The distance between the grid lines
+            bool    active;           // true if the grid is active
+            bool    autoScale;        // If true then the scale will be set to match the grid-lines
 
             inline double Start() { return lowestGridLine; }
             inline double Spacing() { return gridSpacing; }
             inline bool	 IsOn() { return active; }
         }GridLineOptions;
 
-        GridLineOptions		line[2];
+        GridLineOptions line[2];
         inline GridLineOptions& X() { return line[0]; }
         inline GridLineOptions& Y() { return line[1]; }
 
@@ -77,13 +77,13 @@ protected:
         FloatRect first;	// The range for the primary axis, shown to the left and down
         FloatRect second;	// The range for the second axis, shown to the right and up
 
-        bool drawRightUnits;	// if true, then there will be a unit drawn on the right hand side of the plot
-        bool drawXUnits;		// if true, then the units and scale on the x-axis will be shown
+        bool drawRightUnits;    // if true, then there will be a unit drawn on the right hand side of the plot
+        bool drawXUnits;        // if true, then the units and scale on the x-axis will be shown
         bool drawYUnits;        // if true, then the units and scale on the y-axis will be shown.
-        double	minimumRangeX;	// The minimum range for the X-axis
-        double	minimumRangeY;	// The minimum range for the Y-axis
-        CFontOption		axisFont;
-        CFontOption		unitFont;
+        double minimumRangeX;   // The minimum range for the X-axis
+        double minimumRangeY;   // The minimum range for the Y-axis
+        CFontOption axisFont;
+        CFontOption unitFont;
     }AxisOptions;
 
     typedef struct PlotOptions {

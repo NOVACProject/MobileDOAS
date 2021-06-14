@@ -320,19 +320,13 @@ void CGraphCtrl::InvalidateCtrl()
 
     // draw the plot rectangle:
     // determine how wide the y axis scaling values are
-    if (m_axisOptions.drawYUnits)
-    {
-        size_t nCharacters = max(strlen(yAxisStrMax[0]), strlen(yAxisStrMin[0]));
+    // Notice that this space is always applied, regardless of whether we're showing the y-axis unit or not, for consistency between plots
+    size_t nCharacters = max(strlen(yAxisStrMax[0]), strlen(yAxisStrMin[0]));
 
-        // add an extra space
-        nCharacters = nCharacters + 2;
+    // add an extra space
+    nCharacters = nCharacters + 2;
 
-        m_rectPlot.left = m_rectClient.left + 6 * (long)nCharacters + m_axisOptions.unitFont.height;
-    }
-    else
-    {
-        m_rectPlot.left = m_rectClient.left;
-    }
+    m_rectPlot.left = m_rectClient.left + 6 * (long)nCharacters + m_axisOptions.unitFont.height;
 
     // adjust the plot rectangle dimensions
     // assume 6 pixels per character (this may need to be adjusted)
@@ -410,18 +404,20 @@ void CGraphCtrl::InvalidateCtrl()
     oldFont = m_dcGrid.SelectObject(&axisFont);
 
     // --------- Print the scale numbers for the y-axes -------------
-    m_dcGrid.SetTextColor(m_colors.grid);
-    m_dcGrid.SetTextAlign(TA_RIGHT | TA_BASELINE);
+    if (m_axisOptions.drawYUnits)
+    {
+        m_dcGrid.SetTextColor(m_colors.grid);
+        m_dcGrid.SetTextAlign(TA_RIGHT | TA_BASELINE);
 
-    CString number;
-    double step = (double)(m_gridOptions.Y().Spacing() * m_dVerticalFactor);
-    double value = (double)m_axisOptions.first.bottom;
-    for (double j = m_rectPlot.bottom; j > (m_rectPlot.top - step / 2); j -= step) {
-        PrintNumber(value, m_nYDecimals, m_axisOptions.first.formatY, number);
-        m_dcGrid.TextOut(m_rectPlot.left - 4, (int)(j + 4), number);
-        value += m_gridOptions.Y().Spacing();
+        CString number;
+        double step = (double)(m_gridOptions.Y().Spacing() * m_dVerticalFactor);
+        double value = (double)m_axisOptions.first.bottom;
+        for (double j = m_rectPlot.bottom; j > (m_rectPlot.top - step / 2); j -= step) {
+            PrintNumber(value, m_nYDecimals, m_axisOptions.first.formatY, number);
+            m_dcGrid.TextOut(m_rectPlot.left - 4, (int)(j + 4), number);
+            value += m_gridOptions.Y().Spacing();
+        }
     }
-
     // --------- For the x-axes only print the min and max -------------
 
     if (m_axisOptions.drawXUnits) {
@@ -759,7 +755,7 @@ void CGraphCtrl::OnSize(UINT nType, int cx, int cy)
     }
     else
     {
-        m_rectPlot.bottom = m_rectClient.bottom;
+        m_rectPlot.bottom = m_rectClient.bottom - 3;
     }
 
     // set some member variables to avoid multiple function calls

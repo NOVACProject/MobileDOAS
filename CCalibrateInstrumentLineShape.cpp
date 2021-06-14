@@ -50,19 +50,21 @@ BOOL CCalibrateInstrumentLineShape::OnInitDialog() {
     m_spectrumPlot.CleanPlot();
 
     CRect minimapRect;
-    margin = 0;
+    margin = 2;
     m_minimapHolder.GetWindowRect(&minimapRect);
     minimapRect.bottom -= minimapRect.top + margin;
     minimapRect.right -= minimapRect.left + margin;
-    minimapRect.top = margin + 7;
+    minimapRect.top = margin;
     minimapRect.left = margin;
+    m_minimapPlot.HideXScale();
+    m_minimapPlot.HideYScale();
     m_minimapPlot.Create(WS_VISIBLE | WS_CHILD, minimapRect, &m_minimapHolder);
     m_minimapPlot.SetRange(0, 500, 1, -100.0, 100.0, 1);
     m_minimapPlot.SetBackgroundColor(RGB(0, 0, 0));
     m_minimapPlot.SetGridColor(RGB(255, 255, 255));
     m_minimapPlot.SetPlotColor(RGB(255, 0, 0));
-    m_minimapPlot.HideXScale();
-    m_minimapPlot.HideYScale();
+    m_minimapPlot.EnableGridLinesX(false);
+    m_minimapPlot.EnableGridLinesY(false);
     m_minimapPlot.CleanPlot();
 
     m_labelSpectrumContainsNoWavelengthCalibration.ShowWindow(SW_HIDE);
