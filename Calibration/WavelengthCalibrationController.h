@@ -76,6 +76,8 @@ public:
 
         std::vector<double> inlierCorrespondencePixels;
         std::vector<double> inlierCorrespondenceWavelengths;
+        std::vector<double> inlierCorrespondenceMeasuredIntensity; //< the intensity of the measured spectrum
+        std::vector<double> inlierCorrespondenceFraunhoferIntensity; //< the intensity of the Fraunhofer spectrum
 
         std::vector<double> outlierCorrespondencePixels;
         std::vector<double> outlierCorrespondenceWavelengths;
@@ -93,11 +95,11 @@ public:
         std::vector<double> fraunhoferSpectrum;
 
         // All the keypoints from the Fraunhofer spectrum
-        std::vector<double> fraunhoferSpectrumKeypointPixels;
+        std::vector<double> fraunhoferSpectrumKeypointWavelength;
         std::vector<double> fraunhoferSpectrumKeypointIntensities;
 
         // The inlier keypoints from the Fraunhofer spectrum
-        std::vector<double> fraunhoferSpectrumInlierKeypointPixels;
+        std::vector<double> fraunhoferSpectrumInlierKeypointWavelength;
         std::vector<double> fraunhoferSpectrumInlierKeypointIntensities;
     };
 

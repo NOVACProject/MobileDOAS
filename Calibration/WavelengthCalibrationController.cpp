@@ -132,11 +132,13 @@ void WavelengthCalibrationController::RunCalibration()
             {
                 this->m_calibrationDebug.inlierCorrespondencePixels.push_back(corr.measuredValue);
                 this->m_calibrationDebug.inlierCorrespondenceWavelengths.push_back(corr.theoreticalValue);
+                this->m_calibrationDebug.inlierCorrespondenceMeasuredIntensity.push_back(calibrationDebug.measuredKeypoints[corr.measuredIdx].intensity);
+                this->m_calibrationDebug.inlierCorrespondenceFraunhoferIntensity.push_back(calibrationDebug.fraunhoferKeypoints[corr.theoreticalIdx].intensity);
 
                 this->m_calibrationDebug.measuredSpectrumInlierKeypointPixels.push_back(calibrationDebug.measuredKeypoints[corr.measuredIdx].pixel);
                 this->m_calibrationDebug.measuredSpectrumInlierKeypointIntensities.push_back(calibrationDebug.measuredKeypoints[corr.measuredIdx].intensity);
 
-                this->m_calibrationDebug.fraunhoferSpectrumInlierKeypointPixels.push_back(calibrationDebug.fraunhoferKeypoints[corr.theoreticalIdx].pixel);
+                this->m_calibrationDebug.fraunhoferSpectrumInlierKeypointWavelength.push_back(calibrationDebug.fraunhoferKeypoints[corr.theoreticalIdx].wavelength);
                 this->m_calibrationDebug.fraunhoferSpectrumInlierKeypointIntensities.push_back(calibrationDebug.fraunhoferKeypoints[corr.theoreticalIdx].intensity);
             }
             else
@@ -157,7 +159,7 @@ void WavelengthCalibrationController::RunCalibration()
 
         for (const auto& pt : calibrationDebug.fraunhoferKeypoints)
         {
-            this->m_calibrationDebug.fraunhoferSpectrumKeypointPixels.push_back(pt.pixel);
+            this->m_calibrationDebug.fraunhoferSpectrumKeypointWavelength.push_back(pt.wavelength);
             this->m_calibrationDebug.fraunhoferSpectrumKeypointIntensities.push_back(pt.intensity);
         }
     }

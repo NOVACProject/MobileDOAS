@@ -1240,12 +1240,6 @@ void CGraphCtrl::SetSecondYUnit(CString string)
     m_axisOptions.drawRightUnits = true;
 }
 
-/**Draw a line paralell to x-axis or y-axis
-*@direction - HORIZONTAL or VERTICAL
-*@value - the logic value, not in pixel
-*@pColor - define the color of the line
-*@lineType - define the line is dash or solid. 0 - dash, 1 - solid
-**/
 void CGraphCtrl::DrawLine(DIRECTION direction, double value, COLORREF pColor, LINE_STYLE lineStyle, int plotOption)
 {
     int x0, x1, y0, y1;
@@ -1293,6 +1287,55 @@ void CGraphCtrl::DrawLine(DIRECTION direction, double value, COLORREF pColor, LI
     }
     m_dcPlot.MoveTo(x0, y0);
     m_dcPlot.LineTo(x1, y1);
+
+    m_dcPlot.SelectObject(oldPen);
+
+    // --- Clean up ---
+    FinishPlot();
+
+    // --- Redraw ---
+    Invalidate();
+}
+
+void CGraphCtrl::DrawLine(double x1, double x2, double y1, double y2, COLORREF pColor, LINE_STYLE lineStyle, int plotOption)
+{
+    CPen pen;
+    AxisOptions::FloatRect curAxis;
+    double offsLeft, offsBottom, xFactor, yFactor;
+
+    if (m_dcPlot.GetSafeHdc() == nullptr)
+        return;
+
+    m_dcPlot.SetBkColor(m_colors.background);
+
+    // --- The style of the line ---
+    switch (lineStyle)
+    {
+        case STYLE_SOLID:   pen.CreatePen(PS_SOLID, 0, pColor); break;
+        case STYLE_DASHED:  pen.CreatePen(PS_DASH, 0, pColor); break;
+        default:            pen.CreatePen(PS_SOLID, 0, pColor);
+    }
+    CPen* oldPen = m_dcPlot.SelectObject(&pen);
+
+    // Get the current axis
+    if (plotOption & PLOT_SECOND_AXIS) {
+        curAxis = m_axisOptions.second;
+    }
+    else {
+        curAxis = m_axisOptions.first;
+    }
+
+    // ------------ CALCULATE THE TRANSFORM FROM DATA POINT TO PIXELS ---------------
+    GetTransform(offsLeft, offsBottom, xFactor, yFactor, curAxis);
+
+    // --- Draw the line ---
+    m_dcPlot.MoveTo(
+        m_rectPlot.left + (long)((x1 - offsLeft) * xFactor),
+        m_rectPlot.bottom - (y1 - offsBottom) * yFactor);
+
+    m_dcPlot.LineTo(
+        m_rectPlot.left + (long)((x2 - offsLeft) * xFactor),
+        m_rectPlot.bottom - (y2 - offsBottom) * yFactor);
 
     m_dcPlot.SelectObject(oldPen);
 

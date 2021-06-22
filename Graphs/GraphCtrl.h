@@ -31,7 +31,7 @@ class CGraphCtrl : public CWnd
 {
 protected:
     typedef struct Colors {
-        COLORREF	plot;
+        COLORREF plot;
         COLORREF  background;
         COLORREF  grid;
         COLORREF  circles;
@@ -53,7 +53,7 @@ protected:
 
             inline double Start() { return lowestGridLine; }
             inline double Spacing() { return gridSpacing; }
-            inline bool	 IsOn() { return active; }
+            inline bool  IsOn() { return active; }
         }GridLineOptions;
 
         GridLineOptions line[2];
@@ -69,13 +69,13 @@ protected:
             double top;
             double bottom;
             double margin;
-            NUMBER_FORMAT formatX;	// The number format for the x-axis
-            NUMBER_FORMAT formatY;	// The number format for the y-axis
-            bool	equal;			// True if the X- and Y- axes should have equal scaling
+            NUMBER_FORMAT formatX; // The number format for the x-axis
+            NUMBER_FORMAT formatY; // The number format for the y-axis
+            bool equal; // True if the X- and Y- axes should have equal scaling
         }FloatRect;
 
-        FloatRect first;	// The range for the primary axis, shown to the left and down
-        FloatRect second;	// The range for the second axis, shown to the right and up
+        FloatRect first; // The range for the primary axis, shown to the left and down
+        FloatRect second; // The range for the second axis, shown to the right and up
 
         bool drawRightUnits;    // if true, then there will be a unit drawn on the right hand side of the plot
         bool drawXUnits;        // if true, then the units and scale on the x-axis will be shown
@@ -87,8 +87,8 @@ protected:
     }AxisOptions;
 
     typedef struct PlotOptions {
-        int		lineWidth;
-        int		circleRadius;
+        int lineWidth;
+        int circleRadius;
     }PlotOptions;
 
 public:
@@ -156,24 +156,24 @@ public:
     }
 
     /** Returns the minimum value of the X-axis */
-    double	GetXMin(int dim = 0) {
+    double GetXMin(int dim = 0) {
         return (dim == 0) ? m_axisOptions.first.left : m_axisOptions.second.left;
     }
     /** Returns the maximum value of the Y-axis */
-    double	GetYMax(int dim = 0) {
+    double GetYMax(int dim = 0) {
         return (dim == 0) ? m_axisOptions.first.top : m_axisOptions.second.top;
     }
 
     /** Returns the minimum value of the Y-axis */
-    double	GetYMin(int dim = 0) {
+    double GetYMin(int dim = 0) {
         return (dim == 0) ? m_axisOptions.first.bottom : m_axisOptions.second.bottom;
     }
 
     /** Sets the number format for the X-axis */
-    void	SetXAxisNumberFormat(NUMBER_FORMAT format);
+    void SetXAxisNumberFormat(NUMBER_FORMAT format);
 
     /** Sets the number format for the Y-axis */
-    void	SetYAxisNumberFormat(NUMBER_FORMAT format);
+    void SetYAxisNumberFormat(NUMBER_FORMAT format);
 
     /** Sets the color of the background grid */
     void SetGridColor(COLORREF color);
@@ -204,10 +204,10 @@ public:
     void DecreaseLineWidth();
 
     /** Sets the width of lines drawn */
-    void	SetLineWidth(int width, bool clear = false);
+    void SetLineWidth(int width, bool clear = false);
 
     /** Sets the radius of the circles drawn */
-    void	SetCircleRadius(int radius) {
+    void SetCircleRadius(int radius) {
         m_plotOptions.circleRadius = radius;
     }
 
@@ -252,7 +252,7 @@ public:
             @param color - the color value, the lowest value in this set will be blue and the highest red.
                 If this is null then the common plot color will be used.
             @param xError - the error bar for the x-values
-            @param yError	- the error bar for the y-values
+            @param yError - the error bar for the y-values
             @param pointSum - the number of points that will be drawn.
             if xPositions is NULL then the yPositions will be drawn against their index in the array.
             */
@@ -273,6 +273,9 @@ public:
             @param plotOption - the options for how to plot the line */
     void DrawLine(DIRECTION direction, double value, COLORREF pColor, LINE_STYLE lineStyle = STYLE_SOLID, int plotOption = PLOT_FIXED_AXIS);
 
+    /** Draws a line segment between the two provided points */
+    void DrawLine(double x1, double x2, double y1, double y2, COLORREF pColor, LINE_STYLE lineStyle = STYLE_SOLID, int plotOption = PLOT_FIXED_AXIS);
+
     /** Draws the data set as a set of small circles. The plotOptions decides the
             look of the final plot. plotOptions must be one of, or a combination of,
             the parameters 'PLOT_...' defined in the CGraphCtrl class.*/
@@ -287,11 +290,10 @@ public:
         return XYPlot(x, y, color, nSum, plotOption | PLOT_CIRCLES);
     }
 
-
     /** Prints out a string onto the plot.
     The function generates a text-box into which the string will be
     drawn centered using default font.
-    Use pixel coords.		*/
+    Use pixel coords. */
     void DrawTextBox(double x, double y, CString& str);
 
     /** Prints out a string onto the plot.
@@ -407,13 +409,13 @@ protected:
     int m_nXDecimals;
 
     /** The number of decimals on the second y-axis */
-    int	m_nY2Decimals;
+    int m_nY2Decimals;
 
     /** The number of decimals on the second x-axis */
     int m_nX2Decimals;
 
     /** The position where the mouse-cursor is at the moment */
-    CPoint	m_cursorPosition;
+    CPoint m_cursorPosition;
 
     /** The unit of the x-axis */
     CString m_strXUnitsString;
@@ -422,25 +424,25 @@ protected:
     CString m_strYUnitsString;
 
     /** The options for the colors to use when drawing the plot */
-    Colors			m_colors;
+    Colors m_colors;
 
     /** The options for how to draw the grid */
-    GridOptions			m_gridOptions;
+    GridOptions m_gridOptions;
 
     /** The options for how to draw the axis */
-    AxisOptions			m_axisOptions;
+    AxisOptions m_axisOptions;
 
     /** The options for the thickness of the lines/circles plotted */
-    PlotOptions			m_plotOptions;
+    PlotOptions m_plotOptions;
 
     /** Called to repaint the graph, essentially only copies the bitmaps to the screen */
-    afx_msg void		OnPaint();
+    afx_msg void OnPaint();
 
     /** Called when the size of the graph has been changed */
-    afx_msg void		OnSize(UINT nType, int cx, int cy);
+    afx_msg void OnSize(UINT nType, int cx, int cy);
 
     /** Called when the user moves the mouse over the graph */
-    afx_msg void		OnMouseMove(UINT nFlags, CPoint point);
+    afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 
     DECLARE_MESSAGE_MAP()
 
@@ -560,7 +562,7 @@ protected:
     }
 
     /** Pretty prints the number into the supplied string. Used for the scaling of the axes */
-    void	PrintNumber(double number, int nDecimals, NUMBER_FORMAT format, CString& str);
+    void PrintNumber(double number, int nDecimals, NUMBER_FORMAT format, CString& str);
 };
 }
 

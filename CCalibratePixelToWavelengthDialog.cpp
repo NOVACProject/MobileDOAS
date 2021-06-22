@@ -53,7 +53,12 @@ BOOL CCalibratePixelToWavelengthDialog::OnInitDialog() {
     m_graph.SetPlotColor(RGB(255, 0, 0));
     m_graph.CleanPlot();
 
-    m_graphTypeCombo.SetCurSel(0);
+    m_graphTypeList.AddString("Polynomial");
+    m_graphTypeList.AddString("Spectra & Polynomial");
+    m_graphTypeList.AddString("Measured Spectrum");
+    m_graphTypeList.AddString("Fraunhofer Spectrum");
+    m_graphTypeList.SetCurSel(0);
+
     m_instrumentCalibrationTypeCombo.SetCurSel(0);
 
     return TRUE;  // return TRUE unless you set the focus to a control
@@ -70,12 +75,12 @@ void CCalibratePixelToWavelengthDialog::DoDataExchange(CDataExchange* pDX)
     DDX_Control(pDX, IDC_STATIC_GRAPH_HOLDER_PANEL, m_graphHolder);
     DDX_Control(pDX, IDC_BUTTON_RUN, m_runButton);
     DDX_Control(pDX, IDC_BUTTON_SAVE, m_saveButton);
-    DDX_Control(pDX, IDC_COMBO_GRAPH_TYPE, m_graphTypeCombo);
     DDX_Control(pDX, IDC_COMBO_INITIAL_DATA_TYPE, m_instrumentCalibrationTypeCombo);
     DDX_Control(pDX, IDC_STATIC_INITIAL_CALIBRATION, m_wavelengthCalibrationLabel);
     DDX_Control(pDX, IDC_STATIC_LINEHSHAPE, m_instrumentLineShapeCalibrationLabel);
     DDX_Control(pDX, IDC_EDIT_INITIAL_CALIBRATION2, m_instrumentLineShapeCalibrationEdit);
     DDX_Control(pDX, IDC_BUTTON_BROWSE_LINE_SHAPE, m_instrumentLineShapeCalibrationBrowseButton);
+    DDX_Control(pDX, IDC_LIST_GRAPH_TYPE, m_graphTypeList);
 }
 
 BEGIN_MESSAGE_MAP(CCalibratePixelToWavelengthDialog, CPropertyPage)
@@ -86,10 +91,10 @@ BEGIN_MESSAGE_MAP(CCalibratePixelToWavelengthDialog, CPropertyPage)
     ON_BN_CLICKED(IDC_BUTTON_BROWSE_LINE_SHAPE, &CCalibratePixelToWavelengthDialog::OnClickedButtonBrowseLineShape)
     ON_BN_CLICKED(IDC_BUTTON_RUN, &CCalibratePixelToWavelengthDialog::OnClickedButtonRun)
     ON_BN_CLICKED(IDC_BUTTON_SAVE, &CCalibratePixelToWavelengthDialog::OnClickedButtonSave)
-    ON_CBN_SELCHANGE(IDC_COMBO_GRAPH_TYPE, &CCalibratePixelToWavelengthDialog::OnSelchangeComboGraphType)
     ON_CBN_SELCHANGE(IDC_COMBO_INITIAL_DATA_TYPE, &CCalibratePixelToWavelengthDialog::OnSelchangeComboInitialDataType)
 
     ON_MESSAGE(WM_DONE, OnCalibrationDone)
+    ON_LBN_SELCHANGE(IDC_LIST_GRAPH_TYPE, &CCalibratePixelToWavelengthDialog::OnSelchangeListGraphType)
 END_MESSAGE_MAP()
 
 // Persisting the setup to file
@@ -228,19 +233,29 @@ void CCalibratePixelToWavelengthDialog::OnClickedButtonBrowseLineShape()
 
 void CCalibratePixelToWavelengthDialog::UpdateGraph()
 {
-    const int currentGraph = this->m_graphTypeCombo.GetCurSel();
-    if (currentGraph == 2)
+    const int currentGraph = this->m_graphTypeList.GetCurSel();
+    if (currentGraph == 3)
     {
         DrawFraunhoferSpectrumAndKeypoints();
     }
-    else if (currentGraph == 1)
+    else if (currentGraph == 2)
     {
         DrawMeasuredSpectrumAndKeypoints();
+    }
+    else if (currentGraph == 1)
+    {
+        DrawSpectraAndInliers();
     }
     else
     {
         DrawPolynomialAndInliers();
     }
+}
+
+
+void CCalibratePixelToWavelengthDialog::OnSelchangeListGraphType()
+{
+    UpdateGraph();
 }
 
 void CCalibratePixelToWavelengthDialog::DrawPolynomialAndInliers()
@@ -286,7 +301,7 @@ void CCalibratePixelToWavelengthDialog::DrawMeasuredSpectrumAndKeypoints()
     this->m_graph.CleanPlot();
 
     m_graph.SetXUnits("Pixel");
-    m_graph.SetYUnits("Intensity");
+    m_graph.SetYUnits("");
 
     // the measured spectrum
     this->m_graph.SetPlotColor(RGB(255, 0, 0));
@@ -316,12 +331,13 @@ void CCalibratePixelToWavelengthDialog::DrawFraunhoferSpectrumAndKeypoints()
 {
     this->m_graph.CleanPlot();
 
-    m_graph.SetXUnits("Pixel");
-    m_graph.SetYUnits("Intensity");
+    m_graph.SetXUnits("Wavelength");
+    m_graph.SetYUnits("");
 
-    // the measured spectrum
-    this->m_graph.SetPlotColor(RGB(255, 0, 0));
-    this->m_graph.Plot(
+    // the Fraunhofer spectrum
+    this->m_graph.SetPlotColor(RGB(0, 255, 0));
+    this->m_graph.XYPlot(
+        m_controller->m_resultingPixelToWavelengthMapping.data(),
         m_controller->m_calibrationDebug.fraunhoferSpectrum.data(),
         static_cast<int>(m_controller->m_calibrationDebug.fraunhoferSpectrum.size()),
         Graph::CGraphCtrl::PLOT_CONNECTED);
@@ -329,7 +345,7 @@ void CCalibratePixelToWavelengthDialog::DrawFraunhoferSpectrumAndKeypoints()
     // all the keypoints found
     this->m_graph.SetCircleColor(RGB(128, 128, 128));
     this->m_graph.DrawCircles(
-        m_controller->m_calibrationDebug.fraunhoferSpectrumKeypointPixels.data(),
+        m_controller->m_calibrationDebug.fraunhoferSpectrumKeypointWavelength.data(),
         m_controller->m_calibrationDebug.fraunhoferSpectrumKeypointIntensities.data(),
         static_cast<int>(m_controller->m_calibrationDebug.fraunhoferSpectrumKeypointIntensities.size()),
         Graph::CGraphCtrl::PLOT_FIXED_AXIS);
@@ -337,10 +353,60 @@ void CCalibratePixelToWavelengthDialog::DrawFraunhoferSpectrumAndKeypoints()
     // all the keypoints used
     this->m_graph.SetCircleColor(RGB(255, 255, 255));
     this->m_graph.DrawCircles(
-        m_controller->m_calibrationDebug.fraunhoferSpectrumInlierKeypointPixels.data(),
+        m_controller->m_calibrationDebug.fraunhoferSpectrumInlierKeypointWavelength.data(),
         m_controller->m_calibrationDebug.fraunhoferSpectrumInlierKeypointIntensities.data(),
         static_cast<int>(m_controller->m_calibrationDebug.fraunhoferSpectrumInlierKeypointIntensities.size()),
         Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+}
+
+void CCalibratePixelToWavelengthDialog::DrawSpectraAndInliers()
+{
+    this->m_graph.CleanPlot();
+
+    m_graph.SetXUnits("Pixel");
+    m_graph.SetYUnits("Wavelength [nm]");
+    m_graph.SetSecondRangeY(0, 1, 1, false);
+
+    // the calibration polynomial
+    this->m_graph.SetPlotColor(RGB(255, 0, 0));
+    this->m_graph.Plot(
+        m_controller->m_resultingPixelToWavelengthMapping.data(),
+        static_cast<int>(m_controller->m_resultingPixelToWavelengthMapping.size()),
+        Graph::CGraphCtrl::PLOT_CONNECTED);
+
+    // inliers
+    this->m_graph.SetCircleColor(RGB(255, 255, 255));
+    this->m_graph.DrawCircles(
+        m_controller->m_calibrationDebug.inlierCorrespondencePixels.data(),
+        m_controller->m_calibrationDebug.inlierCorrespondenceWavelengths.data(),
+        static_cast<int>(m_controller->m_calibrationDebug.inlierCorrespondencePixels.size()),
+        Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+
+    // the measured spectrum (on the secondary axis)
+    this->m_graph.SetPlotColor(RGB(255, 0, 0));
+    this->m_graph.Plot(
+        m_controller->m_calibrationDebug.measuredSpectrum.data(),
+        static_cast<int>(m_controller->m_calibrationDebug.measuredSpectrum.size()),
+        Graph::CGraphCtrl::PLOT_CONNECTED | Graph::CGraphCtrl::PLOT_SECOND_AXIS);
+
+    // the Fraunhofer spectrum
+    this->m_graph.SetPlotColor(RGB(0, 255, 0));
+    this->m_graph.Plot(
+        m_controller->m_calibrationDebug.fraunhoferSpectrum.data(),
+        static_cast<int>(m_controller->m_calibrationDebug.fraunhoferSpectrum.size()),
+        Graph::CGraphCtrl::PLOT_SECOND_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
+
+    // The inlier correspondences
+    for (size_t ii = 0; ii < m_controller->m_calibrationDebug.inlierCorrespondencePixels.size(); ++ii)
+    {
+        this->m_graph.DrawLine(
+            m_controller->m_calibrationDebug.inlierCorrespondencePixels[ii],
+            m_controller->m_calibrationDebug.inlierCorrespondencePixels[ii],
+            m_controller->m_calibrationDebug.inlierCorrespondenceMeasuredIntensity[ii],
+            m_controller->m_calibrationDebug.inlierCorrespondenceFraunhoferIntensity[ii],
+            RGB(255, 255, 255),
+            Graph::STYLE_SOLID, Graph::CGraphCtrl::PLOT_SECOND_AXIS);
+    }
 }
 
 /// <summary>
@@ -488,11 +554,6 @@ void CCalibratePixelToWavelengthDialog::OnClickedButtonSave()
     }
 }
 
-void CCalibratePixelToWavelengthDialog::OnSelchangeComboGraphType()
-{
-    UpdateGraph();
-}
-
 void CCalibratePixelToWavelengthDialog::OnSelchangeComboInitialDataType()
 {
     const int currentType = this->m_instrumentCalibrationTypeCombo.GetCurSel();
@@ -525,3 +586,4 @@ void CCalibratePixelToWavelengthDialog::OnSelchangeComboInitialDataType()
         m_instrumentLineShapeCalibrationBrowseButton.EnableWindow(FALSE);
     }
 }
+

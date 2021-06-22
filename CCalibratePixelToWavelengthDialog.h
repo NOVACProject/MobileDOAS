@@ -63,7 +63,7 @@ public:
     Graph::CGraphCtrl m_graph; // The plot where we can display the final calibration
     CStatic m_graphHolder; // holder for the graph, for easy ui access
 
-    CComboBox m_graphTypeCombo; // Selecting the type of plot
+    CListBox m_graphTypeList; // Selecting the type of plot
 
     CComboBox m_instrumentCalibrationTypeCombo; // Selecting the type of calibration input
 
@@ -79,7 +79,7 @@ public:
     afx_msg void OnClickedButtonBrowseSpectrumDark();
     afx_msg void OnClickedButtonBrowseLineShape();
     afx_msg void OnClickedButtonSave();
-    afx_msg void OnSelchangeComboGraphType();
+    afx_msg void OnSelchangeListGraphType();
     afx_msg void OnSelchangeComboInitialDataType();
 
     afx_msg LRESULT OnCalibrationDone(WPARAM wParam, LPARAM lParam);
@@ -105,6 +105,11 @@ private:
     /// Draws the fraunhofer spectrum + keypoints
     /// </summary>
     void DrawFraunhoferSpectrumAndKeypoints();
+
+    /// <summary>
+    /// Draws the fraunhofer + measured spectra + keypoints
+    /// </summary>
+    void DrawSpectraAndInliers();
 
     void HandleCalibrationFailure(const char* errorMessage);
 
