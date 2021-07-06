@@ -12,6 +12,7 @@
 
 // CCalibratePixelToWavelengthDialog dialog
 
+// Pointer to the dialog itself. Used for callbacks
 CDialog* wavelengthCalibrationDialog = nullptr;
 
 IMPLEMENT_DYNAMIC(CCalibratePixelToWavelengthDialog, CPropertyPage)
@@ -22,8 +23,6 @@ CCalibratePixelToWavelengthDialog::CCalibratePixelToWavelengthDialog(CWnd* pPare
     , m_darkSpectrumFile(_T(""))
     , m_initialCalibrationFileTypeFilter("Novac Instrument Calibration Files\0*.xml\0")
 {
-    LoadSetup();
-
     wavelengthCalibrationDialog = this;
 
     this->m_controller = new WavelengthCalibrationController();
@@ -60,6 +59,9 @@ BOOL CCalibratePixelToWavelengthDialog::OnInitDialog() {
     m_graphTypeList.SetCurSel(0);
 
     m_instrumentCalibrationTypeCombo.SetCurSel(0);
+
+    LoadDefaultSetup();
+    LoadLastSetup();
 
     return TRUE;  // return TRUE unless you set the focus to a control
 }
@@ -149,7 +151,21 @@ int ParseXmlInteger(const char* startTag, const char* stopTag, const std::string
     return 0; // parse failure, return zero
 }
 
-void CCalibratePixelToWavelengthDialog::LoadSetup()
+void CCalibratePixelToWavelengthDialog::LoadDefaultSetup()
+{
+    Common common;
+    common.GetExePath();
+
+    // See if there is any possible references in the current directory already
+    const auto solarCrossSection = Common::ListFilesInDirectory(common.m_exePath, "SOLAR*.xs");
+
+    if (solarCrossSection.size() > 0)
+    {
+        this->m_setup.m_solarSpectrumFile = CString(solarCrossSection.front().c_str());
+    }
+}
+
+void CCalibratePixelToWavelengthDialog::LoadLastSetup()
 {
     try
     {

@@ -87,7 +87,8 @@ public:
 private:
     std::string SetupFilePath();
     void SaveSetup();
-    void LoadSetup();
+    void LoadLastSetup();
+    void LoadDefaultSetup();
 
     void UpdateGraph();
 

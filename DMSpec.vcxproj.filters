@@ -85,6 +85,9 @@
     <Filter Include="Source Files\SpectralEvaluation\Math">
       <UniqueIdentifier>{0d4c2c64-a512-4842-8313-dd28c9dd1db8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Calibration">
+      <UniqueIdentifier>{c2d51ef4-0451-42c7-84c2-ce32c232b931}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Common.cpp">
@@ -354,9 +357,6 @@
     <ClCompile Include="CCalibrateInstrumentLineShape.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Calibration\WavelengthCalibrationController.cpp">
-      <Filter>Header Files\Calibration</Filter>
-    </ClCompile>
     <ClCompile Include="SpectralEvaluation\src\Spectra\Spectrum.cpp">
       <Filter>Source Files\SpectralEvaluation</Filter>
     </ClCompile>
@@ -411,9 +411,6 @@
     <ClCompile Include="SpectralEvaluation\src\Interpolation.cpp">
       <Filter>Source Files\SpectralEvaluation</Filter>
     </ClCompile>
-    <ClCompile Include="Calibration\InstrumentLineshapeCalibrationController.cpp">
-      <Filter>Header Files\Calibration</Filter>
-    </ClCompile>
     <ClCompile Include="SpectralEvaluation\src\Calibration\InstrumentLineShape.cpp">
       <Filter>Source Files\SpectralEvaluation\Calibration</Filter>
     </ClCompile>
@@ -432,9 +429,6 @@
     <ClCompile Include="CCalibrateReferencesDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Calibration\ReferenceCreationController.cpp">
-      <Filter>Header Files\Calibration</Filter>
-    </ClCompile>
     <ClCompile Include="SpectralEvaluation\src\Math\FunctionFit.cpp">
       <Filter>Source Files\SpectralEvaluation\Math</Filter>
     </ClCompile>
@@ -446,6 +440,15 @@
     </ClCompile>
     <ClCompile Include="SpectralEvaluation\src\Calibration\InstrumentLineShapeEstimation.cpp">
       <Filter>Source Files\SpectralEvaluation\Calibration</Filter>
+    </ClCompile>
+    <ClCompile Include="Calibration\InstrumentLineshapeCalibrationController.cpp">
+      <Filter>Source Files\Calibration</Filter>
+    </ClCompile>
+    <ClCompile Include="Calibration\ReferenceCreationController.cpp">
+      <Filter>Source Files\Calibration</Filter>
+    </ClCompile>
+    <ClCompile Include="Calibration\WavelengthCalibrationController.cpp">
+      <Filter>Source Files\Calibration</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

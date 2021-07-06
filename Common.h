@@ -155,6 +155,14 @@ public:
 			@return false otherwise */
 	static bool BrowseForDirectory(CString &folder);
 	
+	/** Lists all files in the provided directory.
+		If a fileNameFilter is supplied, then only files with names matching the given filter are returned. 
+		Possible filters are '*.*', '*.xs' or 'SO2_*.txt'
+		This will not recurse into sub-directories.
+		@param directory The name of the directory to search. Must end with a backslash or forwardslash.
+		@return a vector containing the full file path to each file found (i.e. including directory and extension) */
+	static std::vector<std::string> ListFilesInDirectory(const char* directory, const char* fileNameFilter = nullptr);
+
 	// ---------------- MATHEMATICAL FUNCTIONS --------------------
 	/** Rounds a given float value to the nearest integer. */
 	long  Round(double d);

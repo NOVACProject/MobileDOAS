@@ -48,7 +48,7 @@ BOOL CCalibrateReferencesDialog::OnInitDialog() {
     m_graph.SetPlotColor(RGB(255, 0, 0));
     m_graph.CleanPlot();
 
-    LoadSetup();
+    LoadLastSetup();
 
     return TRUE;  // return TRUE unless you set the focus to a control
 }
@@ -106,7 +106,7 @@ void CCalibrateReferencesDialog::SaveSetup()
 
 CString ParseXmlString(const char* startTag, const char* stopTag, const std::string& line);
 
-void CCalibrateReferencesDialog::LoadSetup()
+void CCalibrateReferencesDialog::LoadLastSetup()
 {
     try
     {
@@ -133,6 +133,32 @@ void CCalibrateReferencesDialog::LoadSetup()
     }
     catch (std::exception&)
     {
+    }
+
+    // If this is the first time we used this dialog, then just use the default
+    if (this->m_crossSectionsCombo.GetCount() == 0)
+    {
+        this->LoadDefaultSetup();
+    }
+}
+
+void CCalibrateReferencesDialog::LoadDefaultSetup()
+{
+    Common common;
+    common.GetExePath();
+
+    // See if there is any possible references in the current directory already
+    const auto allCrossSections = Common::ListFilesInDirectory(common.m_exePath, "*.xs");
+
+    for (const std::string& crossSectionFile : allCrossSections)
+    {
+        CString fileName{ crossSectionFile.c_str() };
+        this->m_crossSectionsCombo.AddString(fileName);
+    }
+
+    if (this->m_crossSectionsCombo.GetCount() > 0)
+    {
+        this->m_crossSectionsCombo.SetCurSel(0);
     }
 }
 
