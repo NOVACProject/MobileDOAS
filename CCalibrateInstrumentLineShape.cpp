@@ -69,6 +69,9 @@ BOOL CCalibrateInstrumentLineShape::OnInitDialog() {
 
     m_labelSpectrumContainsNoWavelengthCalibration.ShowWindow(SW_HIDE);
 
+    this->m_saveButton.EnableWindow(FALSE); // disable the save button until the user has selected the emission line to save
+    this->m_labelSaveExplanation.ShowWindow(SW_SHOW);
+
     return TRUE;  // return TRUE unless you set the focus to a control
 }
 
@@ -83,8 +86,9 @@ void CCalibrateInstrumentLineShape::DoDataExchange(CDataExchange* pDX)
     DDX_Control(pDX, IDC_LABEL_MISSING_CALIBRATION, m_labelSpectrumContainsNoWavelengthCalibration);
     DDX_Check(pDX, IDC_CALIBRATION_FROM_MERCURY_LINES, m_autoDetermineCalibration);
     DDX_Control(pDX, IDC_STATIC_MINIMAP_HOLDER, m_minimapHolder);
+    DDX_Control(pDX, IDC_BUTTON_SAVE, m_saveButton);
+    DDX_Control(pDX, IDC_LABEL_SAVE_EXPLANATION, m_labelSaveExplanation);
 }
-
 
 BEGIN_MESSAGE_MAP(CCalibrateInstrumentLineShape, CPropertyPage)
     ON_BN_CLICKED(IDC_BUTTON_BROWSE_SPECTRUM, &CCalibrateInstrumentLineShape::OnBnClickedButtonBrowseSpectrum)
@@ -236,6 +240,9 @@ void CCalibrateInstrumentLineShape::OnLbnSelchangeFoundPeak()
             Min(m_controller->m_inputSpectrum.data() + firstPixel, lastPixel - firstPixel),
             Max(m_controller->m_inputSpectrum.data() + firstPixel, lastPixel - firstPixel),
             true);
+
+        this->m_saveButton.EnableWindow(TRUE);
+        this->m_labelSaveExplanation.ShowWindow(SW_HIDE);
     }
     else
     {
@@ -249,6 +256,10 @@ void CCalibrateInstrumentLineShape::OnLbnSelchangeFoundPeak()
             Min(m_controller->m_inputSpectrum.data(), static_cast<long>(m_controller->m_inputSpectrum.size())),
             Max(m_controller->m_inputSpectrum.data(), static_cast<long>(m_controller->m_inputSpectrum.size())),
             true);
+
+
+        this->m_saveButton.EnableWindow(FALSE);
+        this->m_labelSaveExplanation.ShowWindow(SW_SHOW);
     }
 
     UpdateGraph(false);

@@ -38,6 +38,8 @@ public:
     int m_fitFunctionOption = 0; // The option for which function to fit to the line shape. 
     CStatic m_labelSpectrumContainsNoWavelengthCalibration;
     BOOL m_autoDetermineCalibration;
+    CButton m_saveButton;
+    CStatic m_labelSaveExplanation;
 
     afx_msg void OnBnClickedButtonBrowseSpectrum();
     afx_msg void OnBnClickedBrowseSpectrumDark();
