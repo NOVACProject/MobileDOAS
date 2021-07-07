@@ -356,6 +356,10 @@ void CSpectrumInspectionDlg::InitPropertiesList(){
 	m_propertyList.InsertItem(index++,			"Stopped at:");
 	m_propertyList.InsertItem(index++,			"Latitude:");
 	m_propertyList.InsertItem(index++,			"Longitude:");
+	m_propertyList.InsertItem(index++, "Altitude:");
+	m_propertyList.InsertItem(index++, "GPS Status:");
+	m_propertyList.InsertItem(index++, "Speed [m/s]:");
+	m_propertyList.InsertItem(index++, "Course [deg]:");
 
 }
 
@@ -395,7 +399,25 @@ void CSpectrumInspectionDlg::FillInSpectrumPropertiesList(const CSpectrum *spec)
 		m_propertyList.SetItemText(index++, 1,		str);
 
 		str.Format("%.05lf", spec->lon);
-		m_propertyList.SetItemText(index++, 1,		str);
+		m_propertyList.SetItemText(index++, 1, str);
+
+		str.Format("%.1lf", spec->altitude);
+		m_propertyList.SetItemText(index++, 1, str);
+
+		str.Format("Not Available");
+		if (spec->gpsStatus == "A") {
+			str.Format("%s", "Active");
+		}
+		if (spec->gpsStatus == "V") {
+			str.Format("%s", "Void");
+		}
+		m_propertyList.SetItemText(index++, 1, str);
+
+		str.Format("%.1lf", spec->speed);
+		m_propertyList.SetItemText(index++, 1, str);
+
+		str.Format("%.1lf", spec->course);
+		m_propertyList.SetItemText(index++, 1, str);
 	
 	}else{
 		str.Format("");
@@ -408,7 +430,11 @@ void CSpectrumInspectionDlg::FillInSpectrumPropertiesList(const CSpectrum *spec)
 		m_propertyList.SetItemText(index++, 1,		str);
 		m_propertyList.SetItemText(index++, 1,		str);
 		m_propertyList.SetItemText(index++, 1,		str);
-		m_propertyList.SetItemText(index++, 1,		str);	
+		m_propertyList.SetItemText(index++, 1,		str);
+		m_propertyList.SetItemText(index++, 1, str);
+		m_propertyList.SetItemText(index++, 1, str);
+		m_propertyList.SetItemText(index++, 1, str);
+		m_propertyList.SetItemText(index++, 1, str);
 	}
 }
 

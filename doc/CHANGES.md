@@ -1,9 +1,16 @@
 MobileDOAS Release Notes
 -----------------------------------------------------
-Version 6.3 (TBD)
+Version 6.3.1 (May 2021)
+
+* Revisions to new attributes added to STD files in 6.3 (#154)
+* Fix rounding issue in integration time adjustments (#155)
+
+-----------------------------------------------------
+Version 6.3 (April 2021)
 
 New features
-* Option to read and analyze spectra files from a directory (#12)
+* Option to read and analyze spectra files from a directory (#137)
+* Add GPS status, course, and speed to STD files (#151)
 
 Bug fixes
 * Fix traverse display in postflux dialog when passing midnight UTC (#148)
@@ -11,8 +18,6 @@ Bug fixes
 Other
 * Improved method to determine whether spectrum is dark (#146)
 
-
-MobileDOAS Release Notes
 -----------------------------------------------------
 Version 6.2 (August 2019)
 

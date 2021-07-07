@@ -21,6 +21,9 @@ public:
 	double  lat;			// Latitude, in decimal degrees
 	double  lon;			// Longitude, in decimal degrees
 	double  altitude;		// Altitude, in meters above sea-level
+	std::string gpsStatus;  // GPS Status, A=active, V=void, NA=not available
+	double  speed;			// GPS speed in m/s
+	double  course;         // GPS tracking direction in degrees
 	std::string date;		// The date the spectrum acquisition started (dd.mm.yy)
 	int     startTime[3];	// The local time-of-day when the spectrum acquisition started. [0] is hour, [1] is minute, [2] is seconds.
 	int     stopTime[3];	// The local time-of-day when the spectrum acquisition stopped. [0] is hour, [1] is minute, [2] is seconds.
