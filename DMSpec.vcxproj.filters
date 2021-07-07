@@ -348,9 +348,6 @@
     <ClCompile Include="CSpectrometerCalibrationDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CCalibrateInstrumentLineShape.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SpectralEvaluation\src\Spectra\Spectrum.cpp">
       <Filter>Source Files\SpectralEvaluation</Filter>
     </ClCompile>
@@ -414,12 +411,6 @@
     <ClCompile Include="SpectralEvaluation\src\Calibration\WavelengthCalibrationByRansac.cpp">
       <Filter>Source Files\SpectralEvaluation\Calibration</Filter>
     </ClCompile>
-    <ClCompile Include="CCalibratePixelToWavelengthDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CCalibrateReferencesDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SpectralEvaluation\src\Math\FunctionFit.cpp">
       <Filter>Source Files\SpectralEvaluation\Math</Filter>
     </ClCompile>
@@ -440,6 +431,15 @@
     </ClCompile>
     <ClCompile Include="Calibration\WavelengthCalibrationController.cpp">
       <Filter>Source Files\Calibration</Filter>
+    </ClCompile>
+    <ClCompile Include="CCalibrateInstrumentLineShape.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="CCalibratePixelToWavelengthDialog.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="CCalibrateReferencesDialog.cpp">
+      <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -829,9 +829,6 @@
     <ClInclude Include="CSpectrometerCalibrationDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CCalibrateInstrumentLineShape.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Calibration\WavelengthCalibrationController.h">
       <Filter>Header Files\Calibration</Filter>
     </ClInclude>
@@ -847,14 +844,17 @@
     <ClInclude Include="Calibration\InstrumentLineshapeCalibrationController.h">
       <Filter>Header Files\Calibration</Filter>
     </ClInclude>
-    <ClInclude Include="CCalibratePixelToWavelengthDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CCalibrateReferencesDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Calibration\ReferenceCreationController.h">
       <Filter>Header Files\Calibration</Filter>
+    </ClInclude>
+    <ClInclude Include="CCalibrateInstrumentLineShape.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="CCalibratePixelToWavelengthDialog.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="CCalibrateReferencesDialog.h">
+      <Filter>Header Files\Dialogs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

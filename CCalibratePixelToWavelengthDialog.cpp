@@ -162,6 +162,7 @@ void CCalibratePixelToWavelengthDialog::LoadDefaultSetup()
     if (solarCrossSection.size() > 0)
     {
         this->m_setup.m_solarSpectrumFile = CString(solarCrossSection.front().c_str());
+        UpdateData(FALSE);
     }
 }
 
