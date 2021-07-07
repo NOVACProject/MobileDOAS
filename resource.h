@@ -548,7 +548,7 @@
 #define ID_START_GPS                    32799
 #define ID_CONTROL_STARTTHEGPS          32800
 #define ID_CONTROL_VIEWSPECTRAFROMDIRECTORY 32801
-#define ID_CONFIGURATION_               32802
+#define ID_ANALYSIS_CALIBRATESPECTROMETER 32803
 
 // Next default values for new objects
 // 
@@ -556,7 +556,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        289
-#define _APS_NEXT_COMMAND_VALUE         32803
+#define _APS_NEXT_COMMAND_VALUE         32804
 #define _APS_NEXT_CONTROL_VALUE         1329
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

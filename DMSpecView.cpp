@@ -108,6 +108,7 @@ BEGIN_MESSAGE_MAP(CDMSpecView, CFormView)
 	ON_WM_HELPINFO()
 	ON_COMMAND(ID_CONTROL_TESTTHEGPS,				OnMenuControlTestTheGPS)
 	ON_COMMAND(ID_CONTROL_STARTTHEGPS,				OnMenuControlRunTheGPS)
+	ON_COMMAND(ID_ANALYSIS_CALIBRATESPECTROMETER,	OnAnalysisCalibratespectrometer)
 
 	ON_COMMAND(ID_VIEW_COLUMNERROR,					OnViewColumnError)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_COLUMNERROR,		OnUpdateViewColumnError)
@@ -124,7 +125,6 @@ BEGIN_MESSAGE_MAP(CDMSpecView, CFormView)
 	
 	ON_WM_CLOSE()
 	ON_WM_DESTROY()
-	ON_COMMAND(ID_CONFIGURATION_, &CDMSpecView::OnDoSpectrometerCalibration)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1611,7 +1611,7 @@ void CDMSpecView::SoundAlarm()
 	PlaySound(fileToPlay, 0, SND_SYNC);
 }
 
-void CDMSpecView::OnDoSpectrometerCalibration()
+void CDMSpecView::OnAnalysisCalibratespectrometer()
 {
 	CSpectrometerCalibrationDlg dlg;
 	dlg.DoModal();

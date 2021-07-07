@@ -299,7 +299,7 @@ protected:
 public:
 	afx_msg void OnClose();
 	afx_msg void OnDestroy();
-	afx_msg void OnDoSpectrometerCalibration();
+	afx_msg void OnAnalysisCalibratespectrometer();
 };
 
 #ifndef _DEBUG  // debug version in DMSpecView.cpp

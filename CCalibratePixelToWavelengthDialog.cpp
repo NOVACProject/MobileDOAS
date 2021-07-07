@@ -579,7 +579,6 @@ void CCalibratePixelToWavelengthDialog::OnSelchangeComboInitialDataType()
         // 2: User provides a wavelength calibration file, the program derives the instrument line shape
         m_initialCalibrationFileTypeFilter = "Wavelength Calibration Files\0*.clb\0Spectrum Files\0*.txt;*.xs\0\0";
         m_wavelengthCalibrationLabel.SetWindowTextA("Initial Wavelength Calibration");
-        m_instrumentLineShapeCalibrationLabel.EnableWindow(FALSE);
         m_instrumentLineShapeCalibrationEdit.EnableWindow(FALSE);
         m_instrumentLineShapeCalibrationBrowseButton.EnableWindow(FALSE);
     }
@@ -588,7 +587,6 @@ void CCalibratePixelToWavelengthDialog::OnSelchangeComboInitialDataType()
         // 1: User provides a wavelength calibration file and instrument line shape
         m_initialCalibrationFileTypeFilter = "Wavelength Calibration Files\0*.clb\0Spectrum Files\0*.txt;*.xs\0\0";
         m_wavelengthCalibrationLabel.SetWindowTextA("Initial Wavelength Calibration");
-        m_instrumentLineShapeCalibrationLabel.EnableWindow(TRUE);
         m_instrumentLineShapeCalibrationEdit.EnableWindow(TRUE);
         m_instrumentLineShapeCalibrationBrowseButton.EnableWindow(TRUE);
     }
@@ -597,7 +595,6 @@ void CCalibratePixelToWavelengthDialog::OnSelchangeComboInitialDataType()
         // 0: User provides a novac-calibration file containing both wavelength calibration and instrument line shape
         m_initialCalibrationFileTypeFilter = "Novac Instrument Calibration Files\0*.xml\0\0";
         m_wavelengthCalibrationLabel.SetWindowTextA("Initial Calibration");
-        m_instrumentLineShapeCalibrationLabel.EnableWindow(FALSE);
         m_instrumentLineShapeCalibrationEdit.EnableWindow(FALSE);
         m_instrumentLineShapeCalibrationBrowseButton.EnableWindow(FALSE);
     }

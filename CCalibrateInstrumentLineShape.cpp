@@ -257,7 +257,6 @@ void CCalibrateInstrumentLineShape::OnLbnSelchangeFoundPeak()
             Max(m_controller->m_inputSpectrum.data(), static_cast<long>(m_controller->m_inputSpectrum.size())),
             true);
 
-
         this->m_saveButton.EnableWindow(FALSE);
         this->m_labelSaveExplanation.ShowWindow(SW_SHOW);
     }
