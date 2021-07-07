@@ -305,13 +305,11 @@
     <ClCompile Include="Controls\Label.cpp" />
     <ClCompile Include="Controls\ReferenceFileControl.cpp" />
     <ClCompile Include="CSpectrometerCalibrationDlg.cpp" />
-    <ClCompile Include="CWavelengthCalibration.cpp" />
     <ClCompile Include="Dialogs\QueryStringDialog.cpp" />
     <ClCompile Include="Dialogs\ReferencePlotDlg.cpp" />
     <ClCompile Include="Dialogs\ReferencePropertiesDlg.cpp" />
     <ClCompile Include="Dialogs\SelectionDialog.cpp" />
     <ClCompile Include="Dialogs\SimplePropertySheet.cpp" />
-    <ClCompile Include="Dialogs\SpectrumCalibrationDlg.cpp" />
     <ClCompile Include="Dialogs\SpectrumInspectionDlg.cpp" />
     <ClCompile Include="Dialogs\SpectrumScaleDlg.cpp" />
     <ClCompile Include="Dialogs\SpectrumSettingsDlg.cpp" />
@@ -355,7 +353,6 @@
     <ClCompile Include="InformationDialog.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="MeasGrid.cpp" />
-    <ClCompile Include="MeasurementModes\Measurement_Calibrate.cpp" />
     <ClCompile Include="MeasurementModes\Measurement_Traverse.cpp" />
     <ClCompile Include="MeasurementModes\Measurement_View.cpp" />
     <ClCompile Include="MeasurementModes\Measurement_Wind.cpp" />
@@ -506,13 +503,11 @@
     <ClInclude Include="Controls\Label.h" />
     <ClInclude Include="Controls\ReferenceFileControl.h" />
     <ClInclude Include="CSpectrometerCalibrationDlg.h" />
-    <ClInclude Include="CWavelengthCalibration.h" />
     <ClInclude Include="Dialogs\QueryStringDialog.h" />
     <ClInclude Include="Dialogs\ReferencePlotDlg.h" />
     <ClInclude Include="Dialogs\ReferencePropertiesDlg.h" />
     <ClInclude Include="Dialogs\SelectionDialog.h" />
     <ClInclude Include="Dialogs\SimplePropertySheet.h" />
-    <ClInclude Include="Dialogs\SpectrumCalibrationDlg.h" />
     <ClInclude Include="Dialogs\SpectrumInspectionDlg.h" />
     <ClInclude Include="Dialogs\SpectrumScaleDlg.h" />
     <ClInclude Include="Dialogs\SpectrumSettingsDlg.h" />
@@ -591,7 +586,6 @@
     <ClInclude Include="LogDlg.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="MeasGrid.h" />
-    <ClInclude Include="MeasurementModes\Measurement_Calibrate.h" />
     <ClInclude Include="MeasurementModes\Measurement_Traverse.h" />
     <ClInclude Include="MeasurementModes\Measurement_View.h" />
     <ClInclude Include="MeasurementModes\Measurement_Wind.h" />

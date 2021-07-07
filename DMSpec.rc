@@ -21,16 +21,6 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Icon
-//
-
-// Icon with lowest ID value placed first to ensure application icon
-// remains consistent on all systems.
-IDR_DMSPECTYPE          ICON                    "res\\DMSpecDoc.ico"
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
 // Bitmap
 //
 
@@ -81,7 +71,6 @@ BEGIN
         MENUITEM "Stop",                        ID_CONTROL_STOP
         MENUITEM SEPARATOR
         MENUITEM "View Spectrometer Output",    ID_CONTROL_VIEWSPECTRAFROMSPECTROMETER
-        MENUITEM "Calibrate Spectrometer",      258
         MENUITEM "Start WindMeasurement",       ID_CONTROL_STARTWINDMEASUREMENT
         MENUITEM SEPARATOR
         MENUITEM "Test the &GPS",               ID_CONTROL_TESTTHEGPS
@@ -171,10 +160,10 @@ FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
     LTEXT           "Mobile DOAS Version 6.0",IDC_STATIC_VERSION,40,10,171,8,SS_NOPREFIX
-    LTEXT           "Copyright (C) 2004 - 2018   Optical Remote Sensing Group",IDC_STATIC,40,31,207,8
+    LTEXT           "Copyright (C) 2004 - 2021   Optical Remote Sensing Group",IDC_STATIC,40,31,207,8
     DEFPUSHBUTTON   "OK",IDOK,231,7,50,14,WS_GROUP
     LTEXT           "Chalmers University of Technology, Sweden",IDC_STATIC,125,43,140,8
-    LTEXT           "Yan Zhang, Mattias Johansson, Diana Norgaard",IDC_STATIC,126,54,103,18
+    LTEXT           "Yan Zhang, Mattias Johansson, Diana Norgaard",IDC_STATIC,126,54,155,18
 END
 
 IDD_DMSPEC_FORM DIALOGEX 0, 0, 668, 419
@@ -870,8 +859,6 @@ END
 
 STRINGTABLE
 BEGIN
-    ID_CONTROL_CALIBRATESPECTROMETER 
-                            "Collect single spectra with the attached spectrometer."
     ID_ANALYSIS_VIEWMEASUREDSPECTRA 
                             "Browse through the spectra from a measurement"
 END
@@ -916,8 +903,6 @@ IDR_MAINFRAME           ICON                    "res\\Logo.ico"
 //
 
 IDB_BLUE                BITMAP                  "res\\bmp00002.bmp"
-
-IDB_CHALMERS            BITMAP                  "res\\CHALMERSAvancez30.bmp"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1473,19 +1458,6 @@ BEGIN
     SCROLLBAR       IDC_SPECTRUM_SCROLLBAR,170,49,149,11
 END
 
-IDD_SPECTRUM_CALIBRATION DIALOGEX 0, 0, 251, 270
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-EXSTYLE WS_EX_TOOLWINDOW
-CAPTION "Spectrum Calibration"
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
-BEGIN
-    GROUPBOX        "",IDC_FIT_GRAPH_FRAME,7,143,237,120
-    PUSHBUTTON      "Use current spectrum",IDC_BUTTON_USE_CURRENT_SPECTRUM,165,14,79,19
-    GROUPBOX        "Hg Peaks:",IDC_PEAKLIST_FRAME,7,7,143,131
-    PUSHBUTTON      "Fit polynomial",IDC_BUTTON_FIT_POLYNOMIAL,166,39,78,18
-    LTEXT           ".",IDC_LABEL_POLYNOMIAL,164,73,80,67
-END
-
 IDD_CALIBRATE_LINESHAPE_DIALOG DIALOGEX 0, 0, 711, 367
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Instrument Line Shape"
@@ -1710,14 +1682,6 @@ BEGIN
         RIGHTMARGIN, 663
         TOPMARGIN, 7
         BOTTOMMARGIN, 367
-    END
-
-    IDD_SPECTRUM_CALIBRATION, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 244
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 263
     END
 
     IDD_CALIBRATE_LINESHAPE_DIALOG, DIALOG

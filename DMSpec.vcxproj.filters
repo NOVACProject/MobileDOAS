@@ -120,9 +120,6 @@
     <ClCompile Include="MainFrm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MeasurementModes\Measurement_Calibrate.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MeasurementModes\Measurement_Traverse.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -339,9 +336,6 @@
     <ClCompile Include="ExportEvLogDlg.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
-    <ClCompile Include="Dialogs\SpectrumCalibrationDlg.cpp">
-      <Filter>Source Files\Dialogs</Filter>
-    </ClCompile>
     <ClCompile Include="Dialogs\SpectrumInspectionDlg.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
@@ -382,9 +376,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CGpsData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CWavelengthCalibration.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Common\CSpectrum.cpp">
@@ -488,9 +479,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MeasGrid.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MeasurementModes\Measurement_Calibrate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MeasurementModes\Measurement_Traverse.h">
@@ -817,9 +805,6 @@
     <ClInclude Include="Dialogs\ReferencePlotDlg.h">
       <Filter>Header Files\Dialogs</Filter>
     </ClInclude>
-    <ClInclude Include="Dialogs\SpectrumCalibrationDlg.h">
-      <Filter>Header Files\Dialogs</Filter>
-    </ClInclude>
     <ClInclude Include="Dialogs\SpectrumInspectionDlg.h">
       <Filter>Header Files\Dialogs</Filter>
     </ClInclude>
@@ -854,9 +839,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CGpsData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CWavelengthCalibration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Common\CSpectrum.h">
