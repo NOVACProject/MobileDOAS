@@ -38,6 +38,12 @@ public:
     std::vector<novac::SpectrumDataPoint> m_peaksFound;
 
     /// <summary>
+    /// Output: this is our list of peaks which have been found in the m_inputSpectrum
+    /// but have been rejected for some reason
+    /// </summary>
+    std::vector<novac::SpectrumDataPoint> m_rejectedPeaks;
+
+    /// <summary>
     /// Output: The read in mercury spectrum data
     /// </summary>
     std::vector<double> m_inputSpectrum;
@@ -105,4 +111,13 @@ private:
     /// <param name="spectrum">The spectrum to modify</param>
     /// <returns>The baseline which was subtracted.</returns>
     double SubtractBaseline(novac::CSpectrum& spectrum);
+
+    /// <summary>
+    /// Filters the provided set of spectrum data points to only include peaks
+    /// which are (relatively) isolated and which are not saturated.
+    /// </summary>
+    void FilterPeaks(
+        const std::vector<novac::SpectrumDataPoint>& peaks,
+        std::vector<novac::SpectrumDataPoint>& good,
+        std::vector<novac::SpectrumDataPoint>& rejected);
 };

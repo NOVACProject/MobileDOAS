@@ -54,7 +54,10 @@ void InstrumentLineshapeCalibrationController::Update()
     if (this->m_readWavelengthCalibrationFromFile)
     {
         // Find the peaks in the measured spectrum
-        novac::FindEmissionLines(hgSpectrum, m_peaksFound);
+        std::vector<novac::SpectrumDataPoint> peaksFound;
+        novac::FindEmissionLines(hgSpectrum, peaksFound);
+
+        FilterPeaks(peaksFound, m_peaksFound, m_rejectedPeaks);
 
         if (this->m_inputSpectrumContainsWavelength)
         {
@@ -82,7 +85,7 @@ void InstrumentLineshapeCalibrationController::Update()
         if (novac::MercuryCalibration(hgSpectrum, 3, minimumWavelength, maximumWavelength, wavelengthCalibrationResult, &wavelengthCalibrationState))
         {
             this->m_inputSpectrumWavelength = wavelengthCalibrationResult.pixelToWavelengthMapping;
-            this->m_peaksFound = wavelengthCalibrationState.peaks;
+            FilterPeaks(wavelengthCalibrationState.peaks, m_peaksFound, m_rejectedPeaks);
             this->m_wavelengthCalibrationSucceeded = true;
         }
         else
@@ -211,6 +214,67 @@ void InstrumentLineshapeCalibrationController::FitFunctionToLineShape(size_t pea
     else
     {
         throw std::invalid_argument("Invalid type of function selected");
+    }
+}
+
+void InstrumentLineshapeCalibrationController::FilterPeaks(
+    const std::vector<novac::SpectrumDataPoint>& peaks,
+    std::vector<novac::SpectrumDataPoint>& good,
+    std::vector<novac::SpectrumDataPoint>& rejected)
+{
+    good.clear();
+    good.reserve(peaks.size());
+    rejected.clear();
+    rejected.reserve(peaks.size());
+
+    for (const auto& peak : peaks)
+    {
+        if (peak.flatTop)
+        {
+            // This peak is saturated and is hence not a good ILS candidate
+            rejected.push_back(peak);
+            continue;
+        }
+
+        // Check the data around the peak to assess wether the peaks is isolated or part of a double-peak
+        bool isIsolated = true;
+        const size_t leftWidth = static_cast<size_t>(peak.pixel - peak.leftPixel);
+        const size_t rightWidth = static_cast<size_t>(peak.rightPixel - peak.pixel);
+        const size_t peakIdx = static_cast<size_t>(peak.pixel);
+        for (size_t ii = peakIdx; ii < peakIdx + 2 * rightWidth; ++ii)
+        {
+            if (m_inputSpectrum[ii] - m_inputSpectrum[ii + 1] < -0.05 * peak.intensity)
+            {
+                // The intensity starts to go up again, may be secondary peak
+                isIsolated = false;
+                break;
+            }
+        }
+
+        if (!isIsolated)
+        {
+            rejected.push_back(peak);
+            continue;
+        }
+
+        for (size_t ii = peakIdx - 2 * leftWidth; ii < peakIdx; ++ii)
+        {
+            if (m_inputSpectrum[ii + 1] - m_inputSpectrum[ii] < -0.05 * peak.intensity)
+            {
+                // The intensity starts to go down again, may be secondary peak
+                isIsolated = false;
+                break;
+            }
+        }
+
+        if (!isIsolated)
+        {
+            rejected.push_back(peak);
+            continue;
+        }
+
+        // All seems good
+        good.push_back(peak);
     }
 }
 

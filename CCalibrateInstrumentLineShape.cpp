@@ -279,9 +279,30 @@ void CCalibrateInstrumentLineShape::UpdateGraph(bool reset)
         m_minimapPlot.XYPlot(m_controller->m_inputSpectrumWavelength.data(), m_controller->m_inputSpectrum.data(), static_cast<int>(m_controller->m_inputSpectrum.size()), plotOption);
     }
 
+    /* Draw the rejects */
+    if (m_controller->m_rejectedPeaks.size() > 0)
+    {
+        m_spectrumPlot.SetCircleColor(RGB(100, 100, 100));
+        m_minimapPlot.SetCircleColor(RGB(100, 100, 100));
+
+        std::vector<double> peakX;
+        std::vector<double> peakY;
+
+        for each (auto peak in m_controller->m_rejectedPeaks)
+        {
+            peakX.push_back(peak.wavelength);
+            peakY.push_back(peak.intensity);
+        }
+        m_spectrumPlot.DrawCircles(peakX.data(), peakY.data(), static_cast<int>(m_controller->m_rejectedPeaks.size()), Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+        m_minimapPlot.DrawCircles(peakX.data(), peakY.data(), static_cast<int>(m_controller->m_rejectedPeaks.size()), Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+    }
+
     /* Draw the peaks */
     if (m_controller->m_peaksFound.size() > 0)
     {
+        m_spectrumPlot.SetCircleColor(RGB(255, 255, 255));
+        m_minimapPlot.SetCircleColor(RGB(255, 255, 255));
+
         std::vector<double> peakX;
         std::vector<double> peakY;
 
