@@ -6,9 +6,13 @@
 #include <SpectralEvaluation/File/File.h>
 #include <SpectralEvaluation/Calibration/ReferenceSpectrumConvolution.h>
 
+namespace novac
+{
+std::vector<double> GetPixelToWavelengthMappingFromFile(const std::string& clbFile);
+}
+
 ReferenceCreationController::ReferenceCreationController()
 {
-
 }
 
 void ReferenceCreationController::ConvolveReference()
@@ -16,11 +20,30 @@ void ReferenceCreationController::ConvolveReference()
     auto conversion = (m_convertToAir) ? novac::WavelengthConversion::VacuumToAir : novac::WavelengthConversion::None;
 
     // Read the calibration
-    novac::CSpectrum instrumentLineShapeSpectrum;
+    novac::CCrossSectionData instrumentLineShape;
     std::vector<double> pixelToWavelengthMapping;
-    if (!novac::ReadInstrumentCalibration(this->m_calibrationFile, instrumentLineShapeSpectrum, pixelToWavelengthMapping))
+    if (novac::GetFileExtension(this->m_calibrationFile).compare(".xml") == 0)
     {
-        throw std::invalid_argument("Failed to read the instrument calibration file");
+        novac::CSpectrum instrumentLineShapeSpectrum;
+        if (!novac::ReadInstrumentCalibration(this->m_calibrationFile, instrumentLineShapeSpectrum, pixelToWavelengthMapping))
+        {
+            throw std::invalid_argument("Failed to read the instrument calibration file");
+        }
+
+        instrumentLineShape = novac::CCrossSectionData(instrumentLineShapeSpectrum);
+    }
+    else
+    {
+        pixelToWavelengthMapping = novac::GetPixelToWavelengthMappingFromFile(this->m_calibrationFile);
+        if (pixelToWavelengthMapping.size() == 0)
+        {
+            throw std::invalid_argument("Failed to read the wavelength calibration file");
+        }
+
+        if (!novac::ReadCrossSectionFile(this->m_instrumentLineshapeFile, instrumentLineShape))
+        {
+            throw std::invalid_argument("Failed to read the instrument line shape file");
+        }
     }
 
     // Red the reference
@@ -31,7 +54,6 @@ void ReferenceCreationController::ConvolveReference()
     }
 
     // Do the convolution
-    novac::CCrossSectionData instrumentLineShape(instrumentLineShapeSpectrum);
     std::vector<double> convolutionResult;
     if (!novac::ConvolveReference(pixelToWavelengthMapping, instrumentLineShape, highResReference, convolutionResult, conversion))
     {

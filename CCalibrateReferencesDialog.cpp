@@ -8,6 +8,7 @@
 #include <fstream>
 #include "Common.h"
 #include "Calibration/ReferenceCreationController.h"
+#include "OpenInstrumentCalibrationDialog.h"
 #include <SpectralEvaluation/Evaluation/CrossSectionData.h>
 #include <SpectralEvaluation/File/File.h>
 
@@ -72,6 +73,7 @@ BEGIN_MESSAGE_MAP(CCalibrateReferencesDialog, CPropertyPage)
     ON_BN_CLICKED(IDC_CHECK_INPUT_IN_VACUUM, &CCalibrateReferencesDialog::OnConvolutionOptionChanged)
     ON_BN_CLICKED(IDC_BUTTON_RUN_CREATE_REFERENCE, &CCalibrateReferencesDialog::OnBnClickedButtonRunCreateReference)
     ON_BN_CLICKED(IDC_BUTTON_SAVE, &CCalibrateReferencesDialog::OnClickedButtonSave)
+    ON_BN_CLICKED(IDC_BUTTON_SELECT_CALIBRATION, &CCalibrateReferencesDialog::OnButtonSelectCalibration)
 END_MESSAGE_MAP()
 
 std::string CCalibrateReferencesDialog::SetupFilePath()
@@ -245,8 +247,8 @@ void CCalibrateReferencesDialog::UpdateReference()
             return;
         }
 
-        // this->m_controller->m_instrumentLineshapeFile = this->m_instrumentLineshapeFile;
         this->m_controller->m_calibrationFile = this->m_calibrationFile;
+        this->m_controller->m_instrumentLineshapeFile = this->m_instrumentLineshapeFile;
         this->m_controller->m_highPassFilter = this->m_highPassFilterReference;
         this->m_controller->m_convertToAir = this->m_inputInVacuum;
         this->m_controller->m_highResolutionCrossSection = crossSectionFilePath;
@@ -284,3 +286,15 @@ void CCalibrateReferencesDialog::UpdateGraph()
     }
 }
 
+void CCalibrateReferencesDialog::OnButtonSelectCalibration()
+{
+    OpenInstrumentCalibrationDialog dlg;
+    if (IDOK == dlg.DoModal())
+    {
+        this->m_calibrationFile = dlg.m_state.initialCalibrationFile;
+        this->m_instrumentLineshapeFile = dlg.m_state.instrumentLineshapeFile;
+
+        UpdateData(FALSE);
+        UpdateReference();
+    }
+}

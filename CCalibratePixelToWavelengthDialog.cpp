@@ -478,7 +478,8 @@ void CCalibratePixelToWavelengthDialog::OnClickedButtonRun()
         MessageBox("Please select a file which contains an initial guess for the wavelength calibration of the spectrometer", "Missing input", MB_OK);
         return;
     }
-    if (m_instrumentCalibrationTypeCombo.GetCurSel() == (int)InstrumentCalibrationInputOption::WavelengthAndSlitFunctionFile && !IsExistingFile(m_setup.m_instrumentLineshapeFile))
+    if (m_instrumentCalibrationTypeCombo.GetCurSel() == (int)InstrumentCalibrationInputOption::WavelengthAndSlitFunctionFile && 
+        !IsExistingFile(m_setup.m_instrumentLineshapeFile))
     {
         MessageBox("Please select a file which contains a measured instrument line shape", "Missing input", MB_OK);
         return;

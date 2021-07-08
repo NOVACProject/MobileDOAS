@@ -357,6 +357,7 @@
     <ClCompile Include="MeasurementModes\Measurement_View.cpp" />
     <ClCompile Include="MeasurementModes\Measurement_Wind.cpp" />
     <ClCompile Include="MeasurementModes\Measurement_Directory.cpp" />
+    <ClCompile Include="OpenInstrumentCalibrationDialog.cpp" />
     <ClCompile Include="PostFluxDlg.cpp" />
     <ClCompile Include="RealTimeRoute.cpp" />
     <ClCompile Include="ReEvaluation\ReEvalScriptFileHandler.cpp" />
@@ -479,6 +480,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BasicMath.h" />
+    <ClInclude Include="Calibration\InstrumentCalibrationInput.h" />
     <ClInclude Include="Calibration\InstrumentLineshapeCalibrationController.h" />
     <ClInclude Include="Calibration\ReferenceCreationController.h" />
     <ClInclude Include="Calibration\WavelengthCalibrationController.h" />
@@ -590,6 +592,7 @@
     <ClInclude Include="MeasurementModes\Measurement_View.h" />
     <ClInclude Include="MeasurementModes\Measurement_Wind.h" />
     <ClInclude Include="MeasurementModes\Measurement_Directory.h" />
+    <ClInclude Include="OpenInstrumentCalibrationDialog.h" />
     <ClInclude Include="PostFluxDlg.h" />
     <ClInclude Include="RealTimeRoute.h" />
     <ClInclude Include="ReEvaluation\ReEvalScriptFileHandler.h" />

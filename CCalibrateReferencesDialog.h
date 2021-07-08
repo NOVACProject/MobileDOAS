@@ -29,7 +29,10 @@ protected:
     DECLARE_MESSAGE_MAP()
 public:
     CComboBox m_crossSectionsCombo;
-    CString m_calibrationFile;  //< the full calibration file, in the new xml-based format
+
+    CString m_calibrationFile;  //< the full calibration file, in the new xml-based format, OR the wavelength calibration file
+    CString m_instrumentLineshapeFile; //< the instrument line shape file, provided if m_calibrationFile is a wavelength only file
+
     BOOL m_highPassFilterReference;
     BOOL m_inputInVacuum;
 
@@ -43,6 +46,7 @@ public:
     afx_msg void OnBnClickedBrowseCrossSection();
     afx_msg void OnBnClickedButtonRunCreateReference();
     afx_msg void OnClickedButtonSave();
+    afx_msg void OnButtonSelectCalibration();
 
 private:
     std::string SetupFilePath();

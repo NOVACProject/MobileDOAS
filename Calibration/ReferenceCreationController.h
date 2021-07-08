@@ -14,9 +14,16 @@ public:
     ReferenceCreationController();
 
     /// <summary>
-    /// Input: the full file path to the full calibration file.
+    /// Input: the full file path to the calibration file.
+    /// This may either be a full (xml) calibration file OR just a wavelength calibration file.
     /// </summary>
     std::string m_calibrationFile;
+
+    /// <summary>
+    /// Input: the full file path to an instrument line shape file.
+    /// Must be provided if the m_calibrationFile is a wavelength calibration file (i.e. not xml)
+    /// </summary>
+    std::string m_instrumentLineshapeFile;
 
     /// <summary>
     /// Input: the full file path to the high resolved cross section file to use.
