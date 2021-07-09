@@ -51,10 +51,8 @@ void InstrumentLineshapeCalibrationController::Update()
     if (this->m_readWavelengthCalibrationFromFile)
     {
         // Find the peaks in the measured spectrum
-        std::vector<novac::SpectrumDataPoint> peaksFound;
-        novac::FindEmissionLines(hgSpectrum, peaksFound);
-
-        FilterPeaks(peaksFound, m_peaksFound, m_rejectedPeaks);
+        novac::FindEmissionLines(hgSpectrum, this->m_peaksFound);
+        this->m_rejectedPeaks.clear();
 
         if (this->m_inputSpectrumContainsWavelength)
         {
@@ -84,7 +82,8 @@ void InstrumentLineshapeCalibrationController::Update()
         if (novac::MercuryCalibration(hgSpectrum, 3, initialPixelToWavelengthMapping, wavelengthCalibrationResult, &wavelengthCalibrationState))
         {
             this->m_inputSpectrumWavelength = wavelengthCalibrationResult.pixelToWavelengthMapping;
-            FilterPeaks(wavelengthCalibrationState.peaks, m_peaksFound, m_rejectedPeaks);
+            this->m_peaksFound = wavelengthCalibrationState.peaks;
+            // this->m_rejectedPeaks = wavelengthCalibrationState.unknownPeaks;
             this->m_wavelengthCalibrationSucceeded = true;
         }
         else
