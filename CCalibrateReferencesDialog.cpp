@@ -289,6 +289,9 @@ void CCalibrateReferencesDialog::UpdateGraph()
 void CCalibrateReferencesDialog::OnButtonSelectCalibration()
 {
     OpenInstrumentCalibrationDialog dlg;
+    dlg.m_state.initialCalibrationFile = this->m_calibrationFile;
+    dlg.m_state.instrumentLineshapeFile = this->m_instrumentLineshapeFile;
+
     if (IDOK == dlg.DoModal())
     {
         this->m_calibrationFile = dlg.m_state.initialCalibrationFile;

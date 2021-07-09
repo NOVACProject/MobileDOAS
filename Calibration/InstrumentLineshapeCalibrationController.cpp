@@ -48,9 +48,6 @@ void InstrumentLineshapeCalibrationController::Update()
 
     this->m_inputSpectrumContainsWavelength = hgSpectrum.m_wavelength.size() != 0;
 
-    const double minimumWavelength = (hgSpectrum.m_wavelength.size() != 0) ? hgSpectrum.m_wavelength.front() : 280.0;
-    const double maximumWavelength = (hgSpectrum.m_wavelength.size() != 0) ? hgSpectrum.m_wavelength.back() : 420.0;
-
     if (this->m_readWavelengthCalibrationFromFile)
     {
         // Find the peaks in the measured spectrum
@@ -82,7 +79,9 @@ void InstrumentLineshapeCalibrationController::Update()
         // then make a guess for this from the distance of the peaks
         novac::SpectrometerCalibrationResult wavelengthCalibrationResult;
         novac::MercurySpectrumCalibrationState wavelengthCalibrationState;
-        if (novac::MercuryCalibration(hgSpectrum, 3, minimumWavelength, maximumWavelength, wavelengthCalibrationResult, &wavelengthCalibrationState))
+        std::vector<double> initialPixelToWavelengthMapping = (hgSpectrum.m_wavelength.size() != 0) ? hgSpectrum.m_wavelength : GenerateVector(280.0, 420.0, hgSpectrum.m_length);
+
+        if (novac::MercuryCalibration(hgSpectrum, 3, initialPixelToWavelengthMapping, wavelengthCalibrationResult, &wavelengthCalibrationState))
         {
             this->m_inputSpectrumWavelength = wavelengthCalibrationResult.pixelToWavelengthMapping;
             FilterPeaks(wavelengthCalibrationState.peaks, m_peaksFound, m_rejectedPeaks);
