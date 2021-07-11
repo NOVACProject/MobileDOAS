@@ -63,7 +63,7 @@ public:
     /// <summary>
     /// Output: this is set to true if we are to perform a wavelength calibration ourselves
     /// (i.e. if m_readWavelengthCalibrationFromFile==false or m_inputSpectrumContainsWavelength==false)
-    /// but the wavelength calibration failed.
+    /// and the wavelength calibration succeeded.
     /// </summary>
     bool m_wavelengthCalibrationSucceeded = false;
 
@@ -99,8 +99,15 @@ public:
     /// Extracts the instrument line shape based on the peak with the provided index.
     /// If a line shape function has been fitted, then this will be sampled and returned
     /// otherwise the spectrum itself will be returned.
+    /// The returned spectrum will have a length equal that of the measured spectrum
+    ///     and a wavelength calibration set. There will however only be one peak present in the spectrum.
     /// </summary>
     std::unique_ptr<novac::CSpectrum> GetInstrumentLineShape(size_t peakIdx);
+
+    /// <summary>
+    /// Saves the resulting instrument line shape information as a .std file.
+    /// </summary>
+    void SaveResultAsStd(size_t peakIdx, const std::string& filename);
 
 private:
     void ClearFittedLineShape();
@@ -113,11 +120,15 @@ private:
     double SubtractBaseline(novac::CSpectrum& spectrum);
 
     /// <summary>
-    /// Filters the provided set of spectrum data points to only include peaks
-    /// which are (relatively) isolated and which are not saturated.
+    /// The meta-data regarding the last read in mercury spectrum.
     /// </summary>
-    void FilterPeaks(
-        const std::vector<novac::SpectrumDataPoint>& peaks,
-        std::vector<novac::SpectrumDataPoint>& good,
-        std::vector<novac::SpectrumDataPoint>& rejected);
+    novac::CSpectrumInfo m_inputspectrumInformation;
+
+    /// <summary>
+    /// Output: This is set if the wavelength calibration succeeded and will then
+    /// contain the coefficients of the calibration. Empty if wavelength is read from file or
+    /// the wavelength calibration failed.
+    /// </summary>
+    std::vector<double> m_wavelengthCalibrationCoefficients;
+
 };

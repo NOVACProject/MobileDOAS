@@ -7,6 +7,7 @@
 #include <numeric>
 #include "InstrumentLineshapeCalibrationController.h"
 #include <SpectralEvaluation/File/File.h>
+#include <SpectralEvaluation/File/STDFile.h>
 #include <SpectralEvaluation/Calibration/InstrumentLineShape.h>
 #include <SpectralEvaluation/Calibration/WavelengthCalibration.h>
 #include <SpectralEvaluation/VectorUtils.h>
@@ -36,6 +37,7 @@ void InstrumentLineshapeCalibrationController::Update()
     {
         throw std::invalid_argument("Cannot read a spectrum from the provided input file.");
     }
+    this->m_inputspectrumInformation = hgSpectrum.m_info; //< remember the meta-data of the spectrum
 
     // The dark spectrum is optional
     novac::CSpectrum darkSpectrum;
@@ -53,6 +55,7 @@ void InstrumentLineshapeCalibrationController::Update()
         // Find the peaks in the measured spectrum
         novac::FindEmissionLines(hgSpectrum, this->m_peaksFound);
         this->m_rejectedPeaks.clear();
+        this->m_wavelengthCalibrationCoefficients.clear();
 
         if (this->m_inputSpectrumContainsWavelength)
         {
@@ -83,6 +86,7 @@ void InstrumentLineshapeCalibrationController::Update()
         {
             this->m_inputSpectrumWavelength = wavelengthCalibrationResult.pixelToWavelengthMapping;
             this->m_peaksFound = wavelengthCalibrationState.peaks;
+            this->m_wavelengthCalibrationCoefficients = wavelengthCalibrationResult.pixelToWavelengthMappingCoefficients;
             // this->m_rejectedPeaks = wavelengthCalibrationState.unknownPeaks;
             this->m_wavelengthCalibrationSucceeded = true;
         }
@@ -91,6 +95,7 @@ void InstrumentLineshapeCalibrationController::Update()
             this->m_inputSpectrumWavelength.resize(hgSpectrum.m_length);
             std::iota(begin(m_inputSpectrumWavelength), end(m_inputSpectrumWavelength), 0.0);
             this->m_wavelengthCalibrationSucceeded = false;
+            this->m_wavelengthCalibrationCoefficients.clear();
         }
     }
 }
@@ -150,16 +155,35 @@ std::unique_ptr<novac::CSpectrum> InstrumentLineshapeCalibrationController::GetI
         throw std::invalid_argument("Invalid index of mercury peak, please select a peak and try again");
     }
 
+    // Get the peak itself
+    double ignoredBaseline = 0.0;
+    size_t startIdx = 0;
+    auto peak = this->GetMercuryPeak(peakIdx, &ignoredBaseline, &startIdx);
+    novac::Normalize(*peak);
+
     if (m_sampledLineShapeFunction)
     {
         std::unique_ptr<novac::CSpectrum> hgLine = std::make_unique<novac::CSpectrum>(*m_sampledLineShapeFunction);
         novac::Normalize(*hgLine);
 
-        return hgLine;
+        // Extend this into a full spectrum
+        std::vector<double> extendedPeak(m_inputSpectrum.size(), 0.0);
+        std::copy(hgLine->m_data, hgLine->m_data + hgLine->m_length, extendedPeak.begin() + startIdx);
+
+        auto result = std::make_unique<novac::CSpectrum>(m_inputSpectrumWavelength, extendedPeak);
+
+        result->m_info = this->m_inputspectrumInformation;
+        return result;
     }
     else
     {
-        return this->GetMercuryPeak(peakIdx);
+        // Extend this into a full spectrum
+        std::vector<double> extendedPeak(m_inputSpectrum.size(), 0.0);
+        std::copy(peak->m_data, peak->m_data + peak->m_length, extendedPeak.begin() + startIdx);
+
+        auto result = std::make_unique<novac::CSpectrum>(m_inputSpectrumWavelength, extendedPeak);
+        result->m_info = this->m_inputspectrumInformation;
+        return result;
     }
 }
 
@@ -176,7 +200,7 @@ void InstrumentLineshapeCalibrationController::FitFunctionToLineShape(size_t pea
     size_t spectrumStartIdx = 0;
     auto hgLine = GetMercuryPeak(peakIdx, &baseline, &spectrumStartIdx);
 
-    const size_t superSamplingRate = 4;
+    const size_t superSamplingRate = 1;
     if (function == LineShapeFunction::Gaussian)
     {
         auto gaussian = new novac::GaussianLineShape();
@@ -215,64 +239,72 @@ void InstrumentLineshapeCalibrationController::FitFunctionToLineShape(size_t pea
     }
 }
 
-void InstrumentLineshapeCalibrationController::FilterPeaks(
-    const std::vector<novac::SpectrumDataPoint>& peaks,
-    std::vector<novac::SpectrumDataPoint>& good,
-    std::vector<novac::SpectrumDataPoint>& rejected)
+std::pair<std::string, std::string> FormatProperty(const char* name, double value)
 {
-    good.clear();
-    good.reserve(peaks.size());
-    rejected.clear();
-    rejected.reserve(peaks.size());
+    char formattedValue[128];
+    sprintf_s(formattedValue, sizeof(formattedValue), "%.9g", value);
 
-    for (const auto& peak : peaks)
-    {
-        if (peak.flatTop)
-        {
-            // This peak is saturated and is hence not a good ILS candidate
-            rejected.push_back(peak);
-            continue;
-        }
-
-        // Check the data around the peak to assess wether the peaks is isolated or part of a double-peak
-        bool isIsolated = true;
-        const size_t leftWidth = static_cast<size_t>(peak.pixel - peak.leftPixel);
-        const size_t rightWidth = static_cast<size_t>(peak.rightPixel - peak.pixel);
-        const size_t peakIdx = static_cast<size_t>(peak.pixel);
-        for (size_t ii = peakIdx; ii < peakIdx + 2 * rightWidth; ++ii)
-        {
-            if (m_inputSpectrum[ii] - m_inputSpectrum[ii + 1] < -0.05 * peak.intensity)
-            {
-                // The intensity starts to go up again, may be secondary peak
-                isIsolated = false;
-                break;
-            }
-        }
-
-        if (!isIsolated)
-        {
-            rejected.push_back(peak);
-            continue;
-        }
-
-        for (size_t ii = peakIdx - 2 * leftWidth; ii < peakIdx; ++ii)
-        {
-            if (m_inputSpectrum[ii + 1] - m_inputSpectrum[ii] < -0.05 * peak.intensity)
-            {
-                // The intensity starts to go down again, may be secondary peak
-                isIsolated = false;
-                break;
-            }
-        }
-
-        if (!isIsolated)
-        {
-            rejected.push_back(peak);
-            continue;
-        }
-
-        // All seems good
-        good.push_back(peak);
-    }
+    return std::make_pair(std::string(name), std::string(formattedValue));
 }
 
+void InstrumentLineshapeCalibrationController::SaveResultAsStd(size_t peakIdx, const std::string& filename)
+{
+    // Extract the spectrum in the format we want to use
+    if (peakIdx >= this->m_peaksFound.size())
+    {
+        throw std::invalid_argument("Invalid index of mercury peak, please select a peak and try again");
+    }
+
+    // Get the peak itself
+    const novac::SpectrumDataPoint& selectedPeak = this->m_peaksFound[peakIdx];
+    double ignoredBaseline = 0.0;
+    size_t startIdx = 0;
+    auto peak = this->GetMercuryPeak(peakIdx, &ignoredBaseline, &startIdx);
+    novac::Normalize(*peak);
+
+    // Additional information about the spectrum
+    novac::CSTDFile::ExtendedFormatInformation extendedFileInfo;
+    extendedFileInfo.MinChannel = static_cast<int>(startIdx);
+    extendedFileInfo.MaxChannel = static_cast<int>(startIdx + peak->m_length);
+    extendedFileInfo.Marker = selectedPeak.pixel;
+    extendedFileInfo.calibrationPolynomial = this->m_wavelengthCalibrationCoefficients;
+
+    // Get the full spectrum to save
+    std::unique_ptr<novac::CSpectrum> spectrumToSave;
+    if (m_sampledLineShapeFunction)
+    {
+        std::unique_ptr<novac::CSpectrum> hgLine = std::make_unique<novac::CSpectrum>(*m_sampledLineShapeFunction);
+        novac::Normalize(*hgLine);
+
+        // Extend this into a full spectrum
+        std::vector<double> extendedPeak(m_inputSpectrum.size(), 0.0);
+        std::copy(hgLine->m_data, hgLine->m_data + hgLine->m_length, extendedPeak.begin() + startIdx);
+
+        spectrumToSave = std::make_unique<novac::CSpectrum>(m_inputSpectrumWavelength, extendedPeak);
+
+        // Save the information we have on the function fit
+        if (this->m_fittedLineShape.first == LineShapeFunction::Gaussian)
+        {
+            const auto& gauss = static_cast<novac::GaussianLineShape*>(this->m_fittedLineShape.second);
+            extendedFileInfo.additionalProperties.push_back(FormatProperty("GaussFitSigma", gauss->sigma));
+        }
+        else if (this->m_fittedLineShape.first == LineShapeFunction::SuperGauss)
+        {
+            const auto& gauss = static_cast<novac::SuperGaussianLineShape*>(this->m_fittedLineShape.second);
+            extendedFileInfo.additionalProperties.push_back(FormatProperty("SuperGaussFitSigma", gauss->sigma));
+            extendedFileInfo.additionalProperties.push_back(FormatProperty("SuperGaussFitPower", gauss->P));
+        }
+    }
+    else
+    {
+        // Extend this into a full spectrum
+        std::vector<double> extendedPeak(m_inputSpectrum.size(), 0.0);
+        std::copy(peak->m_data, peak->m_data + peak->m_length, extendedPeak.begin() + startIdx);
+
+        spectrumToSave = std::make_unique<novac::CSpectrum>(m_inputSpectrumWavelength, extendedPeak);
+    }
+
+    spectrumToSave->m_info = this->m_inputspectrumInformation;
+
+    novac::CSTDFile::WriteSpectrum(*spectrumToSave, filename, extendedFileInfo);
+}

@@ -1482,7 +1482,7 @@ BEGIN
     CONTROL         "Auto determine from Mercury lines",IDC_CALIBRATION_FROM_MERCURY_LINES,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,467,22,154,10
     GROUPBOX        "",IDC_STATIC_MINIMAP_HOLDER,103,294,601,41
-    LTEXT           "Please select the emission line to save",IDC_LABEL_SAVE_EXPLANATION,484,341,126,8
+    LTEXT           "Please select the emission line to save",IDC_LABEL_SAVE_EXPLANATION,488,347,126,8
 END
 
 IDD_CALIBRATE_WAVELENGTH_DIALOG DIALOGEX 0, 0, 711, 367
