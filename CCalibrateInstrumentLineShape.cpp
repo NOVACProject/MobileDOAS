@@ -357,10 +357,22 @@ void CCalibrateInstrumentLineShape::OnBnClickedSave()
 
         // Save the instrument line shape and the pixel-to-wavelength calibration to file
         CString destinationFileName = L"";
-        if (Common::BrowseForFile_SaveAs("Extended Standard Files\0*.std\0", destinationFileName))
+        int selectedType = 1;
+        if (Common::BrowseForFile_SaveAs("Extended Standard Files\0*.std\0QDOAS Calibrations\0*.clb|*.slf", destinationFileName, &selectedType))
         {
-            std::string dstFileName = novac::EnsureFilenameHasSuffix(std::string(destinationFileName), "std");
-            m_controller->SaveResultAsStd(selectedPeak, dstFileName);
+            if (selectedType == 2)
+            {
+                std::string dstFileName = novac::EnsureFilenameHasSuffix(std::string(destinationFileName), "clb");
+                m_controller->SaveResultAsClb(dstFileName);
+
+                dstFileName = novac::EnsureFilenameHasSuffix(std::string(destinationFileName), "slf");
+                m_controller->SaveResultAsSlf(selectedPeak, dstFileName);
+            }
+            else
+            {
+                std::string dstFileName = novac::EnsureFilenameHasSuffix(std::string(destinationFileName), "std");
+                m_controller->SaveResultAsStd(selectedPeak, dstFileName);
+            }
         }
     }
     catch (std::exception& e)

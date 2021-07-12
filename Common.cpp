@@ -556,7 +556,13 @@ bool Common::BrowseForEvaluationLog(CString& fileName)
 }
 
 // open a browser window and let the user search for a file
-bool Common::BrowseForFile_SaveAs(TCHAR* filter, CString& fileName) {
+bool Common::BrowseForFile_SaveAs(TCHAR* filter, CString& fileName)
+{
+    return BrowseForFile_SaveAs(filter, fileName, nullptr);
+}
+
+bool Common::BrowseForFile_SaveAs(TCHAR* filter, CString& fileName, int* filterType)
+{
     static TCHAR szFile[4096];
     sprintf(szFile, "%s", (LPCTSTR)fileName);
 
@@ -575,36 +581,19 @@ bool Common::BrowseForFile_SaveAs(TCHAR* filter, CString& fileName) {
     ofn.lpstrInitialDir = nullptr;
     ofn.Flags = OFN_PATHMUSTEXIST | OFN_EXPLORER;
 
-    if (GetSaveFileName(&ofn) == TRUE) {
+    if (GetSaveFileName(&ofn) == TRUE)
+    {
         fileName.Format(szFile);
+
+        if (filterType != nullptr)
+        {
+            *filterType = ofn.nFilterIndex;
+        }
+
         return true;
     }
     fileName.Format("");
     return false;
-}
-
-long Common::Round(double d) {
-    // remove the sign, but remember it
-    bool negative = (d < 0);
-    d = fabs(d);
-
-    // the return value
-    long ret;
-
-    // remove the integer part
-    long integer = (long)d;
-    d = d - (double)integer;
-
-    //if the remainder > 0.5 round upwards, otherwise downwards
-    if (d >= 0.5)
-        ret = (integer + 1);
-    else
-        ret = integer;
-
-    if (negative)
-        return -ret;
-    else
-        return ret;
 }
 
 /** Take out the exe name from a long path

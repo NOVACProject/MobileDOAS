@@ -109,6 +109,16 @@ public:
     /// </summary>
     void SaveResultAsStd(size_t peakIdx, const std::string& filename);
 
+    /// <summary>
+    /// Saves the resulting pixel-to-wavelength mapping information as a .clb file.
+    /// </summary>
+    void SaveResultAsClb(const std::string& filename);
+
+    /// <summary>
+    /// Saves the resulting instrument line shape information as a .slf file.
+    /// </summary>
+    void SaveResultAsSlf(size_t peakIdx, const std::string& filename);
+
 private:
     void ClearFittedLineShape();
 

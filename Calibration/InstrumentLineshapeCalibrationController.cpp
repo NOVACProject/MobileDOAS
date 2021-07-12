@@ -266,6 +266,8 @@ void InstrumentLineshapeCalibrationController::SaveResultAsStd(size_t peakIdx, c
     novac::CSTDFile::ExtendedFormatInformation extendedFileInfo;
     extendedFileInfo.MinChannel = static_cast<int>(startIdx);
     extendedFileInfo.MaxChannel = static_cast<int>(startIdx + peak->m_length);
+    extendedFileInfo.MathLow = extendedFileInfo.MinChannel;
+    extendedFileInfo.MathHigh = extendedFileInfo.MaxChannel;
     extendedFileInfo.Marker = selectedPeak.pixel;
     extendedFileInfo.calibrationPolynomial = this->m_wavelengthCalibrationCoefficients;
 
@@ -287,12 +289,14 @@ void InstrumentLineshapeCalibrationController::SaveResultAsStd(size_t peakIdx, c
         {
             const auto& gauss = static_cast<novac::GaussianLineShape*>(this->m_fittedLineShape.second);
             extendedFileInfo.additionalProperties.push_back(FormatProperty("GaussFitSigma", gauss->sigma));
+            extendedFileInfo.additionalProperties.push_back(FormatProperty("GaussFitCenter", gauss->center));
         }
         else if (this->m_fittedLineShape.first == LineShapeFunction::SuperGauss)
         {
             const auto& gauss = static_cast<novac::SuperGaussianLineShape*>(this->m_fittedLineShape.second);
             extendedFileInfo.additionalProperties.push_back(FormatProperty("SuperGaussFitSigma", gauss->sigma));
             extendedFileInfo.additionalProperties.push_back(FormatProperty("SuperGaussFitPower", gauss->P));
+            extendedFileInfo.additionalProperties.push_back(FormatProperty("SuperGaussFitCenter", gauss->center));
         }
     }
     else
@@ -307,4 +311,24 @@ void InstrumentLineshapeCalibrationController::SaveResultAsStd(size_t peakIdx, c
     spectrumToSave->m_info = this->m_inputspectrumInformation;
 
     novac::CSTDFile::WriteSpectrum(*spectrumToSave, filename, extendedFileInfo);
+}
+
+void InstrumentLineshapeCalibrationController::SaveResultAsClb(const std::string& filename)
+{
+    novac::SaveDataToFile(filename, this->m_inputSpectrumWavelength);
+}
+
+void InstrumentLineshapeCalibrationController::SaveResultAsSlf(size_t peakIdx, const std::string& filename)
+{
+    auto peak = this->GetMercuryPeak(peakIdx);
+    novac::Normalize(*peak);
+
+    // Differentiate the wavelength wrt the peak
+    const double centerWavelength = this->m_peaksFound[peakIdx].wavelength;
+    for (double& lambda : peak->m_wavelength)
+    {
+        lambda -= centerWavelength;
+    }
+
+    novac::SaveCrossSectionFile(filename, *peak);
 }
