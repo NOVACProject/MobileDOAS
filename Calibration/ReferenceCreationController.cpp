@@ -22,7 +22,7 @@ void ReferenceCreationController::ConvolveReference()
     // Read the calibration
     novac::CCrossSectionData instrumentLineShape;
     std::vector<double> pixelToWavelengthMapping;
-    if (novac::GetFileExtension(this->m_calibrationFile).compare(".xml") == 0)
+    if (novac::GetFileExtension(this->m_calibrationFile).compare(".std") == 0)
     {
         novac::CSpectrum instrumentLineShapeSpectrum;
         if (!novac::ReadInstrumentCalibration(this->m_calibrationFile, instrumentLineShapeSpectrum, pixelToWavelengthMapping))

@@ -7,6 +7,7 @@
 #include "resource.h"
 #include "Common.h"
 #include "Calibration/WavelengthCalibrationController.h"
+#include "OpenInstrumentCalibrationDialog.h"
 #include <fstream>
 #include <SpectralEvaluation/File/File.h>
 
@@ -58,8 +59,6 @@ BOOL CCalibratePixelToWavelengthDialog::OnInitDialog() {
     m_graphTypeList.AddString("Fraunhofer Spectrum");
     m_graphTypeList.SetCurSel(0);
 
-    m_instrumentCalibrationTypeCombo.SetCurSel(0);
-
     LoadDefaultSetup();
     LoadLastSetup();
 
@@ -72,16 +71,11 @@ void CCalibratePixelToWavelengthDialog::DoDataExchange(CDataExchange* pDX)
     DDX_Text(pDX, IDC_EDIT_SPECTRUM, m_inputSpectrumFile);
     DDX_Text(pDX, IDC_EDIT_SOLAR_SPECTRUM, m_setup.m_solarSpectrumFile);
     DDX_Text(pDX, IDC_EDIT_INITIAL_CALIBRATION, m_setup.m_initialCalibrationFile);
-    DDX_Text(pDX, IDC_EDIT_INITIAL_CALIBRATION2, m_setup.m_instrumentLineshapeFile);
     DDX_Text(pDX, IDC_EDIT_SPECTRUM_DARK2, m_darkSpectrumFile);
     DDX_Control(pDX, IDC_STATIC_GRAPH_HOLDER_PANEL, m_graphHolder);
     DDX_Control(pDX, IDC_BUTTON_RUN, m_runButton);
     DDX_Control(pDX, IDC_BUTTON_SAVE, m_saveButton);
-    DDX_Control(pDX, IDC_COMBO_INITIAL_DATA_TYPE, m_instrumentCalibrationTypeCombo);
     DDX_Control(pDX, IDC_STATIC_INITIAL_CALIBRATION, m_wavelengthCalibrationLabel);
-    DDX_Control(pDX, IDC_STATIC_LINEHSHAPE, m_instrumentLineShapeCalibrationLabel);
-    DDX_Control(pDX, IDC_EDIT_INITIAL_CALIBRATION2, m_instrumentLineShapeCalibrationEdit);
-    DDX_Control(pDX, IDC_BUTTON_BROWSE_LINE_SHAPE, m_instrumentLineShapeCalibrationBrowseButton);
     DDX_Control(pDX, IDC_LIST_GRAPH_TYPE, m_graphTypeList);
 }
 
@@ -89,14 +83,12 @@ BEGIN_MESSAGE_MAP(CCalibratePixelToWavelengthDialog, CPropertyPage)
     ON_BN_CLICKED(IDC_BUTTON_BROWSE_SPECTRUM, &CCalibratePixelToWavelengthDialog::OnClickedButtonBrowseSpectrum)
     ON_BN_CLICKED(IDC_BUTTON_BROWSE_SPECTRUM_DARK2, &CCalibratePixelToWavelengthDialog::OnClickedButtonBrowseSpectrumDark)
     ON_BN_CLICKED(IDC_BUTTON_BROWSE_SOLAR_SPECTRUM, &CCalibratePixelToWavelengthDialog::OnClickedButtonBrowseSolarSpectrum)
-    ON_BN_CLICKED(IDC_BUTTON_BROWSE_INITIAL_CALIBRATION2, &CCalibratePixelToWavelengthDialog::OnClickedButtonBrowseInitialCalibration)
-    ON_BN_CLICKED(IDC_BUTTON_BROWSE_LINE_SHAPE, &CCalibratePixelToWavelengthDialog::OnClickedButtonBrowseLineShape)
     ON_BN_CLICKED(IDC_BUTTON_RUN, &CCalibratePixelToWavelengthDialog::OnClickedButtonRun)
     ON_BN_CLICKED(IDC_BUTTON_SAVE, &CCalibratePixelToWavelengthDialog::OnClickedButtonSave)
-    ON_CBN_SELCHANGE(IDC_COMBO_INITIAL_DATA_TYPE, &CCalibratePixelToWavelengthDialog::OnSelchangeComboInitialDataType)
 
     ON_MESSAGE(WM_DONE, OnCalibrationDone)
     ON_LBN_SELCHANGE(IDC_LIST_GRAPH_TYPE, &CCalibratePixelToWavelengthDialog::OnSelchangeListGraphType)
+    ON_BN_CLICKED(IDC_BUTTON_SELECT_INITIAL_CALIBRATION, &CCalibratePixelToWavelengthDialog::OnButtonSelectInitialCalibration)
 END_MESSAGE_MAP()
 
 // Persisting the setup to file
@@ -221,27 +213,9 @@ void CCalibratePixelToWavelengthDialog::OnClickedButtonBrowseSolarSpectrum()
     UpdateData(FALSE);
 }
 
-void CCalibratePixelToWavelengthDialog::OnClickedButtonBrowseInitialCalibration()
-{
-    if (!Common::BrowseForFile(m_initialCalibrationFileTypeFilter, this->m_setup.m_initialCalibrationFile))
-    {
-        return;
-    }
-    UpdateData(FALSE);
-}
-
 void CCalibratePixelToWavelengthDialog::OnClickedButtonBrowseSpectrumDark()
 {
     if (!Common::BrowseForFile("Spectrum Files\0*.std;*.txt\0", this->m_darkSpectrumFile))
-    {
-        return;
-    }
-    UpdateData(FALSE);
-}
-
-void CCalibratePixelToWavelengthDialog::OnClickedButtonBrowseLineShape()
-{
-    if (!Common::BrowseForFile("Instrument Line Shape Files\0*.slf\0Spectrum Files\0*.txt;*.xs\0", this->m_setup.m_instrumentLineshapeFile))
     {
         return;
     }
@@ -478,12 +452,6 @@ void CCalibratePixelToWavelengthDialog::OnClickedButtonRun()
         MessageBox("Please select a file which contains an initial guess for the wavelength calibration of the spectrometer", "Missing input", MB_OK);
         return;
     }
-    if (m_instrumentCalibrationTypeCombo.GetCurSel() == (int)InstrumentCalibrationInputOption::WavelengthAndSlitFunctionFile && 
-        !IsExistingFile(m_setup.m_instrumentLineshapeFile))
-    {
-        MessageBox("Please select a file which contains a measured instrument line shape", "Missing input", MB_OK);
-        return;
-    }
 
     this->m_controller->m_inputSpectrumFile = this->m_inputSpectrumFile;
     this->m_controller->m_darkSpectrumFile = this->m_darkSpectrumFile;
@@ -558,12 +526,24 @@ void CCalibratePixelToWavelengthDialog::OnClickedButtonSave()
             throw std::exception("Cannot find the instrument line shape");
         }
 
-        // Save the (initial) instrument line shape and the pixel-to-wavelength calibration to file
+        // Save the instrument line shape and the pixel-to-wavelength calibration to file
         CString destinationFileName = L"";
-        if (Common::BrowseForFile_SaveAs("Novac Instrument Calibration Files\0*.xml\0", destinationFileName))
+        int selectedType = 1;
+        if (Common::BrowseForFile_SaveAs("Extended Standard Files\0*.std\0QDOAS Calibrations\0*.clb;*.slf", destinationFileName, &selectedType))
         {
-            std::string dstFileName = novac::EnsureFilenameHasSuffix(std::string(destinationFileName), "xml");
-            novac::SaveInstrumentCalibration(dstFileName, *m_controller->m_measuredInstrumentLineShapeSpectrum, this->m_controller->m_resultingPixelToWavelengthMapping);
+            if (selectedType == 2)
+            {
+                std::string dstFileName = novac::EnsureFilenameHasSuffix(std::string(destinationFileName), "clb");
+                m_controller->SaveResultAsClb(dstFileName);
+
+                dstFileName = novac::EnsureFilenameHasSuffix(std::string(destinationFileName), "slf");
+                m_controller->SaveResultAsSlf(dstFileName);
+            }
+            else
+            {
+                std::string dstFileName = novac::EnsureFilenameHasSuffix(std::string(destinationFileName), "std");
+                m_controller->SaveResultAsStd(dstFileName);
+            }
         }
     }
     catch (std::exception& e)
@@ -572,33 +552,18 @@ void CCalibratePixelToWavelengthDialog::OnClickedButtonSave()
     }
 }
 
-void CCalibratePixelToWavelengthDialog::OnSelchangeComboInitialDataType()
+void CCalibratePixelToWavelengthDialog::OnButtonSelectInitialCalibration()
 {
-    const int currentType = this->m_instrumentCalibrationTypeCombo.GetCurSel();
+    OpenInstrumentCalibrationDialog dlg;
+    dlg.m_state.initialCalibrationFile = this->m_setup.m_initialCalibrationFile;
+    dlg.m_state.instrumentLineshapeFile = this->m_setup.m_instrumentLineshapeFile;
+    dlg.m_state.calibrationOption = (InstrumentCalibrationInputOption)this->m_setup.m_calibrationOption;
 
-    if (currentType == 2)
+    if (IDOK == dlg.DoModal())
     {
-        // 2: User provides a wavelength calibration file, the program derives the instrument line shape
-        m_initialCalibrationFileTypeFilter = "Wavelength Calibration Files\0*.clb\0Spectrum Files\0*.txt;*.xs\0\0";
-        m_wavelengthCalibrationLabel.SetWindowTextA("Initial Wavelength Calibration");
-        m_instrumentLineShapeCalibrationEdit.EnableWindow(FALSE);
-        m_instrumentLineShapeCalibrationBrowseButton.EnableWindow(FALSE);
-    }
-    else if (currentType == 1)
-    {
-        // 1: User provides a wavelength calibration file and instrument line shape
-        m_initialCalibrationFileTypeFilter = "Wavelength Calibration Files\0*.clb\0Spectrum Files\0*.txt;*.xs\0\0";
-        m_wavelengthCalibrationLabel.SetWindowTextA("Initial Wavelength Calibration");
-        m_instrumentLineShapeCalibrationEdit.EnableWindow(TRUE);
-        m_instrumentLineShapeCalibrationBrowseButton.EnableWindow(TRUE);
-    }
-    else
-    {
-        // 0: User provides a novac-calibration file containing both wavelength calibration and instrument line shape
-        m_initialCalibrationFileTypeFilter = "Novac Instrument Calibration Files\0*.xml\0\0";
-        m_wavelengthCalibrationLabel.SetWindowTextA("Initial Calibration");
-        m_instrumentLineShapeCalibrationEdit.EnableWindow(FALSE);
-        m_instrumentLineShapeCalibrationBrowseButton.EnableWindow(FALSE);
+        this->m_setup.m_initialCalibrationFile = dlg.m_state.initialCalibrationFile;
+        this->m_setup.m_instrumentLineshapeFile = dlg.m_state.instrumentLineshapeFile;
+
+        UpdateData(FALSE);
     }
 }
-

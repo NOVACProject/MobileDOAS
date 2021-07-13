@@ -13,7 +13,7 @@ IMPLEMENT_DYNAMIC(OpenInstrumentCalibrationDialog, CDialog)
 
 OpenInstrumentCalibrationDialog::OpenInstrumentCalibrationDialog(CWnd* pParent /*=nullptr*/)
     : CDialog(IDD_CALIBRATE_OPEN_CALIBRATION, pParent)
-    , m_initialCalibrationFileTypeFilter("Novac Instrument Calibration Files\0*.xml\0\0")
+    , m_initialCalibrationFileTypeFilter("Extended Standard Files\0*.std\0\0")
 {
 }
 
@@ -92,8 +92,8 @@ void OpenInstrumentCalibrationDialog::OnSelchangeDataType()
     }
     else
     {
-        // 0: User provides a novac-calibration file containing both wavelength calibration and instrument line shape
-        m_initialCalibrationFileTypeFilter = "Novac Instrument Calibration Files\0*.xml\0\0";
+        // 0: User provides a extended STD file containing both wavelength calibration and instrument line shape
+        m_initialCalibrationFileTypeFilter = "Extended Standard Files\0*.std\0\0";
         m_labelCalibration.SetWindowTextA("Calibration");
         m_labelInstrumentLineShape.EnableWindow(FALSE);
         m_buttonBrowseInstrumentLineShape.EnableWindow(FALSE);

@@ -6,9 +6,11 @@
 #include "WavelengthCalibrationController.h"
 #include <SpectralEvaluation/Spectra/Spectrum.h>
 #include <SpectralEvaluation/File/File.h>
+#include <SpectralEvaluation/File/STDFile.h>
 #include <SpectralEvaluation/Calibration/WavelengthCalibration.h>
 #include <SpectralEvaluation/Calibration/InstrumentLineShapeEstimation.h>
 #include <SpectralEvaluation/Calibration/FraunhoferSpectrumGeneration.h>
+#include <SpectralEvaluation/Interpolation.h>
 
 // TODO: It should be possible to remove this header...
 #include <SpectralEvaluation/Calibration/WavelengthCalibrationByRansac.h>
@@ -76,7 +78,7 @@ void WavelengthCalibrationController::RunCalibration()
         measuredSpectrum.Sub(darkSpectrum);
     }
 
-    if (novac::GetFileExtension(this->m_initialCalibrationFile).compare(".xml") == 0)
+    if (novac::GetFileExtension(this->m_initialCalibrationFile).compare(".std") == 0)
     {
         if (m_measuredInstrumentLineShapeSpectrum != nullptr)
         {
@@ -163,4 +165,46 @@ void WavelengthCalibrationController::RunCalibration()
             this->m_calibrationDebug.fraunhoferSpectrumKeypointIntensities.push_back(pt.intensity);
         }
     }
+}
+
+
+std::pair<std::string, std::string> FormatProperty(const char* name, double value);
+
+void WavelengthCalibrationController::SaveResultAsStd(const std::string& filename)
+{
+    // Get the peak itself
+    size_t startIdx = 0; // TODO: Set this value to something more reasonable
+
+    // Additional information about the spectrum
+    novac::CSTDFile::ExtendedFormatInformation extendedFileInfo;
+    extendedFileInfo.MinChannel = static_cast<int>(startIdx);
+    extendedFileInfo.MaxChannel = static_cast<int>(startIdx + m_measuredInstrumentLineShapeSpectrum->m_length);
+    extendedFileInfo.MathLow = extendedFileInfo.MinChannel;
+    extendedFileInfo.MathHigh = extendedFileInfo.MaxChannel;
+    novac::LinearInterpolation(m_resultingPixelToWavelengthMapping, 0.5 * m_measuredInstrumentLineShapeSpectrum->m_length, extendedFileInfo.Marker);
+    extendedFileInfo.calibrationPolynomial = this->m_resultingPixelToWavelengthMappingCoefficients;
+
+    // Create the spectrum to save from the instrument line-shape + the 
+    std::unique_ptr<novac::CSpectrum> spectrumToSave;
+    {
+        // Extend the measured spectrum line shape into a full spectrum
+        std::vector<double> extendedPeak(m_resultingPixelToWavelengthMapping.size(), 0.0);
+        std::copy(m_measuredInstrumentLineShapeSpectrum->m_data, m_measuredInstrumentLineShapeSpectrum->m_data + m_measuredInstrumentLineShapeSpectrum->m_length, extendedPeak.begin() + startIdx);
+
+        spectrumToSave = std::make_unique<novac::CSpectrum>(m_resultingPixelToWavelengthMapping, extendedPeak);
+    }
+
+    // spectrumToSave->m_info = this->m_inputspectrumInformation;
+
+    novac::CSTDFile::WriteSpectrum(*spectrumToSave, filename, extendedFileInfo);
+}
+
+void WavelengthCalibrationController::SaveResultAsClb(const std::string& filename)
+{
+    novac::SaveDataToFile(filename, this->m_resultingPixelToWavelengthMapping);
+}
+
+void WavelengthCalibrationController::SaveResultAsSlf(const std::string& filename)
+{
+    novac::SaveCrossSectionFile(filename, *m_measuredInstrumentLineShapeSpectrum);
 }

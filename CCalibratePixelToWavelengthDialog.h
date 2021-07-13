@@ -17,13 +17,6 @@ public:
     /** Initializes the controls and the dialog */
     virtual BOOL OnInitDialog();
 
-    enum class InstrumentCalibrationInputOption
-    {
-        NovacInstrumentCalibrationFile = 0, // i.e. input is one file containing both wavelength calibration and instrument line shape
-        WavelengthAndSlitFunctionFile = 1,  // i.e. input is two files containing the wavelength calibration and instrument line shape respectively
-        WavelengthCalibrationFile = 2       // i.e. input is one file containing both wavelength calibration. The instrument line shape needs to be determined from the measurement.
-    };
-
     struct CalibratePixelToWavelengthDialogSetup
     {
     public:
@@ -65,22 +58,15 @@ public:
 
     CListBox m_graphTypeList; // Selecting the type of plot
 
-    CComboBox m_instrumentCalibrationTypeCombo; // Selecting the type of calibration input
-
     CStatic m_wavelengthCalibrationLabel;
-    CStatic m_instrumentLineShapeCalibrationLabel;
-    CEdit m_instrumentLineShapeCalibrationEdit;
-    CButton m_instrumentLineShapeCalibrationBrowseButton;
-
+ 
     afx_msg void OnClickedButtonBrowseSpectrum();
     afx_msg void OnClickedButtonBrowseSolarSpectrum();
     afx_msg void OnClickedButtonRun();
-    afx_msg void OnClickedButtonBrowseInitialCalibration();
     afx_msg void OnClickedButtonBrowseSpectrumDark();
-    afx_msg void OnClickedButtonBrowseLineShape();
     afx_msg void OnClickedButtonSave();
     afx_msg void OnSelchangeListGraphType();
-    afx_msg void OnSelchangeComboInitialDataType();
+    afx_msg void OnButtonSelectInitialCalibration();
 
     afx_msg LRESULT OnCalibrationDone(WPARAM wParam, LPARAM lParam);
 

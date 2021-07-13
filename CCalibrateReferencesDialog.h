@@ -42,7 +42,6 @@ public:
     CStatic m_graphHolder;
 
     afx_msg void OnConvolutionOptionChanged();
-    afx_msg void OnBnClickedBrowseCalibration();
     afx_msg void OnBnClickedBrowseCrossSection();
     afx_msg void OnBnClickedButtonRunCreateReference();
     afx_msg void OnClickedButtonSave();

@@ -66,7 +66,6 @@ void CCalibrateReferencesDialog::DoDataExchange(CDataExchange* pDX)
 }
 
 BEGIN_MESSAGE_MAP(CCalibrateReferencesDialog, CPropertyPage)
-    ON_BN_CLICKED(IDC_BUTTON_BROWSE_CALIBRATION_FILE, &CCalibrateReferencesDialog::OnBnClickedBrowseCalibration)
     ON_BN_CLICKED(IDC_BUTTON_BROWSE_SOLAR_SPECTRUM, &CCalibrateReferencesDialog::OnBnClickedBrowseCrossSection)
     ON_CBN_SELCHANGE(IDC_COMBO_HIGH_RES_CROSSSECTION, &CCalibrateReferencesDialog::OnConvolutionOptionChanged)
     ON_BN_CLICKED(IDC_CHECK_HIGH_PASS_FILTER, &CCalibrateReferencesDialog::OnConvolutionOptionChanged)
@@ -165,17 +164,6 @@ void CCalibrateReferencesDialog::LoadDefaultSetup()
 }
 
 // CCalibrateReferenes message handlers
-
-void CCalibrateReferencesDialog::OnBnClickedBrowseCalibration()
-{
-    if (!Common::BrowseForFile("Novac Instrument Calibration Files\0*.xml\0", this->m_calibrationFile))
-    {
-        return;
-    }
-
-    UpdateData(FALSE);
-    UpdateReference();
-}
 
 void CCalibrateReferencesDialog::OnBnClickedBrowseCrossSection()
 {

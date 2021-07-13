@@ -110,4 +110,18 @@ public:
     /// </summary>
     void RunCalibration();
 
+    /// <summary>
+    /// Saves the resulting pixel-to-wavelength and instrument-line-shape information as a .std file.
+    /// </summary>
+    void SaveResultAsStd(const std::string& filename);
+
+    /// <summary>
+    /// Saves the resulting pixel-to-wavelength mapping information as a .clb file.
+    /// </summary>
+    void SaveResultAsClb(const std::string& filename);
+
+    /// <summary>
+    /// Saves the resulting instrument line shape information as a .slf file.
+    /// </summary>
+    void SaveResultAsSlf(const std::string& filename);
 };

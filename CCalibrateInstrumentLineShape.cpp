@@ -358,7 +358,7 @@ void CCalibrateInstrumentLineShape::OnBnClickedSave()
         // Save the instrument line shape and the pixel-to-wavelength calibration to file
         CString destinationFileName = L"";
         int selectedType = 1;
-        if (Common::BrowseForFile_SaveAs("Extended Standard Files\0*.std\0QDOAS Calibrations\0*.clb|*.slf", destinationFileName, &selectedType))
+        if (Common::BrowseForFile_SaveAs("Extended Standard Files\0*.std\0QDOAS Calibrations\0*.clb;*.slf", destinationFileName, &selectedType))
         {
             if (selectedType == 2)
             {
