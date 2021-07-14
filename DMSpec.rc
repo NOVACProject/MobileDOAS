@@ -889,16 +889,6 @@ LANGUAGE LANG_SWEDISH, SUBLANG_SWEDISH
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Icon
-//
-
-// Icon with lowest ID value placed first to ensure application icon
-// remains consistent on all systems.
-IDR_MAINFRAME           ICON                    "res\\Logo.ico"
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
 // Bitmap
 //
 
@@ -1467,13 +1457,13 @@ BEGIN
     PUSHBUTTON      "Browse...",IDC_BUTTON_BROWSE_SPECTRUM,363,18,76,19
     EDITTEXT        IDC_EDIT_SPECTRUM_DARK,43,42,311,15,ES_AUTOHSCROLL | WS_DISABLED
     PUSHBUTTON      "Browse...",IDC_BUTTON_BROWSE_SPECTRUM_DARK,363,40,76,19
-    LISTBOX         IDC_LIST_FOUND_PEAKS,17,92,69,164,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LISTBOX         IDC_LIST_FOUND_PEAKS,17,92,76,164,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Gaussian",IDC_RADIO_FIT_GAUSSIAN,"Button",BS_AUTORADIOBUTTON | WS_GROUP,21,273,45,10
     CONTROL         "Super Gaussian",IDC_RADIO_FIT_SUPER_GAUSSIAN,"Button",BS_AUTORADIOBUTTON,21,284,67,10
     CONTROL         "Nothing",IDC_RADIO_FIT_NOTHING,"Button",BS_AUTORADIOBUTTON,21,295,41,10
     PUSHBUTTON      "Save",IDC_BUTTON_SAVE,628,341,76,19
     GROUPBOX        "Mercury Spectrum",IDC_STATIC_SPECTRUM,7,7,438,59
-    GROUPBOX        "Emission Lines",IDC_STATIC_GRAPH,7,75,89,260
+    GROUPBOX        "Emission Lines",IDC_STATIC_GRAPH,7,75,96,260
     RTEXT           "Dark",IDC_STATIC_DARK_SPECTRUM,23,45,16,8
     GROUPBOX        "",IDC_STATIC_GRAPH_HOLDER,103,75,601,217
     LTEXT           "Fit",IDC_STATIC,20,263,9,8
@@ -1502,11 +1492,11 @@ BEGIN
     PUSHBUTTON      "Browse...",IDC_BUTTON_BROWSE_SPECTRUM_DARK2,363,40,76,19
     RTEXT           "Dark",IDC_STATIC_DARK,23,45,16,8
     GROUPBOX        "High Resolved Solar Spectrum",IDC_STATIC,451,7,247,59
-    GROUPBOX        "Result",IDC_STATIC,7,132,692,203
-    GROUPBOX        "",IDC_STATIC_GRAPH_HOLDER_PANEL,100,134,597,204
+    GROUPBOX        "Result",IDC_STATIC,7,111,691,224
+    GROUPBOX        "",IDC_STATIC_GRAPH_HOLDER_PANEL,100,111,598,224
     PUSHBUTTON      "Save",IDC_BUTTON_SAVE,628,341,76,19,WS_DISABLED
-    GROUPBOX        "Initial Wavelength Calibration + Instrument Line Shape",IDC_STATIC,7,69,692,54
-    LISTBOX         IDC_LIST_GRAPH_TYPE,15,146,81,40,LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Initial Wavelength Calibration + Instrument Line Shape",IDC_STATIC,7,69,692,35
+    LISTBOX         IDC_LIST_GRAPH_TYPE,15,126,81,40,LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "Browse...",IDC_BUTTON_SELECT_INITIAL_CALIBRATION,614,78,76,19
 END
 
@@ -1822,6 +1812,16 @@ IDD_CALIBRATE_OPEN_CALIBRATION AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\Logo.ico"
 
 
 #ifdef APSTUDIO_INVOKED
