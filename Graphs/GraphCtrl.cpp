@@ -1330,12 +1330,12 @@ void CGraphCtrl::DrawLine(double x1, double x2, double y1, double y2, COLORREF p
 
     // --- Draw the line ---
     m_dcPlot.MoveTo(
-        m_rectPlot.left + (long)((x1 - offsLeft) * xFactor),
-        m_rectPlot.bottom - (y1 - offsBottom) * yFactor);
+        static_cast<int>(round(m_rectPlot.left + (long)((x1 - offsLeft) * xFactor))),
+        static_cast<int>(round(m_rectPlot.bottom - (y1 - offsBottom) * yFactor)));
 
     m_dcPlot.LineTo(
-        m_rectPlot.left + (long)((x2 - offsLeft) * xFactor),
-        m_rectPlot.bottom - (y2 - offsBottom) * yFactor);
+        static_cast<int>(round(m_rectPlot.left + (long)((x2 - offsLeft) * xFactor))),
+        static_cast<int>(round(m_rectPlot.bottom - (y2 - offsBottom) * yFactor)));
 
     m_dcPlot.SelectObject(oldPen);
 

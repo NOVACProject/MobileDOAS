@@ -20,7 +20,7 @@ CCalibrateReferencesDialog::CCalibrateReferencesDialog(CWnd* pParent /*=nullptr*
     : CPropertyPage(IDD_CALIBRATE_REFERENCES)
     , m_highPassFilterReference(TRUE)
     , m_calibrationFile(_T(""))
-    , m_inputInVacuum(FALSE)
+    , m_inputInVacuum(TRUE)
 {
     this->m_controller = new ReferenceCreationController();
 }
