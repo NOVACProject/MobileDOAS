@@ -39,10 +39,12 @@ public:
 
     afx_msg void OnButtonBrowseLineShape();
     afx_msg void OnButtonBrowseCalibration();
+    afx_msg void OnSelchangeDataType();
 
 private:
     char* m_initialCalibrationFileTypeFilter = nullptr;
 
-public:
-    afx_msg void OnSelchangeDataType();
+    void SetInitialCalibrationFiletypeFilter();
+
 };
+
