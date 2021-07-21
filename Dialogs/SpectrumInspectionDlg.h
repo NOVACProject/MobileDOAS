@@ -3,7 +3,7 @@
 #include "afxcmn.h"
 
 #include "../Graphs/SpectrumGraph.h"
-#include "../Common/Spectrum.h"
+#include "../Common/CSpectrum.h"
 
 namespace Dialogs{
 	// CSpectrumInspectionDlg dialog

@@ -48,7 +48,7 @@
 #define MIN_EXPOSURETIME 3
 
 // Possible modes for the spectrometer
-const enum SPECTROMETER_MODE {MODE_TRAVERSE, MODE_WIND, MODE_VIEW, MODE_CALIBRATE, MODE_DIRECTORY};
+const enum SPECTROMETER_MODE {MODE_TRAVERSE, MODE_WIND, MODE_VIEW, MODE_DIRECTORY};
 
 extern CFormView* pView;
 
@@ -59,7 +59,7 @@ extern CFormView* pView;
 	
 	This is a virtual class and cannot be instansiated as it is. Any instances must
 	be of one of the inherited classes (currently: CMeasurement_Traverse, CMeasurement_Wind
-	CMeasurement_Calibrate and CMeasurement_View).
+	and CMeasurement_View).
 */
 
 class CSpectrometer  

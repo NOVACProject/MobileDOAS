@@ -24,7 +24,7 @@
     <SccLocalPath />
     <Keyword>MFCProj</Keyword>
     <ProjectGuid>{C360C2C6-8B27-4407-8343-3BF76669EFD2}</ProjectGuid>
-    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -90,6 +90,7 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>C:\Program Files (x86)\Java\jdk1.8.0_162\include\win32;C:\Program Files (x86)\Java\jdk1.8.0_162\include;C:\Program Files (x86)\Ocean Optics\OmniDriver\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
@@ -108,7 +109,6 @@
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat />
-      <AdditionalIncludeDirectories>%JAVA_HOME%\include\win32;%JAVA_HOME%\include;%OMNIDRIVER_HOME%\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
@@ -141,6 +141,7 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>$(PROJECT_DIR)SpectralEvaluation\include;%JAVA_HOME%\include\win32;%JAVA_HOME%\include;%OMNIDRIVER_HOME%\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
@@ -155,15 +156,16 @@
       <PrecompiledHeaderOutputFile>.\Release/DMSpec.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>
-      </DebugInformationFormat>
-      <AdditionalIncludeDirectories>%JAVA_HOME%\include\win32;%JAVA_HOME%\include;%OMNIDRIVER_HOME%\include</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <AdditionalDependencies>OmniDriver64.lib;common64.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>C:\Program Files\Ocean Optics\OmniDriver\OOI_HOME;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>.\Release/DMSpec.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <ImportLibrary>
@@ -186,6 +188,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>C:\Program Files (x86)\Java\jdk1.8.0_162\include\win32;C:\Program Files (x86)\Java\jdk1.8.0_162\include;C:\Program Files (x86)\Ocean Optics\OmniDriver\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>true</MinimalRebuild>
@@ -205,7 +208,6 @@
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>%JAVA_HOME%\include\win32;%JAVA_HOME%\include;%OMNIDRIVER_HOME%\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
@@ -236,13 +238,13 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(PROJECT_DIR)SpectralEvaluation\include;%JAVA_HOME%\include\win32;%JAVA_HOME%\include;%OMNIDRIVER_HOME%\include</AdditionalIncludeDirectories>
       <StringPooling>true</StringPooling>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <SmallerTypeCheck>false</SmallerTypeCheck>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
@@ -250,7 +252,8 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>%JAVA_HOME%\include\win32;%JAVA_HOME%\include;%OMNIDRIVER_HOME%\include</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <AdditionalDependencies>OmniDriver64.lib;common64.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -278,11 +281,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BasicMath.cpp" />
+    <ClCompile Include="Calibration\InstrumentLineshapeCalibrationController.cpp" />
+    <ClCompile Include="Calibration\ReferenceCreationController.cpp" />
+    <ClCompile Include="Calibration\WavelengthCalibrationController.cpp" />
+    <ClCompile Include="CCalibrateInstrumentLineShape.cpp" />
+    <ClCompile Include="CCalibratePixelToWavelengthDialog.cpp" />
+    <ClCompile Include="CCalibrateReferencesDialog.cpp" />
+    <ClCompile Include="CGpsData.cpp" />
     <ClCompile Include="CommentDlg.cpp" />
     <ClCompile Include="Common.cpp" />
-    <ClCompile Include="Common\DateTime.cpp" />
+    <ClCompile Include="Common\CDateTime.cpp" />
+    <ClCompile Include="Common\CSpectrum.cpp" />
     <ClCompile Include="Common\KMLFileHandler.cpp" />
-    <ClCompile Include="Common\Spectrum.cpp" />
     <ClCompile Include="Common\SpectrumIO.cpp" />
     <ClCompile Include="Common\XMLFileReader.cpp" />
     <ClCompile Include="Configuration\ConfigurationDialog.cpp" />
@@ -294,12 +304,12 @@
     <ClCompile Include="Controls\FitWindowListBox.cpp" />
     <ClCompile Include="Controls\Label.cpp" />
     <ClCompile Include="Controls\ReferenceFileControl.cpp" />
+    <ClCompile Include="CSpectrometerCalibrationDlg.cpp" />
     <ClCompile Include="Dialogs\QueryStringDialog.cpp" />
     <ClCompile Include="Dialogs\ReferencePlotDlg.cpp" />
     <ClCompile Include="Dialogs\ReferencePropertiesDlg.cpp" />
     <ClCompile Include="Dialogs\SelectionDialog.cpp" />
     <ClCompile Include="Dialogs\SimplePropertySheet.cpp" />
-    <ClCompile Include="Dialogs\SpectrumCalibrationDlg.cpp" />
     <ClCompile Include="Dialogs\SpectrumInspectionDlg.cpp" />
     <ClCompile Include="Dialogs\SpectrumScaleDlg.cpp" />
     <ClCompile Include="Dialogs\SpectrumSettingsDlg.cpp" />
@@ -331,7 +341,6 @@
     <ClCompile Include="Flux\Traverse.cpp" />
     <ClCompile Include="Flux\WindField.cpp" />
     <ClCompile Include="GPS.cpp" />
-    <ClCompile Include="GpsData.cpp" />
     <ClCompile Include="Graphs\ColumnGraph.cpp" />
     <ClCompile Include="Graphs\GraphCtrl.cpp" />
     <ClCompile Include="Graphs\SpectrumGraph.cpp" />
@@ -344,11 +353,11 @@
     <ClCompile Include="InformationDialog.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="MeasGrid.cpp" />
-    <ClCompile Include="MeasurementModes\Measurement_Calibrate.cpp" />
     <ClCompile Include="MeasurementModes\Measurement_Traverse.cpp" />
     <ClCompile Include="MeasurementModes\Measurement_View.cpp" />
     <ClCompile Include="MeasurementModes\Measurement_Wind.cpp" />
     <ClCompile Include="MeasurementModes\Measurement_Directory.cpp" />
+    <ClCompile Include="OpenInstrumentCalibrationDialog.cpp" />
     <ClCompile Include="PostFluxDlg.cpp" />
     <ClCompile Include="RealTimeRoute.cpp" />
     <ClCompile Include="ReEvaluation\ReEvalScriptFileHandler.cpp" />
@@ -368,6 +377,94 @@
     <ClCompile Include="SerialConnection.cpp" />
     <ClCompile Include="ShowFitDlg.cpp" />
     <ClCompile Include="SourceSelectionDlg.cpp" />
+    <ClCompile Include="SpectralEvaluation\src\Calibration\FraunhoferSpectrumGeneration.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Calibration\InstrumentLineShape.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Calibration\InstrumentLineShapeEstimation.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Calibration\ReferenceSpectrumConvolution.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Calibration\WavelengthCalibration.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Calibration\WavelengthCalibrationByRansac.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\DateTime.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Evaluation\CrossSectionData.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\File\File.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\File\STDFile.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\File\TXTFile.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\GPSData.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Interpolation.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Math\FFT.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Math\FunctionFit.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Math\PolynomialFit.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Spectra\SpectrometerModel.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Spectra\Spectrum.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Spectra\SpectrumInfo.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Spectra\SpectrumUtils.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\StringUtils.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\VectorUtils.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Spectrometer.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -376,7 +473,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Version.cpp" />
-    <ClCompile Include="WavelengthCalibration.cpp" />
     <ClCompile Include="WindFieldDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -384,11 +480,19 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BasicMath.h" />
+    <ClInclude Include="Calibration\InstrumentCalibrationInput.h" />
+    <ClInclude Include="Calibration\InstrumentLineshapeCalibrationController.h" />
+    <ClInclude Include="Calibration\ReferenceCreationController.h" />
+    <ClInclude Include="Calibration\WavelengthCalibrationController.h" />
+    <ClInclude Include="CCalibrateInstrumentLineShape.h" />
+    <ClInclude Include="CCalibratePixelToWavelengthDialog.h" />
+    <ClInclude Include="CCalibrateReferencesDialog.h" />
+    <ClInclude Include="CGpsData.h" />
     <ClInclude Include="CommentDlg.h" />
     <ClInclude Include="Common.h" />
-    <ClInclude Include="Common\DateTime.h" />
+    <ClInclude Include="Common\CDateTime.h" />
+    <ClInclude Include="Common\CSpectrum.h" />
     <ClInclude Include="Common\KMLFileHandler.h" />
-    <ClInclude Include="Common\Spectrum.h" />
     <ClInclude Include="Common\SpectrumIO.h" />
     <ClInclude Include="Common\XMLFileReader.h" />
     <ClInclude Include="Configuration\ConfigurationDialog.h" />
@@ -400,12 +504,12 @@
     <ClInclude Include="Controls\FitWindowListBox.h" />
     <ClInclude Include="Controls\Label.h" />
     <ClInclude Include="Controls\ReferenceFileControl.h" />
+    <ClInclude Include="CSpectrometerCalibrationDlg.h" />
     <ClInclude Include="Dialogs\QueryStringDialog.h" />
     <ClInclude Include="Dialogs\ReferencePlotDlg.h" />
     <ClInclude Include="Dialogs\ReferencePropertiesDlg.h" />
     <ClInclude Include="Dialogs\SelectionDialog.h" />
     <ClInclude Include="Dialogs\SimplePropertySheet.h" />
-    <ClInclude Include="Dialogs\SpectrumCalibrationDlg.h" />
     <ClInclude Include="Dialogs\SpectrumInspectionDlg.h" />
     <ClInclude Include="Dialogs\SpectrumScaleDlg.h" />
     <ClInclude Include="Dialogs\SpectrumSettingsDlg.h" />
@@ -456,7 +560,6 @@
     <ClInclude Include="Fit\NegateFunction.h" />
     <ClInclude Include="Fit\NonlinearParameterFunction.h" />
     <ClInclude Include="Fit\ParameterLinkItem.h" />
-    <ClInclude Include="Fit\ParameterVector.h" />
     <ClInclude Include="Fit\ParamFunction.h" />
     <ClInclude Include="Fit\PolynomialFunction.h" />
     <ClInclude Include="Fit\ReferenceSpectrumFunction.h" />
@@ -471,7 +574,6 @@
     <ClInclude Include="Flux\Traverse.h" />
     <ClInclude Include="Flux\WindField.h" />
     <ClInclude Include="GPS.h" />
-    <ClInclude Include="GpsData.h" />
     <ClInclude Include="Graphs\ColumnGraph.h" />
     <ClInclude Include="Graphs\GraphCtrl.h" />
     <ClInclude Include="Graphs\SpectrumGraph.h" />
@@ -486,11 +588,11 @@
     <ClInclude Include="LogDlg.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="MeasGrid.h" />
-    <ClInclude Include="MeasurementModes\Measurement_Calibrate.h" />
     <ClInclude Include="MeasurementModes\Measurement_Traverse.h" />
     <ClInclude Include="MeasurementModes\Measurement_View.h" />
     <ClInclude Include="MeasurementModes\Measurement_Wind.h" />
     <ClInclude Include="MeasurementModes\Measurement_Directory.h" />
+    <ClInclude Include="OpenInstrumentCalibrationDialog.h" />
     <ClInclude Include="PostFluxDlg.h" />
     <ClInclude Include="RealTimeRoute.h" />
     <ClInclude Include="ReEvaluation\ReEvalScriptFileHandler.h" />
@@ -514,7 +616,6 @@
     <ClInclude Include="Spectrometer.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="Version.h" />
-    <ClInclude Include="WavelengthCalibration.h" />
     <ClInclude Include="WindFieldDlg.h" />
   </ItemGroup>
   <ItemGroup>

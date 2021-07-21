@@ -1,6 +1,6 @@
 #include "StdAfx.h"
-#include "Spectrum.h"
-#include "../Common/DateTime.h"
+#include "CSpectrum.h"
+#include "../Common/CDateTime.h"
 #include <algorithm>
 #include <string>
 

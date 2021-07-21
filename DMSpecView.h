@@ -13,11 +13,9 @@
 #include "ShowFitDlg.h"
 #include "Dialogs/SpectrumSettingsDlg.h"
 #include "Dialogs/SpectrumScaleDlg.h"
-#include "Dialogs/SpectrumCalibrationDlg.h"
 
 #include "Common.h"
 #include "Controls/Label.h"
-#include "WavelengthCalibration.h"
 
 #include "afxcmn.h"
 #include "afxwin.h"
@@ -102,10 +100,6 @@ public:
 			and storing of spectra and results. */
 	CSpectrometer*				m_Spectrometer;
 
-	/** The wavelenth calibration object, only relevant (and not null) when
-		performing a wavelength calibration. */
-	CWavelengthCalibration		*m_calibration;
-
 	/** The option whether we shall show the column-error bars or not */
 	BOOL						m_showErrorBar;
 
@@ -127,10 +121,6 @@ public:
 
 	/** Starts the viewing of latest spectra from STD files sent to a directory. */
 	afx_msg void OnControlProcessSpectraFromDirectory();
-
-	/** Starts viewing spectra from the spectrometer, this makes 
-		easier for the user to make a calibration of the spectrometer */
-	afx_msg void OnControlCalibrateSpectrometer();
 
 	/** Show the post-flux dialog */
 	afx_msg void OnMenuShowPostFluxDialog();
@@ -221,8 +211,6 @@ public:
 	afx_msg void OnUpdateWindMeasurement(CCmdUI *pCmdUI);
 	afx_msg void OnUpdate_StartTheGps(CCmdUI *pCmdUI);
 
-	afx_msg void OnUpdate_CalibrateSpectrometer(CCmdUI *pCmdUI);
-
 	/** Toggles the showing of the column error bars */
 	afx_msg void OnViewColumnError();
 	// --------------------- PUBLIC METHODS ----------------------------
@@ -263,8 +251,6 @@ protected:
 
 	Dialogs::CSpectrumScaleDlg m_specScaleDlg;
 	
-	Dialogs::CSpectrumCalibrationDlg m_specCalibrationDlg;
-
 	/** The spectrometer thread */
 	CWinThread* pSpecThread = nullptr;
 
@@ -299,6 +285,7 @@ protected:
 public:
 	afx_msg void OnClose();
 	afx_msg void OnDestroy();
+	afx_msg void OnAnalysisCalibratespectrometer();
 };
 
 #ifndef _DEBUG  // debug version in DMSpecView.cpp

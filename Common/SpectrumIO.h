@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Spectrum.h"
+#include "CSpectrum.h"
 
 struct gpsData;
 

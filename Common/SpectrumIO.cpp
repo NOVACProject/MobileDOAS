@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "SpectrumIO.h"
-#include "../GpsData.h"
-#include "../Common/DateTime.h"
+#include "../CGpsData.h"
+#include "../Common/CDateTime.h"
 #include <vector>
 
 CSpectrumIO::CSpectrumIO()

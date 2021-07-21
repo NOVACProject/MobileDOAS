@@ -8,3 +8,12 @@ Release/
 /install
 /.vs/DMSpec/v15
 /.vs/DMSpec/v16
+/Data
+.vs/VSWorkspaceState.json
+.vs/MobileDoas_GitHub/v15/.suo
+*.db
+*.sqlite
+cfg.xml
+Old/MobileDOASDevelopment_2009_03_10/
+Old/MobileDOASDevelopment_OmniDriver_2009_11_30/
+.vs/ProjectSettings.json

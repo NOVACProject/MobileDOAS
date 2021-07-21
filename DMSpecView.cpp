@@ -11,13 +11,13 @@
 #include "DMSpecDoc.h"
 #include "DMSpecView.h"
 #include "MainFrm.h"
-#include "Common/DateTime.h"
+#include "Common/CDateTime.h"
 
 #include "PostFluxDlg.h"
 #include "Flux1.h"
 #include "DualBeam/PostWindDlg.h"
 #include "DualBeam/PostPlumeHeightDlg.h"
-
+#include "CSpectrometerCalibrationDlg.h"
 #include "CommentDlg.h"
 #include "InformationDialog.h"
 #include "Dialogs/SpectrumInspectionDlg.h"
@@ -34,7 +34,6 @@
 #include "MeasurementModes/Measurement_Wind.h"
 #include "MeasurementModes/Measurement_View.h"
 #include "MeasurementModes/Measurement_Directory.h"
-#include "MeasurementModes/Measurement_Calibrate.h"
 #include <algorithm>
 #include <Mmsystem.h>	// used for PlaySound
 
@@ -69,9 +68,6 @@ BEGIN_MESSAGE_MAP(CDMSpecView, CFormView)
 	// Just view the spectra from the spectrometer without evaluations
 	ON_COMMAND(ID_CONTROL_VIEWSPECTRAFROMSPECTROMETER,	OnControlViewSpectra) // <-- view the output from the spectrometer
 	ON_COMMAND(ID_CONTROL_VIEWSPECTRAFROMDIRECTORY, OnControlProcessSpectraFromDirectory) // <-- view latest spectra file in directory
-
-	// Calibrate a spectrometer
-	ON_COMMAND(ID_CONTROL_CALIBRATESPECTROMETER,		OnControlCalibrateSpectrometer)
 
 	ON_COMMAND(ID_ANALYSIS_POSTFLUX,					OnMenuShowPostFluxDialog)
 
@@ -108,6 +104,7 @@ BEGIN_MESSAGE_MAP(CDMSpecView, CFormView)
 	ON_WM_HELPINFO()
 	ON_COMMAND(ID_CONTROL_TESTTHEGPS,				OnMenuControlTestTheGPS)
 	ON_COMMAND(ID_CONTROL_STARTTHEGPS,				OnMenuControlRunTheGPS)
+	ON_COMMAND(ID_ANALYSIS_CALIBRATESPECTROMETER,	OnAnalysisCalibratespectrometer)
 
 	ON_COMMAND(ID_VIEW_COLUMNERROR,					OnViewColumnError)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_COLUMNERROR,		OnUpdateViewColumnError)
@@ -120,7 +117,6 @@ BEGIN_MESSAGE_MAP(CDMSpecView, CFormView)
 	ON_UPDATE_COMMAND_UI(ID_CONTROL_STARTTHEGPS,					OnUpdate_StartTheGps)
 	ON_UPDATE_COMMAND_UI(ID_CONTROL_ADDCOMMENT,						OnUpdate_EnableOnRun)
 	ON_UPDATE_COMMAND_UI(ID_CONFIGURATION_CHANGEEXPOSURETIME,		OnUpdate_EnableOnRun)
-	ON_UPDATE_COMMAND_UI(ID_CONTROL_CALIBRATESPECTROMETER,			OnUpdate_CalibrateSpectrometer)
 	
 	ON_WM_CLOSE()
 	ON_WM_DESTROY()
@@ -483,7 +479,7 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam){
 LRESULT CDMSpecView::OnDrawSpectrum(WPARAM wParam,LPARAM lParam)
 {
 	// to not overload the computer, make sure that we don't draw too often...
-	static double refreshRate = (m_spectrometerMode == MODE_CALIBRATE) ? 0.2 : 0.05;
+	static double refreshRate = 0.05;
 	static clock_t cLastCall = 0;
 	clock_t now = clock();
 	double elapsedTime = (double)(now - cLastCall) / (double)CLOCKS_PER_SEC;
@@ -495,11 +491,12 @@ LRESULT CDMSpecView::OnDrawSpectrum(WPARAM wParam,LPARAM lParam)
 	m_ColumnPlot.CleanPlot();
 	
 	// set the ranges for the plot
-	if(m_spectrometerMode == MODE_VIEW 
-		|| m_spectrometerMode == MODE_DIRECTORY
-		|| m_spectrometerMode == MODE_CALIBRATE){
+	if(m_spectrometerMode == MODE_VIEW  || m_spectrometerMode == MODE_DIRECTORY)
+	{
 		m_ColumnPlot.SetRange(0.0, 2048, 0, m_minSaturationRatio, m_maxSaturationRatio, 0);
-	}else{
+	}
+	else
+	{
 		m_ColumnPlot.SetSecondRange(0.0, 200, 0, m_minSaturationRatio, m_maxSaturationRatio, 0);
 	}
 	
@@ -901,66 +898,6 @@ void CDMSpecView::OnControlProcessSpectraFromDirectory() {
 	m_ColumnPlot.SetSecondRange(0.0, 200, 0, 0.0, 100.0, 0);
 }
 
-/** Starts the viewing of spectra from the spectrometer, 
-		without saving or evaluating them. */
-void CDMSpecView::OnControlCalibrateSpectrometer(){
-	char text[100];
-	CString tmpStr;
-	CRect rect;
-
-	if(!s_spectrometerAcquisitionThreadIsRunning)
-	{
-		CDMSpecDoc* pDoc = GetDocument();
-		CMeasurement_Calibrate *spec = new CMeasurement_Calibrate();
-		this->m_calibration	= spec->m_calibration;
-		this->m_Spectrometer = (CSpectrometer *)spec;
-		m_Spectrometer->m_spectrometerMode = MODE_CALIBRATE;
-		memset(text,0,(size_t)100);
-
-		pSpecThread = AfxBeginThread(CollectSpectra,(LPVOID)(m_Spectrometer),THREAD_PRIORITY_LOWEST,0,0,NULL);
-		s_spectrometerAcquisitionThreadIsRunning = true;
-		m_spectrometerMode	= MODE_CALIBRATE;
-
-		// Show the window that makes it possible to change the exposure time
-		m_specSettingsDlg.m_Spectrometer = spec;
-		m_specSettingsDlg.Create(IDD_SPECTRUM_SETTINGS_DLG, this);
-		m_specSettingsDlg.ShowWindow(SW_SHOW);
-
-		// Show the window that makes the calibration
-		m_specCalibrationDlg.m_Spectrometer = spec;
-		this->m_calibration	= spec->m_calibration;
-		m_specCalibrationDlg.Create(IDD_SPECTRUM_CALIBRATION, this);
-		m_specCalibrationDlg.ShowWindow(SW_SHOW);
-		m_specCalibrationDlg.GetWindowRect(rect);
-		int width = rect.Width();
-		int cx	= GetSystemMetrics(SM_CXSCREEN); // the width of the screen
-		rect.right = cx - 10;
-		rect.left = rect.right - width;
-		m_specCalibrationDlg.MoveWindow(rect);
-
-		if(m_realTimeRouteGraph.fVisible){
-			m_realTimeRouteGraph.m_spectrometer = m_Spectrometer;
-			m_realTimeRouteGraph.DrawRouteGraph();
-		}
-
-		if(m_showFitDlg.fVisible)
-		{
-			m_showFitDlg.m_spectrometer = m_Spectrometer;
-			m_showFitDlg.DrawFit();
-		}
-
-		// Also set the column-plot to only show the measured spectrum
-		m_ColumnPlot.SetSecondYUnit("");
-		m_ColumnPlot.SetYUnits("Intensity [%]");
-		m_ColumnPlot.SetXUnits("Pixel");
-		m_ColumnPlot.EnableGridLinesX(false);
-		m_ColumnPlot.SetRange(0.0, 2048, 0, 0.0, 100.0, 0);
-	}else{
-		MessageBox(TEXT("Spectra are collecting"),"Notice",MB_OK);
-	}
-}
-
-
 void CDMSpecView::OnControlStartWindMeasurement() 
 {
 	char text[100];
@@ -1110,22 +1047,6 @@ void CDMSpecView::DrawSpectrum()
 			m_ColumnPlot.SetLineWidth(2);
 			m_ColumnPlot.XYPlot(NULL, spectrum2, spectrumLength, Graph::CGraphCtrl::PLOT_CONNECTED);
 		}
-		return;
-	}else if(m_spectrometerMode == MODE_CALIBRATE){
-		
-		// Plot the spectrum
-		m_ColumnPlot.SetPlotColor(m_Spectrum0Color);
-		m_ColumnPlot.XYPlot(NULL, spectrum1, spectrumLength, Graph::CGraphCtrl::PLOT_CONNECTED);
-
-		// Plot the wavelengths of each of the lines
-		if(m_calibration != nullptr){
-			for(unsigned int k = 0; k < m_calibration->m_lineNum; ++k){
-				lambdaStr.Format("%.1lf", m_calibration->m_lines[k].wavelength);
-				m_ColumnPlot.DrawLine(Graph::VERTICAL, m_calibration->m_lines[k].pixelNumber, RGB(255, 255, 0), Graph::STYLE_DASHED, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
-				m_ColumnPlot.DrawTextBox(m_calibration->m_lines[k].pixelNumber, m_calibration->m_lines[k].pixelNumber + 50, m_calibration->m_lines[k].maxIntensity, m_calibration->m_lines[k].maxIntensity + 20, lambdaStr);
-			}
-		}
-
 		return;
 	}
 }
@@ -1570,16 +1491,6 @@ void CDMSpecView::OnUpdate_StartTheGps(CCmdUI *pCmdUI) {
 #endif // _DEBUG
 }
 
-void CDMSpecView::OnUpdate_CalibrateSpectrometer(CCmdUI *pCmdUI){
-	// this is not fully implemented yet...
-#ifdef _DEBUG
-	pCmdUI->Enable(TRUE);
-#else
-	pCmdUI->Enable(FALSE);
-#endif
-}
-
-
 void CDMSpecView::OnClose()
 {
 	// Terminate the collection of spectra
@@ -1608,4 +1519,10 @@ void CDMSpecView::SoundAlarm()
 	fileToPlay.Format("%s\\Media\\Windows Error.wav", windowsDir);
 
 	PlaySound(fileToPlay, 0, SND_SYNC);
+}
+
+void CDMSpecView::OnAnalysisCalibratespectrometer()
+{
+	CSpectrometerCalibrationDlg dlg;
+	dlg.DoModal();
 }

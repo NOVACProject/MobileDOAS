@@ -1,0 +1,3 @@
+[submodule "SpectralEvaluation"]
+	path = SpectralEvaluation
+	url = https://github.com/mattias42/SpectralEvaluation.git

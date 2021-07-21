@@ -1,6 +1,6 @@
 #include "StdAfx.h"
-#include "DateTime.h"
-#include "../GpsData.h"
+#include "CDateTime.h"
+#include "../CGpsData.h"
 
 #include <assert.h>
 #include <time.h>

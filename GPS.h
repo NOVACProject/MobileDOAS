@@ -10,7 +10,7 @@
 #endif // _MSC_VER > 1000
 
 #include "SerialConnection.h"
-#include "GpsData.h"
+#include "CGpsData.h"
 #include <string>
 #include <mutex>
 
