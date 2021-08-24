@@ -52,9 +52,11 @@ void InstrumentLineshapeCalibrationController::Update()
 
     if (this->m_readWavelengthCalibrationFromFile)
     {
-        // Find the peaks in the measured spectrum
-        novac::FindEmissionLines(hgSpectrum, this->m_peaksFound);
-        this->m_rejectedPeaks.clear();
+        // Find the peaks in the measured spectrum, rejecting double peaks.
+        novac::FindEmissionLines(hgSpectrum, this->m_peaksFound, true);
+        this->m_rejectedPeaks = novac::FilterByType(this->m_peaksFound, novac::SpectrumDataPointType::UnresolvedPeak);
+        this->m_peaksFound = novac::FilterByType(this->m_peaksFound, novac::SpectrumDataPointType::Peak);
+
         this->m_wavelengthCalibrationCoefficients.clear();
 
         if (this->m_inputSpectrumContainsWavelength)
@@ -87,7 +89,7 @@ void InstrumentLineshapeCalibrationController::Update()
             this->m_inputSpectrumWavelength = wavelengthCalibrationResult.pixelToWavelengthMapping;
             this->m_peaksFound = wavelengthCalibrationState.peaks;
             this->m_wavelengthCalibrationCoefficients = wavelengthCalibrationResult.pixelToWavelengthMappingCoefficients;
-            // this->m_rejectedPeaks = wavelengthCalibrationState.unknownPeaks;
+            this->m_rejectedPeaks = wavelengthCalibrationState.rejectedPeaks;
             this->m_wavelengthCalibrationSucceeded = true;
         }
         else
@@ -96,6 +98,7 @@ void InstrumentLineshapeCalibrationController::Update()
             std::iota(begin(m_inputSpectrumWavelength), end(m_inputSpectrumWavelength), 0.0);
             this->m_wavelengthCalibrationSucceeded = false;
             this->m_wavelengthCalibrationCoefficients.clear();
+            this->m_rejectedPeaks.clear();
         }
     }
 }
