@@ -1,4 +1,5 @@
 #pragma once
+#include <map>
 #include <string>
 #include <SpectralEvaluation/Spectra/SpectrumUtils.h>
 #include <SpectralEvaluation/Spectra/Spectrum.h>
@@ -97,10 +98,17 @@ public:
 
     /// <summary>
     /// Extracts the instrument line shape based on the peak with the provided index.
-    /// If a line shape function has been fitted, then this will be sampled and returned
+    /// If a line shape function has been fitted then this will be sampled and returned (needs a prior call to FitFunctionToLineShape),
     /// otherwise the spectrum itself will be returned.
     /// </summary>
     std::unique_ptr<novac::CSpectrum> GetInstrumentLineShape(size_t peakIdx) const;
+
+    /// <summary>
+    /// Returns a textual summary of parameters / properties of the last fitted function
+    /// (i.e. the last call to FitFunctionToLineShape).
+    /// Returns an empty set if no function has been fitted.
+    /// </summary>
+    std::vector<std::pair<std::string, std::string>> GetFittedFunctionDescription() const;
 
     /// <summary>
     /// Saves the resulting instrument line shape information as a .std file.

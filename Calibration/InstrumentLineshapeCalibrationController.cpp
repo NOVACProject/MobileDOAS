@@ -174,6 +174,35 @@ std::unique_ptr<novac::CSpectrum> InstrumentLineshapeCalibrationController::GetI
     }
 }
 
+std::string ToString(double value)
+{
+    char buffer[64];
+    sprintf(buffer, "%0.3lf", value);
+    return std::string(buffer);
+}
+
+std::vector<std::pair<std::string, std::string>> InstrumentLineshapeCalibrationController::GetFittedFunctionDescription() const
+{
+    std::vector<std::pair<std::string, std::string>> result;
+
+    if (this->m_fittedLineShape.first == LineShapeFunction::Gaussian)
+    {
+        const auto func = static_cast<novac::GaussianLineShape*>(this->m_fittedLineShape.second);
+        result.push_back(std::make_pair("center", ToString(func->center)));
+        result.push_back(std::make_pair("sigma", ToString(func->sigma)));
+        result.push_back(std::make_pair("fwhm", ToString(func->Fwhm())));
+    }
+    else if (this->m_fittedLineShape.first == LineShapeFunction::SuperGauss)
+    {
+        const auto func = static_cast<novac::SuperGaussianLineShape*>(this->m_fittedLineShape.second);
+        result.push_back(std::make_pair("center", ToString(func->center)));
+        result.push_back(std::make_pair("sigma", ToString(func->sigma)));
+        result.push_back(std::make_pair("power", ToString(func->P)));
+    }
+
+    return result;
+}
+
 void InstrumentLineshapeCalibrationController::FitFunctionToLineShape(size_t peakIdx, LineShapeFunction function)
 {
     if (peakIdx >= this->m_peaksFound.size() || function == LineShapeFunction::None)

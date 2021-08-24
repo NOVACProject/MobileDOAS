@@ -9,6 +9,7 @@
 #include "Calibration/InstrumentLineshapeCalibrationController.h"
 #include <SpectralEvaluation/File/File.h>
 #include <algorithm>
+#include <sstream>
 
 #undef min
 #undef max
@@ -70,7 +71,8 @@ BOOL CCalibrateInstrumentLineShape::OnInitDialog() {
     m_labelSpectrumContainsNoWavelengthCalibration.ShowWindow(SW_HIDE);
 
     this->m_saveButton.EnableWindow(FALSE); // disable the save button until the user has selected the emission line to save
-    this->m_labelSaveExplanation.ShowWindow(SW_SHOW);
+    this->UpdateExplanation();
+    this->UpdateFitResultLabel();
 
     return TRUE;  // return TRUE unless you set the focus to a control
 }
@@ -88,6 +90,7 @@ void CCalibrateInstrumentLineShape::DoDataExchange(CDataExchange* pDX)
     DDX_Control(pDX, IDC_STATIC_MINIMAP_HOLDER, m_minimapHolder);
     DDX_Control(pDX, IDC_BUTTON_SAVE, m_saveButton);
     DDX_Control(pDX, IDC_LABEL_SAVE_EXPLANATION, m_labelSaveExplanation);
+    DDX_Control(pDX, IDC_LABEL_FIT_RESULT, m_labelFitResult);
 }
 
 BEGIN_MESSAGE_MAP(CCalibrateInstrumentLineShape, CPropertyPage)
@@ -207,6 +210,9 @@ void CCalibrateInstrumentLineShape::UpdateFittedLineShape()
         const int selectedPeak = this->m_peaksList.GetCurSel();
         const auto selectedFunctionToFit = OptionToLineShapeFunction(this->m_fitFunctionOption);
         m_controller->FitFunctionToLineShape(selectedPeak, selectedFunctionToFit);
+
+        this->UpdateExplanation();
+        this->UpdateFitResultLabel();
     }
     catch (std::invalid_argument& e)
     {
@@ -242,7 +248,6 @@ void CCalibrateInstrumentLineShape::OnLbnSelchangeFoundPeak()
             true);
 
         this->m_saveButton.EnableWindow(TRUE);
-        this->m_labelSaveExplanation.ShowWindow(SW_HIDE);
     }
     else
     {
@@ -258,10 +263,12 @@ void CCalibrateInstrumentLineShape::OnLbnSelchangeFoundPeak()
             true);
 
         this->m_saveButton.EnableWindow(FALSE);
-        this->m_labelSaveExplanation.ShowWindow(SW_SHOW);
     }
 
-    UpdateGraph(false);
+    this->UpdateExplanation();
+    this->UpdateFitResultLabel();
+
+    this->UpdateGraph(false);
 }
 
 void CCalibrateInstrumentLineShape::UpdateGraph(bool reset)
@@ -407,4 +414,60 @@ void CCalibrateInstrumentLineShape::UpdateWavelengthCalibrationOption()
 void CCalibrateInstrumentLineShape::OnBnClickedToggleCalibrationFromMercuryLines()
 {
     this->UpdateWavelengthCalibrationOption();
+}
+
+void CCalibrateInstrumentLineShape::UpdateExplanation()
+{
+    const int selectedEmissionLine = this->m_peaksList.GetCurSel();
+
+    if (selectedEmissionLine >= 0 && selectedEmissionLine < static_cast<int>(this->m_controller->m_peaksFound.size()))
+    {
+        const auto selectedFunctionToFit = OptionToLineShapeFunction(this->m_fitFunctionOption);
+
+        if (selectedFunctionToFit == InstrumentLineshapeCalibrationController::LineShapeFunction::Gaussian)
+        {
+            this->m_labelSaveExplanation.SetWindowTextA("Click Save to save the selected Gaussian instrument line shape to file.");
+        }
+        else if (selectedFunctionToFit == InstrumentLineshapeCalibrationController::LineShapeFunction::SuperGauss)
+        {
+            this->m_labelSaveExplanation.SetWindowTextA("Click Save to save the selected Super Gaussian instrument line shape to file.");
+        }
+        else
+        {
+            this->m_labelSaveExplanation.SetWindowTextA("Click Save to save the selected measured instrument line shape to file.");
+        }
+    }
+    else
+    {
+        // default text, no emission line selected.
+        this->m_labelSaveExplanation.SetWindowTextA("Please select one emission line in the list to the left and (optionally) a function to model as Instrument Line Shape");
+    }
+}
+
+void CCalibrateInstrumentLineShape::UpdateFitResultLabel()
+{
+    const int selectedEmissionLine = this->m_peaksList.GetCurSel();
+    const auto selectedFunctionToFit = OptionToLineShapeFunction(this->m_fitFunctionOption);
+
+    if (selectedEmissionLine >= 0 &&
+        selectedEmissionLine < static_cast<int>(this->m_controller->m_peaksFound.size()) &&
+        selectedFunctionToFit != InstrumentLineshapeCalibrationController::LineShapeFunction::None)
+    {
+        const auto description = this->m_controller->GetFittedFunctionDescription();
+        {
+            std::stringstream str;
+            for each (auto property in description)
+            {
+                str << property.first << ":\t" << property.second << "\n";
+            }
+            std::string text = str.str();
+            this->m_labelFitResult.SetWindowTextA(text.c_str());
+        }
+
+        this->m_labelFitResult.ShowWindow(SW_SHOW);
+    }
+    else
+    {
+        this->m_labelFitResult.ShowWindow(SW_HIDE);
+    }
 }
