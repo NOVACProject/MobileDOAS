@@ -88,6 +88,12 @@
     <Filter Include="Source Files\Calibration">
       <UniqueIdentifier>{c2d51ef4-0451-42c7-84c2-ce32c232b931}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\SpectralEvaluation\Evaluation">
+      <UniqueIdentifier>{1e8fa22d-220a-4935-b512-d508eca0e87c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SpectralEvaluation\Fit">
+      <UniqueIdentifier>{9561066c-9026-453d-be37-99b4d17d5e5e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Common.cpp">
@@ -214,9 +220,6 @@
       <Filter>Source Files\GridCtrl</Filter>
     </ClCompile>
     <ClCompile Include="BasicMath.cpp">
-      <Filter>Source Files\Fit</Filter>
-    </ClCompile>
-    <ClCompile Include="Fit\MessageLog.cpp">
       <Filter>Source Files\Fit</Filter>
     </ClCompile>
     <ClCompile Include="CommentDlg.cpp">
@@ -444,6 +447,15 @@
     <ClCompile Include="CSpectrometerCalibrationDlg.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Evaluation\DoasFit.cpp">
+      <Filter>Source Files\SpectralEvaluation\Evaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Spectra\Scattering.cpp">
+      <Filter>Source Files\SpectralEvaluation\Evaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Fit\MessageLog.cpp">
+      <Filter>Source Files\SpectralEvaluation\Fit</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DMSpec.rc">
@@ -634,9 +646,6 @@
     <ClInclude Include="Fit\FitBasic.h">
       <Filter>Header Files\Fit</Filter>
     </ClInclude>
-    <ClInclude Include="Fit\FitException.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
     <ClInclude Include="Fit\Function.h">
       <Filter>Header Files\Fit</Filter>
     </ClInclude>
@@ -656,9 +665,6 @@
       <Filter>Header Files\Fit</Filter>
     </ClInclude>
     <ClInclude Include="Fit\Matrix.h">
-      <Filter>Header Files\Fit</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit\MessageLog.h">
       <Filter>Header Files\Fit</Filter>
     </ClInclude>
     <ClInclude Include="Fit\Minimizer.h">

@@ -51,7 +51,7 @@ void CreateGuessForInstrumentLineShape(const std::string& solarSpectrumFile, con
     std::vector<std::pair<std::string, double>> noCrossSections;
     novac::FraunhoferSpectrumGeneration fraunhoferSpectrumGen{ solarSpectrumFile, noCrossSections };
 
-    novac::InstrumentLineShapeEstimation ilsEstimation{ settings.initialPixelToWavelengthMapping };
+    novac::InstrumentLineShapeEstimationFromKeypointDistance ilsEstimation{ settings.initialPixelToWavelengthMapping };
 
     double resultInstrumentFwhm;
     ilsEstimation.EstimateInstrumentLineShape(fraunhoferSpectrumGen, measuredSpectrum, settings.initialInstrumentLineShape, resultInstrumentFwhm);

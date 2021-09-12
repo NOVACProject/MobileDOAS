@@ -19,7 +19,7 @@
 #include <iostream>
 #include <math.h>
 #include "FitBasic.h"
-#include "FitException.h"
+#include <SpectralEvaluation/Fit/FitException.h>
 
 #pragma warning (push, 3)
 

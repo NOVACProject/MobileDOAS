@@ -196,8 +196,8 @@ std::vector<std::pair<std::string, std::string>> InstrumentLineshapeCalibrationC
     {
         const auto func = static_cast<novac::SuperGaussianLineShape*>(this->m_fittedLineShape.second);
         result.push_back(std::make_pair("center", ToString(func->center)));
-        result.push_back(std::make_pair("sigma", ToString(func->sigma)));
-        result.push_back(std::make_pair("power", ToString(func->P)));
+        result.push_back(std::make_pair("w", ToString(func->w)));
+        result.push_back(std::make_pair("k", ToString(func->k)));
     }
 
     return result;
@@ -308,16 +308,16 @@ void InstrumentLineshapeCalibrationController::SaveResultAsStd(size_t peakIdx, c
         // Save the information we have on the function fit
         if (this->m_fittedLineShape.first == LineShapeFunction::Gaussian)
         {
-            const auto& gauss = static_cast<novac::GaussianLineShape*>(this->m_fittedLineShape.second);
-            extendedFileInfo.additionalProperties.push_back(FormatProperty("GaussFitSigma", gauss->sigma));
-            extendedFileInfo.additionalProperties.push_back(FormatProperty("GaussFitCenter", gauss->center));
+            const auto& gaussian = static_cast<novac::GaussianLineShape*>(this->m_fittedLineShape.second);
+            extendedFileInfo.additionalProperties.push_back(FormatProperty("GaussFitSigma", gaussian->sigma));
+            extendedFileInfo.additionalProperties.push_back(FormatProperty("GaussFitCenter", gaussian->center));
         }
         else if (this->m_fittedLineShape.first == LineShapeFunction::SuperGauss)
         {
-            const auto& gauss = static_cast<novac::SuperGaussianLineShape*>(this->m_fittedLineShape.second);
-            extendedFileInfo.additionalProperties.push_back(FormatProperty("SuperGaussFitSigma", gauss->sigma));
-            extendedFileInfo.additionalProperties.push_back(FormatProperty("SuperGaussFitPower", gauss->P));
-            extendedFileInfo.additionalProperties.push_back(FormatProperty("SuperGaussFitCenter", gauss->center));
+            const auto& superGaussian = static_cast<novac::SuperGaussianLineShape*>(this->m_fittedLineShape.second);
+            extendedFileInfo.additionalProperties.push_back(FormatProperty("SuperGaussFitWidth", superGaussian->w));
+            extendedFileInfo.additionalProperties.push_back(FormatProperty("SuperGaussFitPower", superGaussian->k));
+            extendedFileInfo.additionalProperties.push_back(FormatProperty("SuperGaussFitCenter", superGaussian->center));
         }
     }
     else
