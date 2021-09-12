@@ -59,7 +59,7 @@ public:
     CListBox m_graphTypeList; // Selecting the type of plot
 
     CStatic m_wavelengthCalibrationLabel;
- 
+
     afx_msg void OnClickedButtonBrowseSpectrum();
     afx_msg void OnClickedButtonBrowseSolarSpectrum();
     afx_msg void OnClickedButtonRun();
@@ -92,6 +92,11 @@ private:
     /// Draws the fraunhofer spectrum + keypoints
     /// </summary>
     void DrawFraunhoferSpectrumAndKeypoints();
+
+    /// <summary>
+    /// Draws the original and fitted instrument line shape.
+    /// </summary>
+    void DrawFittedInstrumentLineShape();
 
     /// <summary>
     /// Draws the fraunhofer + measured spectra + keypoints

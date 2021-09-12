@@ -10,6 +10,7 @@
 #include "OpenInstrumentCalibrationDialog.h"
 #include <fstream>
 #include <SpectralEvaluation/File/File.h>
+#include <SpectralEvaluation/Evaluation/CrossSectionData.h>
 
 // CCalibratePixelToWavelengthDialog dialog
 
@@ -57,6 +58,7 @@ BOOL CCalibratePixelToWavelengthDialog::OnInitDialog() {
     m_graphTypeList.AddString("Spectra & Polynomial");
     m_graphTypeList.AddString("Measured Spectrum");
     m_graphTypeList.AddString("Fraunhofer Spectrum");
+    m_graphTypeList.AddString("Instrument Line Shape");
     m_graphTypeList.SetCurSel(0);
 
     LoadDefaultSetup();
@@ -222,7 +224,11 @@ void CCalibratePixelToWavelengthDialog::OnClickedButtonBrowseSpectrumDark()
 void CCalibratePixelToWavelengthDialog::UpdateGraph()
 {
     const int currentGraph = this->m_graphTypeList.GetCurSel();
-    if (currentGraph == 3)
+    if (currentGraph == 4)
+    {
+        DrawFittedInstrumentLineShape();
+    }
+    else if (currentGraph == 3)
     {
         DrawFraunhoferSpectrumAndKeypoints();
     }
@@ -313,6 +319,36 @@ void CCalibratePixelToWavelengthDialog::DrawMeasuredSpectrumAndKeypoints()
         m_controller->m_calibrationDebug.measuredSpectrumInlierKeypointIntensities.data(),
         static_cast<int>(m_controller->m_calibrationDebug.measuredSpectrumInlierKeypointIntensities.size()),
         Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+}
+
+void CCalibratePixelToWavelengthDialog::DrawFittedInstrumentLineShape()
+{
+    this->m_graph.CleanPlot();
+
+    m_graph.SetXUnits("Delta Wavelength");
+    m_graph.SetYUnits("");
+
+    // The initial instrument line shape
+    if (this->m_controller->m_measuredInstrumentLineShape != nullptr)
+    {
+        this->m_graph.SetPlotColor(RGB(255, 0, 0));
+        this->m_graph.XYPlot(
+            this->m_controller->m_measuredInstrumentLineShape->m_waveLength.data(),
+            this->m_controller->m_measuredInstrumentLineShape->m_crossSection.data(),
+            static_cast<int>(this->m_controller->m_measuredInstrumentLineShape->GetSize()),
+            Graph::CGraphCtrl::PLOT_CONNECTED);
+    }
+
+    // The fitted instrument line shape
+    if (this->m_controller->m_resultingInstrumentLineShape != nullptr)
+    {
+        this->m_graph.SetPlotColor(RGB(0, 255, 0));
+        this->m_graph.XYPlot(
+            this->m_controller->m_resultingInstrumentLineShape->m_waveLength.data(),
+            this->m_controller->m_resultingInstrumentLineShape->m_crossSection.data(),
+            static_cast<int>(this->m_controller->m_resultingInstrumentLineShape->GetSize()),
+            Graph::CGraphCtrl::PLOT_CONNECTED | Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+    }
 }
 
 void CCalibratePixelToWavelengthDialog::DrawFraunhoferSpectrumAndKeypoints()
@@ -518,7 +554,7 @@ void CCalibratePixelToWavelengthDialog::OnClickedButtonSave()
 {
     try
     {
-        if (m_controller->m_measuredInstrumentLineShapeSpectrum == nullptr)
+        if (m_controller->m_measuredInstrumentLineShape == nullptr)
         {
             throw std::exception("Cannot find the instrument line shape");
         }

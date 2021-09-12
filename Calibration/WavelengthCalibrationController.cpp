@@ -22,9 +22,15 @@ WavelengthCalibrationController::WavelengthCalibrationController()
 
 WavelengthCalibrationController::~WavelengthCalibrationController()
 {
-    if (m_measuredInstrumentLineShapeSpectrum != nullptr)
+    if (m_measuredInstrumentLineShape != nullptr)
     {
-        delete m_measuredInstrumentLineShapeSpectrum;
+        delete m_measuredInstrumentLineShape;
+        m_measuredInstrumentLineShape = nullptr;
+    }
+    if (m_resultingInstrumentLineShape != nullptr)
+    {
+        delete m_resultingInstrumentLineShape;
+        m_resultingInstrumentLineShape = nullptr;
     }
 }
 
@@ -80,22 +86,22 @@ void WavelengthCalibrationController::RunCalibration()
 
     if (novac::GetFileExtension(this->m_initialCalibrationFile).compare(".std") == 0)
     {
-        if (m_measuredInstrumentLineShapeSpectrum != nullptr)
+        if (m_measuredInstrumentLineShape != nullptr)
         {
-            delete m_measuredInstrumentLineShapeSpectrum;
+            delete m_measuredInstrumentLineShape;
         }
 
-        this->m_measuredInstrumentLineShapeSpectrum = new novac::CSpectrum();
-        if (!novac::ReadInstrumentCalibration(this->m_initialCalibrationFile, *m_measuredInstrumentLineShapeSpectrum, settings.initialPixelToWavelengthMapping))
+        std::unique_ptr<novac::CSpectrum> instrumentLineShapeSpec = std::make_unique<novac::CSpectrum>();
+        if (!novac::ReadInstrumentCalibration(this->m_initialCalibrationFile, *instrumentLineShapeSpec, settings.initialPixelToWavelengthMapping))
         {
             throw std::invalid_argument("Failed to read the instrument calibration file");
         }
 
         // Convert CSpectrum to CCrossSectionData
-        novac::CCrossSectionData measuredInstrumentLineShape(*m_measuredInstrumentLineShapeSpectrum);
+        this->m_measuredInstrumentLineShape = new novac::CCrossSectionData(*instrumentLineShapeSpec);
 
-        settings.initialInstrumentLineShape = measuredInstrumentLineShape;
-        settings.estimateInstrumentLineShape = novac::InstrumentLineshapeEstimationOption::None;
+        settings.initialInstrumentLineShape = *m_measuredInstrumentLineShape;
+        settings.estimateInstrumentLineShape = novac::InstrumentLineshapeEstimationOption::SuperGaussian;
     }
     else
     {
@@ -104,12 +110,12 @@ void WavelengthCalibrationController::RunCalibration()
         if (this->m_initialLineShapeFile.size() > 0)
         {
             ReadInstrumentLineShape(m_initialLineShapeFile, settings);
-            this->m_measuredInstrumentLineShapeSpectrum = new novac::CSpectrum(settings.initialInstrumentLineShape);
+            this->m_measuredInstrumentLineShape = new novac::CCrossSectionData(settings.initialInstrumentLineShape);
         }
         else
         {
             CreateGuessForInstrumentLineShape(this->m_solarSpectrumFile, measuredSpectrum, settings);
-            this->m_measuredInstrumentLineShapeSpectrum = new novac::CSpectrum(settings.initialInstrumentLineShape);
+            this->m_measuredInstrumentLineShape = new novac::CCrossSectionData(settings.initialInstrumentLineShape);
         }
     }
 
@@ -121,6 +127,10 @@ void WavelengthCalibrationController::RunCalibration()
     // Copy out the result
     this->m_resultingPixelToWavelengthMapping = result.pixelToWavelengthMapping;
     this->m_resultingPixelToWavelengthMappingCoefficients = result.pixelToWavelengthMappingCoefficients;
+    if (result.estimatedInstrumentLineShape.GetSize() > 0)
+    {
+        this->m_resultingInstrumentLineShape = new novac::CCrossSectionData(result.estimatedInstrumentLineShape);
+    }
 
     // Also copy out some debug information, which makes it possible for the user to inspect the calibration
     {
@@ -178,12 +188,13 @@ void WavelengthCalibrationController::SaveResultAsStd(const std::string& filenam
     size_t startIdx = 0; // TODO: Set this value to something more reasonable
 
     // Additional information about the spectrum
+    // TODO: SAVE THE FITTED INSTRUMENT LINE SHAPE INSTEAD!
     novac::CSTDFile::ExtendedFormatInformation extendedFileInfo;
     extendedFileInfo.MinChannel = static_cast<int>(startIdx);
-    extendedFileInfo.MaxChannel = static_cast<int>(startIdx + m_measuredInstrumentLineShapeSpectrum->m_length);
+    extendedFileInfo.MaxChannel = static_cast<int>(startIdx + m_measuredInstrumentLineShape->GetSize());
     extendedFileInfo.MathLow = extendedFileInfo.MinChannel;
     extendedFileInfo.MathHigh = extendedFileInfo.MaxChannel;
-    novac::LinearInterpolation(m_resultingPixelToWavelengthMapping, 0.5 * m_measuredInstrumentLineShapeSpectrum->m_length, extendedFileInfo.Marker);
+    novac::LinearInterpolation(m_resultingPixelToWavelengthMapping, 0.5 * m_measuredInstrumentLineShape->GetSize(), extendedFileInfo.Marker);
     extendedFileInfo.calibrationPolynomial = this->m_resultingPixelToWavelengthMappingCoefficients;
 
     // Create the spectrum to save from the instrument line-shape + the 
@@ -191,7 +202,7 @@ void WavelengthCalibrationController::SaveResultAsStd(const std::string& filenam
     {
         // Extend the measured spectrum line shape into a full spectrum
         std::vector<double> extendedPeak(m_resultingPixelToWavelengthMapping.size(), 0.0);
-        std::copy(m_measuredInstrumentLineShapeSpectrum->m_data, m_measuredInstrumentLineShapeSpectrum->m_data + m_measuredInstrumentLineShapeSpectrum->m_length, extendedPeak.begin() + startIdx);
+        std::copy(m_measuredInstrumentLineShape->m_crossSection.data(), m_measuredInstrumentLineShape->m_crossSection.data() + m_measuredInstrumentLineShape->GetSize(), extendedPeak.begin() + startIdx);
 
         spectrumToSave = std::make_unique<novac::CSpectrum>(m_resultingPixelToWavelengthMapping, extendedPeak);
     }
@@ -208,5 +219,5 @@ void WavelengthCalibrationController::SaveResultAsClb(const std::string& filenam
 
 void WavelengthCalibrationController::SaveResultAsSlf(const std::string& filename)
 {
-    novac::SaveCrossSectionFile(filename, *m_measuredInstrumentLineShapeSpectrum);
+    novac::SaveCrossSectionFile(filename, *m_measuredInstrumentLineShape);
 }

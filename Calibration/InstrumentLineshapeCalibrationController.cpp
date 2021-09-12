@@ -198,6 +198,7 @@ std::vector<std::pair<std::string, std::string>> InstrumentLineshapeCalibrationC
         result.push_back(std::make_pair("center", ToString(func->center)));
         result.push_back(std::make_pair("w", ToString(func->w)));
         result.push_back(std::make_pair("k", ToString(func->k)));
+        result.push_back(std::make_pair("fwhm", ToString(func->Fwhm())));
     }
 
     return result;

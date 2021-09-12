@@ -5,7 +5,7 @@
 
 namespace novac
 {
-class CSpectrum;
+class CCrossSectionData;
 }
 
 class WavelengthCalibrationController
@@ -55,7 +55,12 @@ public:
     /// <summary>
     /// If we have read the instrument line shape from file then the result is saved here
     /// </summary>
-    novac::CSpectrum* m_measuredInstrumentLineShapeSpectrum = nullptr;
+    novac::CCrossSectionData* m_measuredInstrumentLineShape = nullptr;
+
+    /// <summary>
+    /// If we have fitted an instrument line shape to the measured spectrum then the result is saved here
+    /// </summary>
+    novac::CCrossSectionData* m_resultingInstrumentLineShape = nullptr;
 
     /// <summary>
     /// If the calibration fails, for some reason, then this message should be set to indicate why.
