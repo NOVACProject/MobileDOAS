@@ -63,6 +63,11 @@ public:
     novac::CCrossSectionData* m_resultingInstrumentLineShape = nullptr;
 
     /// <summary>
+    /// User friendly description of the fitted parameters for the instrument line shape function.
+    /// </summary>
+    std::vector<std::pair<std::string, std::string>> m_instrumentLineShapeParameterDescriptions;
+
+    /// <summary>
     /// If the calibration fails, for some reason, then this message should be set to indicate why.
     /// </summary>
     std::string m_errorMessage;

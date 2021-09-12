@@ -60,6 +60,8 @@ public:
 
     CStatic m_wavelengthCalibrationLabel;
 
+    CListBox m_detailedResultList; // detailed presentation of the results
+
     afx_msg void OnClickedButtonBrowseSpectrum();
     afx_msg void OnClickedButtonBrowseSolarSpectrum();
     afx_msg void OnClickedButtonRun();
@@ -77,6 +79,8 @@ private:
     void LoadDefaultSetup();
 
     void UpdateGraph();
+
+    void UpdateResultList();
 
     /// <summary>
     /// Updates the graph with inliers / outliers of the correspondences + the fitted polynomial

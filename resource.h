@@ -531,6 +531,8 @@
 #define IDC_BUTTON_BROWSE_CALIBRATION   1329
 #define IDC_LABEL_                      1332
 #define IDC_LABEL_FIT_RESULT            1333
+#define IDC_LIST2                       1333
+#define IDC_WAVELENGTH_CALIBRATION_DETAILS_LIST 1333
 #define ID_ANALYSIS_POSTFLUX            32771
 #define ID_CONTROL_STOP                 32772
 #define ID_CONTROL_START                32772
@@ -555,7 +557,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        292
 #define _APS_NEXT_COMMAND_VALUE         32804
-#define _APS_NEXT_CONTROL_VALUE         1333
+#define _APS_NEXT_CONTROL_VALUE         1334
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

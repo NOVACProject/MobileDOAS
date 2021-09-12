@@ -181,27 +181,41 @@ std::string ToString(double value)
     return std::string(buffer);
 }
 
-std::vector<std::pair<std::string, std::string>> InstrumentLineshapeCalibrationController::GetFittedFunctionDescription() const
+std::vector<std::pair<std::string, std::string>> GetFunctionDescription(const novac::ParametricInstrumentLineShape* lineShapeFunction)
 {
     std::vector<std::pair<std::string, std::string>> result;
 
-    if (this->m_fittedLineShape.first == LineShapeFunction::Gaussian)
+    if (lineShapeFunction == nullptr)
     {
-        const auto func = static_cast<novac::GaussianLineShape*>(this->m_fittedLineShape.second);
-        result.push_back(std::make_pair("center", ToString(func->center)));
+        return result;
+    }
+    else if (lineShapeFunction->Type() == novac::InstrumentLineShapeFunctionType::Gaussian)
+    {
+        const auto func = static_cast<const novac::GaussianLineShape*>(lineShapeFunction);
+        result.push_back(std::make_pair("type", "Gaussian"));
         result.push_back(std::make_pair("sigma", ToString(func->sigma)));
         result.push_back(std::make_pair("fwhm", ToString(func->Fwhm())));
     }
-    else if (this->m_fittedLineShape.first == LineShapeFunction::SuperGauss)
+    else if (lineShapeFunction->Type() == novac::InstrumentLineShapeFunctionType::SuperGaussian)
     {
-        const auto func = static_cast<novac::SuperGaussianLineShape*>(this->m_fittedLineShape.second);
-        result.push_back(std::make_pair("center", ToString(func->center)));
+        const auto func = static_cast<const novac::SuperGaussianLineShape*>(lineShapeFunction);
+        result.push_back(std::make_pair("type", "Super Gaussian"));
         result.push_back(std::make_pair("w", ToString(func->w)));
         result.push_back(std::make_pair("k", ToString(func->k)));
         result.push_back(std::make_pair("fwhm", ToString(func->Fwhm())));
     }
+    else
+    {
+        // unknown type...
+    }
 
     return result;
+}
+
+std::vector<std::pair<std::string, std::string>> InstrumentLineshapeCalibrationController::GetFittedFunctionDescription() const
+{
+    auto func = static_cast<const novac::ParametricInstrumentLineShape*>(this->m_fittedLineShape.second);
+    return GetFunctionDescription(func);
 }
 
 void InstrumentLineshapeCalibrationController::FitFunctionToLineShape(size_t peakIdx, LineShapeFunction function)

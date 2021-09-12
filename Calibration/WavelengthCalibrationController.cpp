@@ -15,6 +15,9 @@
 // TODO: It should be possible to remove this header...
 #include <SpectralEvaluation/Calibration/WavelengthCalibrationByRansac.h>
 
+// From InstrumentLineShapeCalibrationController...
+std::vector<std::pair<std::string, std::string>> GetFunctionDescription(const novac::ParametricInstrumentLineShape* lineShapeFunction);
+
 WavelengthCalibrationController::WavelengthCalibrationController()
     : m_calibrationDebug(0U)
 {
@@ -130,6 +133,10 @@ void WavelengthCalibrationController::RunCalibration()
     if (result.estimatedInstrumentLineShape.GetSize() > 0)
     {
         this->m_resultingInstrumentLineShape = new novac::CCrossSectionData(result.estimatedInstrumentLineShape);
+    }
+    if (result.estimatedInstrumentLineShapeParameters != nullptr)
+    {
+        this->m_instrumentLineShapeParameterDescriptions = GetFunctionDescription(&(*result.estimatedInstrumentLineShapeParameters));
     }
 
     // Also copy out some debug information, which makes it possible for the user to inspect the calibration

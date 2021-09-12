@@ -80,6 +80,7 @@ void CCalibratePixelToWavelengthDialog::DoDataExchange(CDataExchange* pDX)
     DDX_Control(pDX, IDC_BUTTON_SAVE, m_saveButton);
     DDX_Control(pDX, IDC_STATIC_INITIAL_CALIBRATION, m_wavelengthCalibrationLabel);
     DDX_Control(pDX, IDC_LIST_GRAPH_TYPE, m_graphTypeList);
+    DDX_Control(pDX, IDC_WAVELENGTH_CALIBRATION_DETAILS_LIST, m_detailedResultList);
 }
 
 BEGIN_MESSAGE_MAP(CCalibratePixelToWavelengthDialog, CPropertyPage)
@@ -246,6 +247,29 @@ void CCalibratePixelToWavelengthDialog::UpdateGraph()
     }
 }
 
+void CCalibratePixelToWavelengthDialog::UpdateResultList()
+{
+    this->m_detailedResultList.ResetContent(); // clears the list
+
+    CString text;
+
+    // The polynomial coefficients.
+    text.Format("Wavelength polynomial order: %d", m_controller->m_resultingPixelToWavelengthMappingCoefficients.size() - 1);
+    m_detailedResultList.AddString(text);
+
+    for (size_t coefficientIdx = 0; coefficientIdx < m_controller->m_resultingPixelToWavelengthMappingCoefficients.size(); ++coefficientIdx)
+    {
+        text.Format("c%d: %.4g", coefficientIdx, m_controller->m_resultingPixelToWavelengthMappingCoefficients[coefficientIdx]);
+        m_detailedResultList.AddString(text);
+    }
+
+    // The Instrument Line Shape:
+    for (const auto& parameter : m_controller->m_instrumentLineShapeParameterDescriptions)
+    {
+        text.Format("%s: %s", parameter.first.c_str(), parameter.second.c_str());
+        m_detailedResultList.AddString(text);
+    }
+}
 
 void CCalibratePixelToWavelengthDialog::OnSelchangeListGraphType()
 {
@@ -528,6 +552,8 @@ LRESULT CCalibratePixelToWavelengthDialog::OnCalibrationDone(WPARAM wParam, LPAR
         SaveSetup();
 
         UpdateGraph();
+
+        UpdateResultList();
 
         this->m_saveButton.EnableWindow(TRUE);
         this->m_runButton.EnableWindow(TRUE);
