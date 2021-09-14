@@ -8,6 +8,7 @@
 #include "Common.h"
 #include "Calibration/WavelengthCalibrationController.h"
 #include "OpenInstrumentCalibrationDialog.h"
+#include "CCalibratePixelToWavelengthSetupDialog.h"
 #include <fstream>
 #include <SpectralEvaluation/File/File.h>
 #include <SpectralEvaluation/Evaluation/CrossSectionData.h>
@@ -72,13 +73,10 @@ void CCalibratePixelToWavelengthDialog::DoDataExchange(CDataExchange* pDX)
 {
     CPropertyPage::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_EDIT_SPECTRUM, m_inputSpectrumFile);
-    DDX_Text(pDX, IDC_EDIT_SOLAR_SPECTRUM, m_setup.m_solarSpectrumFile);
-    DDX_Text(pDX, IDC_EDIT_INITIAL_CALIBRATION, m_setup.m_initialCalibrationFile);
     DDX_Text(pDX, IDC_EDIT_SPECTRUM_DARK2, m_darkSpectrumFile);
     DDX_Control(pDX, IDC_STATIC_GRAPH_HOLDER_PANEL, m_graphHolder);
     DDX_Control(pDX, IDC_BUTTON_RUN, m_runButton);
     DDX_Control(pDX, IDC_BUTTON_SAVE, m_saveButton);
-    DDX_Control(pDX, IDC_STATIC_INITIAL_CALIBRATION, m_wavelengthCalibrationLabel);
     DDX_Control(pDX, IDC_LIST_GRAPH_TYPE, m_graphTypeList);
     DDX_Control(pDX, IDC_WAVELENGTH_CALIBRATION_DETAILS_LIST, m_detailedResultList);
 }
@@ -93,6 +91,7 @@ BEGIN_MESSAGE_MAP(CCalibratePixelToWavelengthDialog, CPropertyPage)
     ON_MESSAGE(WM_DONE, OnCalibrationDone)
     ON_LBN_SELCHANGE(IDC_LIST_GRAPH_TYPE, &CCalibratePixelToWavelengthDialog::OnSelchangeListGraphType)
     ON_BN_CLICKED(IDC_BUTTON_SELECT_INITIAL_CALIBRATION, &CCalibratePixelToWavelengthDialog::OnButtonSelectInitialCalibration)
+    ON_BN_CLICKED(IDC_BUTTON_SETUP_WAVELENGTH_CALIBRATION, &CCalibratePixelToWavelengthDialog::OnBnClickedSetupWavelengthCaliBration)
 END_MESSAGE_MAP()
 
 // Persisting the setup to file
@@ -115,6 +114,9 @@ void CCalibratePixelToWavelengthDialog::SaveSetup()
         dst << "\t<InitialCalibrationFile>" << this->m_setup.m_initialCalibrationFile << "</InitialCalibrationFile>" << std::endl;
         dst << "\t<LineShapeFile>" << this->m_setup.m_instrumentLineshapeFile << "</LineShapeFile>" << std::endl;
         dst << "\t<InputFileType>" << (int)this->m_setup.m_calibrationOption << "</InputFileType>" << std::endl;
+        dst << "\t<InstrumentLineShapeFitType>" << (int)this->m_setup.m_fitInstrumentLineShapeOption << "</InstrumentLineShapeFitType>" << std::endl;
+        dst << "\t<InstrumentLineShapeFitFrom>" << this->m_setup.m_fitInstrumentLineShapeRegionStart << "</InstrumentLineShapeFitFrom>" << std::endl;
+        dst << "\t<InstrumentLineShapeFitTo>" << this->m_setup.m_fitInstrumentLineShapeRegionStop << "</InstrumentLineShapeFitTo>" << std::endl;
         dst << "</CalibrateWavelengthDlg>" << std::endl;
     }
     catch (std::exception&)
@@ -185,6 +187,18 @@ void CCalibratePixelToWavelengthDialog::LoadLastSetup()
             else if (line.find("InputFileType") != std::string::npos)
             {
                 this->m_setup.m_calibrationOption = ParseXmlInteger("<InputFileType>", "</InputFileType>", line);
+            }
+            else if (line.find("InstrumentLineShapeFitType") != std::string::npos)
+            {
+                this->m_setup.m_fitInstrumentLineShapeOption = ParseXmlInteger("<InstrumentLineShapeFitType>", "</InstrumentLineShapeFitType>", line);
+            }
+            else if (line.find("InstrumentLineShapeFitFrom") != std::string::npos)
+            {
+                this->m_setup.m_fitInstrumentLineShapeRegionStart = ParseXmlString("<InstrumentLineShapeFitFrom>", "</InstrumentLineShapeFitFrom>", line);
+            }
+            else if (line.find("InstrumentLineShapeFitTo") != std::string::npos)
+            {
+                this->m_setup.m_fitInstrumentLineShapeRegionStop = ParseXmlString("<InstrumentLineShapeFitTo>", "</InstrumentLineShapeFitTo>", line);
             }
         }
     }
@@ -515,6 +529,10 @@ void CCalibratePixelToWavelengthDialog::OnClickedButtonRun()
     this->m_controller->m_solarSpectrumFile = this->m_setup.m_solarSpectrumFile;
     this->m_controller->m_initialCalibrationFile = this->m_setup.m_initialCalibrationFile;
     this->m_controller->m_initialLineShapeFile = this->m_setup.m_instrumentLineshapeFile;
+    this->m_controller->m_instrumentLineShapeFitOption = (WavelengthCalibrationController::InstrumentLineShapeFitOption)this->m_setup.m_fitInstrumentLineShapeOption;
+    this->m_controller->m_instrumentLineShapeFitRegion = std::make_pair(
+        std::atof(this->m_setup.m_fitInstrumentLineShapeRegionStart),
+        std::atof(this->m_setup.m_fitInstrumentLineShapeRegionStop));
 
     this->m_runButton.GetWindowTextA(runButtonOriginalText);
 
@@ -626,4 +644,10 @@ void CCalibratePixelToWavelengthDialog::OnButtonSelectInitialCalibration()
 
         UpdateData(FALSE);
     }
+}
+
+void CCalibratePixelToWavelengthDialog::OnBnClickedSetupWavelengthCaliBration()
+{
+    CCalibratePixelToWavelengthSetupDialog setupDlg{ &m_setup };
+    setupDlg.DoModal();
 }

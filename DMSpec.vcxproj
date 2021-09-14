@@ -286,6 +286,7 @@
     <ClCompile Include="Calibration\WavelengthCalibrationController.cpp" />
     <ClCompile Include="CCalibrateInstrumentLineShape.cpp" />
     <ClCompile Include="CCalibratePixelToWavelengthDialog.cpp" />
+    <ClCompile Include="CCalibratePixelToWavelengthSetupDialog.cpp" />
     <ClCompile Include="CCalibrateReferencesDialog.cpp" />
     <ClCompile Include="CGpsData.cpp" />
     <ClCompile Include="CommentDlg.cpp" />
@@ -547,6 +548,7 @@
     <ClInclude Include="Calibration\WavelengthCalibrationController.h" />
     <ClInclude Include="CCalibrateInstrumentLineShape.h" />
     <ClInclude Include="CCalibratePixelToWavelengthDialog.h" />
+    <ClInclude Include="CCalibratePixelToWavelengthSetupDialog.h" />
     <ClInclude Include="CCalibrateReferencesDialog.h" />
     <ClInclude Include="CGpsData.h" />
     <ClInclude Include="CommentDlg.h" />
@@ -644,7 +646,6 @@
     <ClInclude Include="GridCtrl\MemDC.h" />
     <ClInclude Include="GridCtrl\TitleTip.h" />
     <ClInclude Include="InformationDialog.h" />
-    <ClInclude Include="LogDlg.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="MeasGrid.h" />
     <ClInclude Include="MeasurementModes\Measurement_Traverse.h" />

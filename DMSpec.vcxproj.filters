@@ -456,6 +456,9 @@
     <ClCompile Include="SpectralEvaluation\src\Fit\MessageLog.cpp">
       <Filter>Source Files\SpectralEvaluation\Fit</Filter>
     </ClCompile>
+    <ClCompile Include="CCalibratePixelToWavelengthSetupDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DMSpec.rc">
@@ -712,9 +715,6 @@
     <ClInclude Include="InformationDialog.h">
       <Filter>Header Files\Dialogs</Filter>
     </ClInclude>
-    <ClInclude Include="LogDlg.h">
-      <Filter>Header Files\Dialogs</Filter>
-    </ClInclude>
     <ClInclude Include="PostFluxDlg.h">
       <Filter>Header Files\Dialogs</Filter>
     </ClInclude>
@@ -870,6 +870,9 @@
     </ClInclude>
     <ClInclude Include="OpenInstrumentCalibrationDialog.h">
       <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="CCalibratePixelToWavelengthSetupDialog.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

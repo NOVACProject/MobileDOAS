@@ -14,6 +14,12 @@ public:
     WavelengthCalibrationController();
     ~WavelengthCalibrationController();
 
+    enum class InstrumentLineShapeFitOption
+    {
+        None = 0,
+        SuperGaussian = 1
+    };
+
     /// <summary>
     /// The full path to the spectrum to calibrate
     /// </summary>
@@ -41,6 +47,17 @@ public:
     /// This may be left out if m_initialCalibrationFile does contain an instrument line shape.
     /// </summary>
     std::string m_initialLineShapeFile;
+
+    /// <summary>
+    /// The option for if an instrument line shape should be fitted as well during
+    /// the retrieval of the pixel-to-wavelength calibration.
+    /// </summary>
+    InstrumentLineShapeFitOption m_instrumentLineShapeFitOption;
+
+    /// <summary>
+    /// The wavelength region in which the instrument line shape should be fitted (in nm).
+    /// </summary>
+    std::pair<double, double> m_instrumentLineShapeFitRegion;
 
     /// <summary>
     /// Output: the final estimate for the pixel to wavelength mapping.

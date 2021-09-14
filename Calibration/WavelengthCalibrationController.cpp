@@ -3,6 +3,7 @@
 #undef max
 #undef min
 #include <filesystem>
+#include <sstream>
 #include "WavelengthCalibrationController.h"
 #include <SpectralEvaluation/Spectra/Spectrum.h>
 #include <SpectralEvaluation/File/File.h>
@@ -19,7 +20,8 @@
 std::vector<std::pair<std::string, std::string>> GetFunctionDescription(const novac::ParametricInstrumentLineShape* lineShapeFunction);
 
 WavelengthCalibrationController::WavelengthCalibrationController()
-    : m_calibrationDebug(0U)
+    : m_calibrationDebug(0U),
+    m_instrumentLineShapeFitOption(InstrumentLineShapeFitOption::None)
 {
 }
 
@@ -121,6 +123,38 @@ void WavelengthCalibrationController::RunCalibration()
             this->m_measuredInstrumentLineShape = new novac::CCrossSectionData(settings.initialInstrumentLineShape);
         }
     }
+    if (this->m_instrumentLineShapeFitOption == WavelengthCalibrationController::InstrumentLineShapeFitOption::SuperGaussian)
+    {
+        if (this->m_instrumentLineShapeFitRegion.first > this->m_instrumentLineShapeFitRegion.second)
+        {
+            std::stringstream msg;
+            msg << "Invalid region for fitting the instrument line shape ";
+            msg << "(" << this->m_instrumentLineShapeFitRegion.first << ", " << this->m_instrumentLineShapeFitRegion.second << ") [nm]. ";
+            msg << "From must be smaller than To";
+            throw std::invalid_argument(msg.str());
+        }
+        if (this->m_instrumentLineShapeFitRegion.first < settings.initialPixelToWavelengthMapping.front() ||
+            this->m_instrumentLineShapeFitRegion.second > settings.initialPixelToWavelengthMapping.back())
+        {
+            std::stringstream msg;
+            msg << "Invalid region for fitting the instrument line shape ";
+            msg << "(" << this->m_instrumentLineShapeFitRegion.first << ", " << this->m_instrumentLineShapeFitRegion.second << ") [nm]. ";
+            msg << "Region does not overlap initial pixel to wavelength calibration: ";
+            msg << "(" << settings.initialPixelToWavelengthMapping.front() << ", " << settings.initialPixelToWavelengthMapping.back() << ") [nm]. ";
+            throw std::invalid_argument(msg.str());
+        }
+
+        settings.estimateInstrumentLineShape = novac::InstrumentLineshapeEstimationOption::SuperGaussian;
+
+        // Convert the region in nm to pixels.
+        settings.estimateInstrumentLineShapePixelRegion.first = novac::GetFractionalIndex(settings.initialPixelToWavelengthMapping, this->m_instrumentLineShapeFitRegion.first);
+        settings.estimateInstrumentLineShapePixelRegion.second = novac::GetFractionalIndex(settings.initialPixelToWavelengthMapping, this->m_instrumentLineShapeFitRegion.second);
+    }
+    else
+    {
+        settings.estimateInstrumentLineShape = novac::InstrumentLineshapeEstimationOption::None;
+    }
+
 
     // So far no cross sections provided...
 

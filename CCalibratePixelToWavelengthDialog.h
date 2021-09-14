@@ -6,6 +6,33 @@
 
 class WavelengthCalibrationController;
 
+/// <summary>
+/// This is a helper structure for keeping togheter the options for the pixel-to-wavelength calibration
+/// as well as for helping persisting these settings to disk.
+/// </summary>
+struct CalibratePixelToWavelengthDialogSetup
+{
+public:
+    CalibratePixelToWavelengthDialogSetup() :
+        m_calibrationOption(0),
+        m_initialCalibrationFile(""),
+        m_instrumentLineshapeFile(""),
+        m_solarSpectrumFile(""),
+        m_fitInstrumentLineShapeOption(0),
+        m_fitInstrumentLineShapeRegionStart("320"),
+        m_fitInstrumentLineShapeRegionStop("350")
+    {
+    }
+
+    int m_calibrationOption;            //< the type of instrument calibration file to use (.std or .clb + .slf)
+    CString m_initialCalibrationFile;   //< path to the intial calibration file (either .std or .clb)
+    CString m_instrumentLineshapeFile;  //< path to the initial instrument line shape file (.slf). Ususally not set if m_initialCalibrationFile is .std.
+    CString m_solarSpectrumFile;        //< path to the high-res solar spectrum file
+    int m_fitInstrumentLineShapeOption; //< the option for what type of instrument line shape to fit.
+    CString m_fitInstrumentLineShapeRegionStart;
+    CString m_fitInstrumentLineShapeRegionStop;
+};
+
 class CCalibratePixelToWavelengthDialog : public CPropertyPage
 {
     DECLARE_DYNAMIC(CCalibratePixelToWavelengthDialog)
@@ -16,23 +43,6 @@ public:
 
     /** Initializes the controls and the dialog */
     virtual BOOL OnInitDialog();
-
-    struct CalibratePixelToWavelengthDialogSetup
-    {
-    public:
-        CalibratePixelToWavelengthDialogSetup() :
-            m_initialCalibrationFile(""),
-            m_instrumentLineshapeFile(""),
-            m_solarSpectrumFile(""),
-            m_calibrationOption(0)
-        {
-        }
-
-        CString m_initialCalibrationFile;
-        CString m_instrumentLineshapeFile;
-        CString m_solarSpectrumFile;
-        int m_calibrationOption;
-    };
 
     // Dialog Data
 #ifdef AFX_DESIGN_TIME
@@ -58,8 +68,6 @@ public:
 
     CListBox m_graphTypeList; // Selecting the type of plot
 
-    CStatic m_wavelengthCalibrationLabel;
-
     CListBox m_detailedResultList; // detailed presentation of the results
 
     afx_msg void OnClickedButtonBrowseSpectrum();
@@ -69,6 +77,7 @@ public:
     afx_msg void OnClickedButtonSave();
     afx_msg void OnSelchangeListGraphType();
     afx_msg void OnButtonSelectInitialCalibration();
+    afx_msg void OnBnClickedSetupWavelengthCaliBration();
 
     afx_msg LRESULT OnCalibrationDone(WPARAM wParam, LPARAM lParam);
 
