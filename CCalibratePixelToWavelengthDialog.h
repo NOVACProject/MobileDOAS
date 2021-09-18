@@ -71,12 +71,10 @@ public:
     CListBox m_detailedResultList; // detailed presentation of the results
 
     afx_msg void OnClickedButtonBrowseSpectrum();
-    afx_msg void OnClickedButtonBrowseSolarSpectrum();
     afx_msg void OnClickedButtonRun();
     afx_msg void OnClickedButtonBrowseSpectrumDark();
     afx_msg void OnClickedButtonSave();
     afx_msg void OnSelchangeListGraphType();
-    afx_msg void OnButtonSelectInitialCalibration();
     afx_msg void OnBnClickedSetupWavelengthCaliBration();
 
     afx_msg LRESULT OnCalibrationDone(WPARAM wParam, LPARAM lParam);

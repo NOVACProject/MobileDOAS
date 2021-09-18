@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "CCalibratePixelToWavelengthSetupDialog.h"
 #include "CCalibratePixelToWavelengthDialog.h"
+#include "OpenInstrumentCalibrationDialog.h"
 #include "Common.h"
 #include "afxdialogex.h"
 #include "resource.h"
@@ -49,6 +50,10 @@ void CCalibratePixelToWavelengthSetupDialog::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CCalibratePixelToWavelengthSetupDialog, CDialog)
     ON_BN_CLICKED(IDC_RADIO_INSTRUMENT_LINE_SHAPE_FIT_NOTHING, &CCalibratePixelToWavelengthSetupDialog::OnBnClickedRadioInstrumentLineShapeFitOption)
     ON_BN_CLICKED(IDC_RADIO_INSTRUMENT_LINE_SHAPE_FIT_SUPER_GAUSS, &CCalibratePixelToWavelengthSetupDialog::OnBnClickedRadioInstrumentLineShapeFitOption)
+
+    ON_BN_CLICKED(IDC_BUTTON_BROWSE_SOLAR_SPECTRUM_SETTING, &CCalibratePixelToWavelengthSetupDialog::OnClickedButtonBrowseSolarSpectrum)
+    ON_BN_CLICKED(IDC_BUTTON_SELECT_INITIAL_CALIBRATION_SETTING, &CCalibratePixelToWavelengthSetupDialog::OnButtonSelectInitialCalibration)
+
     ON_BN_CLICKED(IDOK, &CCalibratePixelToWavelengthSetupDialog::OnBnClickedOk)
 END_MESSAGE_MAP()
 
@@ -62,6 +67,33 @@ void CCalibratePixelToWavelengthSetupDialog::OnBnClickedRadioInstrumentLineShape
     m_fitRegionEditLow.EnableWindow(enableRegion);
     m_fitRegionEditHigh.EnableWindow(enableRegion);
 }
+
+void CCalibratePixelToWavelengthSetupDialog::OnButtonSelectInitialCalibration()
+{
+    OpenInstrumentCalibrationDialog dlg;
+    dlg.m_state.initialCalibrationFile = this->m_setup->m_initialCalibrationFile;
+    dlg.m_state.instrumentLineshapeFile = this->m_setup->m_instrumentLineshapeFile;
+    dlg.m_state.calibrationOption = (InstrumentCalibrationInputOption)this->m_setup->m_calibrationOption;
+
+    if (IDOK == dlg.DoModal())
+    {
+        this->m_setup->m_initialCalibrationFile = dlg.m_state.initialCalibrationFile;
+        this->m_setup->m_instrumentLineshapeFile = dlg.m_state.instrumentLineshapeFile;
+        this->m_setup->m_calibrationOption = (int)dlg.m_state.calibrationOption;
+
+        UpdateData(FALSE);
+    }
+}
+
+void CCalibratePixelToWavelengthSetupDialog::OnClickedButtonBrowseSolarSpectrum()
+{
+    if (!Common::BrowseForFile("Spectrum Files\0*.std;*.txt;*.xs\0", this->m_setup->m_solarSpectrumFile))
+    {
+        return;
+    }
+    UpdateData(FALSE);
+}
+
 
 void CCalibratePixelToWavelengthSetupDialog::OnBnClickedOk()
 {

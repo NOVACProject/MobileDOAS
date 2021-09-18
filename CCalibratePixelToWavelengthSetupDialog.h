@@ -34,5 +34,9 @@ public:
 
     CEdit m_fitRegionEditLow;
     CEdit m_fitRegionEditHigh;
+
     afx_msg void OnBnClickedOk();
+    afx_msg void OnClickedButtonBrowseSolarSpectrum();
+    afx_msg void OnButtonSelectInitialCalibration();
+
 };

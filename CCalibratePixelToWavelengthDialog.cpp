@@ -7,7 +7,6 @@
 #include "resource.h"
 #include "Common.h"
 #include "Calibration/WavelengthCalibrationController.h"
-#include "OpenInstrumentCalibrationDialog.h"
 #include "CCalibratePixelToWavelengthSetupDialog.h"
 #include <fstream>
 #include <SpectralEvaluation/File/File.h>
@@ -84,13 +83,11 @@ void CCalibratePixelToWavelengthDialog::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CCalibratePixelToWavelengthDialog, CPropertyPage)
     ON_BN_CLICKED(IDC_BUTTON_BROWSE_SPECTRUM, &CCalibratePixelToWavelengthDialog::OnClickedButtonBrowseSpectrum)
     ON_BN_CLICKED(IDC_BUTTON_BROWSE_SPECTRUM_DARK2, &CCalibratePixelToWavelengthDialog::OnClickedButtonBrowseSpectrumDark)
-    ON_BN_CLICKED(IDC_BUTTON_BROWSE_SOLAR_SPECTRUM, &CCalibratePixelToWavelengthDialog::OnClickedButtonBrowseSolarSpectrum)
     ON_BN_CLICKED(IDC_BUTTON_RUN, &CCalibratePixelToWavelengthDialog::OnClickedButtonRun)
     ON_BN_CLICKED(IDC_BUTTON_SAVE, &CCalibratePixelToWavelengthDialog::OnClickedButtonSave)
 
     ON_MESSAGE(WM_DONE, OnCalibrationDone)
     ON_LBN_SELCHANGE(IDC_LIST_GRAPH_TYPE, &CCalibratePixelToWavelengthDialog::OnSelchangeListGraphType)
-    ON_BN_CLICKED(IDC_BUTTON_SELECT_INITIAL_CALIBRATION, &CCalibratePixelToWavelengthDialog::OnButtonSelectInitialCalibration)
     ON_BN_CLICKED(IDC_BUTTON_SETUP_WAVELENGTH_CALIBRATION, &CCalibratePixelToWavelengthDialog::OnBnClickedSetupWavelengthCaliBration)
 END_MESSAGE_MAP()
 
@@ -212,15 +209,6 @@ void CCalibratePixelToWavelengthDialog::LoadLastSetup()
 void CCalibratePixelToWavelengthDialog::OnClickedButtonBrowseSpectrum()
 {
     if (!Common::BrowseForFile("Spectrum Files\0*.std;*.txt\0", this->m_inputSpectrumFile))
-    {
-        return;
-    }
-    UpdateData(FALSE);
-}
-
-void CCalibratePixelToWavelengthDialog::OnClickedButtonBrowseSolarSpectrum()
-{
-    if (!Common::BrowseForFile("Spectrum Files\0*.std;*.txt;*.xs\0", this->m_setup.m_solarSpectrumFile))
     {
         return;
     }
@@ -626,23 +614,6 @@ void CCalibratePixelToWavelengthDialog::OnClickedButtonSave()
     catch (std::exception& e)
     {
         MessageBox(e.what(), "Failed to save pixel to wavelength mapping to file", MB_OK);
-    }
-}
-
-void CCalibratePixelToWavelengthDialog::OnButtonSelectInitialCalibration()
-{
-    OpenInstrumentCalibrationDialog dlg;
-    dlg.m_state.initialCalibrationFile = this->m_setup.m_initialCalibrationFile;
-    dlg.m_state.instrumentLineshapeFile = this->m_setup.m_instrumentLineshapeFile;
-    dlg.m_state.calibrationOption = (InstrumentCalibrationInputOption)this->m_setup.m_calibrationOption;
-
-    if (IDOK == dlg.DoModal())
-    {
-        this->m_setup.m_initialCalibrationFile = dlg.m_state.initialCalibrationFile;
-        this->m_setup.m_instrumentLineshapeFile = dlg.m_state.instrumentLineshapeFile;
-        this->m_setup.m_calibrationOption = (int)dlg.m_state.calibrationOption;
-
-        UpdateData(FALSE);
     }
 }
 

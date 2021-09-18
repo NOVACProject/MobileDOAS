@@ -872,7 +872,7 @@
       <Filter>Header Files\Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="CCalibratePixelToWavelengthSetupDialog.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Dialogs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
