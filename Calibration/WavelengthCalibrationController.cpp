@@ -12,6 +12,7 @@
 #include <SpectralEvaluation/Calibration/InstrumentLineShapeEstimation.h>
 #include <SpectralEvaluation/Calibration/FraunhoferSpectrumGeneration.h>
 #include <SpectralEvaluation/Interpolation.h>
+#include <SpectralEvaluation/VectorUtils.h>
 
 // TODO: It should be possible to remove this header...
 #include <SpectralEvaluation/Calibration/WavelengthCalibrationByRansac.h>
@@ -32,11 +33,7 @@ WavelengthCalibrationController::~WavelengthCalibrationController()
         delete m_measuredInstrumentLineShape;
         m_measuredInstrumentLineShape = nullptr;
     }
-    if (m_resultingInstrumentLineShape != nullptr)
-    {
-        delete m_resultingInstrumentLineShape;
-        m_resultingInstrumentLineShape = nullptr;
-    }
+    this->DeleteSavedInstrumentLineShape();
 }
 
 /// <summary>
@@ -123,6 +120,13 @@ void WavelengthCalibrationController::RunCalibration()
             this->m_measuredInstrumentLineShape = new novac::CCrossSectionData(settings.initialInstrumentLineShape);
         }
     }
+
+    // Normalize the initial instrument line shape
+    if (this->m_measuredInstrumentLineShape != nullptr)
+    {
+        Normalize(m_measuredInstrumentLineShape->m_crossSection);
+    }
+
     if (this->m_instrumentLineShapeFitOption == WavelengthCalibrationController::InstrumentLineShapeFitOption::SuperGaussian)
     {
         if (this->m_instrumentLineShapeFitRegion.first > this->m_instrumentLineShapeFitRegion.second)
@@ -155,6 +159,9 @@ void WavelengthCalibrationController::RunCalibration()
         settings.estimateInstrumentLineShape = novac::InstrumentLineshapeEstimationOption::None;
     }
 
+    // Clear the previous result
+    this->DeleteSavedInstrumentLineShape();
+
 
     // So far no cross sections provided...
 
@@ -167,10 +174,26 @@ void WavelengthCalibrationController::RunCalibration()
     if (result.estimatedInstrumentLineShape.GetSize() > 0)
     {
         this->m_resultingInstrumentLineShape = new novac::CCrossSectionData(result.estimatedInstrumentLineShape);
+        this->m_instrumentLineShapeEstimationPixelRange = result.estimatedInstrumentLineShapePixelRange;
     }
     if (result.estimatedInstrumentLineShapeParameters != nullptr)
     {
         this->m_instrumentLineShapeParameterDescriptions = GetFunctionDescription(&(*result.estimatedInstrumentLineShapeParameters));
+
+        novac::SuperGaussianLineShape* superGaussian = dynamic_cast<novac::SuperGaussianLineShape*>(result.estimatedInstrumentLineShapeParameters.get());
+        if (superGaussian != nullptr)
+        {
+            this->m_instrumentLineShapeParameter = new novac::SuperGaussianLineShape(*superGaussian);
+        }
+        else
+        {
+            novac::GaussianLineShape* regularGaussian = dynamic_cast<novac::GaussianLineShape*>(result.estimatedInstrumentLineShapeParameters.get());
+            if (regularGaussian != nullptr)
+            {
+                this->m_instrumentLineShapeParameter = new novac::GaussianLineShape(*regularGaussian);
+            }
+        }
+
     }
 
     // Also copy out some debug information, which makes it possible for the user to inspect the calibration
@@ -225,17 +248,49 @@ std::pair<std::string, std::string> FormatProperty(const char* name, double valu
 
 void WavelengthCalibrationController::SaveResultAsStd(const std::string& filename)
 {
-    // Get the peak itself
-    size_t startIdx = 0; // TODO: Set this value to something more reasonable
+    novac::CSTDFile::ExtendedFormatInformation extendedFileInfo;
+
+    // If we have fitted an instrument line shape then save the result of that.
+    size_t instrumentLineShapeSpectrumStartIdx = 0; // The pixel where the instrument line shape should start
+    if (this->m_resultingInstrumentLineShape != nullptr)
+    {
+        const size_t regionCenter = (this->m_instrumentLineShapeEstimationPixelRange.first + this->m_instrumentLineShapeEstimationPixelRange.second) / 2;
+
+        if (regionCenter <= m_resultingInstrumentLineShape->GetSize() / 2)
+        {
+            instrumentLineShapeSpectrumStartIdx = 0;
+        }
+        else if (regionCenter >= m_resultingPixelToWavelengthMapping.size() - m_resultingInstrumentLineShape->GetSize())
+        {
+            instrumentLineShapeSpectrumStartIdx = m_resultingPixelToWavelengthMapping.size() - m_resultingInstrumentLineShape->GetSize();
+        }
+        else
+        {
+            instrumentLineShapeSpectrumStartIdx = regionCenter - m_resultingInstrumentLineShape->GetSize() / 2;
+        }
+        extendedFileInfo.MinChannel = static_cast<int>(instrumentLineShapeSpectrumStartIdx);
+        extendedFileInfo.MaxChannel = static_cast<int>(instrumentLineShapeSpectrumStartIdx + m_resultingInstrumentLineShape->GetSize());
+        extendedFileInfo.MathLow = extendedFileInfo.MinChannel;
+        extendedFileInfo.MathHigh = extendedFileInfo.MaxChannel;
+        novac::LinearInterpolation(m_resultingPixelToWavelengthMapping, 0.5 * m_resultingInstrumentLineShape->GetSize(), extendedFileInfo.Marker);
+
+        novac::SuperGaussianLineShape* superGaussian = dynamic_cast<novac::SuperGaussianLineShape*>(this->m_instrumentLineShapeParameter);
+        if (superGaussian != nullptr)
+        {
+            extendedFileInfo.additionalProperties.push_back(FormatProperty("SuperGaussFitWidth", superGaussian->w));
+            extendedFileInfo.additionalProperties.push_back(FormatProperty("SuperGaussFitPower", superGaussian->k));
+        }
+    }
+    else
+    {
+        extendedFileInfo.MinChannel = static_cast<int>(instrumentLineShapeSpectrumStartIdx);
+        extendedFileInfo.MaxChannel = static_cast<int>(instrumentLineShapeSpectrumStartIdx + m_measuredInstrumentLineShape->GetSize());
+        extendedFileInfo.MathLow = extendedFileInfo.MinChannel;
+        extendedFileInfo.MathHigh = extendedFileInfo.MaxChannel;
+        novac::LinearInterpolation(m_resultingPixelToWavelengthMapping, 0.5 * m_measuredInstrumentLineShape->GetSize(), extendedFileInfo.Marker);
+    }
 
     // Additional information about the spectrum
-    // TODO: SAVE THE FITTED INSTRUMENT LINE SHAPE INSTEAD!
-    novac::CSTDFile::ExtendedFormatInformation extendedFileInfo;
-    extendedFileInfo.MinChannel = static_cast<int>(startIdx);
-    extendedFileInfo.MaxChannel = static_cast<int>(startIdx + m_measuredInstrumentLineShape->GetSize());
-    extendedFileInfo.MathLow = extendedFileInfo.MinChannel;
-    extendedFileInfo.MathHigh = extendedFileInfo.MaxChannel;
-    novac::LinearInterpolation(m_resultingPixelToWavelengthMapping, 0.5 * m_measuredInstrumentLineShape->GetSize(), extendedFileInfo.Marker);
     extendedFileInfo.calibrationPolynomial = this->m_resultingPixelToWavelengthMappingCoefficients;
 
     // Create the spectrum to save from the instrument line-shape + the 
@@ -243,7 +298,7 @@ void WavelengthCalibrationController::SaveResultAsStd(const std::string& filenam
     {
         // Extend the measured spectrum line shape into a full spectrum
         std::vector<double> extendedPeak(m_resultingPixelToWavelengthMapping.size(), 0.0);
-        std::copy(m_measuredInstrumentLineShape->m_crossSection.data(), m_measuredInstrumentLineShape->m_crossSection.data() + m_measuredInstrumentLineShape->GetSize(), extendedPeak.begin() + startIdx);
+        std::copy(m_measuredInstrumentLineShape->m_crossSection.data(), m_measuredInstrumentLineShape->m_crossSection.data() + m_measuredInstrumentLineShape->GetSize(), extendedPeak.begin() + instrumentLineShapeSpectrumStartIdx);
 
         spectrumToSave = std::make_unique<novac::CSpectrum>(m_resultingPixelToWavelengthMapping, extendedPeak);
     }
@@ -261,4 +316,18 @@ void WavelengthCalibrationController::SaveResultAsClb(const std::string& filenam
 void WavelengthCalibrationController::SaveResultAsSlf(const std::string& filename)
 {
     novac::SaveCrossSectionFile(filename, *m_measuredInstrumentLineShape);
+}
+
+void WavelengthCalibrationController::DeleteSavedInstrumentLineShape()
+{
+    if (m_resultingInstrumentLineShape != nullptr)
+    {
+        delete m_resultingInstrumentLineShape;
+        m_resultingInstrumentLineShape = nullptr;
+    }
+    if (m_instrumentLineShapeParameter != nullptr)
+    {
+        delete m_instrumentLineShapeParameter;
+        m_instrumentLineShapeParameter = nullptr;
+    }
 }

@@ -6,6 +6,7 @@
 namespace novac
 {
 class CCrossSectionData;
+class ParametricInstrumentLineShape;
 }
 
 class WavelengthCalibrationController
@@ -75,14 +76,24 @@ public:
     novac::CCrossSectionData* m_measuredInstrumentLineShape = nullptr;
 
     /// <summary>
-    /// If we have fitted an instrument line shape to the measured spectrum then the result is saved here
+    /// If we have fitted an instrument line shape to the measured spectrum then the sampled result is saved here
     /// </summary>
     novac::CCrossSectionData* m_resultingInstrumentLineShape = nullptr;
+
+    /// <summary>
+    /// If we have fitted an instrument line shape to the measured spectrum then the estimated parameters are saved here.
+    /// </summary>
+    novac::ParametricInstrumentLineShape* m_instrumentLineShapeParameter = nullptr;
 
     /// <summary>
     /// User friendly description of the fitted parameters for the instrument line shape function.
     /// </summary>
     std::vector<std::pair<std::string, std::string>> m_instrumentLineShapeParameterDescriptions;
+
+    /// <summary>
+    /// The range of pixels over which the m_resultingInstrumentLineShape was estimatd (only set if it was estimated).
+    /// </summary>
+    std::pair<size_t, size_t> m_instrumentLineShapeEstimationPixelRange;
 
     /// <summary>
     /// If the calibration fails, for some reason, then this message should be set to indicate why.
@@ -151,4 +162,7 @@ public:
     /// Saves the resulting instrument line shape information as a .slf file.
     /// </summary>
     void SaveResultAsSlf(const std::string& filename);
+
+private:
+    void DeleteSavedInstrumentLineShape();
 };
