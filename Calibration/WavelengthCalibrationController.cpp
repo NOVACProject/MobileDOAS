@@ -2,20 +2,16 @@
 
 #undef max
 #undef min
-#include <filesystem>
+
 #include <sstream>
 #include "WavelengthCalibrationController.h"
+#include <SpectralEvaluation/VectorUtils.h>
 #include <SpectralEvaluation/Spectra/Spectrum.h>
 #include <SpectralEvaluation/File/File.h>
-#include <SpectralEvaluation/File/STDFile.h>
 #include <SpectralEvaluation/Calibration/InstrumentCalibration.h>
 #include <SpectralEvaluation/Calibration/WavelengthCalibration.h>
 #include <SpectralEvaluation/Calibration/InstrumentLineShapeEstimation.h>
 #include <SpectralEvaluation/Calibration/FraunhoferSpectrumGeneration.h>
-#include <SpectralEvaluation/Interpolation.h>
-#include <SpectralEvaluation/VectorUtils.h>
-
-// TODO: It should be possible to remove this header...
 #include <SpectralEvaluation/Calibration/WavelengthCalibrationByRansac.h>
 
 // From InstrumentLineShapeCalibrationController...
@@ -159,29 +155,13 @@ void WavelengthCalibrationController::RunCalibration()
     {
         this->m_resultingCalibration->instrumentLineShape = result.estimatedInstrumentLineShape.m_crossSection;
         this->m_resultingCalibration->instrumentLineShapeGrid = result.estimatedInstrumentLineShape.m_waveLength;
-        this->m_resultingCalibration->instrumentLineShapeCenter = 0.5 * (this->m_instrumentLineShapeEstimationWavelengthRange.first + this->m_instrumentLineShapeEstimationWavelengthRange.second);
-
-        this->m_instrumentLineShapeEstimationWavelengthRange = settings.estimateInstrumentLineShapeWavelengthRegion;
+        this->m_resultingCalibration->instrumentLineShapeCenter = 0.5 * (this->m_instrumentLineShapeFitRegion.first + this->m_instrumentLineShapeFitRegion.second);
     }
 
     if (result.estimatedInstrumentLineShapeParameters != nullptr)
     {
         this->m_instrumentLineShapeParameterDescriptions = GetFunctionDescription(&(*result.estimatedInstrumentLineShapeParameters));
-
-        novac::SuperGaussianLineShape* superGaussian = dynamic_cast<novac::SuperGaussianLineShape*>(result.estimatedInstrumentLineShapeParameters.get());
-        if (superGaussian != nullptr)
-        {
-            this->m_resultingCalibration->instrumentLineShapeParameter = new novac::SuperGaussianLineShape(*superGaussian);
-        }
-        else
-        {
-            novac::GaussianLineShape* regularGaussian = dynamic_cast<novac::GaussianLineShape*>(result.estimatedInstrumentLineShapeParameters.get());
-            if (regularGaussian != nullptr)
-            {
-                this->m_resultingCalibration->instrumentLineShapeParameter = new novac::GaussianLineShape(*regularGaussian);
-            }
-        }
-
+        this->m_resultingCalibration->instrumentLineShapeParameter = result.estimatedInstrumentLineShapeParameters->Clone();
     }
 
     // Also copy out some debug information, which makes it possible for the user to inspect the calibration
@@ -230,9 +210,6 @@ void WavelengthCalibrationController::RunCalibration()
         }
     }
 }
-
-
-std::pair<std::string, std::string> FormatProperty(const char* name, double value);
 
 void WavelengthCalibrationController::SaveResultAsStd(const std::string& filename)
 {

@@ -4,6 +4,11 @@
 #include <SpectralEvaluation/Spectra/SpectrumUtils.h>
 #include <SpectralEvaluation/Spectra/Spectrum.h>
 
+namespace novac
+{
+class InstrumentCalibration;
+}
+
 class InstrumentLineshapeCalibrationController
 {
 public:
@@ -45,14 +50,16 @@ public:
     std::vector<novac::SpectrumDataPoint> m_rejectedPeaks;
 
     /// <summary>
+    /// This is our best estimate of the instrument calibration.
+    /// The pixel-to-wavelength mapping can either be read from file or by
+    /// performing a pixel-to-wavelength calibration based on the location of found mercury lines.
+    /// </summary>
+    std::unique_ptr<novac::InstrumentCalibration> m_resultingCalibration;
+
+    /// <summary>
     /// Output: The read in mercury spectrum data
     /// </summary>
     std::vector<double> m_inputSpectrum;
-
-    /// <summary>
-    /// Output: The read in mercury spectrum wavlengths
-    /// </summary>
-    std::vector<double> m_inputSpectrumWavelength;
 
     /// <summary>
     /// Output: This is set to true (when reading the input spectrum) 
@@ -67,16 +74,6 @@ public:
     /// and the wavelength calibration succeeded.
     /// </summary>
     bool m_wavelengthCalibrationSucceeded = false;
-
-    /// <summary>
-    /// Output: The fitted line shape function.
-    /// </summary>
-    std::pair<LineShapeFunction, void*> m_fittedLineShape;
-
-    /// <summary>
-    /// Output: The fitted line shape function sampled over the selected peak.
-    /// </summary>
-    std::unique_ptr<novac::CSpectrum> m_sampledLineShapeFunction;
 
     /// <summary>
     /// Locates peaks in the spectrum.
@@ -94,14 +91,7 @@ public:
     /// Extracts the peak with the provided index from the read in spectrum file.
     /// The peak will be normalized and have its baseline subtracted.
     /// </summary>
-    std::unique_ptr<novac::CSpectrum> GetMercuryPeak(size_t peakIdx, double* baseline = nullptr, size_t* startIdx = nullptr) const;
-
-    /// <summary>
-    /// Extracts the instrument line shape based on the peak with the provided index.
-    /// If a line shape function has been fitted then this will be sampled and returned (needs a prior call to FitFunctionToLineShape),
-    /// otherwise the spectrum itself will be returned.
-    /// </summary>
-    std::unique_ptr<novac::CSpectrum> GetInstrumentLineShape(size_t peakIdx) const;
+    std::unique_ptr<novac::CSpectrum> ExtractSelectedMercuryPeak(size_t peakIdx, double* baseline = nullptr, size_t* startIdx = nullptr) const;
 
     /// <summary>
     /// Returns a textual summary of parameters / properties of the last fitted function
@@ -139,12 +129,5 @@ private:
     /// The meta-data regarding the last read in mercury spectrum.
     /// </summary>
     novac::CSpectrumInfo m_inputspectrumInformation;
-
-    /// <summary>
-    /// Output: This is set if the wavelength calibration succeeded and will then
-    /// contain the coefficients of the calibration. Empty if wavelength is read from file or
-    /// the wavelength calibration failed.
-    /// </summary>
-    std::vector<double> m_wavelengthCalibrationCoefficients;
 
 };

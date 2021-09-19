@@ -5,8 +5,6 @@
 
 namespace novac
 {
-class CCrossSectionData;
-class ParametricInstrumentLineShape;
 class InstrumentCalibration;
 }
 
@@ -77,11 +75,6 @@ public:
     /// User friendly description of the fitted parameters for the instrument line shape function.
     /// </summary>
     std::vector<std::pair<std::string, std::string>> m_instrumentLineShapeParameterDescriptions;
-
-    /// <summary>
-    /// The range of wavelengths over which the m_resultingInstrumentLineShape was estimated (only set if it was estimated).
-    /// </summary>
-    std::pair<double, double> m_instrumentLineShapeEstimationWavelengthRange;
 
     /// <summary>
     /// If the calibration fails, for some reason, then this message should be set to indicate why.

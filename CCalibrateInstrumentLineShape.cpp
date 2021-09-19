@@ -8,6 +8,7 @@
 #include "Common.h"
 #include "Calibration/InstrumentLineshapeCalibrationController.h"
 #include <SpectralEvaluation/File/File.h>
+#include <SpectralEvaluation/Calibration/InstrumentCalibration.h>
 #include <algorithm>
 #include <sstream>
 
@@ -237,9 +238,9 @@ void CCalibrateInstrumentLineShape::OnLbnSelchangeFoundPeak()
         const double leftWidth = selectedPeak.pixel - selectedPeak.leftPixel;
         const double rightWidth = selectedPeak.rightPixel - selectedPeak.pixel;
         const int firstPixel = std::max(static_cast<int>(selectedPeak.pixel - 3 * leftWidth), 0);
-        const int lastPixel = std::min(static_cast<int>(selectedPeak.pixel + 3 * rightWidth), static_cast<int>(this->m_controller->m_inputSpectrumWavelength.size()) - 1);
-        const double lambdaMin = this->m_controller->m_inputSpectrumWavelength[firstPixel];
-        const double lambdaMax = this->m_controller->m_inputSpectrumWavelength[lastPixel];
+        const int lastPixel = std::min(static_cast<int>(selectedPeak.pixel + 3 * rightWidth), static_cast<int>(this->m_controller->m_resultingCalibration->pixelToWavelengthMapping.size()) - 1);
+        const double lambdaMin = this->m_controller->m_resultingCalibration->pixelToWavelengthMapping[firstPixel];
+        const double lambdaMax = this->m_controller->m_resultingCalibration->pixelToWavelengthMapping[lastPixel];
 
         m_spectrumPlot.SetRangeX(lambdaMin, lambdaMax, 1, false);
         m_spectrumPlot.SetRangeY(
@@ -253,8 +254,8 @@ void CCalibrateInstrumentLineShape::OnLbnSelchangeFoundPeak()
     {
         // zoom out to show the entire graph
         m_spectrumPlot.SetRangeX(
-            this->m_controller->m_inputSpectrumWavelength.front(),
-            this->m_controller->m_inputSpectrumWavelength.back(),
+            this->m_controller->m_resultingCalibration->pixelToWavelengthMapping.front(),
+            this->m_controller->m_resultingCalibration->pixelToWavelengthMapping.back(),
             0,
             false);
         m_spectrumPlot.SetRangeY(
@@ -280,10 +281,18 @@ void CCalibrateInstrumentLineShape::UpdateGraph(bool reset)
     {
         int plotOption = (reset) ? Graph::CGraphCtrl::PLOT_CONNECTED : Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED;
         m_spectrumPlot.SetPlotColor(RGB(255, 0, 0));
-        m_spectrumPlot.XYPlot(m_controller->m_inputSpectrumWavelength.data(), m_controller->m_inputSpectrum.data(), static_cast<int>(m_controller->m_inputSpectrum.size()), plotOption);
+        m_spectrumPlot.XYPlot(
+            m_controller->m_resultingCalibration->pixelToWavelengthMapping.data(),
+            m_controller->m_inputSpectrum.data(),
+            static_cast<int>(m_controller->m_inputSpectrum.size()),
+            plotOption);
 
         m_minimapPlot.SetPlotColor(RGB(255, 0, 0));
-        m_minimapPlot.XYPlot(m_controller->m_inputSpectrumWavelength.data(), m_controller->m_inputSpectrum.data(), static_cast<int>(m_controller->m_inputSpectrum.size()), plotOption);
+        m_minimapPlot.XYPlot(
+            m_controller->m_resultingCalibration->pixelToWavelengthMapping.data(),
+            m_controller->m_inputSpectrum.data(),
+            static_cast<int>(m_controller->m_inputSpectrum.size()),
+            plotOption);
     }
 
     /* Draw the rejects */
@@ -323,13 +332,13 @@ void CCalibrateInstrumentLineShape::UpdateGraph(bool reset)
     }
 
     /* Draw the fitted line shape (if any) */
-    if (m_controller->m_sampledLineShapeFunction != nullptr)
+    if (m_controller->m_resultingCalibration->instrumentLineShape.size() > 0)
     {
         m_spectrumPlot.SetPlotColor(RGB(0, 255, 0));
         m_spectrumPlot.XYPlot(
-            m_controller->m_sampledLineShapeFunction->m_wavelength.data(),
-            m_controller->m_sampledLineShapeFunction->m_data,
-            m_controller->m_sampledLineShapeFunction->m_length,
+            m_controller->m_resultingCalibration->instrumentLineShapeGrid.data(),
+            m_controller->m_resultingCalibration->instrumentLineShape.data(),
+            static_cast<long>(m_controller->m_resultingCalibration->instrumentLineShape.size()),
             Graph::CGraphCtrl::PLOT_CONNECTED | Graph::CGraphCtrl::PLOT_FIXED_AXIS);
     }
 
