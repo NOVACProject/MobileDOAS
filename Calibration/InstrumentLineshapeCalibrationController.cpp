@@ -291,6 +291,8 @@ void InstrumentLineshapeCalibrationController::SaveResultAsStd(size_t peakIdx, c
         throw std::invalid_argument("Invalid index of mercury peak, please select a peak and try again");
     }
 
+    // TODO: migrate to using the new Read/Write calibration functionality
+
     // Get the peak itself
     const novac::SpectrumDataPoint& selectedPeak = this->m_peaksFound[peakIdx];
     double ignoredBaseline = 0.0;

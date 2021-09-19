@@ -11,6 +11,7 @@
 #include <fstream>
 #include <SpectralEvaluation/File/File.h>
 #include <SpectralEvaluation/Evaluation/CrossSectionData.h>
+#include <SpectralEvaluation/Calibration/InstrumentCalibration.h>
 
 // CCalibratePixelToWavelengthDialog dialog
 
@@ -252,16 +253,21 @@ void CCalibratePixelToWavelengthDialog::UpdateGraph()
 void CCalibratePixelToWavelengthDialog::UpdateResultList()
 {
     this->m_detailedResultList.ResetContent(); // clears the list
+    if (this->m_controller->m_resultingCalibration == nullptr)
+    {
+        return;
+    }
+
 
     CString text;
 
     // The polynomial coefficients.
-    text.Format("Wavelength polynomial order: %d", m_controller->m_resultingPixelToWavelengthMappingCoefficients.size() - 1);
+    text.Format("Wavelength polynomial order: %d", m_controller->m_resultingCalibration->pixelToWavelengthPolynomial.size() - 1);
     m_detailedResultList.AddString(text);
 
-    for (size_t coefficientIdx = 0; coefficientIdx < m_controller->m_resultingPixelToWavelengthMappingCoefficients.size(); ++coefficientIdx)
+    for (size_t coefficientIdx = 0; coefficientIdx < m_controller->m_resultingCalibration->pixelToWavelengthPolynomial.size(); ++coefficientIdx)
     {
-        text.Format("c%d: %.4g", coefficientIdx, m_controller->m_resultingPixelToWavelengthMappingCoefficients[coefficientIdx]);
+        text.Format("c%d: %.4g", coefficientIdx, m_controller->m_resultingCalibration->pixelToWavelengthPolynomial[coefficientIdx]);
         m_detailedResultList.AddString(text);
     }
 
@@ -293,11 +299,14 @@ void CCalibratePixelToWavelengthDialog::DrawPolynomialAndInliers()
         Graph::CGraphCtrl::PLOT_CONNECTED);
 
     // the calibration polynomial
-    this->m_graph.SetPlotColor(RGB(255, 0, 0));
-    this->m_graph.Plot(
-        m_controller->m_resultingPixelToWavelengthMapping.data(),
-        static_cast<int>(m_controller->m_resultingPixelToWavelengthMapping.size()),
-        Graph::CGraphCtrl::PLOT_CONNECTED | Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+    if (m_controller->m_resultingCalibration != nullptr)
+    {
+        this->m_graph.SetPlotColor(RGB(255, 0, 0));
+        this->m_graph.Plot(
+            m_controller->m_resultingCalibration->pixelToWavelengthMapping.data(),
+            static_cast<int>(m_controller->m_resultingCalibration->pixelToWavelengthMapping.size()),
+            Graph::CGraphCtrl::PLOT_CONNECTED | Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+    }
 
     // outliers
     this->m_graph.SetCircleColor(RGB(128, 128, 128));
@@ -355,24 +364,24 @@ void CCalibratePixelToWavelengthDialog::DrawFittedInstrumentLineShape()
     m_graph.SetYUnits("");
 
     // The initial instrument line shape
-    if (this->m_controller->m_measuredInstrumentLineShape != nullptr)
+    if (m_controller->m_initialCalibration != nullptr)
     {
         this->m_graph.SetPlotColor(RGB(255, 0, 0));
         this->m_graph.XYPlot(
-            this->m_controller->m_measuredInstrumentLineShape->m_waveLength.data(),
-            this->m_controller->m_measuredInstrumentLineShape->m_crossSection.data(),
-            static_cast<int>(this->m_controller->m_measuredInstrumentLineShape->GetSize()),
+            m_controller->m_initialCalibration->instrumentLineShapeGrid.data(),
+            m_controller->m_initialCalibration->instrumentLineShape.data(),
+            static_cast<int>(m_controller->m_initialCalibration->instrumentLineShape.size()),
             Graph::CGraphCtrl::PLOT_CONNECTED);
     }
 
     // The fitted instrument line shape
-    if (this->m_controller->m_resultingInstrumentLineShape != nullptr)
+    if (m_controller->m_resultingCalibration != nullptr)
     {
         this->m_graph.SetPlotColor(RGB(0, 255, 0));
         this->m_graph.XYPlot(
-            this->m_controller->m_resultingInstrumentLineShape->m_waveLength.data(),
-            this->m_controller->m_resultingInstrumentLineShape->m_crossSection.data(),
-            static_cast<int>(this->m_controller->m_resultingInstrumentLineShape->GetSize()),
+            m_controller->m_resultingCalibration->instrumentLineShapeGrid.data(),
+            m_controller->m_resultingCalibration->instrumentLineShape.data(),
+            static_cast<int>(m_controller->m_resultingCalibration->instrumentLineShape.size()),
             Graph::CGraphCtrl::PLOT_CONNECTED | Graph::CGraphCtrl::PLOT_FIXED_AXIS);
     }
 }
@@ -387,7 +396,7 @@ void CCalibratePixelToWavelengthDialog::DrawFraunhoferSpectrumAndKeypoints()
     // the Fraunhofer spectrum
     this->m_graph.SetPlotColor(RGB(0, 255, 0));
     this->m_graph.XYPlot(
-        m_controller->m_resultingPixelToWavelengthMapping.data(),
+        m_controller->m_resultingCalibration->pixelToWavelengthMapping.data(),
         m_controller->m_calibrationDebug.fraunhoferSpectrum.data(),
         static_cast<int>(m_controller->m_calibrationDebug.fraunhoferSpectrum.size()),
         Graph::CGraphCtrl::PLOT_CONNECTED);
@@ -420,8 +429,8 @@ void CCalibratePixelToWavelengthDialog::DrawSpectraAndInliers()
     // the calibration polynomial
     this->m_graph.SetPlotColor(RGB(255, 0, 0));
     this->m_graph.Plot(
-        m_controller->m_resultingPixelToWavelengthMapping.data(),
-        static_cast<int>(m_controller->m_resultingPixelToWavelengthMapping.size()),
+        m_controller->m_resultingCalibration->pixelToWavelengthMapping.data(),
+        static_cast<int>(m_controller->m_resultingCalibration->pixelToWavelengthMapping.size()),
         Graph::CGraphCtrl::PLOT_CONNECTED);
 
     // inliers
@@ -586,9 +595,9 @@ void CCalibratePixelToWavelengthDialog::OnClickedButtonSave()
 {
     try
     {
-        if (m_controller->m_measuredInstrumentLineShape == nullptr)
+        if (m_controller->m_resultingCalibration == nullptr)
         {
-            throw std::exception("Cannot find the instrument line shape");
+            throw std::exception("Cannot find the fitted result");
         }
 
         // Save the instrument line shape and the pixel-to-wavelength calibration to file

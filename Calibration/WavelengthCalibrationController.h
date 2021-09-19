@@ -7,6 +7,7 @@ namespace novac
 {
 class CCrossSectionData;
 class ParametricInstrumentLineShape;
+class InstrumentCalibration;
 }
 
 class WavelengthCalibrationController
@@ -61,29 +62,16 @@ public:
     std::pair<double, double> m_instrumentLineShapeFitRegion;
 
     /// <summary>
-    /// Output: the final estimate for the pixel to wavelength mapping.
+    /// This is the initial calibration, used as a starting point for the calibration routine.
+    /// Must be set before calling RunCalibration().
     /// </summary>
-    std::vector<double> m_resultingPixelToWavelengthMapping;
+    std::unique_ptr<novac::InstrumentCalibration> m_initialCalibration;
 
     /// <summary>
-    /// Output: the coefficients of the pixel-to-wavelength mapping polynomial
+    /// This is the result of the wavelength calibration.
+    /// Can only be set after calling RunCalibration().
     /// </summary>
-    std::vector<double> m_resultingPixelToWavelengthMappingCoefficients;
-
-    /// <summary>
-    /// If we have read the instrument line shape from file then the result is saved here
-    /// </summary>
-    novac::CCrossSectionData* m_measuredInstrumentLineShape = nullptr;
-
-    /// <summary>
-    /// If we have fitted an instrument line shape to the measured spectrum then the sampled result is saved here
-    /// </summary>
-    novac::CCrossSectionData* m_resultingInstrumentLineShape = nullptr;
-
-    /// <summary>
-    /// If we have fitted an instrument line shape to the measured spectrum then the estimated parameters are saved here.
-    /// </summary>
-    novac::ParametricInstrumentLineShape* m_instrumentLineShapeParameter = nullptr;
+    std::unique_ptr<novac::InstrumentCalibration> m_resultingCalibration;
 
     /// <summary>
     /// User friendly description of the fitted parameters for the instrument line shape function.
@@ -91,9 +79,9 @@ public:
     std::vector<std::pair<std::string, std::string>> m_instrumentLineShapeParameterDescriptions;
 
     /// <summary>
-    /// The range of pixels over which the m_resultingInstrumentLineShape was estimatd (only set if it was estimated).
+    /// The range of wavelengths over which the m_resultingInstrumentLineShape was estimated (only set if it was estimated).
     /// </summary>
-    std::pair<size_t, size_t> m_instrumentLineShapeEstimationPixelRange;
+    std::pair<double, double> m_instrumentLineShapeEstimationWavelengthRange;
 
     /// <summary>
     /// If the calibration fails, for some reason, then this message should be set to indicate why.
@@ -163,6 +151,4 @@ public:
     /// </summary>
     void SaveResultAsSlf(const std::string& filename);
 
-private:
-    void DeleteSavedInstrumentLineShape();
 };
