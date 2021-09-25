@@ -8,12 +8,13 @@
 #include <SpectralEvaluation/VectorUtils.h>
 #include <SpectralEvaluation/Spectra/Spectrum.h>
 #include <SpectralEvaluation/File/File.h>
+#include <SpectralEvaluation/Calibration/Correspondence.h>
 #include <SpectralEvaluation/Calibration/InstrumentCalibration.h>
 #include <SpectralEvaluation/Calibration/WavelengthCalibration.h>
 #include <SpectralEvaluation/Calibration/InstrumentLineShapeEstimation.h>
 #include <SpectralEvaluation/Calibration/FraunhoferSpectrumGeneration.h>
 #include <SpectralEvaluation/Calibration/WavelengthCalibrationByRansac.h>
-
+    
 // From InstrumentLineShapeCalibrationController...
 std::vector<std::pair<std::string, std::string>> GetFunctionDescription(const novac::ParametricInstrumentLineShape* lineShapeFunction);
 
