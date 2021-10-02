@@ -12,6 +12,7 @@
 #include <SpectralEvaluation/File/File.h>
 #include <SpectralEvaluation/Evaluation/CrossSectionData.h>
 #include <SpectralEvaluation/Calibration/InstrumentCalibration.h>
+#include <SpectralEvaluation/File/XmlUtil.h>
 
 // CCalibratePixelToWavelengthDialog dialog
 
@@ -122,31 +123,6 @@ void CCalibratePixelToWavelengthDialog::SaveSetup()
     }
 }
 
-CString ParseXmlString(const char* startTag, const char* stopTag, const std::string& line)
-{
-    const size_t firstIdx = line.find(startTag);
-    const size_t start = firstIdx + strlen(startTag);
-    const size_t stop = line.find(stopTag);
-    if (stop > start && firstIdx != line.npos && stop != line.npos)
-    {
-        return CString(line.c_str() + start, static_cast<int>(stop - start));
-    }
-    return CString(); // parse failure, return empty string.
-}
-
-int ParseXmlInteger(const char* startTag, const char* stopTag, const std::string& line)
-{
-    const size_t firstIdx = line.find(startTag);
-    const size_t start = firstIdx + strlen(startTag);
-    const size_t stop = line.find(stopTag);
-    if (stop > start && firstIdx != line.npos && stop != line.npos)
-    {
-        std::string valueStr = line.substr(start, stop - start);
-        return std::atoi(valueStr.c_str());
-    }
-    return 0; // parse failure, return zero
-}
-
 void CCalibratePixelToWavelengthDialog::LoadDefaultSetup()
 {
     Common common;
@@ -172,31 +148,36 @@ void CCalibratePixelToWavelengthDialog::LoadLastSetup()
         {
             if (line.find("SolarSpectrum") != std::string::npos)
             {
-                this->m_setup.m_solarSpectrumFile = ParseXmlString("<SolarSpectrum>", "</SolarSpectrum>", line);
+                auto str = novac::ParseXmlString("SolarSpectrum", line);
+                this->m_setup.m_solarSpectrumFile = CString(str.c_str());
             }
             else if (line.find("InitialCalibrationFile") != std::string::npos)
             {
-                this->m_setup.m_initialCalibrationFile = ParseXmlString("<InitialCalibrationFile>", "</InitialCalibrationFile>", line);
+                auto str = novac::ParseXmlString("InitialCalibrationFile", line);
+                this->m_setup.m_initialCalibrationFile = CString(str.c_str());
             }
             else if (line.find("LineShapeFile") != std::string::npos)
             {
-                this->m_setup.m_instrumentLineshapeFile = ParseXmlString("<LineShapeFile>", "</LineShapeFile>", line);
+                auto str = novac::ParseXmlString("LineShapeFile", line);
+                this->m_setup.m_instrumentLineshapeFile = CString(str.c_str());
             }
             else if (line.find("InputFileType") != std::string::npos)
             {
-                this->m_setup.m_calibrationOption = ParseXmlInteger("<InputFileType>", "</InputFileType>", line);
+                this->m_setup.m_calibrationOption = novac::ParseXmlInteger("InputFileType", line, 0);
             }
             else if (line.find("InstrumentLineShapeFitType") != std::string::npos)
             {
-                this->m_setup.m_fitInstrumentLineShapeOption = ParseXmlInteger("<InstrumentLineShapeFitType>", "</InstrumentLineShapeFitType>", line);
+                this->m_setup.m_fitInstrumentLineShapeOption = novac::ParseXmlInteger("InstrumentLineShapeFitType", line, 0);
             }
             else if (line.find("InstrumentLineShapeFitFrom") != std::string::npos)
             {
-                this->m_setup.m_fitInstrumentLineShapeRegionStart = ParseXmlString("<InstrumentLineShapeFitFrom>", "</InstrumentLineShapeFitFrom>", line);
+                auto str = novac::ParseXmlString("InstrumentLineShapeFitFrom", line);
+                this->m_setup.m_fitInstrumentLineShapeRegionStart = CString(str.c_str());
             }
             else if (line.find("InstrumentLineShapeFitTo") != std::string::npos)
             {
-                this->m_setup.m_fitInstrumentLineShapeRegionStop = ParseXmlString("<InstrumentLineShapeFitTo>", "</InstrumentLineShapeFitTo>", line);
+                auto str = novac::ParseXmlString("InstrumentLineShapeFitTo", line);
+                this->m_setup.m_fitInstrumentLineShapeRegionStop = CString(str.c_str());
             }
         }
     }
