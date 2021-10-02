@@ -39,7 +39,7 @@ void PrepareConvolvedReferenceForHighPassFiltering(const std::unique_ptr<novac::
             ++indexOfFirstValidValue;
         }
 
-        DistributeValue(reference->m_crossSection, reference->m_crossSection[indexOfFirstValidValue], 0, indexOfFirstValidValue);
+        DistributeValue(reference->m_crossSection, reference->m_crossSection[indexOfFirstValidValue + 1], 0, indexOfFirstValidValue + 1);
     }
 
     if (reference->m_waveLength.back() > validWavelengthRange.back())
