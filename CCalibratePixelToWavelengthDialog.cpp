@@ -12,6 +12,7 @@
 #include <SpectralEvaluation/File/File.h>
 #include <SpectralEvaluation/Evaluation/CrossSectionData.h>
 #include <SpectralEvaluation/Calibration/InstrumentCalibration.h>
+#include <SpectralEvaluation/Calibration/StandardCrossSectionSetup.h>
 #include <SpectralEvaluation/File/XmlUtil.h>
 
 // CCalibratePixelToWavelengthDialog dialog
@@ -128,12 +129,15 @@ void CCalibratePixelToWavelengthDialog::LoadDefaultSetup()
     Common common;
     common.GetExePath();
 
-    // See if there is any possible references in the current directory already
-    const auto solarCrossSection = Common::ListFilesInDirectory(common.m_exePath, "SOLAR*.xs");
+    // See if there a Fraunhofer reference in the standard cross section setup.
+    std::string exePath = common.m_exePath;
+    const auto standardCrossSections = new novac::StandardCrossSectionSetup{ exePath };
+
+    const auto solarCrossSection = standardCrossSections->FraunhoferReferenceFileName();
 
     if (solarCrossSection.size() > 0)
     {
-        this->m_setup.m_solarSpectrumFile = CString(solarCrossSection.front().c_str());
+        this->m_setup.m_solarSpectrumFile = CString(solarCrossSection.c_str());
     }
 }
 
@@ -238,7 +242,6 @@ void CCalibratePixelToWavelengthDialog::UpdateResultList()
     {
         return;
     }
-
 
     CString text;
 
@@ -375,12 +378,15 @@ void CCalibratePixelToWavelengthDialog::DrawFraunhoferSpectrumAndKeypoints()
     m_graph.SetYUnits("");
 
     // the Fraunhofer spectrum
-    this->m_graph.SetPlotColor(RGB(0, 255, 0));
-    this->m_graph.XYPlot(
-        m_controller->m_resultingCalibration->pixelToWavelengthMapping.data(),
-        m_controller->m_calibrationDebug.fraunhoferSpectrum.data(),
-        static_cast<int>(m_controller->m_calibrationDebug.fraunhoferSpectrum.size()),
-        Graph::CGraphCtrl::PLOT_CONNECTED);
+    if (m_controller->m_resultingCalibration != nullptr)
+    {
+        this->m_graph.SetPlotColor(RGB(0, 255, 0));
+        this->m_graph.XYPlot(
+            m_controller->m_resultingCalibration->pixelToWavelengthMapping.data(),
+            m_controller->m_calibrationDebug.fraunhoferSpectrum.data(),
+            static_cast<int>(m_controller->m_calibrationDebug.fraunhoferSpectrum.size()),
+            Graph::CGraphCtrl::PLOT_CONNECTED);
+    }
 
     // all the keypoints found
     this->m_graph.SetCircleColor(RGB(128, 128, 128));
@@ -408,11 +414,14 @@ void CCalibratePixelToWavelengthDialog::DrawSpectraAndInliers()
     m_graph.SetSecondRangeY(0, 1, 1, false);
 
     // the calibration polynomial
-    this->m_graph.SetPlotColor(RGB(255, 0, 0));
-    this->m_graph.Plot(
-        m_controller->m_resultingCalibration->pixelToWavelengthMapping.data(),
-        static_cast<int>(m_controller->m_resultingCalibration->pixelToWavelengthMapping.size()),
-        Graph::CGraphCtrl::PLOT_CONNECTED);
+    if (m_controller->m_resultingCalibration)
+    {
+        this->m_graph.SetPlotColor(RGB(255, 0, 0));
+        this->m_graph.Plot(
+            m_controller->m_resultingCalibration->pixelToWavelengthMapping.data(),
+            static_cast<int>(m_controller->m_resultingCalibration->pixelToWavelengthMapping.size()),
+            Graph::CGraphCtrl::PLOT_CONNECTED);
+    }
 
     // inliers
     this->m_graph.SetCircleColor(RGB(255, 255, 255));
