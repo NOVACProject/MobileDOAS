@@ -14,7 +14,7 @@
 #include <SpectralEvaluation/Calibration/InstrumentLineShapeEstimation.h>
 #include <SpectralEvaluation/Calibration/FraunhoferSpectrumGeneration.h>
 #include <SpectralEvaluation/Calibration/WavelengthCalibrationByRansac.h>
-    
+
 // From InstrumentLineShapeCalibrationController...
 std::vector<std::pair<std::string, std::string>> GetFunctionDescription(const novac::ParametricInstrumentLineShape* lineShapeFunction);
 
@@ -94,6 +94,10 @@ void WavelengthCalibrationController::RunCalibration()
     else
     {
         this->m_initialCalibration->pixelToWavelengthMapping = novac::GetPixelToWavelengthMappingFromFile(this->m_initialCalibrationFile);
+        if (!novac::IsPossiblePixelToWavelengthCalibration(m_initialCalibration->pixelToWavelengthMapping))
+        {
+            throw std::invalid_argument("Error interpreting the provided initial pixel to wavelength calibration, the wavelengths are not monotonically increasing.");
+        }
 
         if (this->m_initialLineShapeFile.size() > 0)
         {
