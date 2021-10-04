@@ -35,42 +35,42 @@ void InstrumentLineshapeCalibrationController::Update()
     ClearFittedLineShape();
 
     novac::CSpectrum hgSpectrum;
-    if (!novac::ReadSpectrum(this->m_inputSpectrumPath, hgSpectrum))
+    if (!novac::ReadSpectrum(m_inputSpectrumPath, hgSpectrum))
     {
         throw std::invalid_argument("Cannot read a spectrum from the provided input file.");
     }
-    this->m_inputspectrumInformation = hgSpectrum.m_info; //< remember the meta-data of the spectrum
+    m_inputspectrumInformation = hgSpectrum.m_info; //< remember the meta-data of the spectrum
 
     // The dark spectrum is optional
     novac::CSpectrum darkSpectrum;
-    if (novac::ReadSpectrum(this->m_darkSpectrumPath, darkSpectrum))
+    if (novac::ReadSpectrum(m_darkSpectrumPath, darkSpectrum))
     {
         hgSpectrum.Sub(darkSpectrum);
     }
 
-    this->m_inputSpectrum = std::vector<double>(hgSpectrum.m_data, hgSpectrum.m_data + hgSpectrum.m_length);
+    m_inputSpectrum = std::vector<double>(hgSpectrum.m_data, hgSpectrum.m_data + hgSpectrum.m_length);
 
-    this->m_inputSpectrumContainsWavelength = hgSpectrum.m_wavelength.size() != 0;
+    m_inputSpectrumContainsWavelength = hgSpectrum.m_wavelength.size() != 0;
 
-    if (this->m_readWavelengthCalibrationFromFile)
+    if (m_readWavelengthCalibrationFromFile)
     {
         // Find the peaks in the measured spectrum, rejecting double peaks.
-        novac::FindEmissionLines(hgSpectrum, this->m_peaksFound, true);
-        this->m_rejectedPeaks = novac::FilterByType(this->m_peaksFound, novac::SpectrumDataPointType::UnresolvedPeak);
-        this->m_peaksFound = novac::FilterByType(this->m_peaksFound, novac::SpectrumDataPointType::Peak);
+        novac::FindEmissionLines(hgSpectrum, m_peaksFound, true);
+        m_rejectedPeaks = novac::FilterByType(m_peaksFound, novac::SpectrumDataPointType::UnresolvedPeak);
+        m_peaksFound = novac::FilterByType(m_peaksFound, novac::SpectrumDataPointType::Peak);
 
-        this->m_resultingCalibration->pixelToWavelengthPolynomial.clear();
+        m_resultingCalibration->pixelToWavelengthPolynomial.clear();
 
-        if (this->m_inputSpectrumContainsWavelength)
+        if (m_inputSpectrumContainsWavelength)
         {
-            this->m_resultingCalibration->pixelToWavelengthMapping = hgSpectrum.m_wavelength;
-            this->m_wavelengthCalibrationSucceeded = true;
+            m_resultingCalibration->pixelToWavelengthMapping = hgSpectrum.m_wavelength;
+            m_wavelengthCalibrationSucceeded = true;
         }
         else
         {
-            this->m_resultingCalibration->pixelToWavelengthMapping.resize(hgSpectrum.m_length);
-            std::iota(begin(this->m_resultingCalibration->pixelToWavelengthMapping), end(this->m_resultingCalibration->pixelToWavelengthMapping), 0.0);
-            this->m_wavelengthCalibrationSucceeded = false;
+            m_resultingCalibration->pixelToWavelengthMapping.resize(hgSpectrum.m_length);
+            std::iota(begin(m_resultingCalibration->pixelToWavelengthMapping), end(m_resultingCalibration->pixelToWavelengthMapping), 0.0);
+            m_wavelengthCalibrationSucceeded = false;
 
             for (auto& peak : m_peaksFound)
             {
@@ -88,19 +88,20 @@ void InstrumentLineshapeCalibrationController::Update()
 
         if (novac::MercuryCalibration(hgSpectrum, 3, initialPixelToWavelengthMapping, wavelengthCalibrationResult, &wavelengthCalibrationState))
         {
-            this->m_resultingCalibration->pixelToWavelengthMapping = wavelengthCalibrationResult.pixelToWavelengthMapping;
-            this->m_resultingCalibration->pixelToWavelengthPolynomial = wavelengthCalibrationResult.pixelToWavelengthMappingCoefficients;
-            this->m_peaksFound = wavelengthCalibrationState.peaks;
-            this->m_rejectedPeaks = wavelengthCalibrationState.rejectedPeaks;
-            this->m_wavelengthCalibrationSucceeded = true;
+            m_resultingCalibration->pixelToWavelengthMapping = wavelengthCalibrationResult.pixelToWavelengthMapping;
+            m_resultingCalibration->pixelToWavelengthPolynomial = wavelengthCalibrationResult.pixelToWavelengthMappingCoefficients;
+            m_peaksFound = wavelengthCalibrationState.peaks;
+            m_rejectedPeaks = wavelengthCalibrationState.rejectedPeaks;
+            m_wavelengthCalibrationSucceeded = true;
         }
         else
         {
-            this->m_resultingCalibration->pixelToWavelengthMapping.resize(hgSpectrum.m_length);
-            std::iota(begin(this->m_resultingCalibration->pixelToWavelengthMapping), end(this->m_resultingCalibration->pixelToWavelengthMapping), 0.0);
-            this->m_wavelengthCalibrationSucceeded = false;
-            this->m_resultingCalibration->pixelToWavelengthPolynomial.clear();
-            this->m_rejectedPeaks.clear();
+            m_resultingCalibration->pixelToWavelengthMapping.resize(hgSpectrum.m_length);
+            std::iota(begin(m_resultingCalibration->pixelToWavelengthMapping), end(m_resultingCalibration->pixelToWavelengthMapping), 0.0);
+            m_wavelengthCalibrationSucceeded = false;
+            m_resultingCalibration->pixelToWavelengthPolynomial.clear();
+            m_peaksFound.clear();
+            m_rejectedPeaks.clear();
         }
     }
 }
@@ -122,20 +123,20 @@ double InstrumentLineshapeCalibrationController::SubtractBaseline(novac::CSpectr
 
 std::unique_ptr<novac::CSpectrum> InstrumentLineshapeCalibrationController::ExtractSelectedMercuryPeak(size_t peakIdx, double* baselinePtr, size_t* startIdx) const
 {
-    if (peakIdx >= this->m_peaksFound.size())
+    if (peakIdx >= m_peaksFound.size())
     {
         throw std::invalid_argument("Invalid index of mercury peak, please select a peak and try again");
     }
 
     // Extract the data surrounding the peak
-    const novac::SpectrumDataPoint selectedPeak = this->m_peaksFound[peakIdx];
+    const novac::SpectrumDataPoint selectedPeak = m_peaksFound[peakIdx];
     const double leftWidth = selectedPeak.pixel - selectedPeak.leftPixel;
     const double rightWidth = selectedPeak.rightPixel - selectedPeak.pixel;
 
     const size_t spectrumStartIdx = static_cast<size_t>(std::max(0, static_cast<int>(std::round(selectedPeak.pixel - 3 * leftWidth))));
-    const size_t spectralDataLength = std::min(this->m_inputSpectrum.size() - spectrumStartIdx, static_cast<size_t>(std::round(3 * (leftWidth + rightWidth))));
-    const double* spectralData = this->m_inputSpectrum.data() + spectrumStartIdx;
-    const double* wavelengthData = this->m_resultingCalibration->pixelToWavelengthMapping.data() + spectrumStartIdx;
+    const size_t spectralDataLength = std::min(m_inputSpectrum.size() - spectrumStartIdx, static_cast<size_t>(std::round(3 * (leftWidth + rightWidth))));
+    const double* spectralData = m_inputSpectrum.data() + spectrumStartIdx;
+    const double* wavelengthData = m_resultingCalibration->pixelToWavelengthMapping.data() + spectrumStartIdx;
 
     // Construct the spectrum we want to fit to
     std::unique_ptr<novac::CSpectrum> hgLine = std::make_unique<novac::CSpectrum>(wavelengthData, spectralData, spectralDataLength);
@@ -200,7 +201,7 @@ void InstrumentLineshapeCalibrationController::FitFunctionToLineShape(size_t pea
 {
     ClearFittedLineShape();
 
-    if (peakIdx >= this->m_peaksFound.size() || function == LineShapeFunction::None)
+    if (peakIdx >= m_peaksFound.size() || function == LineShapeFunction::None)
     {
         return;
     }
@@ -224,11 +225,11 @@ void InstrumentLineshapeCalibrationController::FitFunctionToLineShape(size_t pea
         {
             highResPixelData[ii] = hgLine->m_wavelength[0] + ii * range / (double)(highResPixelData.size() - 1);
         }
-        const std::vector<double> sampledLineShape = novac::SampleInstrumentLineShape(*gaussian, highResPixelData, m_peaksFound[peakIdx].wavelength, this->m_peaksFound[peakIdx].intensity - baseline, baseline);
+        const std::vector<double> sampledLineShape = novac::SampleInstrumentLineShape(*gaussian, highResPixelData, m_peaksFound[peakIdx].wavelength, m_peaksFound[peakIdx].intensity - baseline, baseline);
 
         m_resultingCalibration->instrumentLineShapeGrid = highResPixelData;
         m_resultingCalibration->instrumentLineShape = sampledLineShape;
-        m_resultingCalibration->instrumentLineShapeCenter = this->m_peaksFound[peakIdx].wavelength;
+        m_resultingCalibration->instrumentLineShapeCenter = m_peaksFound[peakIdx].wavelength;
     }
     else if (function == LineShapeFunction::SuperGauss)
     {
@@ -243,17 +244,17 @@ void InstrumentLineshapeCalibrationController::FitFunctionToLineShape(size_t pea
         {
             highResPixelData[ii] = hgLine->m_wavelength[0] + ii * range / (double)(highResPixelData.size() - 1);
         }
-        const std::vector<double> sampledLineShape = novac::SampleInstrumentLineShape(*superGaussian, highResPixelData, m_peaksFound[peakIdx].wavelength, this->m_peaksFound[peakIdx].intensity - baseline, baseline);
+        const std::vector<double> sampledLineShape = novac::SampleInstrumentLineShape(*superGaussian, highResPixelData, m_peaksFound[peakIdx].wavelength, m_peaksFound[peakIdx].intensity - baseline, baseline);
 
         m_resultingCalibration->instrumentLineShapeGrid = highResPixelData;
         m_resultingCalibration->instrumentLineShape = sampledLineShape;
-        m_resultingCalibration->instrumentLineShapeCenter = this->m_peaksFound[peakIdx].wavelength;
+        m_resultingCalibration->instrumentLineShapeCenter = m_peaksFound[peakIdx].wavelength;
     }
     else if (function == LineShapeFunction::None)
     {
         m_resultingCalibration->instrumentLineShapeGrid = hgLine->m_wavelength;
         m_resultingCalibration->instrumentLineShape = std::vector<double>(hgLine->m_data, hgLine->m_data + hgLine->m_length);
-        m_resultingCalibration->instrumentLineShapeCenter = this->m_peaksFound[peakIdx].wavelength;
+        m_resultingCalibration->instrumentLineShapeCenter = m_peaksFound[peakIdx].wavelength;
     }
     else
     {
@@ -272,23 +273,23 @@ std::pair<std::string, std::string> FormatProperty(const char* name, double valu
 void InstrumentLineshapeCalibrationController::SaveResultAsStd(size_t peakIdx, const std::string& filename)
 {
     // Extract the spectrum in the format we want to use
-    if (peakIdx >= this->m_peaksFound.size())
+    if (peakIdx >= m_peaksFound.size())
     {
         throw std::invalid_argument("Invalid index of mercury peak, please select a peak and try again");
     }
 
     // Create an instrument calibration with a normalized intensity of the instrument line shape
     novac::InstrumentCalibration calibrationWithNormalizedInstrumentLineShape;
-    calibrationWithNormalizedInstrumentLineShape.pixelToWavelengthMapping = this->m_resultingCalibration->pixelToWavelengthMapping;
-    calibrationWithNormalizedInstrumentLineShape.pixelToWavelengthPolynomial = this->m_resultingCalibration->pixelToWavelengthPolynomial;
+    calibrationWithNormalizedInstrumentLineShape.pixelToWavelengthMapping = m_resultingCalibration->pixelToWavelengthMapping;
+    calibrationWithNormalizedInstrumentLineShape.pixelToWavelengthPolynomial = m_resultingCalibration->pixelToWavelengthPolynomial;
 
-    calibrationWithNormalizedInstrumentLineShape.instrumentLineShape = this->m_resultingCalibration->instrumentLineShape;
-    calibrationWithNormalizedInstrumentLineShape.instrumentLineShapeGrid = this->m_resultingCalibration->instrumentLineShapeGrid;
-    calibrationWithNormalizedInstrumentLineShape.instrumentLineShapeCenter = this->m_resultingCalibration->instrumentLineShapeCenter;
+    calibrationWithNormalizedInstrumentLineShape.instrumentLineShape = m_resultingCalibration->instrumentLineShape;
+    calibrationWithNormalizedInstrumentLineShape.instrumentLineShapeGrid = m_resultingCalibration->instrumentLineShapeGrid;
+    calibrationWithNormalizedInstrumentLineShape.instrumentLineShapeCenter = m_resultingCalibration->instrumentLineShapeCenter;
 
-    if (this->m_resultingCalibration->instrumentLineShapeParameter != nullptr)
+    if (m_resultingCalibration->instrumentLineShapeParameter != nullptr)
     {
-        calibrationWithNormalizedInstrumentLineShape.instrumentLineShapeParameter = this->m_resultingCalibration->instrumentLineShapeParameter->Clone();
+        calibrationWithNormalizedInstrumentLineShape.instrumentLineShapeParameter = m_resultingCalibration->instrumentLineShapeParameter->Clone();
     }
 
     Normalize(calibrationWithNormalizedInstrumentLineShape.instrumentLineShape);
@@ -301,14 +302,14 @@ void InstrumentLineshapeCalibrationController::SaveResultAsStd(size_t peakIdx, c
 
 void InstrumentLineshapeCalibrationController::SaveResultAsClb(const std::string& filename)
 {
-    novac::SaveDataToFile(filename, this->m_resultingCalibration->pixelToWavelengthMapping);
+    novac::SaveDataToFile(filename, m_resultingCalibration->pixelToWavelengthMapping);
 }
 
 void InstrumentLineshapeCalibrationController::SaveResultAsSlf(size_t peakIdx, const std::string& filename)
 {
     novac::CCrossSectionData instrumentLineShape;
-    instrumentLineShape.m_crossSection = this->m_resultingCalibration->instrumentLineShape;
-    instrumentLineShape.m_waveLength = this->m_resultingCalibration->instrumentLineShapeGrid;
+    instrumentLineShape.m_crossSection = m_resultingCalibration->instrumentLineShape;
+    instrumentLineShape.m_waveLength = m_resultingCalibration->instrumentLineShapeGrid;
 
     novac::SaveCrossSectionFile(filename, instrumentLineShape);
 }
