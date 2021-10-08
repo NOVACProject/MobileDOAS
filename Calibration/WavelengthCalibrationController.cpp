@@ -6,6 +6,7 @@
 #include <sstream>
 #include "WavelengthCalibrationController.h"
 #include <SpectralEvaluation/VectorUtils.h>
+#include <SpectralEvaluation/StringUtils.h>
 #include <SpectralEvaluation/Spectra/Spectrum.h>
 #include <SpectralEvaluation/File/File.h>
 #include <SpectralEvaluation/Calibration/Correspondence.h>
@@ -84,7 +85,7 @@ void WavelengthCalibrationController::RunCalibration()
 
     // Read the initial callibration
     this->m_initialCalibration = std::make_unique<novac::InstrumentCalibration>();
-    if (novac::GetFileExtension(this->m_initialCalibrationFile).compare(".std") == 0)
+    if (EqualsIgnoringCase(novac::GetFileExtension(this->m_initialCalibrationFile), ".std"))
     {
         if (!novac::ReadInstrumentCalibration(this->m_initialCalibrationFile, *m_initialCalibration))
         {
