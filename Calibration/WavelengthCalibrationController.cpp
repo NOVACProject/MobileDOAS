@@ -77,12 +77,14 @@ void WavelengthCalibrationController::RunCalibration()
     {
         throw std::invalid_argument("Cannot read the provided input spectrum file");
     }
+    Log("Read measured spectrum: ", m_inputSpectrumFile);
 
     // subtract the dark-spectrum (if this has been provided)
     novac::CSpectrum darkSpectrum;
     if (novac::ReadSpectrum(m_darkSpectrumFile, darkSpectrum))
     {
         measuredSpectrum.Sub(darkSpectrum);
+        Log("Read and subtracted dark spectrum: ", m_darkSpectrumFile);
     }
 
     // Read the initial callibration
@@ -95,7 +97,17 @@ void WavelengthCalibrationController::RunCalibration()
             throw std::invalid_argument("Failed to read the instrument calibration file");
         }
 
-        Log("Read intiial instrument calibration from: ", m_initialCalibrationFile);
+        Log("Read initial instrument calibration from: ", m_initialCalibrationFile);
+
+        if (m_initialCalibration->instrumentLineShapeGrid.size() > 0)
+        {
+            const double fwhm = novac::GetFwhm(m_initialCalibration->instrumentLineShapeGrid, m_initialCalibration->instrumentLineShape);
+            Log("Initial instrument line shape has a fwhm of: ", fwhm);
+        }
+        else
+        {
+            Log("Provided instrument calibration file does not contain an instrument line shape.");
+        }
     }
     else
     {
@@ -112,7 +124,10 @@ void WavelengthCalibrationController::RunCalibration()
     if (m_initialLineShapeFile.size() > 0)
     {
         ReadInstrumentLineShape(m_initialLineShapeFile, *m_initialCalibration);
-        Log("Read initial instrument line shape from: ", m_initialCalibrationFile);
+        Log("Read initial instrument line shape from: ", m_initialLineShapeFile);
+
+        const double fwhm = novac::GetFwhm(m_initialCalibration->instrumentLineShapeGrid, m_initialCalibration->instrumentLineShape);
+        Log("Initial instrument line shape has a fwhm of :", fwhm);
     }
     else if (m_initialCalibration->instrumentLineShape.size() == 0)
     {
