@@ -290,6 +290,7 @@
     <ClCompile Include="CCalibrateReferencesDialog.cpp" />
     <ClCompile Include="CCreateStandardReferencesDialog.cpp" />
     <ClCompile Include="CGpsData.cpp" />
+    <ClCompile Include="CLogDialog.cpp" />
     <ClCompile Include="CommentDlg.cpp" />
     <ClCompile Include="Common.cpp" />
     <ClCompile Include="Common\CDateTime.cpp" />
@@ -577,6 +578,7 @@
     <ClInclude Include="CCalibrateReferencesDialog.h" />
     <ClInclude Include="CCreateStandardReferencesDialog.h" />
     <ClInclude Include="CGpsData.h" />
+    <ClInclude Include="CLogDialog.h" />
     <ClInclude Include="CommentDlg.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="Common\CDateTime.h" />

@@ -127,6 +127,7 @@
 #define IDD_CALIBRATE_OPEN_CALIBRATION  289
 #define IDD_CALIBRATE_WAVELENGTH_SETTINGS_DIALOG 292
 #define IDD_CALIBRATE_STANDARD_REFERENCES 296
+#define IDD_VIEW_LOG_DIALOG             298
 #define IDC_EDIT1                       1000
 #define IDC_WINDSPEED                   1000
 #define IDC_DLG2WS                      1000
@@ -253,6 +254,7 @@
 #define IDC_BUTTON_SAVESPEC             1062
 #define IDC_BROWSE_EVALLOG              1062
 #define IDC_BROWSE_DIRECTORY            1062
+#define IDC_BUTTON_VIEW_LOG             1062
 #define IDC_SPECCHANNELS                1063
 #define IDC_BROWSE_O3                   1063
 #define IDC_BTN_SOURCE_LONG             1063
@@ -540,6 +542,7 @@
 #define IDC_LIST1                       1337
 #define IDC_RADIO1                      1337
 #define IDC_RADIO_INSTRUMENT_LINE_SHAPE_FIT_NOTHING 1337
+#define IDC_MESSAGE_LIST                1337
 #define IDC_LIST_GRAPH_TYPE             1338
 #define IDC_BUTTON_BROWSE_STANDARD_REFERENCES_DIRECTORY 1338
 #define IDC_LABEL_SAVE_EXPLANATION      1339
@@ -574,7 +577,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        298
+#define _APS_NEXT_RESOURCE_VALUE        300
 #define _APS_NEXT_COMMAND_VALUE         32804
 #define _APS_NEXT_CONTROL_VALUE         1340
 #define _APS_NEXT_SYMED_VALUE           104

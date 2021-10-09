@@ -74,6 +74,7 @@ public:
     afx_msg void OnClickedButtonRun();
     afx_msg void OnClickedButtonBrowseSpectrumDark();
     afx_msg void OnClickedButtonSave();
+    afx_msg void OnBnClickedButtonViewLog();
     afx_msg void OnSelchangeListGraphType();
     afx_msg void OnBnClickedSetupWavelengthCaliBration();
 
@@ -119,4 +120,6 @@ private:
     WavelengthCalibrationController* m_controller;
 
     char* m_initialCalibrationFileTypeFilter = nullptr;
+public:
+    CButton m_viewLogButton;
 };
