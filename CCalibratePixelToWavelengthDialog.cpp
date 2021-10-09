@@ -115,7 +115,6 @@ void CCalibratePixelToWavelengthDialog::SaveSetup()
         dst << "<CalibrateWavelengthDlg>" << std::endl;
         dst << "\t<SolarSpectrum>" << m_setup.m_solarSpectrumFile << "</SolarSpectrum>" << std::endl;
         dst << "\t<InitialCalibrationFile>" << m_setup.m_initialCalibrationFile << "</InitialCalibrationFile>" << std::endl;
-        dst << "\t<LineShapeFile>" << m_setup.m_instrumentLineshapeFile << "</LineShapeFile>" << std::endl;
         dst << "\t<InputFileType>" << (int)m_setup.m_calibrationOption << "</InputFileType>" << std::endl;
         dst << "\t<InstrumentLineShapeFitType>" << (int)m_setup.m_fitInstrumentLineShapeOption << "</InstrumentLineShapeFitType>" << std::endl;
         dst << "\t<InstrumentLineShapeFitFrom>" << m_setup.m_fitInstrumentLineShapeRegionStart << "</InstrumentLineShapeFitFrom>" << std::endl;
@@ -157,11 +156,6 @@ void CCalibratePixelToWavelengthDialog::LoadLastSetup()
             {
                 auto str = novac::ParseXmlString("SolarSpectrum", line);
                 m_setup.m_solarSpectrumFile = CString(str.c_str());
-            }
-            else if (line.find("InitialCalibrationFile") != std::string::npos)
-            {
-                auto str = novac::ParseXmlString("InitialCalibrationFile", line);
-                m_setup.m_initialCalibrationFile = CString(str.c_str());
             }
             else if (line.find("LineShapeFile") != std::string::npos)
             {
@@ -568,7 +562,6 @@ LRESULT CCalibratePixelToWavelengthDialog::OnCalibrationDone(WPARAM wParam, LPAR
 
         m_saveButton.EnableWindow(TRUE);
         m_runButton.EnableWindow(TRUE);
-        m_viewLogButton.EnableWindow(TRUE);
         m_runButton.SetWindowTextA(runButtonOriginalText);
     }
     catch (std::exception& e)
@@ -576,6 +569,8 @@ LRESULT CCalibratePixelToWavelengthDialog::OnCalibrationDone(WPARAM wParam, LPAR
         HandleCalibrationFailure(e.what());
         m_runButton.SetWindowTextA(runButtonOriginalText);
     }
+
+    m_viewLogButton.EnableWindow(m_controller->m_log.size() > 0);
 
     return 0;
 }

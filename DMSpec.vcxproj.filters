@@ -477,6 +477,9 @@
     <ClCompile Include="CLogDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Log.cpp">
+      <Filter>Source Files\SpectralEvaluation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DMSpec.rc">

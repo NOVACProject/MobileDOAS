@@ -68,6 +68,7 @@ void WavelengthCalibrationController::RunCalibration()
 {
     m_errorMessage.clear();
     m_log.clear();
+    m_instrumentLineShapeParameterDescriptions.clear();
 
     novac::WavelengthCalibrationSettings settings;
     settings.highResSolarAtlas = m_solarSpectrumFile;
@@ -299,6 +300,7 @@ void WavelengthCalibrationController::ClearResult()
     m_calibrationDebug = WavelengthCalibrationController::WavelengthCalibrationDebugState(0U);
     m_errorMessage.clear();
     m_log.clear();
+    m_instrumentLineShapeParameterDescriptions.clear();
     m_resultingCalibration.reset();
 }
 
