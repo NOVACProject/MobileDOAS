@@ -198,7 +198,10 @@ void CCalibratePixelToWavelengthDialog::OnClickedButtonBrowseSpectrum()
     {
         return;
     }
+
+    m_controller->ClearResult();
     UpdateData(FALSE);
+    UpdateGraph();
 }
 
 void CCalibratePixelToWavelengthDialog::OnClickedButtonBrowseSpectrumDark()

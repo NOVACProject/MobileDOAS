@@ -144,4 +144,9 @@ public:
     /// </summary>
     void SaveResultAsSlf(const std::string& filename);
 
+    /// <summary>
+    /// Empties the previous result (if any).
+    /// </summary>
+    void ClearResult();
+
 };

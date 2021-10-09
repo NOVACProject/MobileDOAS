@@ -87,6 +87,7 @@ void WavelengthCalibrationController::RunCalibration()
     this->m_initialCalibration = std::make_unique<novac::InstrumentCalibration>();
     if (EqualsIgnoringCase(novac::GetFileExtension(this->m_initialCalibrationFile), ".std"))
     {
+        // This is a file which may contain either just the wavelength calibration _or_ both a wavelength calibration and an instrument line shape.
         if (!novac::ReadInstrumentCalibration(this->m_initialCalibrationFile, *m_initialCalibration))
         {
             throw std::invalid_argument("Failed to read the instrument calibration file");
@@ -99,16 +100,18 @@ void WavelengthCalibrationController::RunCalibration()
         {
             throw std::invalid_argument("Error interpreting the provided initial pixel to wavelength calibration, the wavelengths are not monotonically increasing.");
         }
-
-        if (this->m_initialLineShapeFile.size() > 0)
-        {
-            ReadInstrumentLineShape(m_initialLineShapeFile, *m_initialCalibration);
-        }
-        else
-        {
-            CreateGuessForInstrumentLineShape(this->m_solarSpectrumFile, measuredSpectrum, *m_initialCalibration);
-        }
     }
+
+    // Check the initial instrument line shape.
+    if (this->m_initialLineShapeFile.size() > 0)
+    {
+        ReadInstrumentLineShape(m_initialLineShapeFile, *m_initialCalibration);
+    }
+    else if (m_initialCalibration->instrumentLineShape.size() == 0)
+    {
+        CreateGuessForInstrumentLineShape(this->m_solarSpectrumFile, measuredSpectrum, *m_initialCalibration);
+    }
+
     settings.initialPixelToWavelengthMapping = this->m_initialCalibration->pixelToWavelengthMapping;
     settings.initialInstrumentLineShape.m_crossSection = this->m_initialCalibration->instrumentLineShape;
     settings.initialInstrumentLineShape.m_waveLength = this->m_initialCalibration->instrumentLineShapeGrid;
@@ -267,3 +270,9 @@ void WavelengthCalibrationController::SaveResultAsSlf(const std::string& filenam
     novac::SaveCrossSectionFile(filename, instrumentLineShape);
 }
 
+void WavelengthCalibrationController::ClearResult()
+{
+    m_calibrationDebug = WavelengthCalibrationController::WavelengthCalibrationDebugState(0U);
+    m_errorMessage.clear();
+    m_resultingCalibration.reset();
+}
