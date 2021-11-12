@@ -175,9 +175,6 @@ void WavelengthCalibrationController::RunCalibration()
     // Clear the previous result
     m_resultingCalibration = std::make_unique<novac::InstrumentCalibration>();
 
-
-    // So far no cross sections provided...
-
     novac::WavelengthCalibrationSetup setup{ settings };
     auto result = setup.DoWavelengthCalibration(measuredSpectrum);
 

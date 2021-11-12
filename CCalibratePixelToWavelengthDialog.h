@@ -70,6 +70,13 @@ public:
 
     CListBox m_detailedResultList; // detailed presentation of the results
 
+    CButton m_viewLogButton;
+
+    CStatic m_greenLegendIcon;
+    CStatic m_greenLegendLabel;
+    CStatic m_redLegendIcon;
+    CStatic m_redLegendLabel;
+
     afx_msg void OnClickedButtonBrowseSpectrum();
     afx_msg void OnClickedButtonRun();
     afx_msg void OnClickedButtonBrowseSpectrumDark();
@@ -115,11 +122,13 @@ private:
     /// </summary>
     void DrawSpectraAndInliers();
 
+    void UpdateGreenLegend(bool show, const char* message = nullptr);
+    void UpdateRedLegend(bool show, const char* message = nullptr);
+
     void HandleCalibrationFailure(const char* errorMessage);
 
     WavelengthCalibrationController* m_controller;
 
     char* m_initialCalibrationFileTypeFilter = nullptr;
-public:
-    CButton m_viewLogButton;
+
 };

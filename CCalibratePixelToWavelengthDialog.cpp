@@ -65,6 +65,9 @@ BOOL CCalibratePixelToWavelengthDialog::OnInitDialog() {
     m_graphTypeList.AddString("Instrument Line Shape");
     m_graphTypeList.SetCurSel(0);
 
+    UpdateGreenLegend(false);
+    UpdateRedLegend(false);
+
     LoadDefaultSetup();
     LoadLastSetup();
     UpdateData(FALSE);
@@ -83,6 +86,10 @@ void CCalibratePixelToWavelengthDialog::DoDataExchange(CDataExchange* pDX)
     DDX_Control(pDX, IDC_LIST_GRAPH_TYPE, m_graphTypeList);
     DDX_Control(pDX, IDC_WAVELENGTH_CALIBRATION_DETAILS_LIST, m_detailedResultList);
     DDX_Control(pDX, IDC_BUTTON_VIEW_LOG, m_viewLogButton);
+    DDX_Control(pDX, IDC_STATIC_LEGEND_GREEN, m_greenLegendLabel);
+    DDX_Control(pDX, IDC_STATIC_LEGEND_RED, m_redLegendLabel);
+    DDX_Control(pDX, IDC_STATIC_RED, m_redLegendIcon);
+    DDX_Control(pDX, IDC_STATIC_GREEN, m_greenLegendIcon);
 }
 
 BEGIN_MESSAGE_MAP(CCalibratePixelToWavelengthDialog, CPropertyPage)
@@ -276,11 +283,14 @@ void CCalibratePixelToWavelengthDialog::DrawPolynomialAndInliers()
     m_graph.SetYUnits("Wavelength [nm]");
 
     // the old (initial) calibration polynomial
-    m_graph.SetPlotColor(RGB(128, 0, 0));
+    m_graph.SetPlotColor(RGB(0, 255, 0));
     m_graph.Plot(
         m_controller->m_calibrationDebug.initialPixelToWavelengthMapping.data(),
         static_cast<int>(m_controller->m_calibrationDebug.initialPixelToWavelengthMapping.size()),
         Graph::CGraphCtrl::PLOT_CONNECTED);
+
+    UpdateGreenLegend(m_controller->m_calibrationDebug.initialPixelToWavelengthMapping.size() > 0,
+        "Initial wavelength calibration");
 
     // the calibration polynomial
     if (m_controller->m_resultingCalibration != nullptr)
@@ -291,6 +301,8 @@ void CCalibratePixelToWavelengthDialog::DrawPolynomialAndInliers()
             static_cast<int>(m_controller->m_resultingCalibration->pixelToWavelengthMapping.size()),
             Graph::CGraphCtrl::PLOT_CONNECTED | Graph::CGraphCtrl::PLOT_FIXED_AXIS);
     }
+    UpdateRedLegend(m_controller->m_resultingCalibration != nullptr && m_controller->m_resultingCalibration->pixelToWavelengthMapping.size() > 0,
+        "Resulting wavelength calibration");
 
     // outliers
     m_graph.SetCircleColor(RGB(128, 128, 128));
@@ -338,6 +350,9 @@ void CCalibratePixelToWavelengthDialog::DrawMeasuredSpectrumAndKeypoints()
         m_controller->m_calibrationDebug.measuredSpectrumInlierKeypointIntensities.data(),
         static_cast<int>(m_controller->m_calibrationDebug.measuredSpectrumInlierKeypointIntensities.size()),
         Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+
+    UpdateRedLegend(m_controller->m_calibrationDebug.measuredSpectrum.size() > 0, "Measured spectrum");
+    UpdateGreenLegend(false);
 }
 
 void CCalibratePixelToWavelengthDialog::DrawFittedInstrumentLineShape()
@@ -357,6 +372,8 @@ void CCalibratePixelToWavelengthDialog::DrawFittedInstrumentLineShape()
             static_cast<int>(m_controller->m_initialCalibration->instrumentLineShape.size()),
             Graph::CGraphCtrl::PLOT_CONNECTED);
     }
+    UpdateRedLegend(m_controller->m_initialCalibration != nullptr && m_controller->m_initialCalibration->instrumentLineShape.size() > 0,
+        "Initial instrument line shape");
 
     // The fitted instrument line shape
     if (m_controller->m_resultingCalibration != nullptr)
@@ -368,6 +385,8 @@ void CCalibratePixelToWavelengthDialog::DrawFittedInstrumentLineShape()
             static_cast<int>(m_controller->m_resultingCalibration->instrumentLineShape.size()),
             Graph::CGraphCtrl::PLOT_CONNECTED | Graph::CGraphCtrl::PLOT_FIXED_AXIS);
     }
+    UpdateGreenLegend(m_controller->m_resultingCalibration != nullptr && m_controller->m_resultingCalibration->instrumentLineShape.size() > 0,
+        "Resulting instrument line shape");
 }
 
 void CCalibratePixelToWavelengthDialog::DrawFraunhoferSpectrumAndKeypoints()
@@ -387,6 +406,8 @@ void CCalibratePixelToWavelengthDialog::DrawFraunhoferSpectrumAndKeypoints()
             static_cast<int>(m_controller->m_calibrationDebug.fraunhoferSpectrum.size()),
             Graph::CGraphCtrl::PLOT_CONNECTED);
     }
+    UpdateGreenLegend(m_controller->m_resultingCalibration != nullptr && m_controller->m_calibrationDebug.fraunhoferSpectrum.size() > 0,
+        "Fraunhofer spectrum");
 
     // all the keypoints found
     m_graph.SetCircleColor(RGB(128, 128, 128));
@@ -403,6 +424,8 @@ void CCalibratePixelToWavelengthDialog::DrawFraunhoferSpectrumAndKeypoints()
         m_controller->m_calibrationDebug.fraunhoferSpectrumInlierKeypointIntensities.data(),
         static_cast<int>(m_controller->m_calibrationDebug.fraunhoferSpectrumInlierKeypointIntensities.size()),
         Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+
+    UpdateRedLegend(false);
 }
 
 void CCalibratePixelToWavelengthDialog::DrawSpectraAndInliers()
@@ -438,12 +461,18 @@ void CCalibratePixelToWavelengthDialog::DrawSpectraAndInliers()
         static_cast<int>(m_controller->m_calibrationDebug.measuredSpectrum.size()),
         Graph::CGraphCtrl::PLOT_CONNECTED | Graph::CGraphCtrl::PLOT_SECOND_AXIS);
 
+    UpdateRedLegend(m_controller->m_calibrationDebug.measuredSpectrum.size() > 0,
+        "Measured spectrum");
+
     // the Fraunhofer spectrum
     m_graph.SetPlotColor(RGB(0, 255, 0));
     m_graph.Plot(
         m_controller->m_calibrationDebug.fraunhoferSpectrum.data(),
         static_cast<int>(m_controller->m_calibrationDebug.fraunhoferSpectrum.size()),
         Graph::CGraphCtrl::PLOT_SECOND_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
+
+    UpdateGreenLegend(m_controller->m_calibrationDebug.fraunhoferSpectrum.size() > 0,
+        "Fraunhofer spectrum");
 
     // The inlier correspondences
     for (size_t ii = 0; ii < m_controller->m_calibrationDebug.inlierCorrespondencePixels.size(); ++ii)
@@ -629,3 +658,34 @@ void CCalibratePixelToWavelengthDialog::OnBnClickedButtonViewLog()
     CLogDialog logDialog{ m_controller->m_log };
     logDialog.DoModal();
 }
+
+void CCalibratePixelToWavelengthDialog::UpdateGreenLegend(bool show, const char* message)
+{
+    if (show && message != nullptr)
+    {
+        m_greenLegendIcon.ShowWindow(SW_SHOW);
+        m_greenLegendLabel.ShowWindow(SW_SHOW);
+        m_greenLegendLabel.SetWindowTextA(message);
+    }
+    else
+    {
+        m_greenLegendIcon.ShowWindow(SW_HIDE);
+        m_greenLegendLabel.ShowWindow(SW_HIDE);
+    }
+}
+
+void CCalibratePixelToWavelengthDialog::UpdateRedLegend(bool show, const char* message)
+{
+    if (show && message != nullptr)
+    {
+        m_redLegendIcon.ShowWindow(SW_SHOW);
+        m_redLegendLabel.ShowWindow(SW_SHOW);
+        m_redLegendLabel.SetWindowTextA(message);
+    }
+    else
+    {
+        m_redLegendIcon.ShowWindow(SW_HIDE);
+        m_redLegendLabel.ShowWindow(SW_HIDE);
+    }
+}
+
