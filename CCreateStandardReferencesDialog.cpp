@@ -77,7 +77,7 @@ std::string CCreateStandardReferencesDialog::ReferenceName(size_t referenceIdx, 
         dstFileNameStream << "_" << m_fileNameSuffix;
     }
 
-    std::string dstFileName = novac::EnsureFilenameHasSuffix(dstFileNameStream.str(), "xs");
+    std::string dstFileName = novac::EnsureFilenameHasSuffix(dstFileNameStream.str(), "txt");
     return dstFileName;
 }
 

@@ -208,9 +208,9 @@ void CCalibrateReferencesDialog::OnClickedButtonSave()
     try
     {
         CString destinationFileName = L"";
-        if (Common::BrowseForFile_SaveAs("Reference Files\0*.xs\0", destinationFileName))
+        if (Common::BrowseForFile_SaveAs("Reference Files\0*.txt\0", destinationFileName))
         {
-            std::string dstFileName = novac::EnsureFilenameHasSuffix(std::string(destinationFileName), "xs");
+            std::string dstFileName = novac::EnsureFilenameHasSuffix(std::string(destinationFileName), "txt");
             novac::SaveCrossSectionFile(dstFileName, *(m_controller->m_resultingCrossSection));
         }
     }
