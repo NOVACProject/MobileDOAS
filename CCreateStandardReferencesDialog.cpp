@@ -21,7 +21,6 @@ CCreateStandardReferencesDialog::CCreateStandardReferencesDialog(CWnd* pParent /
     , m_fileNameSuffix(_T(""))
     , m_outputFileNamesExplanation(_T(""))
 {
-
 }
 
 CCreateStandardReferencesDialog::~CCreateStandardReferencesDialog()
@@ -77,8 +76,9 @@ std::string CCreateStandardReferencesDialog::ReferenceName(size_t referenceIdx, 
         dstFileNameStream << "_" << m_fileNameSuffix;
     }
 
-    std::string dstFileName = novac::EnsureFilenameHasSuffix(dstFileNameStream.str(), "txt");
-    return dstFileName;
+    dstFileNameStream << ".txt";
+
+    return dstFileNameStream.str();
 }
 
 void CCreateStandardReferencesDialog::OnClickedButtonBrowseOutputDirectory()

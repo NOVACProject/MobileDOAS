@@ -88,7 +88,7 @@ void WavelengthCalibrationController::RunCalibration()
         Log("Read and subtracted dark spectrum: ", m_darkSpectrumFile);
     }
 
-    // Read the initial callibration
+    // Read the initial calibration
     m_initialCalibration = std::make_unique<novac::InstrumentCalibration>();
     if (EqualsIgnoringCase(novac::GetFileExtension(m_initialCalibrationFile), ".std"))
     {
