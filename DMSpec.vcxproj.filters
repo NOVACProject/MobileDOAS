@@ -456,9 +456,6 @@
     <ClCompile Include="SpectralEvaluation\src\Fit\MessageLog.cpp">
       <Filter>Source Files\SpectralEvaluation\Fit</Filter>
     </ClCompile>
-    <ClCompile Include="CCalibratePixelToWavelengthSetupDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SpectralEvaluation\src\Calibration\InstrumentCalibration.cpp">
       <Filter>Source Files\SpectralEvaluation\Calibration</Filter>
     </ClCompile>
@@ -482,6 +479,9 @@
     </ClCompile>
     <ClCompile Include="SpectralEvaluation\src\Calibration\CrossSectionSpectrumGenerator.cpp">
       <Filter>Source Files\SpectralEvaluation\Calibration</Filter>
+    </ClCompile>
+    <ClCompile Include="CCalibratePixelToWavelengthSetupDialog.cpp">
+      <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

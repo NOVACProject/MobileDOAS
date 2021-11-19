@@ -27,6 +27,7 @@ CCalibratePixelToWavelengthDialog::CCalibratePixelToWavelengthDialog(CWnd* pPare
     : CPropertyPage(IDD_CALIBRATE_WAVELENGTH_DIALOG)
     , m_inputSpectrumFile(_T(""))
     , m_darkSpectrumFile(_T(""))
+    , m_standardCrossSections(nullptr)
     , m_initialCalibrationFileTypeFilter("Novac Instrument Calibration Files\0*.xml\0")
 {
     wavelengthCalibrationDialog = this;
@@ -37,6 +38,7 @@ CCalibratePixelToWavelengthDialog::CCalibratePixelToWavelengthDialog(CWnd* pPare
 CCalibratePixelToWavelengthDialog::~CCalibratePixelToWavelengthDialog()
 {
     delete m_controller;
+    delete m_standardCrossSections;
 }
 
 BOOL CCalibratePixelToWavelengthDialog::OnInitDialog() {
@@ -140,9 +142,9 @@ void CCalibratePixelToWavelengthDialog::LoadDefaultSetup()
 
     // See if there a Fraunhofer reference in the standard cross section setup.
     std::string exePath = common.m_exePath;
-    const auto standardCrossSections = new novac::StandardCrossSectionSetup{ exePath };
+    m_standardCrossSections = new novac::StandardCrossSectionSetup{ exePath };
 
-    const auto solarCrossSection = standardCrossSections->FraunhoferReferenceFileName();
+    const auto solarCrossSection = m_standardCrossSections->FraunhoferReferenceFileName();
 
     if (solarCrossSection.size() > 0)
     {
@@ -539,6 +541,12 @@ void CCalibratePixelToWavelengthDialog::OnClickedButtonRun()
         MessageBox("Please select a file which contains an initial guess for the wavelength calibration of the spectrometer", "Missing input", MB_OK);
         return;
     }
+    if (m_setup.m_fitInstrumentLineShapeOzoneReference.GetLength() > 3 &&
+        !IsExistingFile(m_setup.m_fitInstrumentLineShapeOzoneReference))
+    {
+        MessageBox("Failed to find the provided ozone reference file to be used when deriving the instrument line shape.", "Missing input", MB_OK);
+        return;
+    }
 
     m_controller->m_inputSpectrumFile = m_inputSpectrumFile;
     m_controller->m_darkSpectrumFile = m_darkSpectrumFile;
@@ -549,6 +557,7 @@ void CCalibratePixelToWavelengthDialog::OnClickedButtonRun()
     m_controller->m_instrumentLineShapeFitRegion = std::make_pair(
         std::atof(m_setup.m_fitInstrumentLineShapeRegionStart),
         std::atof(m_setup.m_fitInstrumentLineShapeRegionStop));
+    m_controller->m_crossSectionsForInstrumentLineShapeFitting = m_setup.m_fitInstrumentLineShapeOzoneReference;
 
     m_runButton.GetWindowTextA(runButtonOriginalText);
 
@@ -649,7 +658,7 @@ void CCalibratePixelToWavelengthDialog::OnClickedButtonSave()
 
 void CCalibratePixelToWavelengthDialog::OnBnClickedSetupWavelengthCaliBration()
 {
-    CCalibratePixelToWavelengthSetupDialog setupDlg{ &m_setup };
+    CCalibratePixelToWavelengthSetupDialog setupDlg{ &m_setup, m_standardCrossSections };
     setupDlg.DoModal();
 }
 
