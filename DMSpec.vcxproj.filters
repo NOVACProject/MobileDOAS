@@ -480,6 +480,9 @@
     <ClCompile Include="SpectralEvaluation\src\Log.cpp">
       <Filter>Source Files\SpectralEvaluation</Filter>
     </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Calibration\CrossSectionSpectrumGenerator.cpp">
+      <Filter>Source Files\SpectralEvaluation\Calibration</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DMSpec.rc">
