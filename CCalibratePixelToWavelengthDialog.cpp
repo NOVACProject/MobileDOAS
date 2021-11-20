@@ -554,7 +554,7 @@ void CCalibratePixelToWavelengthDialog::OnClickedButtonRun()
     m_controller->m_initialCalibrationFile = m_setup.m_initialCalibrationFile;
     m_controller->m_initialLineShapeFile = m_setup.m_instrumentLineshapeFile;
     m_controller->m_instrumentLineShapeFitOption = (WavelengthCalibrationController::InstrumentLineShapeFitOption)m_setup.m_fitInstrumentLineShapeOption;
-    m_controller->m_instrumentLineShapeFitRegion = std::make_pair(
+    m_controller->m_instrumentLineShapeFitRegion = novac::WavelengthRange(
         std::atof(m_setup.m_fitInstrumentLineShapeRegionStart),
         std::atof(m_setup.m_fitInstrumentLineShapeRegionStop));
     m_controller->m_crossSectionsForInstrumentLineShapeFitting = m_setup.m_fitInstrumentLineShapeOzoneReference;

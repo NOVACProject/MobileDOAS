@@ -23,7 +23,7 @@ void CMeasurement_Directory::Run() {
 		ShowMessageBox("Error in configuration settings.", "Error");
 		return;
 	}
-	m_spectrometerDynRange = m_conf->m_spectrometerDyanmicRange;
+	m_spectrometerDynRange = m_conf->m_spectrometerDynamicRange;
 
 	// Get directory to watch
 	if (strlen(m_conf->m_directory) == 0) {

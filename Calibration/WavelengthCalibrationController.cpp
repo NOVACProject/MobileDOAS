@@ -23,7 +23,8 @@ std::vector<std::pair<std::string, std::string>> GetFunctionDescription(const no
 
 WavelengthCalibrationController::WavelengthCalibrationController()
     : m_calibrationDebug(0U),
-    m_instrumentLineShapeFitOption(InstrumentLineShapeFitOption::None)
+    m_instrumentLineShapeFitOption(InstrumentLineShapeFitOption::None),
+    m_instrumentLineShapeFitRegion(330.0, 350.0)
 {
 }
 
@@ -154,28 +155,28 @@ void WavelengthCalibrationController::RunCalibration()
 
     if (m_instrumentLineShapeFitOption == WavelengthCalibrationController::InstrumentLineShapeFitOption::SuperGaussian)
     {
-        if (m_instrumentLineShapeFitRegion.first > m_instrumentLineShapeFitRegion.second)
+        if (m_instrumentLineShapeFitRegion.low > m_instrumentLineShapeFitRegion.high)
         {
             std::stringstream msg;
             msg << "Invalid region for fitting the instrument line shape ";
-            msg << "(" << m_instrumentLineShapeFitRegion.first << ", " << m_instrumentLineShapeFitRegion.second << ") [nm]. ";
+            msg << "(" << m_instrumentLineShapeFitRegion.low << ", " << m_instrumentLineShapeFitRegion.high << ") [nm]. ";
             msg << "From must be smaller than To";
             throw std::invalid_argument(msg.str());
         }
-        if (m_instrumentLineShapeFitRegion.first < settings.initialPixelToWavelengthMapping.front() ||
-            m_instrumentLineShapeFitRegion.second > settings.initialPixelToWavelengthMapping.back())
+        if (m_instrumentLineShapeFitRegion.low < settings.initialPixelToWavelengthMapping.front() ||
+            m_instrumentLineShapeFitRegion.high > settings.initialPixelToWavelengthMapping.back())
         {
             std::stringstream msg;
             msg << "Invalid region for fitting the instrument line shape ";
-            msg << "(" << m_instrumentLineShapeFitRegion.first << ", " << m_instrumentLineShapeFitRegion.second << ") [nm]. ";
+            msg << "(" << m_instrumentLineShapeFitRegion.low << ", " << m_instrumentLineShapeFitRegion.high << ") [nm]. ";
             msg << "Region does not overlap initial pixel to wavelength calibration: ";
             msg << "(" << settings.initialPixelToWavelengthMapping.front() << ", " << settings.initialPixelToWavelengthMapping.back() << ") [nm]. ";
             throw std::invalid_argument(msg.str());
         }
 
         settings.estimateInstrumentLineShape = novac::InstrumentLineshapeEstimationOption::SuperGaussian;
-        settings.estimateInstrumentLineShapeWavelengthRegion.first = m_instrumentLineShapeFitRegion.first;
-        settings.estimateInstrumentLineShapeWavelengthRegion.second = m_instrumentLineShapeFitRegion.second;
+        settings.estimateInstrumentLineShapeWavelengthRegion.first = m_instrumentLineShapeFitRegion.low;
+        settings.estimateInstrumentLineShapeWavelengthRegion.second = m_instrumentLineShapeFitRegion.high;
 
         settings.crossSectionsForInstrumentLineShapeFitting.clear();
         if (m_crossSectionsForInstrumentLineShapeFitting.size() > 0)
@@ -202,7 +203,7 @@ void WavelengthCalibrationController::RunCalibration()
     {
         m_resultingCalibration->instrumentLineShape = result.estimatedInstrumentLineShape.m_crossSection;
         m_resultingCalibration->instrumentLineShapeGrid = result.estimatedInstrumentLineShape.m_waveLength;
-        m_resultingCalibration->instrumentLineShapeCenter = 0.5 * (m_instrumentLineShapeFitRegion.first + m_instrumentLineShapeFitRegion.second);
+        m_resultingCalibration->instrumentLineShapeCenter = 0.5 * (m_instrumentLineShapeFitRegion.low + m_instrumentLineShapeFitRegion.high);
     }
 
     if (result.estimatedInstrumentLineShapeParameters != nullptr)

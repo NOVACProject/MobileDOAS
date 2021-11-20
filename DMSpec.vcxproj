@@ -299,6 +299,8 @@
     <ClCompile Include="Common\SpectrumIO.cpp" />
     <ClCompile Include="Common\XMLFileReader.cpp" />
     <ClCompile Include="Configuration\ConfigurationDialog.cpp" />
+    <ClCompile Include="Configuration\ConfigurationFile.cpp" />
+    <ClCompile Include="Configuration\Configure_Calibration.cpp" />
     <ClCompile Include="Configuration\Configure_Evaluation.cpp" />
     <ClCompile Include="Configuration\Configure_GPS.cpp" />
     <ClCompile Include="Configuration\Configure_Spectrometer.cpp" />
@@ -597,6 +599,8 @@
     <ClInclude Include="Common\SpectrumIO.h" />
     <ClInclude Include="Common\XMLFileReader.h" />
     <ClInclude Include="Configuration\ConfigurationDialog.h" />
+    <ClInclude Include="Configuration\ConfigurationFile.h" />
+    <ClInclude Include="Configuration\Configure_Calibration.h" />
     <ClInclude Include="Configuration\Configure_Evaluation.h" />
     <ClInclude Include="Configuration\Configure_GPS.h" />
     <ClInclude Include="Configuration\Configure_Spectrometer.h" />

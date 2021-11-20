@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <SpectralEvaluation/Spectra/WavelengthRange.h>
 
 namespace novac
 {
@@ -58,7 +59,7 @@ public:
     /// <summary>
     /// The wavelength region in which the instrument line shape should be fitted (in nm).
     /// </summary>
-    std::pair<double, double> m_instrumentLineShapeFitRegion;
+    novac::WavelengthRange m_instrumentLineShapeFitRegion;
 
     /// <summary>
     /// One additional cross section to be included when performing the instrument line shape fitting.

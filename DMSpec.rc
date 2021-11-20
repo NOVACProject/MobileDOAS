@@ -59,6 +59,32 @@ BEGIN
     LTEXT           " ",IDC_STATIC_STANDARD_REFERENCES_OUTPUT_FILENAMES,20,110,379,48
 END
 
+IDD_CONFIGURE_CALIBRATION DIALOGEX 0, 0, 392, 214
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Calibration"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "This page specifies the settings to use when performing a calibration during the traverse",IDC_STATIC,7,7,291,8
+    EDITTEXT        IDC_EDIT_SOLAR_SPECTRUM_SETTING,7,33,292,15,ES_AUTOHSCROLL | WS_DISABLED
+    PUSHBUTTON      "Browse...",IDC_BUTTON_BROWSE_SOLAR_SPECTRUM_SETTING,311,31,76,19
+    EDITTEXT        IDC_EDIT_INITIAL_CALIBRATION_SETTING,7,69,292,15,ES_AUTOHSCROLL | WS_DISABLED
+    PUSHBUTTON      "Browse...",IDC_BUTTON_SELECT_INITIAL_CALIBRATION_SETTING,311,67,76,19
+    GROUPBOX        "Instrument Line Shape",IDC_STATIC,7,93,174,116,WS_GROUP
+    LTEXT           "From",IDC_STATIC,28,138,18,8
+    LTEXT           "To",IDC_STATIC,36,154,10,8
+    EDITTEXT        IDC_EDIT_INSTRUMENT_LINE_SHAPE_FIT_REGION_LOW,53,135,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_EDIT_INSTRUMENT_LINE_SHAPE_FIT_REGION_HIGH,53,152,40,14,ES_AUTOHSCROLL
+    LTEXT           "[nm]",IDC_STATIC,99,137,17,8
+    LTEXT           "[nm]",IDC_STATIC,100,154,17,8
+    CONTROL         "Do not fit an Instrument Line Shape (faster)",IDC_RADIO_INSTRUMENT_LINE_SHAPE_FIT_NOTHING,
+                    "Button",BS_AUTORADIOBUTTON | WS_GROUP,13,106,159,10
+    CONTROL         "Fit a Super Gaussian Instrument Line Shape",IDC_RADIO_INSTRUMENT_LINE_SHAPE_FIT_SUPER_GAUSS,
+                    "Button",BS_AUTORADIOBUTTON,13,121,159,10
+    LTEXT           "High Resolved Solar Spectrum",IDC_STATIC,7,22,100,8
+    LTEXT           "Initial Calibration",IDC_STATIC,7,59,56,8
+    GROUPBOX        "References",IDC_STATIC,190,93,195,116,WS_GROUP
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -82,6 +108,13 @@ BEGIN
         RIGHTMARGIN, 412
         TOPMARGIN, 7
         BOTTOMMARGIN, 192
+    END
+
+    IDD_CONFIGURE_CALIBRATION, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 209
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -121,6 +154,11 @@ BEGIN
     0
 END
 
+IDD_CONFIGURE_CALIBRATION AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
 #endif    // Neutral resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -131,135 +169,6 @@ END
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Bitmap
-//
-
-IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
-
-IDB_GREEN               BITMAP                  "res\\green.bmp"
-
-IDB_YELLOW              BITMAP                  "res\\bitmap2.bmp"
-
-IDB_RED                 BITMAP                  "res\\green1.bmp"
-
-IDB_ROUTE_LEGEND        BITMAP                  "res\\route_legend.bmp"
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Toolbar
-//
-
-IDR_MAINFRAME TOOLBAR 16, 15
-BEGIN
-    BUTTON      IDC_BTNSTART
-    BUTTON      ID_CONTROL_STOP
-    BUTTON      ID_APP_EXIT
-    SEPARATOR
-    BUTTON      ID_CONFIGURATION_OPERATION
-    SEPARATOR
-    BUTTON      ID_ANALYSIS_POSTFLUX
-    BUTTON      ID_CONTROL_REEVALUATE
-    SEPARATOR
-    BUTTON      ID_CONTROL_STARTWINDMEASUREMENT
-    BUTTON      ID_CONTROL_VIEWSPECTRAFROMSPECTROMETER
-    SEPARATOR
-    BUTTON      ID_HELP_ABOUTMOBILEDOAS
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Menu
-//
-
-IDR_MAINFRAME MENU
-BEGIN
-    POPUP "&Control"
-    BEGIN
-        MENUITEM "Start Traverse",              1041
-        MENUITEM "Stop",                        ID_CONTROL_STOP
-        MENUITEM SEPARATOR
-        MENUITEM "View Spectrometer Output",    ID_CONTROL_VIEWSPECTRAFROMSPECTROMETER
-        MENUITEM "Start WindMeasurement",       ID_CONTROL_STARTWINDMEASUREMENT
-        MENUITEM SEPARATOR
-        MENUITEM "Test the &GPS",               ID_CONTROL_TESTTHEGPS
-        MENUITEM "Start the GPS",               ID_CONTROL_STARTTHEGPS
-        MENUITEM SEPARATOR
-        MENUITEM "Realtime Flux",               ID_CONTROL_COUNTFLUX
-        MENUITEM "Calculate Flux From File",    ID_ANALYSIS_POSTFLUX
-        MENUITEM SEPARATOR
-        MENUITEM "Add Comment",                 ID_CONTROL_ADDCOMMENT
-        MENUITEM SEPARATOR
-        MENUITEM "Exit",                        ID_APP_EXIT
-    END
-    POPUP "Con&figuration"
-    BEGIN
-        MENUITEM "Operation Setting",           ID_CONFIGURATION_OPERATION
-        POPUP "Plot Setting"
-        BEGIN
-            MENUITEM "Set Background Color",        ID_CONFIGURATION_PLOT_CHANGEBACKGROUND
-            MENUITEM "Set Plot Color",              ID_CONFIGURATION_PLOT_CHANGEPLOTCOLOR
-            MENUITEM "Set Plot Color (Slave)",      32784
-        END
-    END
-    POPUP "&Analysis"
-    BEGIN
-        MENUITEM "&ReEvaluate Traverse",        ID_CONTROL_REEVALUATE
-        MENUITEM SEPARATOR
-        MENUITEM "Calculate &Flux From File",   ID_ANALYSIS_POSTFLUX
-        MENUITEM SEPARATOR
-        MENUITEM "&PlumeHeight Measurement",    ID_ANALYSIS_PLUMEHEIGHTMEASUREMENT, INACTIVE
-        MENUITEM "&WindSpeed Measurement",      ID_ANALYSIS_WINDSPEEDMEASUREMENT, INACTIVE
-        MENUITEM SEPARATOR
-        MENUITEM "&View Measured Spectra",      ID_ANALYSIS_VIEWMEASUREDSPECTRA
-        MENUITEM SEPARATOR
-        MENUITEM "Calibrate Spectrometer",      ID_ANALYSIS_CALIBRATESPECTROMETER
-    END
-    POPUP "&View"
-    BEGIN
-        MENUITEM "RealTime Route",              ID_VIEW_REALTIMEROUTE
-        MENUITEM "Spectrum Fit",                ID_VIEW_SPECTRUMFIT
-        MENUITEM SEPARATOR
-        MENUITEM "Column Error",                ID_VIEW_COLUMNERROR
-        MENUITEM SEPARATOR
-        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
-        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
-    END
-    POPUP "&Help"
-    BEGIN
-        MENUITEM "&About Mobile DOAS...",       ID_APP_ABOUT
-    END
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Accelerator
-//
-
-IDR_MAINFRAME ACCELERATORS
-BEGIN
-    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
-    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
-    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT, NOINVERT
-    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL, NOINVERT
-    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
-    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT, NOINVERT
-    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT, NOINVERT
-    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL, NOINVERT
-    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
-    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
-    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
-    VK_F6,          ID_NEXT_PANE,           VIRTKEY, NOINVERT
-    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT, NOINVERT
-    VK_OEM_PLUS,    ID_COLUMNGRAPH_INCREASELINEWIDTH, VIRTKEY, CONTROL, NOINVERT
-    VK_INSERT,      ID_COLUMNGRAPH_DECREASELINEWIDTH, VIRTKEY, CONTROL, NOINVERT
-END
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -458,8 +367,8 @@ STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Evaluation"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    LTEXT           "Fit To:",IDC_STATIC,112,32,22,8
-    LTEXT           "Fit From:",IDC_STATIC,112,19,30,8
+    LTEXT           "Fit To:",IDC_STATIC,109,32,22,8
+    LTEXT           "Fit From:",IDC_STATIC,109,19,30,8
     EDITTEXT        IDC_EDIT_FITFROM,152,17,36,12,ES_AUTOHSCROLL
     EDITTEXT        IDC_EDIT_FITTO,152,30,36,12,ES_AUTOHSCROLL
     GROUPBOX        "References",IDC_REFERENCE_FRAME,7,69,378,113
@@ -469,7 +378,7 @@ BEGIN
     LISTBOX         IDC_REEVAL_FITWINDOWLIST,15,17,72,38,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
     GROUPBOX        "Fit Parameters",IDC_STATIC,102,7,134,55
     EDITTEXT        IDC_REEVAL_WINDOW_POLYNOM2,152,43,53,13,ES_AUTOHSCROLL
-    LTEXT           "Polynom:",IDC_STATIC,109,46,30,8
+    LTEXT           "Polynomial:",IDC_STATIC,109,46,39,8
     PUSHBUTTON      "Insert Reference",IDC_INSERT_REFERENCE,140,193,67,14
     PUSHBUTTON      "Remove Reference",IDC_REMOVE_REFERENCE,210,193,67,14
     GROUPBOX        "Misc.",IDC_STATIC,246,7,134,55
@@ -477,6 +386,8 @@ BEGIN
     COMBOBOX        IDC_COMBO_CHANNEL,332,15,44,139,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "View",IDC_REFERENCE_VIEW,334,193,51,14
     PUSHBUTTON      "Properties",IDC_REFERENCE_PROPERTIES,280,193,51,14
+    CONTROL         "Start with instrument calibration (replaces references)",IDC_CHECK_STARTMEASUREMENTBYCALIBRATION,
+                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,254,31,121,19
 END
 
 IDD_CONFIGURE_SPECTROMETER DIALOGEX 0, 0, 341, 213
@@ -568,45 +479,6 @@ BEGIN
     LTEXT           "Default darkcur file, if darkcur_0.std does not exist (adaptive mode only):",IDC_STATIC,14,130,237,8
     EDITTEXT        IDC_EDIT_DYNAMIC_RANGE,14,46,40,14,ES_AUTOHSCROLL
     LTEXT           "Spectrometer Dynamic Range",IDC_STATIC,59,49,96,8
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Version
-//
-
-VS_VERSION_INFO VERSIONINFO
- FILEVERSION 6,1,0,0
- PRODUCTVERSION 6,1,0,0
- FILEFLAGSMASK 0x3fL
-#ifdef _DEBUG
- FILEFLAGS 0x1L
-#else
- FILEFLAGS 0x0L
-#endif
- FILEOS 0x4L
- FILETYPE 0x1L
- FILESUBTYPE 0x0L
-BEGIN
-    BLOCK "StringFileInfo"
-    BEGIN
-        BLOCK "040904b0"
-        BEGIN
-            VALUE "CompanyName", "Chalmers University of Technology"
-            VALUE "FileDescription", "MobileDOAS"
-            VALUE "FileVersion", "6.1.0.0"
-            VALUE "InternalName", "MobileDOAS"
-            VALUE "LegalCopyright", "Copyright (C) 2003-2017"
-            VALUE "OriginalFilename", "MobileDOAS.EXE"
-            VALUE "ProductName", "MobileDOAS"
-            VALUE "ProductVersion", "6.1.0.0"
-        END
-    END
-    BLOCK "VarFileInfo"
-    BEGIN
-        VALUE "Translation", 0x409, 1200
-    END
 END
 
 
@@ -762,6 +634,174 @@ END
 IDD_CONFIGURE_DIRECTORY AFX_DIALOG_LAYOUT
 BEGIN
     0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
+
+IDB_GREEN               BITMAP                  "res\\green.bmp"
+
+IDB_YELLOW              BITMAP                  "res\\bitmap2.bmp"
+
+IDB_RED                 BITMAP                  "res\\green1.bmp"
+
+IDB_ROUTE_LEGEND        BITMAP                  "res\\route_legend.bmp"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_MAINFRAME TOOLBAR 16, 15
+BEGIN
+    BUTTON      IDC_BTNSTART
+    BUTTON      ID_CONTROL_STOP
+    BUTTON      ID_APP_EXIT
+    SEPARATOR
+    BUTTON      ID_CONFIGURATION_OPERATION
+    SEPARATOR
+    BUTTON      ID_ANALYSIS_POSTFLUX
+    BUTTON      ID_CONTROL_REEVALUATE
+    SEPARATOR
+    BUTTON      ID_CONTROL_STARTWINDMEASUREMENT
+    BUTTON      ID_CONTROL_VIEWSPECTRAFROMSPECTROMETER
+    SEPARATOR
+    BUTTON      ID_HELP_ABOUTMOBILEDOAS
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU
+BEGIN
+    POPUP "&Control"
+    BEGIN
+        MENUITEM "Start Traverse",              1041
+        MENUITEM "Stop",                        ID_CONTROL_STOP
+        MENUITEM SEPARATOR
+        MENUITEM "View Spectrometer Output",    ID_CONTROL_VIEWSPECTRAFROMSPECTROMETER
+        MENUITEM "Start WindMeasurement",       ID_CONTROL_STARTWINDMEASUREMENT
+        MENUITEM SEPARATOR
+        MENUITEM "Test the &GPS",               ID_CONTROL_TESTTHEGPS
+        MENUITEM "Start the GPS",               ID_CONTROL_STARTTHEGPS
+        MENUITEM SEPARATOR
+        MENUITEM "Realtime Flux",               ID_CONTROL_COUNTFLUX
+        MENUITEM "Calculate Flux From File",    ID_ANALYSIS_POSTFLUX
+        MENUITEM SEPARATOR
+        MENUITEM "Add Comment",                 ID_CONTROL_ADDCOMMENT
+        MENUITEM SEPARATOR
+        MENUITEM "Exit",                        ID_APP_EXIT
+    END
+    POPUP "Con&figuration"
+    BEGIN
+        MENUITEM "Operation Setting",           ID_CONFIGURATION_OPERATION
+        POPUP "Plot Setting"
+        BEGIN
+            MENUITEM "Set Background Color",        ID_CONFIGURATION_PLOT_CHANGEBACKGROUND
+            MENUITEM "Set Plot Color",              ID_CONFIGURATION_PLOT_CHANGEPLOTCOLOR
+            MENUITEM "Set Plot Color (Slave)",      32784
+        END
+    END
+    POPUP "&Analysis"
+    BEGIN
+        MENUITEM "&ReEvaluate Traverse",        ID_CONTROL_REEVALUATE
+        MENUITEM SEPARATOR
+        MENUITEM "Calculate &Flux From File",   ID_ANALYSIS_POSTFLUX
+        MENUITEM SEPARATOR
+        MENUITEM "&PlumeHeight Measurement",    ID_ANALYSIS_PLUMEHEIGHTMEASUREMENT, INACTIVE
+        MENUITEM "&WindSpeed Measurement",      ID_ANALYSIS_WINDSPEEDMEASUREMENT, INACTIVE
+        MENUITEM SEPARATOR
+        MENUITEM "&View Measured Spectra",      ID_ANALYSIS_VIEWMEASUREDSPECTRA
+        MENUITEM SEPARATOR
+        MENUITEM "Calibrate Spectrometer",      ID_ANALYSIS_CALIBRATESPECTROMETER
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "RealTime Route",              ID_VIEW_REALTIMEROUTE
+        MENUITEM "Spectrum Fit",                ID_VIEW_SPECTRUMFIT
+        MENUITEM SEPARATOR
+        MENUITEM "Column Error",                ID_VIEW_COLUMNERROR
+        MENUITEM SEPARATOR
+        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
+        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About Mobile DOAS...",       ID_APP_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS
+BEGIN
+    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
+    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
+    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT, NOINVERT
+    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL, NOINVERT
+    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
+    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT, NOINVERT
+    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT, NOINVERT
+    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL, NOINVERT
+    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
+    VK_F6,          ID_NEXT_PANE,           VIRTKEY, NOINVERT
+    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT, NOINVERT
+    VK_OEM_PLUS,    ID_COLUMNGRAPH_INCREASELINEWIDTH, VIRTKEY, CONTROL, NOINVERT
+    VK_INSERT,      ID_COLUMNGRAPH_DECREASELINEWIDTH, VIRTKEY, CONTROL, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 6,1,0,0
+ PRODUCTVERSION 6,1,0,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName", "Chalmers University of Technology"
+            VALUE "FileDescription", "MobileDOAS"
+            VALUE "FileVersion", "6.1.0.0"
+            VALUE "InternalName", "MobileDOAS"
+            VALUE "LegalCopyright", "Copyright (C) 2003-2017"
+            VALUE "OriginalFilename", "MobileDOAS.EXE"
+            VALUE "ProductName", "MobileDOAS"
+            VALUE "ProductVersion", "6.1.0.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
 END
 
 
@@ -999,181 +1039,6 @@ END
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_SVE)
 LANGUAGE LANG_SWEDISH, SUBLANG_SWEDISH
 #pragma code_page(1252)
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Bitmap
-//
-
-IDB_BLUE                BITMAP                  "res\\bmp00002.bmp"
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Menu
-//
-
-IDR_FLUX_MENU MENU
-BEGIN
-    POPUP "&File"
-    BEGIN
-        MENUITEM "&Open Log File",              ID_FILE_OPENLOGFILE
-        MENUITEM "&Reload This Log File",       169
-        MENUITEM "Re&Evaluate This Log File",   155
-        MENUITEM SEPARATOR
-        MENUITEM "Create Additional Log File",  ID_FILE_CREATEADDITIONALLOGFILE
-        MENUITEM SEPARATOR
-        MENUITEM "E&xport This Log File",       ID_FILE_EXPORTTHISLOGFILE
-        MENUITEM "&Save Column Graph",          ID_FILE_SAVECOLUMNGRAPH
-        MENUITEM "Export traverse to &Google Earth", ID_FILE_EXPORT_TRAVERSE_TO_KML
-        MENUITEM SEPARATOR
-        MENUITEM "Close &All Log Files",        ID_FILE_CLOSEALLLOGFILES
-    END
-    POPUP "&Edit"
-    BEGIN
-        MENUITEM "Delete &Selected",            1053
-        MENUITEM "Delete &Low/High Intensity Points", 1106
-        MENUITEM SEPARATOR
-        MENUITEM "Import &Wind Field",          1057
-    END
-    POPUP "&View"
-    BEGIN
-        MENUITEM "Show &Intensity",             ID_VIEW_SHOWINTENSITY
-        MENUITEM "Show Column &Error",          ID_VIEW_SHOWCOLUMNERROR
-        MENUITEM "Show &Route Map",             1056
-        MENUITEM SEPARATOR
-        POPUP "X Axis Format"
-        BEGIN
-            MENUITEM "Show vs Time",                ID_VIEW_SHOWVSTIME
-            MENUITEM "Show vs Distance Travelled",  ID_VIEW_SHOWVSDISTANCETRAVELLED
-            MENUITEM "Show vs Measurement Number",  ID_VIEW_SHOWVSMEASUREMENTNUMBER
-        END
-        MENUITEM SEPARATOR
-        POPUP "Column Graph"
-        BEGIN
-            MENUITEM "Increase Line Width",         ID_COLUMNGRAPH_INCREASELINEWIDTH
-            MENUITEM "Decrease Line Width",         ID_COLUMNGRAPH_DECREASELINEWIDTH
-        END
-    END
-    POPUP "&Help"
-    BEGIN
-        MENUITEM "About Mobile DOAS",           57664
-    END
-END
-
-IDR_FLUX_PATH_MENU MENU
-BEGIN
-    POPUP ""
-    BEGIN
-        MENUITEM "Open New Log File",           162
-        MENUITEM "Reload This Log File",        ID_RELOAD_LOGFILE
-        MENUITEM "ReEvaluate This Log File",    155
-    END
-END
-
-IDR_REEVAL_CONTEXTMENU MENU
-BEGIN
-    POPUP ""
-    BEGIN
-        MENUITEM "Insert Reference",            ID__INSERT
-        MENUITEM "Remove Reference",            ID__REMOVE
-    END
-END
-
-IDR_ROUTEDLG_MENU MENU
-BEGIN
-    POPUP "&File"
-    BEGIN
-        MENUITEM "Save Graph as &Image",        ID_FILE_SAVEGRAPHASIMAGE
-    END
-    POPUP "&View"
-    BEGIN
-        POPUP "&Change Colors"
-        BEGIN
-            MENUITEM "&Background",                 ID_COLORS_BACKGROUND
-            MENUITEM "&Grid",                       ID_CHANGECOLORS_GRID
-            MENUITEM "Circles",                     ID_CHANGECOLORS_CIRCLES
-            MENUITEM "&WindField",                  ID_CHANGECOLORS_WINDFIELD
-            MENUITEM SEPARATOR
-            MENUITEM "ColorScheme - B && W",        ID_CHANGECOLORS_COLORSCALEBW
-            MENUITEM "ColorScheme - Default",       ID_CHANGECOLORS_COLORSCALEDEFAULT
-        END
-        POPUP "Grid"
-        BEGIN
-            MENUITEM "Increase",                    ID_GRID_INCREASE
-            MENUITEM "Decrease",                    ID_GRID_DECREASE
-        END
-        MENUITEM SEPARATOR
-        MENUITEM "&Show/Hide Scale",            ID_SHOWHIDESCALE
-        MENUITEM SEPARATOR
-        POPUP "Indicate Column Value By"
-        BEGIN
-            MENUITEM "Color",                       ID_INDICATECOLUMNVALUEBY_COLOR
-            MENUITEM "Size of Circle",              ID_INDICATECOLUMNVALUEBY_SIZEOFCIRCLE
-        END
-    END
-END
-
-IDR_FLUX_VIEW_MENU MENU
-BEGIN
-    POPUP ""
-    BEGIN
-        MENUITEM "Show &Intensity",             159
-        MENUITEM "Show Column &Error",          211
-        MENUITEM "Show &Route Map",             1056
-        POPUP "X Axis Format"
-        BEGIN
-            MENUITEM "Show vs Time",                249
-            MENUITEM "Show vs Distance Travelled",  252
-            MENUITEM "Show vs Measurement Number",  253
-        END
-        POPUP "Column Graph"
-        BEGIN
-            MENUITEM "Increase Line Width",         171
-            MENUITEM "Decrease Line Width",         172
-        END
-    END
-END
-
-IDR_FITWINDOWLIST_MENU MENU
-BEGIN
-    POPUP ""
-    BEGIN
-        MENUITEM "Insert",                      ID__INSERTFITWINDOW
-        MENUITEM "Remove",                      ID__REMOVEWINDOW
-        MENUITEM SEPARATOR
-        MENUITEM "Rename Window",               ID__RENAMEWINDOW
-    END
-END
-
-IDR_REEVAL_DLG_MENU MENU
-BEGIN
-    POPUP "&File"
-    BEGIN
-        MENUITEM "&Browse for EvaluationLog",   ID_FILE_BROWSEFOREVALUATIONLOG
-        MENUITEM "&Close",                      ID_FILE_CLOSE239
-    END
-    POPUP "&Settings"
-    BEGIN
-        MENUITEM "&Load Settings from File",    ID_FILE_LOADSETTINGSFROMFILE
-        MENUITEM "&Save Settings to File",      ID_FILE_SAVESETTINGSTOFILE
-    END
-    POPUP "S&cript"
-    BEGIN
-        MENUITEM "&Create Script",              ID_SCRIPT_CREATESCRIPT
-        MENUITEM "&Run Script",                 ID_SCRIPT_RUNSCRIPT
-    END
-END
-
-IDR_MENU_REEVAL_SCRIPT MENU
-BEGIN
-    POPUP "&File"
-    BEGIN
-        MENUITEM "&Load Script",                ID_FILE_LOADSCRIPT
-        MENUITEM "&Save Script",                ID_FILE_SAVESCRIPT
-    END
-END
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1946,6 +1811,181 @@ END
 IDD_VIEW_LOG_DIALOG AFX_DIALOG_LAYOUT
 BEGIN
     0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_BLUE                BITMAP                  "res\\bmp00002.bmp"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_FLUX_MENU MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Open Log File",              ID_FILE_OPENLOGFILE
+        MENUITEM "&Reload This Log File",       169
+        MENUITEM "Re&Evaluate This Log File",   155
+        MENUITEM SEPARATOR
+        MENUITEM "Create Additional Log File",  ID_FILE_CREATEADDITIONALLOGFILE
+        MENUITEM SEPARATOR
+        MENUITEM "E&xport This Log File",       ID_FILE_EXPORTTHISLOGFILE
+        MENUITEM "&Save Column Graph",          ID_FILE_SAVECOLUMNGRAPH
+        MENUITEM "Export traverse to &Google Earth", ID_FILE_EXPORT_TRAVERSE_TO_KML
+        MENUITEM SEPARATOR
+        MENUITEM "Close &All Log Files",        ID_FILE_CLOSEALLLOGFILES
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "Delete &Selected",            1053
+        MENUITEM "Delete &Low/High Intensity Points", 1106
+        MENUITEM SEPARATOR
+        MENUITEM "Import &Wind Field",          1057
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "Show &Intensity",             ID_VIEW_SHOWINTENSITY
+        MENUITEM "Show Column &Error",          ID_VIEW_SHOWCOLUMNERROR
+        MENUITEM "Show &Route Map",             1056
+        MENUITEM SEPARATOR
+        POPUP "X Axis Format"
+        BEGIN
+            MENUITEM "Show vs Time",                ID_VIEW_SHOWVSTIME
+            MENUITEM "Show vs Distance Travelled",  ID_VIEW_SHOWVSDISTANCETRAVELLED
+            MENUITEM "Show vs Measurement Number",  ID_VIEW_SHOWVSMEASUREMENTNUMBER
+        END
+        MENUITEM SEPARATOR
+        POPUP "Column Graph"
+        BEGIN
+            MENUITEM "Increase Line Width",         ID_COLUMNGRAPH_INCREASELINEWIDTH
+            MENUITEM "Decrease Line Width",         ID_COLUMNGRAPH_DECREASELINEWIDTH
+        END
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "About Mobile DOAS",           57664
+    END
+END
+
+IDR_FLUX_PATH_MENU MENU
+BEGIN
+    POPUP ""
+    BEGIN
+        MENUITEM "Open New Log File",           162
+        MENUITEM "Reload This Log File",        ID_RELOAD_LOGFILE
+        MENUITEM "ReEvaluate This Log File",    155
+    END
+END
+
+IDR_REEVAL_CONTEXTMENU MENU
+BEGIN
+    POPUP ""
+    BEGIN
+        MENUITEM "Insert Reference",            ID__INSERT
+        MENUITEM "Remove Reference",            ID__REMOVE
+    END
+END
+
+IDR_ROUTEDLG_MENU MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "Save Graph as &Image",        ID_FILE_SAVEGRAPHASIMAGE
+    END
+    POPUP "&View"
+    BEGIN
+        POPUP "&Change Colors"
+        BEGIN
+            MENUITEM "&Background",                 ID_COLORS_BACKGROUND
+            MENUITEM "&Grid",                       ID_CHANGECOLORS_GRID
+            MENUITEM "Circles",                     ID_CHANGECOLORS_CIRCLES
+            MENUITEM "&WindField",                  ID_CHANGECOLORS_WINDFIELD
+            MENUITEM SEPARATOR
+            MENUITEM "ColorScheme - B && W",        ID_CHANGECOLORS_COLORSCALEBW
+            MENUITEM "ColorScheme - Default",       ID_CHANGECOLORS_COLORSCALEDEFAULT
+        END
+        POPUP "Grid"
+        BEGIN
+            MENUITEM "Increase",                    ID_GRID_INCREASE
+            MENUITEM "Decrease",                    ID_GRID_DECREASE
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "&Show/Hide Scale",            ID_SHOWHIDESCALE
+        MENUITEM SEPARATOR
+        POPUP "Indicate Column Value By"
+        BEGIN
+            MENUITEM "Color",                       ID_INDICATECOLUMNVALUEBY_COLOR
+            MENUITEM "Size of Circle",              ID_INDICATECOLUMNVALUEBY_SIZEOFCIRCLE
+        END
+    END
+END
+
+IDR_FLUX_VIEW_MENU MENU
+BEGIN
+    POPUP ""
+    BEGIN
+        MENUITEM "Show &Intensity",             159
+        MENUITEM "Show Column &Error",          211
+        MENUITEM "Show &Route Map",             1056
+        POPUP "X Axis Format"
+        BEGIN
+            MENUITEM "Show vs Time",                249
+            MENUITEM "Show vs Distance Travelled",  252
+            MENUITEM "Show vs Measurement Number",  253
+        END
+        POPUP "Column Graph"
+        BEGIN
+            MENUITEM "Increase Line Width",         171
+            MENUITEM "Decrease Line Width",         172
+        END
+    END
+END
+
+IDR_FITWINDOWLIST_MENU MENU
+BEGIN
+    POPUP ""
+    BEGIN
+        MENUITEM "Insert",                      ID__INSERTFITWINDOW
+        MENUITEM "Remove",                      ID__REMOVEWINDOW
+        MENUITEM SEPARATOR
+        MENUITEM "Rename Window",               ID__RENAMEWINDOW
+    END
+END
+
+IDR_REEVAL_DLG_MENU MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Browse for EvaluationLog",   ID_FILE_BROWSEFOREVALUATIONLOG
+        MENUITEM "&Close",                      ID_FILE_CLOSE239
+    END
+    POPUP "&Settings"
+    BEGIN
+        MENUITEM "&Load Settings from File",    ID_FILE_LOADSETTINGSFROMFILE
+        MENUITEM "&Save Settings to File",      ID_FILE_SAVESETTINGSTOFILE
+    END
+    POPUP "S&cript"
+    BEGIN
+        MENUITEM "&Create Script",              ID_SCRIPT_CREATESCRIPT
+        MENUITEM "&Run Script",                 ID_SCRIPT_RUNSCRIPT
+    END
+END
+
+IDR_MENU_REEVAL_SCRIPT MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Load Script",                ID_FILE_LOADSCRIPT
+        MENUITEM "&Save Script",                ID_FILE_SAVESCRIPT
+    END
 END
 
 

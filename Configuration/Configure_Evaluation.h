@@ -7,95 +7,97 @@
 
 // CConfigure_Evaluation dialog
 
-namespace Configuration{
+namespace Configuration {
 
-	class CConfigure_Evaluation : public CPropertyPage
-	{
-		DECLARE_DYNAMIC(CConfigure_Evaluation)
+class CConfigure_Evaluation : public CPropertyPage
+{
+    DECLARE_DYNAMIC(CConfigure_Evaluation)
 
-	public:
-		CConfigure_Evaluation();
-		virtual ~CConfigure_Evaluation();
+public:
+    CConfigure_Evaluation();
+    virtual ~CConfigure_Evaluation();
 
-	// Dialog Data
-		enum { IDD = IDD_CONFIGURE_EVALUATION };
+    // Dialog Data
+    enum { IDD = IDD_CONFIGURE_EVALUATION };
 
-		/** The local handle to the CMobileConfiguration object that we're changing */
-		std::shared_ptr<CMobileConfiguration> m_conf;
+    /** The local handle to the CMobileConfiguration object that we're changing */
+    std::shared_ptr<CMobileConfiguration> m_conf;
 
-		/** The local handle to the option of wheather to use this window or not */
-		int		*m_Evaluate;
+    /** The local handle to the option of wheather to use this window or not */
+    int* m_Evaluate;
 
-		/** The main-specie that this window evaluates for */
-		CString	m_specieName;
+    /** The main-specie that this window evaluates for */
+    CString m_specieName;
 
-	protected:
-		virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+protected:
+    virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
-		DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 
-		/** Called when the dialog is to be shown */
-		virtual BOOL OnInitDialog();
+    /** Called when the dialog is to be shown */
+    virtual BOOL OnInitDialog();
 
-		/** Enables the controls that should be enabled, and disables
-				the ones which should be disabled */
-		//afx_msg void EnableControls();
+    /** Enables the controls that should be enabled, and disables
+            the ones which should be disabled */
+            //afx_msg void EnableControls();
 
-		/** Saves the data in the dialog */
-		afx_msg void SaveData();
+    /** Saves the data in the dialog */
+    afx_msg void SaveData();
 
-		/** The user has changed the currently selected fit-window */
-		afx_msg void OnChangeFitWindow();
-		
-		/** Called when the user wants to see the
-		properties of one reference */
-		void OnShowProperties();
+    /** The user has changed the currently selected fit-window */
+    afx_msg void OnChangeFitWindow();
 
-		/** Called when the user wants to see the 
-			size of the references */
-		void OnShowReferenceGraph();
-		
-		/** Inititalizes the reference-file control */
-		void InitReferenceFileControl();
+    /** Called when the user wants to see the
+    properties of one reference */
+    void OnShowProperties();
 
-		/** Fills in the cells of the reference-file control */
-		void PopulateReferenceFileControl();
+    /** Called when the user wants to see the
+        size of the references */
+    void OnShowReferenceGraph();
 
-		/** Fills the window list with names */
-		void PopulateWindowList();
+    /** Inititalizes the reference-file control */
+    void InitReferenceFileControl();
 
-		/** Called when the user wants to remove a reference from the fit window. */
-		void OnRemoveReference();
+    /** Fills in the cells of the reference-file control */
+    void PopulateReferenceFileControl();
 
-		/** Called when the user wants to insert a new reference to the fit window. */
-		void OnInsertReference();
+    /** Fills the window list with names */
+    void PopulateWindowList();
 
-		/** Setup the tool tips */
-		void InitToolTips();
+    /** Called when the user wants to remove a reference from the fit window. */
+    void OnRemoveReference();
 
-		/** Handling the tool tips */
-		virtual BOOL PreTranslateMessage(MSG* pMsg); 
+    /** Called when the user wants to insert a new reference to the fit window. */
+    void OnInsertReference();
 
-		// -------------- DIALOG COMPONENTS -----------------
+    /** Setup the tool tips */
+    void InitToolTips();
 
-		/** The frame for defining the size of the reference file control */ 
-		CStatic m_referenceFrame;
+    /** Handling the tool tips */
+    virtual BOOL PreTranslateMessage(MSG* pMsg);
 
-		/** The list of fit-windows */
-		DlgControls::CFitWindowListBox m_windowList;
+    // -------------- DIALOG COMPONENTS -----------------
 
-		/** The reference grid, enables the user to select reference files */
-		DlgControls::CReferenceFileControl m_referenceGrid;
+    /** The frame for defining the size of the reference file control */
+    CStatic m_referenceFrame;
 
-		/** The tooltip control */
-		CToolTipCtrl m_toolTip;
+    /** The list of fit-windows */
+    DlgControls::CFitWindowListBox m_windowList;
 
-		// -------------------- PROTECTED DATA --------------------------
+    /** The reference grid, enables the user to select reference files */
+    DlgControls::CReferenceFileControl m_referenceGrid;
 
-		/** Fit parameters */
-		int m_fitHigh, m_fitLow, m_polyOrder;
-		int m_fitChannel;
+    /** The tooltip control */
+    CToolTipCtrl m_toolTip;
 
-		// -------------------- PROTECTED METHODS --------------------------
-	};
+    // -------------------- PROTECTED DATA --------------------------
+
+    /** Fit parameters */
+    int m_fitHigh, m_fitLow, m_polyOrder;
+    int m_fitChannel;
+
+    int m_runCalibrationInMeasurement;
+
+    // -------------------- PROTECTED METHODS --------------------------
+};
 }

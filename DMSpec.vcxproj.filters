@@ -483,6 +483,12 @@
     <ClCompile Include="CCalibratePixelToWavelengthSetupDialog.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
+    <ClCompile Include="Configuration\Configure_Calibration.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Configuration\ConfigurationFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DMSpec.rc">
@@ -902,6 +908,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CLogDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Configuration\Configure_Calibration.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Configuration\ConfigurationFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
