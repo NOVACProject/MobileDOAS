@@ -4,10 +4,12 @@
 #undef min
 
 #include <sstream>
+#include <chrono>
 #include "WavelengthCalibrationController.h"
 #include <SpectralEvaluation/VectorUtils.h>
 #include <SpectralEvaluation/StringUtils.h>
 #include <SpectralEvaluation/Spectra/Spectrum.h>
+#include <SpectralEvaluation/Spectra/SpectrometerModel.h>
 #include <SpectralEvaluation/File/File.h>
 #include <SpectralEvaluation/Calibration/Correspondence.h>
 #include <SpectralEvaluation/Calibration/InstrumentCalibration.h>
@@ -70,6 +72,8 @@ void WavelengthCalibrationController::RunCalibration()
     m_log.clear();
     m_instrumentLineShapeParameterDescriptions.clear();
 
+    auto startTime = std::chrono::steady_clock::now();
+
     novac::WavelengthCalibrationSettings settings;
     settings.highResSolarAtlas = m_solarSpectrumFile;
 
@@ -87,6 +91,12 @@ void WavelengthCalibrationController::RunCalibration()
         measuredSpectrum.Sub(darkSpectrum);
         Log("Read and subtracted dark spectrum: ", m_darkSpectrumFile);
     }
+
+    // Copy out the spectrum, such that the user can see it.
+    m_calibrationDebug.measuredSpectrum = std::vector<double>(measuredSpectrum.m_data, measuredSpectrum.m_data + measuredSpectrum.m_length);
+
+    // Check that this is a good measurement, according to our standards.
+    CheckSpectrumQuality(measuredSpectrum);
 
     // Read the initial calibration
     m_initialCalibration = std::make_unique<novac::InstrumentCalibration>();
@@ -247,7 +257,12 @@ void WavelengthCalibrationController::RunCalibration()
         }
     }
 
-    Log("Instrument calibration done");
+    auto stopTime = std::chrono::steady_clock::now();
+    {
+        std::stringstream message;
+        message << "Instrument calibration done in " << std::chrono::duration_cast<std::chrono::seconds>(stopTime - startTime).count() << " s";
+        Log(message.str());
+    }
 }
 
 void WavelengthCalibrationController::SaveResultAsStd(const std::string& filename)
@@ -298,6 +313,30 @@ void WavelengthCalibrationController::SaveResultAsSlf(const std::string& filenam
     novac::SaveCrossSectionFile(filename, instrumentLineShape);
 }
 
+void WavelengthCalibrationController::CheckSpectrumQuality(const novac::CSpectrum& spectrum)
+{
+    const auto model = novac::CSpectrometerDatabase::GetInstance().GuessModelFromSerial(spectrum.m_info.m_device);
+    const double maximumSaturationRatio = novac::GetMaximumSaturationRatioOfSpectrum(spectrum, model);
+
+    if (maximumSaturationRatio > 0.85)
+    {
+        std::stringstream message;
+        message << "The provided sky spectrum seems to be saturated ";
+        message << "(maximum intensity: " << spectrum.MaxValue(0, spectrum.m_length) << ", corresponding to : " << 100 * maximumSaturationRatio << "% of full range).";
+        message << " Spectrometer model: " << model.modelName;
+        Log(message.str());
+    }
+
+    if (maximumSaturationRatio < 0.20)
+    {
+        std::stringstream message;
+        message << "The provided sky spectrum seems to be too dark for the calibration to succeed ";
+        message << "(maximum intensity: " << spectrum.MaxValue(0, spectrum.m_length) << ", corresponding to : " << 100 * maximumSaturationRatio << "% of full range).";
+        message << " Spectrometer model: " << model.modelName;
+        Log(message.str());
+    }
+}
+
 void WavelengthCalibrationController::ClearResult()
 {
     m_calibrationDebug = WavelengthCalibrationController::WavelengthCalibrationDebugState(0U);
@@ -305,6 +344,7 @@ void WavelengthCalibrationController::ClearResult()
     m_log.clear();
     m_instrumentLineShapeParameterDescriptions.clear();
     m_resultingCalibration.reset();
+    m_initialCalibration.reset();
 }
 
 void WavelengthCalibrationController::Log(const std::string& message)

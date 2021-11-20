@@ -97,12 +97,9 @@ void ReferenceCreationController::ConvolveReference()
         throw std::exception("Failed to read the reference file");
     }
 
-    // Do the convolution
+    // Do the convolution (this throws if the setup is invalid)
     std::vector<double> convolutionResult;
-    if (!novac::ConvolveReference(pixelToWavelengthMapping, instrumentLineShape, highResReference, convolutionResult, conversion))
-    {
-        throw std::exception("Failed to convolve the references");
-    }
+    novac::ConvolveReference(pixelToWavelengthMapping, instrumentLineShape, highResReference, convolutionResult, conversion);
 
     // Combine the results into the final output cross section data 
     m_resultingCrossSection = std::make_unique<novac::CCrossSectionData>();
