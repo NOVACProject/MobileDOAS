@@ -102,7 +102,7 @@ int Equals(const CString& str1, const CString& str2);
     @return 1 if the strings are equal. @return 0 if the strings are not equal. */
 int Equals(const CString& str1, const CString& str2, unsigned int nCharacters);
 
-/** A simple function to find out wheather a given file exists or not.
+/** A simple function to find out whether a given file exists or not.
     @param - The filename (including path) to the file.
     @return 0 if the file does not exist.
     @return 1 if the file exist. */

@@ -41,7 +41,7 @@ BEGIN_MESSAGE_MAP(CConfigure_GPS, CPropertyPage)
     ON_LBN_SELCHANGE(IDC_COMBO_PORT, SaveSettings)
     ON_LBN_SELCHANGE(IDC_COMBO_BAUDRATE, SaveSettings)
 
-    // Changing wheather we should use the gps or not
+    // Changing whether we should use the gps or not
     ON_BN_CLICKED(IDC_CHECK_USEGPS, SaveSettings)
 END_MESSAGE_MAP()
 

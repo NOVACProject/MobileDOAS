@@ -70,8 +70,7 @@ public:
     /** The desired saturation level at that channel (in percent 0-100%) */
     long  m_percent;
 
-    /** Wheather to use automatic determination of the exposure-time or
-            to use a fixed exp.time */
+    /** Whether to use automatic determination of the exposure-time or to use a fixed exp.time */
     int   m_expTimeMode;
 
     /** The exposure-time to use if we're to use a fixed exposure-time */
@@ -127,33 +126,34 @@ public:
     struct AutomaticCalibration
     {
     public:
+        /** If enabled then the automatic calibration will run at startup. */
         bool m_enable = false;
 
-        /// <summary>
-        /// The full path to the high resolved solar spectrum
-        /// </summary>
+        /** If enabled then new references will be generated and replace the user-configured references. */
+        BOOL m_generateReferences = FALSE;
+
+        /** Set to true to high-pass filter the created references */
+        BOOL m_filterReferences = TRUE;
+
+        /** The full path to the high resolved solar spectrum */
         CString m_solarSpectrumFile;
 
-        // Path to the intial calibration file (either .std or .clb)
+        /** Path to the intial calibration file (either .std or .clb) */
         CString m_initialCalibrationFile;
 
-        // Path to the initial instrument line shape file (.slf). Ususally not set if m_initialCalibrationFile is .std.
+        /** Path to the initial instrument line shape file (.slf). Ususally not set if m_initialCalibrationFile is .std. */
         CString m_instrumentLineshapeFile;
 
-        // Option for how to interpret the above calibration file and instrument line shape file options.
+        /** Option for how to interpret the above calibration file and instrument line shape file options. */
         int m_initialCalibrationSetupOption = 0;
 
-        /// <summary>
-        /// The option for if an instrument line shape should be fitted as well during
-        /// the retrieval of the pixel-to-wavelength calibration.
-        /// 0 corresponds to no fitting of an instrument line shape,
-        /// 1 corresponds to fitting a super-gaussian instrument line shape.
-        /// </summary>
+        /** The option for if an instrument line shape should be fitted as well during
+        *   the retrieval of the pixel-to-wavelength calibration.
+        *   0 corresponds to no fitting of an instrument line shape,
+        *   1 corresponds to fitting a super-gaussian instrument line shape.  */
         int m_instrumentLineShapeFitOption = 0;
 
-        /// <summary>
-        /// The wavelength region in which the instrument line shape should be fitted (in nm).
-        /// </summary>
+        /** The wavelength region in which the instrument line shape should be fitted (in nm).  */
         novac::WavelengthRange m_instrumentLineShapeFitRegion = novac::WavelengthRange(330.0, 350.0);
 
         void Clear()

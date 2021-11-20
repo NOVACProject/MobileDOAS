@@ -407,10 +407,30 @@ int CMobileConfiguration::ParseCalibrationSettings()
 {
     while (szToken = NextToken()) {
 
+        // no use to parse empty lines
+        if (strlen(szToken) < 3) {
+            continue;
+        }
+
+        // the end of the directory mode section
+        if (Equals(szToken, "/Calibration")) {
+            return 0;
+        }
+
         if (Equals(szToken, "Enable")) {
             int tempInt = 0;
             Parse_IntItem("/Enable", tempInt);
             m_calibration.m_enable = (tempInt != 0);
+            continue;
+        }
+
+        if (Equals(szToken, "GenerateReferences")) {
+            Parse_IntItem("/GenerateReferences", m_calibration.m_generateReferences);
+            continue;
+        }
+
+        if (Equals(szToken, "FilterReferences")) {
+            Parse_IntItem("/FilterReferences", m_calibration.m_filterReferences);
             continue;
         }
 
@@ -556,6 +576,17 @@ int CMobileConfiguration::ParseDirectoryMode() {
 
     // the actual reading loop
     while (szToken = NextToken()) {
+
+        // no use to parse empty lines
+        if (strlen(szToken) < 3) {
+            continue;
+        }
+
+        // the end of the directory mode section
+        if (Equals(szToken, "/DirectoryMode")) {
+            return 0;
+        }
+
         // Directory to watch for STD files in
         if (Equals(szToken, "directory")) {
             Parse_StringItem("/directory", m_directory);

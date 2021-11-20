@@ -96,6 +96,9 @@ void ConfigurationFile::Write(CMobileConfiguration& configuration)
 
     fprintf(f, "\t<Calibration>\n");
     fprintf(f, "\t\t<Enable>%d</Enable>\n", configuration.m_calibration.m_enable);
+    fprintf(f, "\t\t<GenerateReferences>%d</GenerateReferences>\n", configuration.m_calibration.m_generateReferences);
+    fprintf(f, "\t\t<FilterReferences>%d</FilterReferences>\n", configuration.m_calibration.m_filterReferences);
+
     fprintf(f, "\t\t<SolarSpectrumFile>%s</SolarSpectrumFile>\n", configuration.m_calibration.m_solarSpectrumFile.GetBuffer());
 
     fprintf(f, "\t\t<InitialCalibrationFile>%s</InitialCalibrationFile>\n", configuration.m_calibration.m_initialCalibrationFile.GetBuffer());
