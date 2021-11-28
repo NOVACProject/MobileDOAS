@@ -188,7 +188,6 @@ void CConfigure_Evaluation::PopulateReferenceFileControl() {
         m_referenceGrid.UpdateData(FALSE);
 }
 
-/** Called when the user wants to remove a reference file */
 void CConfigure_Evaluation::OnRemoveReference() {
 
     // save the data in the dialog
@@ -225,7 +224,6 @@ void CConfigure_Evaluation::OnRemoveReference() {
     PopulateReferenceFileControl();
 }
 
-/** Called when the user wants to insert a new reference file */
 void CConfigure_Evaluation::OnInsertReference() {
 
     // save the data in the dialog
@@ -366,15 +364,6 @@ void CConfigure_Evaluation::InitToolTips() {
     if (!m_toolTip.Create(this)) {
         TRACE0("Failed to create tooltip control\n");
     }
-    //m_toolTip.AddTool(&m_labelVolcano,							IDC_EDIT_VOLCANO);
-    //m_toolTip.AddTool(&m_comboVolcano,							IDC_EDIT_VOLCANO);
-    //m_toolTip.AddTool(&m_labelSite,									IDC_EDIT_SITE);
-    //m_toolTip.AddTool(&m_editSite,									IDC_EDIT_SITE);
-    //m_toolTip.AddTool(&m_labelObservatory,					IDC_EDIT_OBSERVATORY);
-    ////m_toolTip.AddTool(&m_editObservatory,						IDC_EDIT_OBSERVATORY);
-    //m_toolTip.AddTool(&m_comboSpectrometerModel,		IDC_COMBO_SPECTROMETERMODEL);
-    //m_toolTip.AddTool(&m_comboSpectrometerChannels,	IDC_COMBO_CHANNELS);
-    //m_toolTip.AddTool(&m_editSerial,								IDC_EDIT_SERIALNUMBER);
 
     m_toolTip.SetMaxTipWidth(SHRT_MAX);
     m_toolTip.Activate(TRUE);
@@ -386,8 +375,6 @@ BOOL CConfigure_Evaluation::PreTranslateMessage(MSG* pMsg) {
     return CPropertyPage::PreTranslateMessage(pMsg);
 }
 
-/** Called when the user wants to see the
-properties of one reference */
 void CConfigure_Evaluation::OnShowProperties() {
 
     // save the data in the dialog
@@ -422,8 +409,6 @@ void CConfigure_Evaluation::OnShowProperties() {
     PopulateReferenceFileControl();
 }
 
-/** Called when the user wants to see the
-    size of the references */
 void CConfigure_Evaluation::OnShowReferenceGraph() {
     // save the data in the dialog
     UpdateData(TRUE);

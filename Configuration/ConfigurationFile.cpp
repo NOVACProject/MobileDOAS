@@ -107,7 +107,7 @@ void ConfigurationFile::Write(CMobileConfiguration& configuration)
     {
         fprintf(f, "\t\t<InitialLineShapeFile>%s</InitialLineShapeFile>\n", configuration.m_calibration.m_instrumentLineshapeFile.GetBuffer());
     }
-    fprintf(f, "\t\t<InitialCalibrationOption>%d</InitialCalibrationOption>\n", configuration.m_calibration.m_initialCalibrationSetupOption);
+    fprintf(f, "\t\t<InitialCalibrationType>%d</InitialCalibrationType>\n", configuration.m_calibration.m_initialCalibrationType);
 
     fprintf(f, "\t\t<LineShapeOption>%d</LineShapeOption>\n", configuration.m_calibration.m_instrumentLineShapeFitOption);
     fprintf(f, "\t\t<LineShapeFitFrom>%lf</LineShapeFitFrom>\n", configuration.m_calibration.m_instrumentLineShapeFitRegion.low);

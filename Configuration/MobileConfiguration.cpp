@@ -449,8 +449,8 @@ int CMobileConfiguration::ParseCalibrationSettings()
             continue;
         }
 
-        if (Equals(szToken, "InitialCalibrationOption")) {
-            Parse_IntItem("/InitialCalibrationOption", m_calibration.m_initialCalibrationSetupOption);
+        if (Equals(szToken, "InitialCalibrationType")) {
+            Parse_IntItem("/InitialCalibrationType", m_calibration.m_initialCalibrationType);
             continue;
         }
 

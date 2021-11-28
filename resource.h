@@ -277,6 +277,7 @@
 #define IDC_SPECCENTER                  1066
 #define IDC_BROWSE_SKY                  1066
 #define IDC_BROWSE_DIR_OFFSET           1066
+#define IDC_REFERENCE_VIEW2             1066
 #define IDC_PERCENT                     1067
 #define IDC_REFFILE                     1068
 #define IDC_FITFROM                     1069

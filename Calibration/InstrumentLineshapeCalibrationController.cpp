@@ -201,7 +201,7 @@ void InstrumentLineshapeCalibrationController::FitFunctionToLineShape(size_t pea
 {
     ClearFittedLineShape();
 
-    if (peakIdx >= m_peaksFound.size() || function == LineShapeFunction::None)
+    if (peakIdx >= m_peaksFound.size())
     {
         return;
     }

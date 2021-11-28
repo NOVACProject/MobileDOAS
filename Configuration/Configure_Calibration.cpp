@@ -102,13 +102,13 @@ void CConfigure_Calibration::OnButtonSelectInitialCalibration()
     OpenInstrumentCalibrationDialog dlg;
     dlg.m_state.initialCalibrationFile = m_conf->m_calibration.m_initialCalibrationFile;
     dlg.m_state.instrumentLineshapeFile = m_conf->m_calibration.m_instrumentLineshapeFile;
-    dlg.m_state.calibrationOption = (InstrumentCalibrationInputOption)m_conf->m_calibration.m_initialCalibrationSetupOption;
+    dlg.m_state.calibrationOption = (InstrumentCalibrationInputOption)m_conf->m_calibration.m_initialCalibrationType;
 
     if (IDOK == dlg.DoModal())
     {
         m_conf->m_calibration.m_initialCalibrationFile = dlg.m_state.initialCalibrationFile;
         m_conf->m_calibration.m_instrumentLineshapeFile = dlg.m_state.instrumentLineshapeFile;
-        m_conf->m_calibration.m_initialCalibrationSetupOption = (int)dlg.m_state.calibrationOption;
+        m_conf->m_calibration.m_initialCalibrationType = (int)dlg.m_state.calibrationOption;
 
         UpdateData(FALSE);
     }

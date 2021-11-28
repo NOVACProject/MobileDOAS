@@ -8,7 +8,7 @@ class WavelengthCalibrationController;
 
 namespace novac
 {
-class StandardCrossSectionSetup;
+    class StandardCrossSectionSetup;
 }
 
 /// <summary>
@@ -90,7 +90,7 @@ public:
     afx_msg void OnClickedButtonSave();
     afx_msg void OnBnClickedButtonViewLog();
     afx_msg void OnSelchangeListGraphType();
-    afx_msg void OnBnClickedSetupWavelengthCaliBration();
+    afx_msg void OnBnClickedSetupWavelengthCalibration();
 
     afx_msg LRESULT OnCalibrationDone(WPARAM wParam, LPARAM lParam);
 
