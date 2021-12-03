@@ -24,6 +24,14 @@ public:
     /** Setting: set to true if the high resolution reference is measured in vacuum. */
     bool m_convertToAir = false;
 
+    /** The desired output unit.
+        0 = PPMM (default)
+        1 = molecules / cm2 */
+    int m_unitSelection = 0;
+
+    /** Setting: set to true for pseudo-absorbers (e.g. Ring) which should not be scaled to ppmm */
+    bool m_isPseudoAbsorber = false;
+
     /** Output: The resulting convolved cross section. */
     std::unique_ptr<novac::CCrossSectionData> m_resultingCrossSection;
 

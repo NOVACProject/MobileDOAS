@@ -100,7 +100,7 @@ novac::InstrumentCalibration ReferenceCreationController::ReadCalibration(std::s
 
 void ReferenceCreationController::ConvolveReference(const novac::InstrumentCalibration& initialCalibration)
 {
-    auto conversion = (m_convertToAir) ? novac::WavelengthConversion::VacuumToAir : novac::WavelengthConversion::None;
+    auto wavelengthConversion = (m_convertToAir) ? novac::WavelengthConversion::VacuumToAir : novac::WavelengthConversion::None;
 
     // Extract the line shape (needed for the convolution below)
     novac::CCrossSectionData instrumentLineShape;
@@ -121,7 +121,7 @@ void ReferenceCreationController::ConvolveReference(const novac::InstrumentCalib
         instrumentLineShape,
         highResReference,
         convolutionResult,
-        conversion);
+        wavelengthConversion);
 
     // Combine the results into the final output cross section data 
     m_resultingCrossSection = std::make_unique<novac::CCrossSectionData>();
@@ -133,12 +133,38 @@ void ReferenceCreationController::ConvolveReference(const novac::InstrumentCalib
         PrepareConvolvedReferenceForHighPassFiltering(m_resultingCrossSection, highResReference.m_waveLength);
 
         const int length = (int)m_resultingCrossSection->m_crossSection.size();
-
         CBasicMath math;
-        math.Mul(m_resultingCrossSection->m_crossSection.data(), length, -2.5e15);
-        math.Delog(m_resultingCrossSection->m_crossSection.data(), length);
-        math.HighPassBinomial(m_resultingCrossSection->m_crossSection.data(), length, 500);
-        math.Log(m_resultingCrossSection->m_crossSection.data(), length);
+
+        if (m_isPseudoAbsorber)
+        {
+            math.HighPassBinomial(m_resultingCrossSection->m_crossSection.data(), length, 500);
+        }
+        else
+        {
+            math.Mul(m_resultingCrossSection->m_crossSection.data(), length, -2.5e15);
+            math.Delog(m_resultingCrossSection->m_crossSection.data(), length);
+            math.HighPassBinomial(m_resultingCrossSection->m_crossSection.data(), length, 500);
+            math.Log(m_resultingCrossSection->m_crossSection.data(), length);
+
+            if (m_unitSelection == 1)
+            {
+                math.Div(m_resultingCrossSection->m_crossSection.data(), length, 2.5e15);
+            }
+        }
+    }
+    else
+    {
+        if (m_unitSelection == 0 && !m_isPseudoAbsorber)
+        {
+            const int length = (int)m_resultingCrossSection->m_crossSection.size();
+
+            CBasicMath math;
+            math.Mul(m_resultingCrossSection->m_crossSection.data(), length, 2.5e15);
+        }
+        else
+        {
+            // Nothing more needs to be done here.
+        }
     }
 
 }

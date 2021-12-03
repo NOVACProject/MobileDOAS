@@ -277,7 +277,6 @@
 #define IDC_SPECCENTER                  1066
 #define IDC_BROWSE_SKY                  1066
 #define IDC_BROWSE_DIR_OFFSET           1066
-#define IDC_REFERENCE_VIEW2             1066
 #define IDC_PERCENT                     1067
 #define IDC_REFFILE                     1068
 #define IDC_FITFROM                     1069
@@ -568,6 +567,7 @@
 #define IDC_STATIC_STANDARD_REFERENCES_OUTPUT_FILENAMES 1348
 #define IDC_COMBO_STANDARD_REFERENCES   1349
 #define IDC_CHECK_FILTER_REFERENCES     1352
+#define IDC_COMBO_REFERENCE_UNIT        1354
 #define ID_ANALYSIS_POSTFLUX            32771
 #define ID_CONTROL_STOP                 32772
 #define ID_CONTROL_START                32772
@@ -592,7 +592,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        302
 #define _APS_NEXT_COMMAND_VALUE         32804
-#define _APS_NEXT_CONTROL_VALUE         1354
+#define _APS_NEXT_CONTROL_VALUE         1355
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif
