@@ -6,7 +6,7 @@
 #include "afxdialogex.h"
 #include "resource.h"
 #include "Common.h"
-#include "Calibration/WavelengthCalibrationController.h"
+#include <SpectralEvaluation/DialogControllers/WavelengthCalibrationController.h>
 #include "CCalibratePixelToWavelengthSetupDialog.h"
 #include "CLogDialog.h"
 #include <fstream>
@@ -32,7 +32,7 @@ CCalibratePixelToWavelengthDialog::CCalibratePixelToWavelengthDialog(CWnd* pPare
 {
     wavelengthCalibrationDialog = this;
 
-    m_controller = new WavelengthCalibrationController();
+    m_controller = new MobileDoasWavelengthCalibrationController();
 }
 
 CCalibratePixelToWavelengthDialog::~CCalibratePixelToWavelengthDialog()

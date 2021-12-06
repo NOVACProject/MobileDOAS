@@ -423,15 +423,6 @@
     <ClCompile Include="SpectralEvaluation\src\Calibration\InstrumentLineShapeEstimation.cpp">
       <Filter>Source Files\SpectralEvaluation\Calibration</Filter>
     </ClCompile>
-    <ClCompile Include="Calibration\InstrumentLineshapeCalibrationController.cpp">
-      <Filter>Source Files\Calibration</Filter>
-    </ClCompile>
-    <ClCompile Include="Calibration\ReferenceCreationController.cpp">
-      <Filter>Source Files\Calibration</Filter>
-    </ClCompile>
-    <ClCompile Include="Calibration\WavelengthCalibrationController.cpp">
-      <Filter>Source Files\Calibration</Filter>
-    </ClCompile>
     <ClCompile Include="CCalibrateInstrumentLineShape.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
@@ -488,6 +479,15 @@
     </ClCompile>
     <ClCompile Include="Configuration\Configure_Calibration.cpp">
       <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\DialogControllers\InstrumentLineshapeCalibrationController.cpp">
+      <Filter>Source Files\Calibration</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\DialogControllers\ReferenceCreationController.cpp">
+      <Filter>Source Files\Calibration</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\DialogControllers\WavelengthCalibrationController.cpp">
+      <Filter>Source Files\Calibration</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -868,9 +868,6 @@
     <ClInclude Include="CSpectrometerCalibrationDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Calibration\WavelengthCalibrationController.h">
-      <Filter>Header Files\Calibration</Filter>
-    </ClInclude>
     <ClInclude Include="Common\CDateTime.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -880,12 +877,6 @@
     <ClInclude Include="Common\CSpectrum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Calibration\InstrumentLineshapeCalibrationController.h">
-      <Filter>Header Files\Calibration</Filter>
-    </ClInclude>
-    <ClInclude Include="Calibration\ReferenceCreationController.h">
-      <Filter>Header Files\Calibration</Filter>
-    </ClInclude>
     <ClInclude Include="CCalibrateInstrumentLineShape.h">
       <Filter>Header Files\Dialogs</Filter>
     </ClInclude>
@@ -894,9 +885,6 @@
     </ClInclude>
     <ClInclude Include="CCalibrateReferencesDialog.h">
       <Filter>Header Files\Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="Calibration\InstrumentCalibrationInput.h">
-      <Filter>Header Files\Calibration</Filter>
     </ClInclude>
     <ClInclude Include="OpenInstrumentCalibrationDialog.h">
       <Filter>Header Files\Dialogs</Filter>
@@ -915,6 +903,18 @@
     </ClInclude>
     <ClInclude Include="Configuration\ConfigurationFile.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\DialogControllers\InstrumentCalibrationInput.h">
+      <Filter>Header Files\Calibration</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\DialogControllers\InstrumentLineshapeCalibrationController.h">
+      <Filter>Header Files\Calibration</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\DialogControllers\ReferenceCreationController.h">
+      <Filter>Header Files\Calibration</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\DialogControllers\WavelengthCalibrationController.h">
+      <Filter>Header Files\Calibration</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -6,7 +6,7 @@
 #include "afxdialogex.h"
 #include "resource.h"
 #include "Common.h"
-#include "Calibration/InstrumentLineshapeCalibrationController.h"
+#include <SpectralEvaluation/DialogControllers/InstrumentLineshapeCalibrationController.h>
 #include <SpectralEvaluation/File/File.h>
 #include <SpectralEvaluation/Calibration/InstrumentCalibration.h>
 #include <algorithm>

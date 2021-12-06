@@ -4,7 +4,7 @@
 
 // CCalibratePixelToWavelengthDialog dialog
 
-class WavelengthCalibrationController;
+class MobileDoasWavelengthCalibrationController;
 
 namespace novac
 {
@@ -134,7 +134,7 @@ private:
 
     void HandleCalibrationFailure(const char* errorMessage);
 
-    WavelengthCalibrationController* m_controller;
+    MobileDoasWavelengthCalibrationController* m_controller;
 
     novac::StandardCrossSectionSetup* m_standardCrossSections;
 

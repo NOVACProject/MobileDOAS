@@ -281,9 +281,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BasicMath.cpp" />
-    <ClCompile Include="Calibration\InstrumentLineshapeCalibrationController.cpp" />
-    <ClCompile Include="Calibration\ReferenceCreationController.cpp" />
-    <ClCompile Include="Calibration\WavelengthCalibrationController.cpp" />
     <ClCompile Include="CCalibrateInstrumentLineShape.cpp" />
     <ClCompile Include="CCalibratePixelToWavelengthDialog.cpp" />
     <ClCompile Include="CCalibratePixelToWavelengthSetupDialog.cpp" />
@@ -445,6 +442,18 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\DialogControllers\InstrumentLineshapeCalibrationController.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\DialogControllers\ReferenceCreationController.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\DialogControllers\WavelengthCalibrationController.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="SpectralEvaluation\src\Evaluation\CrossSectionData.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -580,10 +589,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BasicMath.h" />
-    <ClInclude Include="Calibration\InstrumentCalibrationInput.h" />
-    <ClInclude Include="Calibration\InstrumentLineshapeCalibrationController.h" />
-    <ClInclude Include="Calibration\ReferenceCreationController.h" />
-    <ClInclude Include="Calibration\WavelengthCalibrationController.h" />
     <ClInclude Include="CCalibrateInstrumentLineShape.h" />
     <ClInclude Include="CCalibratePixelToWavelengthDialog.h" />
     <ClInclude Include="CCalibratePixelToWavelengthSetupDialog.h" />
@@ -715,6 +720,10 @@
     <ClInclude Include="SerialConnection.h" />
     <ClInclude Include="SourceSelectionDlg.h" />
     <ClInclude Include="Spectra.h" />
+    <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\DialogControllers\InstrumentCalibrationInput.h" />
+    <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\DialogControllers\InstrumentLineshapeCalibrationController.h" />
+    <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\DialogControllers\ReferenceCreationController.h" />
+    <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\DialogControllers\WavelengthCalibrationController.h" />
     <ClInclude Include="Spectrometer.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="Version.h" />

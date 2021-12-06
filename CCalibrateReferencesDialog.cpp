@@ -7,7 +7,7 @@
 #include "resource.h"
 #include <fstream>
 #include "Common.h"
-#include "Calibration/ReferenceCreationController.h"
+#include <SpectralEvaluation/DialogControllers/ReferenceCreationController.h>
 #include "OpenInstrumentCalibrationDialog.h"
 #include <SpectralEvaluation/Evaluation/CrossSectionData.h>
 #include <SpectralEvaluation/File/File.h>
