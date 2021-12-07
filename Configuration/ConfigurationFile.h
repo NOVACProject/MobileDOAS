@@ -5,16 +5,15 @@
 
 namespace Configuration
 {
-class CMobileConfiguration;
+    class CMobileConfiguration;
 
-class ConfigurationFile
-{
-public:
+    class ConfigurationFile
+    {
+    public:
 
-    /** Writes the provided configuration to the default location.
-        @throws a subclass to std::exception if someting goes wrong. */
-    static void Write(CMobileConfiguration& configuration);
+        /** Writes the provided configuration to the default location.
+            @throws a subclass to std::exception if someting goes wrong. */
+        static void Write(CMobileConfiguration& configuration);
 
-};
-
+    };
 }

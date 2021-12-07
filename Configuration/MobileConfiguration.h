@@ -219,10 +219,10 @@ namespace Configuration {
         int ParseCalibrationSettings();
 
         /** Parses a reference-file section */
-        int ParseReference(Evaluation::CReferenceFile& reference);
+        int ParseReference(novac::CReferenceFile& reference);
 
         /** Parses a shift or squeeze section */
-        int Parse_ShiftOrSqueeze(const CString& label, Evaluation::SHIFT_TYPE& option, double& lowValue /**, double &highValue*/);
+        int Parse_ShiftOrSqueeze(const CString& label, novac::SHIFT_TYPE& option, double& lowValue /**, double &highValue*/);
 
         /** Parses directory mode section */
         int ParseDirectoryMode();

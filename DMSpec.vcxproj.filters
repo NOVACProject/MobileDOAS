@@ -276,9 +276,6 @@
     <ClCompile Include="Evaluation\FitWindow.cpp">
       <Filter>Source Files\Evaluation</Filter>
     </ClCompile>
-    <ClCompile Include="Evaluation\ReferenceFile.cpp">
-      <Filter>Source Files\Evaluation</Filter>
-    </ClCompile>
     <ClCompile Include="Evaluation\ReferenceFitResult.cpp">
       <Filter>Source Files\Evaluation</Filter>
     </ClCompile>
@@ -488,6 +485,12 @@
     </ClCompile>
     <ClCompile Include="CCreateStandardReferencesDialog.cpp">
       <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Evaluation\RealTimeCalibration.cpp">
+      <Filter>Source Files\Evaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Evaluation\ReferenceFile.cpp">
+      <Filter>Source Files\SpectralEvaluation\Evaluation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -787,9 +790,6 @@
     <ClInclude Include="Evaluation\FitWindow.h">
       <Filter>Header Files\Evaluation</Filter>
     </ClInclude>
-    <ClInclude Include="Evaluation\ReferenceFile.h">
-      <Filter>Header Files\Evaluation</Filter>
-    </ClInclude>
     <ClInclude Include="Evaluation\ReferenceFitResult.h">
       <Filter>Header Files\Evaluation</Filter>
     </ClInclude>
@@ -915,6 +915,9 @@
     </ClInclude>
     <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\DialogControllers\WavelengthCalibrationController.h">
       <Filter>Header Files\Calibration</Filter>
+    </ClInclude>
+    <ClInclude Include="Evaluation\RealTimeCalibration.h">
+      <Filter>Header Files\Evaluation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

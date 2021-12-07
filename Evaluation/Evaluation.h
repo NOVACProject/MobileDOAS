@@ -42,7 +42,7 @@ public:
 
     // initialize the shift parameters for the evaluation, if these are more 
     //  complicated than what can be handled by using the 'Evaluate'-function itself
-    void SetShiftAndSqueeze(int refNum, SHIFT_TYPE shiftType, double shift, SHIFT_TYPE squeezeType, double squeeze);
+    void SetShiftAndSqueeze(int refNum, novac::SHIFT_TYPE shiftType, double shift, novac::SHIFT_TYPE squeezeType, double squeeze);
 
     /** Evaluate the following spectra, the parameters for the fit are defined in 'm_fitWindow' */
     void Evaluate(const double* darkArray, const double* skyArray, const double* specMem, long numSteps = 400);

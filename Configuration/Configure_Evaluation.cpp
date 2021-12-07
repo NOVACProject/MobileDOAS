@@ -57,6 +57,7 @@ BEGIN_MESSAGE_MAP(CConfigure_Evaluation, CPropertyPage)
     ON_EN_KILLFOCUS(IDC_EDIT_FITTO, SaveData)
     ON_EN_KILLFOCUS(IDC_REEVAL_WINDOW_POLYNOM2, SaveData)
     ON_LBN_SELCHANGE(IDC_COMBO_CHANNEL, SaveData)
+    ON_BN_CLICKED(IDC_CHECK_STARTMEASUREMENTBYCALIBRATION, SaveData)
 END_MESSAGE_MAP()
 
 
@@ -147,33 +148,33 @@ void CConfigure_Evaluation::PopulateReferenceFileControl() {
     int i;
     for (i = 0; i < window.nRef; i++) {
 
-        CReferenceFile& ref = window.ref[i];
+        novac::CReferenceFile& ref = window.ref[i];
 
-        m_referenceGrid.SetItemTextFmt(1 + i, 0, ref.m_specieName);
-        m_referenceGrid.SetItemTextFmt(1 + i, 1, ref.m_path);
+        m_referenceGrid.SetItemTextFmt(1 + i, 0, ref.m_specieName.c_str());
+        m_referenceGrid.SetItemTextFmt(1 + i, 1, ref.m_path.c_str());
 
-        if (ref.m_shiftOption == SHIFT_FREE)
+        if (ref.m_shiftOption == novac::SHIFT_TYPE::SHIFT_FREE)
             m_referenceGrid.SetItemTextFmt(1 + i, 2, "free");
 
-        if (ref.m_shiftOption == SHIFT_FIX)
+        if (ref.m_shiftOption == novac::SHIFT_TYPE::SHIFT_FIX)
             m_referenceGrid.SetItemTextFmt(1 + i, 2, "fixed to %.2lf", ref.m_shiftValue);
 
-        if (ref.m_shiftOption == SHIFT_LINK)
+        if (ref.m_shiftOption == novac::SHIFT_TYPE::SHIFT_LINK)
             m_referenceGrid.SetItemTextFmt(1 + i, 2, "linked to %.2lf", ref.m_shiftValue);
 
-        //if(ref.m_shiftOption == SHIFT_LIMIT)
+        //if(ref.m_shiftOption == novac::SHIFT_TYPE::SHIFT_LIMIT)
         //  m_referenceGrid.SetItemTextFmt(1 + i, 2, "limited to %.2lf", ref.m_shiftValue);
 
-        if (ref.m_squeezeOption == SHIFT_FREE)
+        if (ref.m_squeezeOption == novac::SHIFT_TYPE::SHIFT_FREE)
             m_referenceGrid.SetItemTextFmt(1 + i, 3, "free");
 
-        if (ref.m_squeezeOption == SHIFT_FIX)
+        if (ref.m_squeezeOption == novac::SHIFT_TYPE::SHIFT_FIX)
             m_referenceGrid.SetItemTextFmt(1 + i, 3, "fixed to %.2lf", ref.m_squeezeValue);
 
-        if (ref.m_squeezeOption == SHIFT_LINK)
+        if (ref.m_squeezeOption == novac::SHIFT_TYPE::SHIFT_LINK)
             m_referenceGrid.SetItemTextFmt(1 + i, 3, "linked to %.2lf", ref.m_squeezeValue);
 
-        //if(ref.m_squeezeOption == SHIFT_LIMIT)
+        //if(ref.m_squeezeOption == novac::SHIFT_TYPE::SHIFT_LIMIT)
     //    m_referenceGrid.SetItemTextFmt(1 + i, 3, "limited to %.2lf", ref.m_squeezeValue);
     }
 
@@ -252,13 +253,13 @@ void CConfigure_Evaluation::OnInsertReference() {
         // The user has selected a new reference file, insert it into the list
 
         // 1. Set the path
-        window.ref[window.nRef].m_path.Format("%s", fileName);
+        window.ref[window.nRef].m_path = std::string((LPCSTR)fileName);
 
         // 2. make a guess of the specie name
         CString specie;
         Common::GuessSpecieName(fileName, specie);
         if (strlen(specie) != 0) {
-            window.ref[window.nRef].m_specieName.Format("%s", specie);
+            window.ref[window.nRef].m_specieName = std::string((LPCSTR)specie);
 
             if (Equals(specie, "NO2")) {
                 window.ref[window.nRef].m_gasFactor = GASFACTOR_NO2;
@@ -274,13 +275,13 @@ void CConfigure_Evaluation::OnInsertReference() {
         // 3. Set the shift and squeeze options for this reference
         if (window.nRef == 0) {
             // If it is the first one, select 'optimal' 
-            window.ref[window.nRef].m_shiftOption = Evaluation::SHIFT_FIX;
-            window.ref[window.nRef].m_squeezeOption = Evaluation::SHIFT_FIX;
+            window.ref[window.nRef].m_shiftOption = novac::SHIFT_TYPE::SHIFT_FIX;
+            window.ref[window.nRef].m_squeezeOption = novac::SHIFT_TYPE::SHIFT_FIX;
         }
         else {
-            window.ref[window.nRef].m_shiftOption = Evaluation::SHIFT_LINK;
+            window.ref[window.nRef].m_shiftOption = novac::SHIFT_TYPE::SHIFT_LINK;
             window.ref[window.nRef].m_shiftValue = 0;
-            window.ref[window.nRef].m_squeezeOption = Evaluation::SHIFT_LINK;
+            window.ref[window.nRef].m_squeezeOption = novac::SHIFT_TYPE::SHIFT_LINK;
             window.ref[window.nRef].m_squeezeValue = 1;
         }
 

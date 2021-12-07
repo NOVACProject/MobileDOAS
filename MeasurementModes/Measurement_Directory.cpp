@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Measurement_Directory.h"
+#include "../Evaluation/RealTimeCalibration.h"
 
 extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
 
@@ -35,28 +36,6 @@ void CMeasurement_Directory::Run() {
     // Update MobileLog.txt 
     UpdateMobileLog();
 
-    // Read reference files
-    m_statusMsg.Format("Reading References");
-    pView->PostMessage(WM_STATUSMSG);
-    if (ReadReferenceFiles()) {
-        ShowMessageBox("Error reading reference files.", "Error");
-        return;
-    }
-
-    // Initialize the evaluator 
-    for (int fitRgn = 0; fitRgn < m_fitRegionNum; ++fitRgn) {
-        for (int i = 0; i < m_NChannels; ++i) {
-            m_fitRegion[fitRgn].window.specLength = this->m_detectorSize;
-            m_fitRegion[fitRgn].eval[i]->SetFitWindow(m_fitRegion[fitRgn].window);
-        }
-    }
-
-    // Create the output directory and start the evaluation log file.
-    CreateDirectories();
-    for (int j = 0; j < m_fitRegionNum; ++j) {
-        WriteBeginEvFile(j);
-    }
-
     // get sky 
     if (!ReadSky()) {
         return;
@@ -79,6 +58,42 @@ void CMeasurement_Directory::Run() {
         if (!ReadOffset()) {
             return;
         }
+    }
+
+    // If we should do an automatic calibration, then do so now
+    if (m_conf->m_calibration.m_enable)
+    {
+        m_statusMsg.Format("Performing instrument calibration");
+        pView->PostMessage(WM_STATUSMSG);
+
+        Evaluation::CRealTimeCalibration::RunInstrumentCalibration(
+            m_sky[0],
+            m_dark[0],
+            MAX_SPECTRUM_LENGTH, // TODO: This isn't correct - we need to know the size of the spectra here...
+            (LPCSTR)m_subFolder,
+            *m_conf);
+    }
+
+    // Read reference files
+    m_statusMsg.Format("Reading References");
+    pView->PostMessage(WM_STATUSMSG);
+    if (ReadReferenceFiles()) {
+        ShowMessageBox("Error reading reference files.", "Error");
+        return;
+    }
+
+    // Initialize the evaluator 
+    for (int fitRgn = 0; fitRgn < m_fitRegionNum; ++fitRgn) {
+        for (int i = 0; i < m_NChannels; ++i) {
+            m_fitRegion[fitRgn].window.specLength = this->m_detectorSize;
+            m_fitRegion[fitRgn].eval[i]->SetFitWindow(m_fitRegion[fitRgn].window);
+        }
+    }
+
+    // Create the output directory and start the evaluation log file.
+    CreateDirectories();
+    for (int j = 0; j < m_fitRegionNum; ++j) {
+        WriteBeginEvFile(j);
     }
 
     // variables used for adaptive mode

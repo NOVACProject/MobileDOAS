@@ -109,9 +109,9 @@ void ConfigurationFile::Write(CMobileConfiguration& configuration)
     }
     fprintf(f, "\t\t<InitialCalibrationType>%d</InitialCalibrationType>\n", configuration.m_calibration.m_initialCalibrationType);
 
-    fprintf(f, "\t\t<LineShapeOption>%d</LineShapeOption>\n", configuration.m_calibration.m_instrumentLineShapeFitOption);
-    fprintf(f, "\t\t<LineShapeFitFrom>%lf</LineShapeFitFrom>\n", configuration.m_calibration.m_instrumentLineShapeFitRegion.low);
-    fprintf(f, "\t\t<LineShapeFitTo>%lf</LineShapeFitTo>\n", configuration.m_calibration.m_instrumentLineShapeFitRegion.high);
+    fprintf(f, "\t\t<InstrumentLineShapeFitOption>%d</InstrumentLineShapeFitOption>\n", configuration.m_calibration.m_instrumentLineShapeFitOption);
+    fprintf(f, "\t\t<instrumentLineShapeFitRegionLow>%lf</instrumentLineShapeFitRegionLow>\n", configuration.m_calibration.m_instrumentLineShapeFitRegion.low);
+    fprintf(f, "\t\t<instrumentLineShapeFitRegionHigh>%lf</instrumentLineShapeFitRegionHigh>\n", configuration.m_calibration.m_instrumentLineShapeFitRegion.high);
 
     fprintf(f, "\t</Calibration>\n");
 
@@ -126,29 +126,29 @@ void ConfigurationFile::Write(CMobileConfiguration& configuration)
 
         for (int j = 0; j < configuration.m_fitWindow[k].nRef; ++j) {
             fprintf(f, "\t\t<Reference>\n");
-            fprintf(f, "\t\t\t<name>%s</name>\n", (LPCTSTR)configuration.m_fitWindow[k].ref[j].m_specieName);
-            fprintf(f, "\t\t\t<path>%s</path>\n", (LPCTSTR)configuration.m_fitWindow[k].ref[j].m_path);
+            fprintf(f, "\t\t\t<name>%s</name>\n", configuration.m_fitWindow[k].ref[j].m_specieName.c_str());
+            fprintf(f, "\t\t\t<path>%s</path>\n", configuration.m_fitWindow[k].ref[j].m_path.c_str());
             fprintf(f, "\t\t\t<gasFactor>%.2lf</gasFactor>\n", configuration.m_fitWindow[k].ref[j].m_gasFactor);
 
             // Shift
-            if (configuration.m_fitWindow[k].ref[j].m_shiftOption == Evaluation::SHIFT_FIX) {
+            if (configuration.m_fitWindow[k].ref[j].m_shiftOption == novac::SHIFT_TYPE::SHIFT_FIX) {
                 fprintf(f, "\t\t\t<shift>fix to %.2lf</shift>\n", configuration.m_fitWindow[k].ref[j].m_shiftValue);
             }
-            else if (configuration.m_fitWindow[k].ref[j].m_shiftOption == Evaluation::SHIFT_FREE) {
+            else if (configuration.m_fitWindow[k].ref[j].m_shiftOption == novac::SHIFT_TYPE::SHIFT_FREE) {
                 fprintf(f, "\t\t\t<shift>free</shift>\n");
             }
-            else if (configuration.m_fitWindow[k].ref[j].m_shiftOption == Evaluation::SHIFT_LINK) {
+            else if (configuration.m_fitWindow[k].ref[j].m_shiftOption == novac::SHIFT_TYPE::SHIFT_LINK) {
                 fprintf(f, "\t\t\t<shift>link to %.0lf</shift>\n", configuration.m_fitWindow[k].ref[j].m_shiftValue);
             }
 
             // Squeeze
-            if (configuration.m_fitWindow[k].ref[j].m_squeezeOption == Evaluation::SHIFT_FIX) {
+            if (configuration.m_fitWindow[k].ref[j].m_squeezeOption == novac::SHIFT_TYPE::SHIFT_FIX) {
                 fprintf(f, "\t\t\t<squeeze>fix to %.2lf</squeeze>\n", configuration.m_fitWindow[k].ref[j].m_squeezeValue);
             }
-            else if (configuration.m_fitWindow[k].ref[j].m_squeezeOption == Evaluation::SHIFT_FREE) {
+            else if (configuration.m_fitWindow[k].ref[j].m_squeezeOption == novac::SHIFT_TYPE::SHIFT_FREE) {
                 fprintf(f, "\t\t\t<squeeze>free</squeeze>\n");
             }
-            else if (configuration.m_fitWindow[k].ref[j].m_squeezeOption == Evaluation::SHIFT_LINK) {
+            else if (configuration.m_fitWindow[k].ref[j].m_squeezeOption == novac::SHIFT_TYPE::SHIFT_LINK) {
                 fprintf(f, "\t\t\t<squeeze>link to %.0lf</squeeze>\n", configuration.m_fitWindow[k].ref[j].m_squeezeValue);
             }
             fprintf(f, "\t\t</Reference>\n");

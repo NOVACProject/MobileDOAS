@@ -51,8 +51,8 @@ void CMobileConfiguration::Clear() {
     m_fitWindow[0].fitType = Evaluation::FIT_HP_DIV;
     m_fitWindow[0].name.Format("NEW");
     m_fitWindow[0].nRef = 0;
-    m_fitWindow[0].ref[0].m_path.Format("");
-    m_fitWindow[0].ref[0].m_specieName.Format("SO2");
+    m_fitWindow[0].ref[0].m_path = "";
+    m_fitWindow[0].ref[0].m_specieName = "SO2";
     m_fitWindow[0].polyOrder = 5;
     m_fitWindow[0].specLength = MAX_SPECTRUM_LENGTH;
 
@@ -454,18 +454,18 @@ int CMobileConfiguration::ParseCalibrationSettings()
             continue;
         }
 
-        if (Equals(szToken, "LineShapeOption")) {
-            Parse_IntItem("/LineShapeOption", m_calibration.m_instrumentLineShapeFitOption);
+        if (Equals(szToken, "InstrumentLineShapeFitOption")) {
+            Parse_IntItem("/InstrumentLineShapeFitOption", m_calibration.m_instrumentLineShapeFitOption);
             continue;
         }
 
-        if (Equals(szToken, "LineShapeFitFrom")) {
-            Parse_FloatItem("/LineShapeFitFrom", m_calibration.m_instrumentLineShapeFitRegion.low);
+        if (Equals(szToken, "instrumentLineShapeFitRegionLow")) {
+            Parse_FloatItem("/instrumentLineShapeFitRegionLow", m_calibration.m_instrumentLineShapeFitRegion.low);
             continue;
         }
 
-        if (Equals(szToken, "LineShapeFitTo")) {
-            Parse_FloatItem("/LineShapeFitTo", m_calibration.m_instrumentLineShapeFitRegion.high);
+        if (Equals(szToken, "instrumentLineShapeFitRegionHigh")) {
+            Parse_FloatItem("/instrumentLineShapeFitRegionHigh", m_calibration.m_instrumentLineShapeFitRegion.high);
             continue;
         }
 
@@ -474,8 +474,7 @@ int CMobileConfiguration::ParseCalibrationSettings()
     return 0;
 }
 
-/** Parses a reference-file section */
-int	CMobileConfiguration::ParseReference(Evaluation::CReferenceFile& reference) {
+int	CMobileConfiguration::ParseReference(novac::CReferenceFile& reference) {
     // the actual reading loop
     while (szToken = NextToken()) {
 
@@ -496,13 +495,17 @@ int	CMobileConfiguration::ParseReference(Evaluation::CReferenceFile& reference) 
 
         // The name of the specie
         if (Equals(szToken, "name")) {
-            Parse_StringItem(TEXT("/name"), reference.m_specieName);
+            CString tmpStr;
+            Parse_StringItem(TEXT("/name"), tmpStr);
+            reference.m_specieName = std::string(tmpStr);
             continue;
         }
 
         // The path of the specie
         if (Equals(szToken, "path")) {
-            Parse_StringItem(TEXT("/path"), reference.m_path);
+            CString tmpStr;
+            Parse_StringItem(TEXT("/path"), tmpStr);
+            reference.m_path = std::string(tmpStr);
             continue;
         }
 
@@ -528,8 +531,7 @@ int	CMobileConfiguration::ParseReference(Evaluation::CReferenceFile& reference) 
     return 0;
 }
 
-/** Parses a shift or squeeze section */
-int CMobileConfiguration::Parse_ShiftOrSqueeze(const CString& label, Evaluation::SHIFT_TYPE& option, double& lowValue/*, double &highValue*/) {
+int CMobileConfiguration::Parse_ShiftOrSqueeze(const CString& label, novac::SHIFT_TYPE& option, double& lowValue/*, double &highValue*/) {
     char* pt = nullptr;
 
     // the actual reading loop
@@ -554,17 +556,17 @@ int CMobileConfiguration::Parse_ShiftOrSqueeze(const CString& label, Evaluation:
 
         if (pt = strstr(szToken, "fix to")) {
             sscanf(szToken, "fix to %lf", &lowValue);
-            option = Evaluation::SHIFT_FIX;
+            option = novac::SHIFT_TYPE::SHIFT_FIX;
         }
         else if (pt = strstr(szToken, "free")) {
-            option = Evaluation::SHIFT_FREE;
+            option = novac::SHIFT_TYPE::SHIFT_FREE;
             //}else if(pt = strstr(szToken, "limit")){
             //	sscanf(szToken, "limit from %lf to %lf", &lowValue, &highValue);
             //	option = Evaluation::SHIFT_LIMIT;
         }
         else if (pt = strstr(szToken, "link")) {
             sscanf(szToken, "link to %lf", &lowValue);
-            option = Evaluation::SHIFT_LINK;
+            option = novac::SHIFT_TYPE::SHIFT_LINK;
         }
     }
     return 0;

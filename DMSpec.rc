@@ -86,7 +86,7 @@ BEGIN
     CONTROL         "Replace configured references",IDC_CHECK_REPLACE_USER_DEFINED_REFERENCES,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,202,106,115,10
     CONTROL         "High pass filter references",IDC_CHECK_FILTER_REFERENCES,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,202,126,102,10
+                    "Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,202,126,102,10
 END
 
 

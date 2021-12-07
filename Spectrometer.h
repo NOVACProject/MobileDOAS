@@ -86,16 +86,16 @@ public:
     /** m_isRunning is true as long as the measurements are running. This is set to false
         when the user wants to quit the application. All running functions will then
         return as soon as they can. */
-    volatile bool    m_isRunning;
+    volatile bool m_isRunning;
 
     /** The actual measurement. This must be overridden in each sub-class */
-    virtual void    Run() = 0;
+    virtual void Run() = 0;
 
     /** Starts the measurements. Sets m_isRunning to true and calls 'Run' */
-    int       Start();
+    int Start();
 
     /** Stops the measurements. Sets m_isRunning to false */
-    int       Stop();
+    int Stop();
 
     /** The measurement mode */
     SPECTROMETER_MODE   m_spectrometerMode;
@@ -121,21 +121,21 @@ public:
     int ScanUSB(int sumInComputer, int sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]);
 
     /** The number of channels in the spectrometer to use */
-    int     m_NChannels;
+    int m_NChannels;
 
     /** The number of spectra to average before writing to file / updating flux.
         This is equal to m_sumInSpectrometer * m_sumInComputer */
-    long    m_totalSpecNum;
+    long m_totalSpecNum;
 
     /** number of spectra to average in spectrometer */
-    int   m_sumInSpectrometer;
+    int m_sumInSpectrometer;
 
     /** Number of spectra to average in computer */
-    int     m_sumInComputer;
+    int m_sumInComputer;
 
     /** the desired time resolution of the measurement (i.e. how often a spectrum
             should) be stored to file. In milli seconds */
-    long    m_timeResolution;
+    long m_timeResolution;
 
     /** Contains the name of the spectrometer, if USB-Connection
         is used this is the serial number of the spectrometer */
@@ -143,23 +143,23 @@ public:
 
     /** The number of pixels on the spectrometer's detector.
         To keep track of how long spectra we should receive */
-    long    m_detectorSize;
+    long m_detectorSize;
 
     /** The dynamic range of the spectrometer */
-    long    m_spectrometerDynRange;
+    long m_spectrometerDynRange;
 
     /** The model of the spectrometer */
     CString m_spectrometerModel;
 
     /** The spectrometer to use, if there are several attached
         must be at least 0 and always smaller than 'm_numberOfSpectrometersAttached' */
-    int  m_spectrometerIndex;
+    int m_spectrometerIndex;
 
     /** The channel to use on the attached spectrometer, this is only used if m_NChannels == 1 */
-    int  m_spectrometerChannel;
+    int m_spectrometerChannel;
 
     /** The number of spectrometers that are attached to this computer */
-    int  m_numberOfSpectrometersAttached;
+    int m_numberOfSpectrometersAttached;
 
     /** This will change the spectrometer to use, to the one with the
         given spectrometerIndex (ranging from 0 to (the number of spectrometers - 1) ).
@@ -220,11 +220,11 @@ public:
 
     /** The desired intensity of the measured spectra,
         in fractions of the maximum value */
-    double  m_percent;
+    double m_percent;
 
     /** if m_fixexptime > 0 the integration time will be set to
           m_fixexptime, else it will be judged automatically. */
-    long    m_fixexptime;
+    long m_fixexptime;
 
     /** True if the user wants us to update the integration time. */
     BOOL  m_adjustIntegrationTime;
@@ -242,42 +242,42 @@ public:
 
     /** The scaled (and possibly shifted) references that were fitted
         to the measured spectrum. This is used for plotting mostly */
-    double  m_fitResult[MAX_FIT_WINDOWS][MAX_SPECTRUM_LENGTH];
+    double m_fitResult[MAX_FIT_WINDOWS][MAX_SPECTRUM_LENGTH];
 
     /** Called to calculate the flux in real-time (during the scope of the measurement)
         @return the accumulated flux so far */
-    double  CountFlux(double windSpeed, double windAngle);
+    double CountFlux(double windSpeed, double windAngle);
 
     /** The so far accumulated flux in the measurement, set by 'CountFlux' */
-    double  m_flux;
+    double m_flux;
 
     /** The wind direction used to calculate the flux.
         Set by the user at startup */
-    double  m_windAngle;
+    double m_windAngle;
 
     /** The wind speed used to calculate the flux.
         Set by the user at startup */
-    double  m_windSpeed;
+    double m_windSpeed;
 
     /** The gas factor used to calculate the flux.
         Set to 2.66 (SO2) */
-    double  m_gasFactor;
+    double m_gasFactor;
 
     /** Evaluates the given spectrum using the given dark and sky spectra
         @param pSky - the sky spectrum(-a) to use. Should already be dark-corrected!
         @param pDark - the dark spectrum(-a) to use (for the measured spectrum,
             the sky should already be dark-corrected
         @param pSpectrum - the spectrum to evaluate.  */
-    void  DoEvaluation(double pSky[][MAX_SPECTRUM_LENGTH], double pDark[][MAX_SPECTRUM_LENGTH], double pSpectrum[][MAX_SPECTRUM_LENGTH]);
+    void DoEvaluation(double pSky[][MAX_SPECTRUM_LENGTH], double pDark[][MAX_SPECTRUM_LENGTH], double pSpectrum[][MAX_SPECTRUM_LENGTH]);
 
     /** Copies the current sky-spectrum to 'tmpSky' */
-    void  GetSky();
+    void GetSky();
 
     /** Copies the current dark-spectrum to 'tmpDark' */
-    void  GetDark();
+    void GetDark();
 
     /** Reads the references files from disk */
-    int   ReadReferenceFiles();
+    int ReadReferenceFiles();
 
     /** The evaluated results for the last spectrum
         This is a 3D-matrix, where
@@ -298,7 +298,7 @@ public:
 
     /** This is the evaluation result in the first fit-window for the first
         spectrometer channel. Same as evaluateResult[0][0] */
-    double  m_result[6]; /* [column, columnError, shift, shiftError, squeeze, squeezeError] */
+    double m_result[6]; /* [column, columnError, shift, shiftError, squeeze, squeezeError] */
 
     /** This is an array holding the intensities of the so far collected spectra */
     CVector vIntensity;
@@ -311,28 +311,28 @@ public:
         @param fitRegion - the fit-region index for which we should write the
             evaluation log file header. Must be >= 0 and < m_fitRegionNum.
     */
-    void    WriteBeginEvFile(int fitRegion);
+    void WriteBeginEvFile(int fitRegion);
 
     /** Writes the calculated flux to file. Called by 'CountFlux' */
-    void    WriteFluxLog();
+    void WriteFluxLog();
 
     /** Writes the given string to the given file
         @param filename - the file to write to
         @param txt - the string to write */
-    void    WriteLogFile(CString filename, CString txt);
+    void WriteLogFile(CString filename, CString txt);
 
     /** Sets the name of the next .std file that we should write to.
         Sets the member variable 'm_stdfileName'*/
-    void    SetFileName();
+    void SetFileName();
 
     /** Takes care of creating the correct structure of directories
         in the output directory
         Sets the variable 'm_subFolder' */
-    void    CreateDirectories();
+    void CreateDirectories();
 
     /** Writes the last evaluation result from the given fit region
         to the specified file-name */
-    void    WriteEvFile(CString filename, FitRegion* fitRegion);
+    void WriteEvFile(CString filename, FitRegion* fitRegion);
 
     /** The directory that we're currently writing to.
         Set by 'CreateDirectories' */
@@ -376,11 +376,11 @@ public:
 
     /** The Serial-port that we should read the GPS data from
         This is something like 'COM4' */
-    char    m_GPSPort[20];
+    char m_GPSPort[20];
 
     /** The baudrate that we should use to communicate with the GPS
         reveiver, typicallly 9600 */
-    long    m_GPSBaudRate = 9600;
+    long m_GPSBaudRate = 9600;
 
 
     // ----------------------------- Handling the serial communication -----------------
@@ -400,96 +400,96 @@ public:
 
     /** Called to test the USB-connection.
         @return 1 if successful, else 0 */
-    int     TestUSBConnection();
+    int TestUSBConnection();
 
     /** Called to close the USB-connection. Should only be done
         when we're about to stop collecting spectra */
-    void    CloseUSBConnection();
+    void CloseUSBConnection();
 
     /** @return true if the spectrometer has been disconnected */
-    bool    IsSpectrometerDisconnected();
+    bool IsSpectrometerDisconnected();
 
     /** Attepts to reconnect with the spectrometer after the connection has been lost.
         This will not return until the connection has been regained */
-    void    ReconnectWithSpectrometer();
+    void ReconnectWithSpectrometer();
 
     // ------------------------ Setup ------------------------
 
     /** Applies the settings found in m_conf to the rest
         of the parameters */
-    void    ApplySettings();
+    void ApplySettings();
 
     /** Checks the settings in 'm_conf' for reasonability and
         checks that the specified files does exist */
-    int     CheckSettings();
+    int CheckSettings();
 
     // ------------------------------ Misc ------------------------
 
      /* Returns the current time in UMT as a long, must have gotten
         at least one GPS-time value to work properly, otherwise the local time will be returned */
-    long    GetTimeValue_UMT();
+    long GetTimeValue_UMT();
 
     /** Plays a small sound according to the last evaluated column.
         The volume will be somewhere between 0 and 1 depending on
             if the last column is <=0 and >= m_maxColumn */
-    void    Sing(double factor);
+    void Sing(double factor);
 
     /** Updates the mobile-log... This is used to store the
         users preferences between runs */
-    void    UpdateMobileLog();
+    void UpdateMobileLog();
 
     //  ----------------- Communicating with other parts of the program -----------------
 
     /** Gets the number of spectra that are averaged in the spectrometer and in the computer */
-    void    GetNSpecAverage(int& averageInSpectrometer, int& averageInComputer);
+    void GetNSpecAverage(int& averageInSpectrometer, int& averageInComputer);
 
     /** Retrieves the last evaluated column.
         @return a pointer to 'm_result' */
     double* GetLastColumn();
 
     /** Returns the last calculated flux */
-    double  GetFlux() { return m_flux; }
+    double GetFlux() { return m_flux; }
 
     /** Retrieves the last 'sum' evaluated columns
         @param (out) a pointer to an array, will on return be filled with at most 'sum' retrieved columns
         @param sum (in) the desired number of columns to retrieve
         @param fitRegion (in) - the fit region that we want to have the columns for
     */
-    long    GetColumns(double* columnList, long sum, int fitRegion = 0);
+    long GetColumns(double* columnList, long sum, int fitRegion = 0);
 
     /** Retrieves the last 'sum' estimated columns errors
         @param (out) a pointer to an array, will on return be filled with at most 'sum' estimated columns errors
         @param sum (in) the desired number of columns errors to retrieve
         @param fitRegion (in) - the fit region that we want to have the columns errors for
     */
-    long    GetColumnErrors(double* columnList, long sum, int fitRegion = 0);
+    long GetColumnErrors(double* columnList, long sum, int fitRegion = 0);
 
     /** Retrieve the position for the (at most) 'sum' spectra.
         @param la (out) - will on return be filled with the latitudes
         @param lo (out) - will on return be filled with the longitudes
         @param al (out) - will on return be filled with the altitudes
         @param sum (in) - the desired number of positions */
-    long    GetLatLongAlt(double* la, double* lo, double* al, long sum);
+    long GetLatLongAlt(double* la, double* lo, double* al, long sum);
 
     /** Retrieves the position for the last collected spectrum
         @param la (out) - will on return be filled with the latitude
         @param lo (out) - will on return be filled with the longitude
         @param al (out) - will on return be filled with the altitude */
-    void    GetCurrentPos(double* la, double* lo, double* al);
+    void GetCurrentPos(double* la, double* lo, double* al);
 
     /** Retrieves the GPS-time for the last collected spectrum as a
         long. */
-    long    GetCurrentGPSTime();
+    long GetCurrentGPSTime();
 
     /** Retrieves the intensities for the (at most) 'sum' collected spectra
         @param list (out) - will on return be filled with the intensities
         @param sum (in) the desired number of intensities.
         @return - the number of intensities actually filled into 'list' */
-    long    GetIntensity(double* list, long sum);
+    long GetIntensity(double* list, long sum);
 
     /** Sets the wind speed, wind direction and basename from the
         Graphical User Interface */
-    void    SetUserParameters(double windspeed, double winddirection, char* baseName);
+    void SetUserParameters(double windspeed, double winddirection, char* baseName);
 
     /** Retrieves the last collected spectrum from the given channel */
     double* GetSpectrum(int channel);
@@ -498,10 +498,10 @@ public:
     double* GetWavelengths(int channel);
 
     /** @return the number of spectra that have been collected so far */
-    long    GetColumnNumber();
+    long GetColumnNumber();
 
     /** @return the currently used integration time, in milli seconds */
-    long    RequestIntTime() { return (long)m_integrationTime; }
+    long RequestIntTime() { return (long)m_integrationTime; }
 
     /** This is the text to show in the status bar of the program*/
     CString m_statusMsg;
@@ -574,7 +574,7 @@ protected:
 
     /** The highpass filtered measured spectrum.
     This is used for plotting mostly */
-    double  m_spectrum[MAX_FIT_WINDOWS][MAX_SPECTRUM_LENGTH];
+    double m_spectrum[MAX_FIT_WINDOWS][MAX_SPECTRUM_LENGTH];
 
 
     // ---------------------------------------------------------------------------------------
@@ -598,7 +598,7 @@ protected:
         double offset = 0.0;
 
         /** True if the program judges that the spectrum is dark */
-        bool   isDark = false;
+        bool isDark = false;
 
     }SpectrumInfo;
 
@@ -606,13 +606,13 @@ protected:
     SpectrumInfo m_specInfo[MAX_N_CHANNELS];
 
     /** Average intensity (at the specified pixel) of the last spectrum that we measured */
-    long    m_averageSpectrumIntensity[MAX_N_CHANNELS];
+    long m_averageSpectrumIntensity[MAX_N_CHANNELS];
 
     /** Audio option **/
     int m_useAudio = 1;
 
     /** The column value that causes 'Sing' to sing at the highest available volume */
-    double  m_maxColumn;
+    double m_maxColumn;
 
     /* Spectrum number, only used to judge if this is dark, sky or measurement spectrum */
     long m_scanNum;
@@ -649,11 +649,11 @@ private:
 
     /** Used by 'CountFlux' to calculate the flux.
         TODO: Is this really necessary?? */
-    long    m_posFlag;
+    long m_posFlag;
 
     /** Used by 'CountFlux' to calculate the flux
         TODO: Is this really necessary?? */
-    long    m_zeroPosNum;
+    long m_zeroPosNum;
 
     /** The offset of the last dark-spectrum collected. This is used
         to keep track of wheter we should warn the user about the fact

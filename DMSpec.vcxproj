@@ -333,7 +333,7 @@
     <ClCompile Include="Evaluation\Evaluation.cpp" />
     <ClCompile Include="Evaluation\EvaluationResult.cpp" />
     <ClCompile Include="Evaluation\FitWindow.cpp" />
-    <ClCompile Include="Evaluation\ReferenceFile.cpp" />
+    <ClCompile Include="Evaluation\RealTimeCalibration.cpp" />
     <ClCompile Include="Evaluation\ReferenceFitResult.cpp" />
     <ClCompile Include="Evaluation\TraverseResult.cpp" />
     <ClCompile Include="ExportEvLogDlg.cpp" />
@@ -461,6 +461,12 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="SpectralEvaluation\src\Evaluation\DoasFit.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Evaluation\ReferenceFile.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -636,7 +642,7 @@
     <ClInclude Include="Evaluation\Evaluation.h" />
     <ClInclude Include="Evaluation\EvaluationResult.h" />
     <ClInclude Include="Evaluation\FitWindow.h" />
-    <ClInclude Include="Evaluation\ReferenceFile.h" />
+    <ClInclude Include="Evaluation\RealTimeCalibration.h" />
     <ClInclude Include="Evaluation\ReferenceFitResult.h" />
     <ClInclude Include="Evaluation\TraverseResult.h" />
     <ClInclude Include="ExportEvLogDlg.h" />

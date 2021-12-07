@@ -12,6 +12,7 @@
 #include "Common/CDateTime.h"
 #include <algorithm>
 #include "Dialogs/SelectionDialog.h"
+#include <SpectralEvaluation/StringUtils.h>
 #include <numeric>
 
 
@@ -428,7 +429,7 @@ int CSpectrometer::CheckSettings() {
     //  have the correct format.
     for (int k = 0; k < m_fitRegion[0].window.nRef; ++k) {
         int nRows = 0;
-        FILE* f = fopen(m_fitRegion[0].window.ref[k].m_path, "r");
+        FILE* f = fopen(m_fitRegion[0].window.ref[k].m_path.c_str(), "r");
         if (nullptr == f) {
             fileName.Format("%s%s", g_exePath, m_fitRegion[0].window.ref[k].m_path);
             f = fopen(fileName, "r");
@@ -465,14 +466,14 @@ int CSpectrometer::CheckSettings() {
     // 3. If there is a reference file with the name SO2, the it should
     //  be the first reference file (since the main window will only
     //  show the result of evaluating the first reference-file)
-    if (!Equals(m_fitRegion[0].window.ref[0].m_specieName, "SO2")) {
+    if (!EqualsIgnoringCase(m_fitRegion[0].window.ref[0].m_specieName, "SO2")) {
         int k;
         for (k = 1; k < m_fitRegion[0].window.nRef; ++k) {
-            if (Equals(m_fitRegion[0].window.ref[k].m_specieName, "SO2"))
+            if (EqualsIgnoringCase(m_fitRegion[0].window.ref[k].m_specieName, "SO2"))
                 break;
         }
         if (k != m_fitRegion[0].window.nRef) {
-            Evaluation::CReferenceFile tmpRef = m_fitRegion[0].window.ref[0];
+            novac::CReferenceFile tmpRef = m_fitRegion[0].window.ref[0];
             m_fitRegion[0].window.ref[0] = m_fitRegion[0].window.ref[k];
             m_fitRegion[0].window.ref[k] = tmpRef;
         }
@@ -694,7 +695,7 @@ int CSpectrometer::ReadReferenceFiles() {
 
     for (int j = 0; j < m_fitRegionNum; ++j) {
         for (int k = 0; k < m_fitRegion[j].window.nRef; ++k) {
-            if (IsExistingFile(m_fitRegion[j].window.ref[k].m_path)) {
+            if (IsExistingFile(m_fitRegion[j].window.ref[k].m_path.c_str())) {
                 refFileList[k].Format("%s", m_fitRegion[j].window.ref[k].m_path);
             }
             else {
@@ -1180,7 +1181,7 @@ void CSpectrometer::WriteBeginEvFile(int fitRegion) {
     str5.Format("FIXEXPTIME=%d\nFITFROM=%d\nFITTO=%d\nPOLYNOM=%d\n",
         m_fixexptime, m_fitRegion[fitRegion].window.fitLow, m_fitRegion[fitRegion].window.fitHigh, m_fitRegion[fitRegion].window.polyOrder);
     str5.AppendFormat("FIXSHIFT=%d\nFIXSQUEEZE=%d\n",
-        m_fitRegion[fitRegion].window.ref[0].m_shiftOption == Evaluation::SHIFT_FIX, m_fitRegion[fitRegion].window.ref[0].m_squeezeOption == Evaluation::SHIFT_FIX);
+        m_fitRegion[fitRegion].window.ref[0].m_shiftOption == novac::SHIFT_TYPE::SHIFT_FIX, m_fitRegion[fitRegion].window.ref[0].m_squeezeOption == novac::SHIFT_TYPE::SHIFT_FIX);
     str6.Format("SPECCENTER=%d\nPERCENT=%f\nMAXCOLUMN=%f\nGASFACTOR=%f\n",
         m_conf->m_specCenter, m_percent, m_maxColumn, m_gasFactor);
     for (int k = 0; k < m_fitRegion[fitRegion].window.nRef; ++k) {
