@@ -568,6 +568,7 @@
 #define IDC_COMBO_STANDARD_REFERENCES   1349
 #define IDC_CHECK_FILTER_REFERENCES     1352
 #define IDC_COMBO_REFERENCE_UNIT        1354
+#define IDC_BUTTON_SAVE_REFERENCES      1355
 #define ID_ANALYSIS_POSTFLUX            32771
 #define ID_CONTROL_STOP                 32772
 #define ID_CONTROL_START                32772
@@ -592,7 +593,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        302
 #define _APS_NEXT_COMMAND_VALUE         32804
-#define _APS_NEXT_CONTROL_VALUE         1355
+#define _APS_NEXT_CONTROL_VALUE         1356
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

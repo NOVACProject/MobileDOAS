@@ -459,9 +459,6 @@
     <ClCompile Include="SpectralEvaluation\src\Calibration\StandardCrossSectionSetup.cpp">
       <Filter>Source Files\SpectralEvaluation\Calibration</Filter>
     </ClCompile>
-    <ClCompile Include="CCreateStandardReferencesDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CLogDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -488,6 +485,9 @@
     </ClCompile>
     <ClCompile Include="SpectralEvaluation\src\DialogControllers\WavelengthCalibrationController.cpp">
       <Filter>Source Files\Calibration</Filter>
+    </ClCompile>
+    <ClCompile Include="CCreateStandardReferencesDialog.cpp">
+      <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
