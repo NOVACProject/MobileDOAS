@@ -148,7 +148,7 @@ void CReEval_FitWindowsDlg::PopulateReferenceFileControl() {
             m_referenceGrid.SetItemTextFmt(1 + i, 2, "fixed to %.2lf", ref.m_shiftValue);
 
         if (ref.m_shiftOption == novac::SHIFT_TYPE::SHIFT_LINK)
-            m_referenceGrid.SetItemTextFmt(1 + i, 2, "linked to %s", window.ref[(int)ref.m_shiftValue].m_specieName);
+            m_referenceGrid.SetItemTextFmt(1 + i, 2, "linked to %s", window.ref[(int)ref.m_shiftValue].m_specieName.c_str());
 
         if (ref.m_shiftOption == novac::SHIFT_TYPE::SHIFT_OPTIMAL)
             m_referenceGrid.SetItemTextFmt(1 + i, 2, "find optimal");
@@ -160,7 +160,7 @@ void CReEval_FitWindowsDlg::PopulateReferenceFileControl() {
             m_referenceGrid.SetItemTextFmt(1 + i, 3, "fixed to %.2lf", ref.m_squeezeValue);
 
         if (ref.m_squeezeOption == novac::SHIFT_TYPE::SHIFT_LINK)
-            m_referenceGrid.SetItemTextFmt(1 + i, 3, "linked to %s", window.ref[(int)ref.m_squeezeValue].m_specieName);
+            m_referenceGrid.SetItemTextFmt(1 + i, 3, "linked to %s", window.ref[(int)ref.m_squeezeValue].m_specieName.c_str());
 
         if (ref.m_squeezeOption == novac::SHIFT_TYPE::SHIFT_OPTIMAL)
             m_referenceGrid.SetItemTextFmt(1 + i, 3, "find optimal");

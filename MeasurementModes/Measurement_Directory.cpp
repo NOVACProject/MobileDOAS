@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "Measurement_Directory.h"
-#include "../Evaluation/RealTimeCalibration.h"
 
 extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
 
@@ -13,7 +12,8 @@ CMeasurement_Directory::~CMeasurement_Directory()
 {
 }
 
-void CMeasurement_Directory::Run() {
+void CMeasurement_Directory::Run()
+{
     ShowMessageBox("START", "NOTICE");
 
     // Read configuration file and apply settings
@@ -60,18 +60,13 @@ void CMeasurement_Directory::Run() {
         }
     }
 
+    // Create the output directory
+    CreateDirectories();
+
     // If we should do an automatic calibration, then do so now
     if (m_conf->m_calibration.m_enable)
     {
-        m_statusMsg.Format("Performing instrument calibration");
-        pView->PostMessage(WM_STATUSMSG);
-
-        Evaluation::CRealTimeCalibration::RunInstrumentCalibration(
-            m_sky[0],
-            m_dark[0],
-            MAX_SPECTRUM_LENGTH, // TODO: This isn't correct - we need to know the size of the spectra here...
-            (LPCSTR)m_subFolder,
-            *m_conf);
+        RunInstrumentCalibration(m_sky[0], m_dark[0], m_detectorSize);
     }
 
     // Read reference files
@@ -90,8 +85,7 @@ void CMeasurement_Directory::Run() {
         }
     }
 
-    // Create the output directory and start the evaluation log file.
-    CreateDirectories();
+    // Start the evaluation log file.
     for (int j = 0; j < m_fitRegionNum; ++j) {
         WriteBeginEvFile(j);
     }
@@ -264,6 +258,7 @@ bool CMeasurement_Directory::ReadSky() {
     else {
         specfile.Format("%s\\%s", m_conf->m_directory, ffd.cFileName);
     }
+
     if (CSpectrumIO::readSTDFile(specfile, &spec) == 1) {
         ShowMessageBox("Error reading sky file.", "Error");
         return FAIL;
@@ -272,6 +267,8 @@ bool CMeasurement_Directory::ReadSky() {
         memcpy((void*)m_sky[0], (void*)spec.I, sizeof(double) * MAX_SPECTRUM_LENGTH);
         m_integrationTime = spec.exposureTime;
         m_totalSpecNum = spec.scans;
+        m_detectorSize = spec.length;
+        m_spectrometerName = spec.spectrometerSerial;
     }
     return SUCCESS;
 }

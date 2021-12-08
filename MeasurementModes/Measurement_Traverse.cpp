@@ -104,7 +104,7 @@ void CMeasurement_Traverse::Run() {
     }
 
     // Create the output directory and start the evaluation log file.
-    CreateDirectories();
+    CreateDirectories(); // TODO: Move to before calibration is done.
     for (int j = 0; j < m_fitRegionNum; ++j) {
         WriteBeginEvFile(j);
     }

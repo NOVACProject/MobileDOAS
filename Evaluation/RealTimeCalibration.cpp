@@ -8,6 +8,7 @@
 #include <SpectralEvaluation/DialogControllers/WavelengthCalibrationController.h>
 #include <SpectralEvaluation/File/File.h>
 #include <SpectralEvaluation/Calibration/StandardCrossSectionSetup.h>
+#include <SpectralEvaluation/Spectra/SpectrumInfo.h>
 
 #include <sstream>
 #include <afxstr.h>
@@ -46,10 +47,10 @@ std::string GetCalibrationFileName(const novac::CSpectrumInfo& spectrumInformati
 }
 
 void RunCalibration(
-    MobileDoasWavelengthCalibrationController& calibrationController,
+    InMemoryWavelengthCalibrationController& calibrationController,
     const double* measuredSpectrum,
     const double* darkSpectrum,
-    size_t spectrumLength, 
+    size_t spectrumLength,
     const Configuration::CMobileConfiguration::AutomaticCalibration& autoCalibrationSettings)
 {
     // calibrationController.m_inputSpectrumFile = scanFile;
@@ -78,11 +79,14 @@ std::vector<novac::CReferenceFile> CreateStandardReferences(
     ReferenceCreationController referenceController;
     std::vector<novac::CReferenceFile> referencesCreated;
 
+    referenceController.m_highPassFilter = settings.m_calibration.m_filterReferences;
+    referenceController.m_unitSelection = 0;
+
     for (size_t ii = 0; ii < standardCrossSections.NumberOfReferences(); ++ii)
     {
-        referenceController.m_highPassFilter = settings.m_calibration.m_filterReferences;
         referenceController.m_convertToAir = standardCrossSections.IsReferenceInVacuum(ii);
         referenceController.m_highResolutionCrossSection = standardCrossSections.ReferenceFileName(ii);
+        referenceController.m_isPseudoAbsorber = standardCrossSections.IsAdditionalAbsorber(ii);
         referenceController.ConvolveReference(*calibration);
 
         // Save the result
@@ -144,44 +148,54 @@ bool CRealTimeCalibration::RunInstrumentCalibration(
     const double* measuredSpectrum,
     const double* darkSpectrum,
     size_t spectrumLength,
+    const novac::CSpectrumInfo& spectrumInfo,
     const std::string& outputDirectory,
     Configuration::CMobileConfiguration& settings)
 {
-    try
+    bool referencesReplaced = false;
+
+    // Use the WavelengthCalibrationController, which is also used when the 
+    //  user performs the instrument calibrations using the CCalibratePixelToWavelengthDialog.
+    // This makes sure we get the same behavior in the dialog and here.
+    InMemoryWavelengthCalibrationController calibrationController;
+
+    // Construct the measured CSpectrum.
+    memcpy(calibrationController.m_measuredSpectrum.m_data, measuredSpectrum, spectrumLength * sizeof(double));
+    if (darkSpectrum != nullptr)
     {
-        // Use the WavelengthCalibrationController, which is also used when the 
-        //  user performs the instrument calibrations using the CCalibratePixelToWavelengthDialog.
-        // This makes sure we get the same behavior in the dialog and here.
-        MobileDoasWavelengthCalibrationController calibrationController;
-        RunCalibration(calibrationController, measuredSpectrum, darkSpectrum, spectrumLength, settings.m_calibration);
-
-        // Save new instrument calibration.
-        const std::string calibrationFileName = outputDirectory + GetCalibrationFileName(calibrationController.m_calibrationDebug.spectrumInfo);
-        calibrationController.SaveResultAsStd(calibrationFileName);
-
-        // Create the standard references.
-        const auto finalCalibration = calibrationController.GetFinalCalibration();
-        auto referencesCreated = CreateStandardReferences(
-            calibrationController.m_calibrationDebug.spectrumInfo,
-            finalCalibration,
-            outputDirectory,
-            settings);
-
-        // All references have successfully been created, replace the references used by the evaluation with the new references.
-        if (settings.m_calibration.m_generateReferences && referencesCreated.size() > 0)
+        for (size_t ii = 0; ii < spectrumLength; ++ii)
         {
-            // Update the settings.
-            ReplaceReferences(referencesCreated, settings);
-
-            // Save the updated settings to file
-            Configuration::ConfigurationFile::Write(settings);
+            calibrationController.m_measuredSpectrum.m_data[ii] -= darkSpectrum[ii];
         }
+    }
+    calibrationController.m_measuredSpectrum.m_length = static_cast<long>(spectrumLength);
+    calibrationController.m_measuredSpectrum.m_info = spectrumInfo;
 
-        return true; 
-    }
-    catch (std::exception& e)
+    RunCalibration(calibrationController, measuredSpectrum, darkSpectrum, spectrumLength, settings.m_calibration);
+
+    // Save new instrument calibration.
+    const std::string calibrationFileName = outputDirectory + GetCalibrationFileName(calibrationController.m_calibrationDebug.spectrumInfo);
+    calibrationController.SaveResultAsStd(calibrationFileName);
+
+    // Create the standard references.
+    const auto finalCalibration = calibrationController.GetFinalCalibration();
+    auto referencesCreated = CreateStandardReferences(
+        calibrationController.m_calibrationDebug.spectrumInfo,
+        finalCalibration,
+        outputDirectory,
+        settings);
+
+    // All references have successfully been created, replace the references used by the evaluation with the new references.
+    if (settings.m_calibration.m_generateReferences && referencesCreated.size() > 0)
     {
-        // AppendMessageToLog(spectrometer, e.what());
+        // Update the settings.
+        ReplaceReferences(referencesCreated, settings);
+
+        // Save the updated settings to file
+        Configuration::ConfigurationFile::Write(settings);
+
+        referencesReplaced = true;
     }
-    return false;
+
+    return referencesReplaced;
 }

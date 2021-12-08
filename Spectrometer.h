@@ -52,6 +52,10 @@ const enum SPECTROMETER_MODE { MODE_TRAVERSE, MODE_WIND, MODE_VIEW, MODE_DIRECTO
 
 extern CFormView* pView;
 
+namespace novac
+{
+    class CDateTime;
+}
 
 /** The class <b>CSpectrometer</b> is the base class used when communicating with the
     spectrometer. This holds all basic functions for USB or serial communication,
@@ -133,8 +137,8 @@ public:
     /** Number of spectra to average in computer */
     int m_sumInComputer;
 
-    /** the desired time resolution of the measurement (i.e. how often a spectrum
-            should) be stored to file. In milli seconds */
+    /** the desired time resolution of the measurement
+        (i.e. how often a spectrum should) be stored to file. In milliseconds */
     long m_timeResolution;
 
     /** Contains the name of the spectrometer, if USB-Connection
@@ -335,7 +339,8 @@ public:
     void WriteEvFile(CString filename, FitRegion* fitRegion);
 
     /** The directory that we're currently writing to.
-        Set by 'CreateDirectories' */
+    *   Notice that this does NOT end with a trailing (forward/backward) slash.
+        Set by calling 'CreateDirectories' */
     CString m_subFolder;
 
     /** The file-name (including full path) of the next .std - file
@@ -345,6 +350,9 @@ public:
 
     /** Retrieves the current date and time either from the GPS or from the computer time (if no valid gps-data). */
     void GetCurrentDateAndTime(std::string& currentDate, long& currentTime);
+
+    /** Retrieves the current date and time either from the GPS or from the computer time (if no valid gps-data). */
+    void GetCurrentDateAndTime(novac::CDateTime& currentDateAndTime);
 
     /* Create Spectrum data object. */
     void CreateSpectrum(CSpectrum& spectrum, const double* spec, const std::string& startDate, long startTime, long elapsedSecond);
@@ -366,6 +374,9 @@ public:
 
     /** Retrieves the current time from the system time */
     long GetCurrentTimeFromComputerClock();
+
+    /** Retrieves the current time from the system time */
+    void GetCurrentTimeFromComputerClock(novac::CDateTime& time);
 
     /** Pointer to the gps reading thread */
     GpsAsyncReader* m_gps = nullptr;
@@ -418,6 +429,10 @@ public:
     /** Applies the settings found in m_conf to the rest
         of the parameters */
     void ApplySettings();
+
+    /** Applies the settings for the evaluation to the rest of the parameters.
+        Called from ApplySettings but may also be called from e.g. the instrument calibration routine */
+    void ApplyEvaluationSettings();
 
     /** Checks the settings in 'm_conf' for reasonability and
         checks that the specified files does exist */
@@ -642,6 +657,11 @@ protected:
 
     /** Shows a message box to the user (through the main window form) */
     void ShowMessageBox(CString message, CString label) const;
+
+    /** Performs an instrument calibration using the provided measured spectrum (and a dark spectrum).
+        Depending on the settings, this may update the references used for evaluation and may hence make it possible to re-read the references.
+        @return true if the references were updated. */
+    bool RunInstrumentCalibration(const double* measuredSpectrum, const double* darkSpectrum, size_t spectrumLength);
 
 private:
 

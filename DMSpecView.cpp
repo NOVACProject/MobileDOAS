@@ -772,7 +772,7 @@ void CDMSpecView::OnControlStart()
         CString cfgFile = g_exePath + TEXT("cfg.xml");
         std::unique_ptr<Configuration::CMobileConfiguration> conf;
         conf.reset(new Configuration::CMobileConfiguration(cfgFile));
-        if (conf->m_spectrometerConnection == conf->CONNECTION_DIRECTORY) {
+         if (conf->m_spectrometerConnection == conf->CONNECTION_DIRECTORY) {
             OnControlProcessSpectraFromDirectory();
             return;
         }

@@ -13,8 +13,10 @@
 #include <algorithm>
 #include "Dialogs/SelectionDialog.h"
 #include <SpectralEvaluation/StringUtils.h>
+#include <SpectralEvaluation/Spectra/SpectrumInfo.h>
+#include "Evaluation/RealTimeCalibration.h"
 #include <numeric>
-
+#include <sstream>
 
 extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
 
@@ -55,9 +57,7 @@ CSpectrometer::CSpectrometer()
     m_gasFactor = GASFACTOR_SO2;
 
     m_fitRegionNum = 1;
-    m_fitRegion[0].eval[0] = new Evaluation::CEvaluation();
-    m_fitRegion[0].eval[1] = new Evaluation::CEvaluation();
-    for (int k = 1; k < MAX_FIT_WINDOWS; ++k) {
+    for (int k = 0; k < MAX_FIT_WINDOWS; ++k) {
         m_fitRegion[k].eval[0] = nullptr;
         m_fitRegion[k].eval[1] = nullptr;
     }
@@ -91,12 +91,19 @@ CSpectrometer::CSpectrometer()
 
 CSpectrometer::~CSpectrometer()
 {
-    delete this->m_fitRegion[0].eval[0];
-    delete this->m_fitRegion[0].eval[1];
+    for (int k = 0; k < MAX_FIT_WINDOWS; ++k)
+    {
+        delete m_fitRegion[k].eval[0];
+        m_fitRegion[k].eval[0] = nullptr;
+
+        delete m_fitRegion[k].eval[1];
+        m_fitRegion[k].eval[1] = nullptr;
+    }
 
     if (m_gps != nullptr)
     {
         delete m_gps;
+        m_gps = nullptr;
     }
 }
 
@@ -346,6 +353,29 @@ void CSpectrometer::SetUserParameters(double windspeed, double winddirection, ch
     m_measurementBaseName.TrimRight(' ');
 }
 
+void CSpectrometer::ApplyEvaluationSettings()
+{
+    for (int fitRegionIdx = 0; fitRegionIdx < MAX_FIT_WINDOWS; ++fitRegionIdx)
+    {
+        m_fitRegion[fitRegionIdx].window = m_conf->m_fitWindow[fitRegionIdx];
+
+        for (int channelIdx = 0; channelIdx < 2; ++channelIdx)
+        {
+            if (m_fitRegion[fitRegionIdx].eval[channelIdx] != nullptr)
+            {
+                delete m_fitRegion[fitRegionIdx].eval[channelIdx];
+            }
+            m_fitRegion[fitRegionIdx].eval[channelIdx] = new Evaluation::CEvaluation();
+        }
+
+        // the offset
+        m_fitRegion[fitRegionIdx].window.offsetFrom = m_conf->m_offsetFrom;
+        m_fitRegion[fitRegionIdx].window.offsetTo = m_conf->m_offsetTo;
+    }
+
+    this->m_fitRegionNum = m_conf->m_nFitWindows;
+}
+
 void CSpectrometer::ApplySettings() {
     CString msg;
 
@@ -394,17 +424,7 @@ void CSpectrometer::ApplySettings() {
     this->m_timeResolution = m_conf->m_timeResolution;
 
     // The settings for the evaluation
-    for (int k = 0; k < MAX_FIT_WINDOWS; ++k) {
-        m_fitRegion[k].window = m_conf->m_fitWindow[k];
-        if (k > 0) {
-            m_fitRegion[k].eval[0] = new Evaluation::CEvaluation();
-            m_fitRegion[k].eval[1] = new Evaluation::CEvaluation();
-        }
-        // the offset
-        m_fitRegion[k].window.offsetFrom = m_conf->m_offsetFrom;
-        m_fitRegion[k].window.offsetTo = m_conf->m_offsetTo;
-    }
-    this->m_fitRegionNum = m_conf->m_nFitWindows;
+    ApplyEvaluationSettings();
 
     // Audio Settings
     this->m_useAudio = m_conf->m_useAudio;
@@ -431,10 +451,10 @@ int CSpectrometer::CheckSettings() {
         int nRows = 0;
         FILE* f = fopen(m_fitRegion[0].window.ref[k].m_path.c_str(), "r");
         if (nullptr == f) {
-            fileName.Format("%s%s", g_exePath, m_fitRegion[0].window.ref[k].m_path);
+            fileName.Format("%s%s", g_exePath, m_fitRegion[0].window.ref[k].m_path.c_str());
             f = fopen(fileName, "r");
             if (nullptr == f) {
-                msgStr.Format("Cannot open reference file : %s for reading.", m_fitRegion[0].window.ref[k].m_path);
+                msgStr.Format("Cannot open reference file : %s for reading.", m_fitRegion[0].window.ref[k].m_path.c_str());
                 ShowMessageBox(msgStr, "Error");
                 return 1;
             }
@@ -690,21 +710,22 @@ int CSpectrometer::Start()
 
 /* Return value = 0 if all is ok, else 1 */
 int CSpectrometer::ReadReferenceFiles() {
-    CString refFileList[10];
-    CString tmpFileName, errorMessage;
 
-    for (int j = 0; j < m_fitRegionNum; ++j) {
-        for (int k = 0; k < m_fitRegion[j].window.nRef; ++k) {
-            if (IsExistingFile(m_fitRegion[j].window.ref[k].m_path.c_str())) {
-                refFileList[k].Format("%s", m_fitRegion[j].window.ref[k].m_path);
+    for (int fitRegionIdx = 0; fitRegionIdx < m_fitRegionNum; ++fitRegionIdx) {
+        CString refFileList[10];
+        for (int referenceIdx = 0; referenceIdx < m_fitRegion[fitRegionIdx].window.nRef; ++referenceIdx) {
+            if (IsExistingFile(m_fitRegion[fitRegionIdx].window.ref[referenceIdx].m_path.c_str())) {
+                refFileList[referenceIdx].Format("%s", m_fitRegion[fitRegionIdx].window.ref[referenceIdx].m_path.c_str());
             }
             else {
-                tmpFileName.Format("%s\\%s", g_exePath, m_fitRegion[j].window.ref[k].m_path);
+                CString tmpFileName;
+                tmpFileName.Format("%s\\%s", (LPCSTR)g_exePath, m_fitRegion[fitRegionIdx].window.ref[referenceIdx].m_path.c_str());
                 if (IsExistingFile(tmpFileName)) {
-                    refFileList[k].Format("%s", tmpFileName);
+                    refFileList[referenceIdx].Format("%s", (LPCSTR)tmpFileName);
                 }
                 else {
-                    errorMessage.Format("Can not read reference file\n %s\n Please check the file location and restart collection", m_fitRegion[j].window.ref[k].m_path);
+                    CString errorMessage;
+                    errorMessage.Format("Can not read reference file\n %s\n Please check the file location and restart collection", m_fitRegion[fitRegionIdx].window.ref[referenceIdx].m_path.c_str());
                     ShowMessageBox(errorMessage, "Error");
                     return 1;
                 }
@@ -712,13 +733,21 @@ int CSpectrometer::ReadReferenceFiles() {
         }
 
         /* Init the Master Channel Evaluator */
-        if (!(m_fitRegion[j].eval[0]->ReadRefList(refFileList, m_fitRegion[j].window.nRef, m_detectorSize))) {
+        if (m_fitRegion[fitRegionIdx].eval[0] == nullptr)
+        {
+            m_fitRegion[fitRegionIdx].eval[0] = new Evaluation::CEvaluation(); // should in fact not happen as this should have been done in ApplyEvaluationSettings()
+        }
+        if (!(m_fitRegion[fitRegionIdx].eval[0]->ReadRefList(refFileList, m_fitRegion[fitRegionIdx].window.nRef, m_detectorSize))) {
             ShowMessageBox("Can not read reference file\n Please check the file location and restart collection", "Error");
             return 1;
         }
 
         /* Init the 1:st Slave Channel Evaluator */
-        if (!(m_fitRegion[j].eval[1]->ReadRefList(refFileList, m_fitRegion[j].window.nRef, m_detectorSize))) {
+        if (m_fitRegion[fitRegionIdx].eval[1] == nullptr)
+        {
+            m_fitRegion[fitRegionIdx].eval[1] = new Evaluation::CEvaluation(); // should in fact not happen as this should have been done in ApplyEvaluationSettings()
+        }
+        if (!(m_fitRegion[fitRegionIdx].eval[1]->ReadRefList(refFileList, m_fitRegion[fitRegionIdx].window.nRef, m_detectorSize))) {
             ShowMessageBox("Can not read reference file\n Please check the file location and restart collection", "Error");
             return 1;
         }
@@ -1143,6 +1172,25 @@ void CSpectrometer::GetCurrentDateAndTime(std::string& currentDate, long& curren
     }
 }
 
+void CSpectrometer::GetCurrentDateAndTime(novac::CDateTime& currentDateAndTime)
+{
+    gpsData currentGpsInfo;
+    const bool couldReadValidGPSData = (m_useGps) ? UpdateGpsData(currentGpsInfo) : false;
+    if (couldReadValidGPSData)
+    {
+        ExtractDateAndTime(currentGpsInfo, currentDateAndTime);
+    }
+    else
+    {
+        GetCurrentDateFromComputerClock(currentDateAndTime);
+        GetCurrentTimeFromComputerClock(currentDateAndTime);
+    }
+
+    if (currentGpsInfo.date == 0) {
+        GetCurrentDateFromComputerClock(currentDateAndTime);
+    }
+}
+
 void CSpectrometer::WriteLogFile(CString filename, CString txt) {
     FILE* f;
     f = fopen(filename, "a+");
@@ -1185,7 +1233,7 @@ void CSpectrometer::WriteBeginEvFile(int fitRegion) {
     str6.Format("SPECCENTER=%d\nPERCENT=%f\nMAXCOLUMN=%f\nGASFACTOR=%f\n",
         m_conf->m_specCenter, m_percent, m_maxColumn, m_gasFactor);
     for (int k = 0; k < m_fitRegion[fitRegion].window.nRef; ++k) {
-        str6.AppendFormat("REFFILE=%s\n", m_fitRegion[fitRegion].window.ref[k].m_path);
+        str6.AppendFormat("REFFILE=%s\n", m_fitRegion[fitRegion].window.ref[k].m_path.c_str());
     }
     WriteLogFile(evPath, str1 + str2 + str3 + str4 + str5 + str6);
 
@@ -1206,9 +1254,12 @@ void CSpectrometer::WriteBeginEvFile(int fitRegion) {
     }
 
     str7.Format("\n#Time\tLat\tLong\tAlt\tNSpec\tExpTime\tIntens(%s)\t", channelName);
-    for (int k = 0; k < m_fitRegion[fitRegion].window.nRef; ++k) {
+    for (int referenceIdx = 0; referenceIdx < m_fitRegion[fitRegion].window.nRef; ++referenceIdx) {
         str7.AppendFormat("%s_Column_%s\t%s_ColumnError_%s\t",
-            channelName, m_fitRegion[fitRegion].window.ref[k].m_specieName, channelName, m_fitRegion[fitRegion].window.ref[k].m_specieName);
+            channelName,
+            m_fitRegion[fitRegion].window.ref[referenceIdx].m_specieName.c_str(),
+            channelName,
+            m_fitRegion[fitRegion].window.ref[referenceIdx].m_specieName.c_str());
     }
     str7.AppendFormat("STD-File(%s)\n", channelName);
 
@@ -1656,7 +1707,6 @@ void CSpectrometer::UpdateMobileLog() {
 bool CSpectrometer::CheckIfDark(double spectrum[MAX_SPECTRUM_LENGTH]) {
     // consider pixels 50 to 70. Remove the highest 3 in case they are 'hot'. Then calculate the average:
     std::vector<double> vec;
-    int i;
     double m_darkIntensity;
     double m_spectrumIntensity;
 
@@ -1921,6 +1971,18 @@ long CSpectrometer::GetCurrentTimeFromComputerClock()
     return startTime;
 }
 
+void CSpectrometer::GetCurrentTimeFromComputerClock(novac::CDateTime& result)
+{
+    long currentTime = GetCurrentTimeFromComputerClock();
+
+    int hours, minutes, seconds;
+    GetHrMinSec(currentTime, hours, minutes, seconds);
+
+    result.hour = hours;
+    result.minute = minutes;
+    result.second = seconds;
+}
+
 unsigned int CSpectrometer::GetProcessedSpectrum(double* dst, unsigned int maxNofElements, int chn) const
 {
     const unsigned int length = std::min(maxNofElements, (unsigned int)MAX_SPECTRUM_LENGTH);
@@ -1966,3 +2028,44 @@ void CSpectrometer::CreateSpectrum(CSpectrum& spectrum, const double* spec, cons
         spectrum.SetStopTime(startTime + elapsedSecond);
     }
 }
+
+bool CSpectrometer::RunInstrumentCalibration(const double* measuredSpectrum, const double* darkSpectrum, size_t spectrumLength)
+{
+    m_statusMsg.Format("Performing instrument calibration");
+    pView->PostMessage(WM_STATUSMSG);
+
+    bool referencesUpdated = false;
+
+    try
+    {
+        novac::CSpectrumInfo spectrumInfo;
+        spectrumInfo.m_device = m_spectrometerName;
+        spectrumInfo.m_specModelName = m_spectrometerModel;
+        GetCurrentDateAndTime(spectrumInfo.m_startTime); // TODO: This should in fact be the time the spectrum was measured, which may be just before now
+
+        std::string outputDirectory = std::string(m_subFolder + "/");
+
+        referencesUpdated = Evaluation::CRealTimeCalibration::RunInstrumentCalibration(
+            measuredSpectrum,
+            darkSpectrum,
+            spectrumLength,
+            spectrumInfo,
+            outputDirectory,
+            *m_conf);
+
+        if (referencesUpdated)
+        {
+            // Make sure to update the relevant settings here as well.
+            ApplyEvaluationSettings();
+        }
+    }
+    catch (std::exception& e)
+    {
+        std::stringstream message;
+        message << "Failed to perform instrument calibration: " << e.what();
+        ShowMessageBox(CString(message.str().c_str()), "Error");
+    }
+
+    return referencesUpdated;
+}
+
