@@ -652,7 +652,18 @@ protected:
     CString m_measurementBaseName;
 
     // ---------------------------------------------------------------------------------------
-    // ----------------------- Communicating wiht the user and the GUI -----------------------
+    // -------------------- Collecting common behavior between subclasses --------------------
+    // ---------------------------------------------------------------------------------------
+
+    /** Sets up the evaluation objects. 
+        @param skySpectrumIsDarkCorrected set to true if the sky-spectrum used in the evaluation
+            has already been dark-corrected before doing the evaluation (normally: true) */
+    void InitializeEvaluators(bool skySpectrumIsDarkCorrected);
+
+    void WriteEvaluationLogFileHeaders();
+
+    // ---------------------------------------------------------------------------------------
+    // ----------------------- Communicating with the user and the GUI -----------------------
     // ---------------------------------------------------------------------------------------
 
     /** Shows a message box to the user (through the main window form) */

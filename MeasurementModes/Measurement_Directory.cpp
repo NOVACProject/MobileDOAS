@@ -77,18 +77,9 @@ void CMeasurement_Directory::Run()
         return;
     }
 
-    // Initialize the evaluator 
-    for (int fitRgn = 0; fitRgn < m_fitRegionNum; ++fitRgn) {
-        for (int i = 0; i < m_NChannels; ++i) {
-            m_fitRegion[fitRgn].window.specLength = this->m_detectorSize;
-            m_fitRegion[fitRgn].eval[i]->SetFitWindow(m_fitRegion[fitRgn].window);
-        }
-    }
+    InitializeEvaluators(m_conf->m_expTimeMode == m_conf->EXPOSURETIME_ADAPTIVE);
 
-    // Start the evaluation log file.
-    for (int j = 0; j < m_fitRegionNum; ++j) {
-        WriteBeginEvFile(j);
-    }
+    WriteEvaluationLogFileHeaders();
 
     // variables used for adaptive mode
     int roundResult[MAX_N_CHANNELS];
@@ -105,11 +96,6 @@ void CMeasurement_Directory::Run()
         GetDark();
         for (int iterator = 0; iterator < MAX_SPECTRUM_LENGTH; ++iterator) {
             m_sky[0][iterator] -= m_tmpDark[0][iterator];
-        }
-
-        // Tell the evaluator(s) that the dark-spectrum does not need to be subtracted from the sky-spectrum
-        for (int fitRgn = 0; fitRgn < m_fitRegionNum; ++fitRgn) {
-            m_fitRegion[fitRgn].eval[0]->m_subtractDarkFromSky = false;
         }
 
         /* Set the delays and initialize the USB-Connection */

@@ -75,31 +75,6 @@ void CMeasurement_Wind::Run() {
         return;
     }
 
-    /* -- The Reference Files -- */
-    // NB!! It is important that the USB-connection is tested before
-    //	the references are read. Since the testing of the USB connection
-    //	counts the number of pixels on the detector, and that number
-    //	is here compared to the number of data-points found in the reference-files
-    if (m_spectrometerMode != MODE_VIEW) {
-        m_statusMsg.Format("Reading References");
-        pView->PostMessage(WM_STATUSMSG);
-        if (ReadReferenceFiles()) {
-
-            // we have to call this before exiting the application otherwise we'll have trouble next time we start...
-            CloseUSBConnection();
-
-            return;
-        }
-
-        /* Initialize the evaluator */
-        for (int fitRgn = 0; fitRgn < m_fitRegionNum; ++fitRgn) {
-            for (int i = 0; i < m_NChannels; ++i) {
-                m_fitRegion[fitRgn].window.specLength = this->m_detectorSize;
-                m_fitRegion[fitRgn].eval[i]->SetFitWindow(m_fitRegion[fitRgn].window);
-            }
-        }
-    }
-
     /* -- Init Serial Communication -- */
     m_statusMsg.Format("Initializing communication with spectrometer");
     pView->PostMessage(WM_STATUSMSG);
@@ -113,11 +88,7 @@ void CMeasurement_Wind::Run() {
     }
 
     if (m_spectrometerMode != MODE_VIEW) {
-        // Create the output directory and start the evaluation log file.
         CreateDirectories();
-        for (int j = 0; j < m_fitRegionNum; ++j) {
-            WriteBeginEvFile(j);
-        }
 
         /* Start the GPS collection thread */
         if (m_useGps)
@@ -125,7 +96,9 @@ void CMeasurement_Wind::Run() {
             m_gps = new GpsAsyncReader(m_GPSPort, m_GPSBaudRate);
         }
     }
-    else {
+
+    if (m_spectrometerMode == MODE_VIEW) {
+
         this->m_scanNum = 2; // start directly on the measured spectra, skip dark and sky
     }
 
@@ -295,6 +268,26 @@ void CMeasurement_Wind::Run() {
 
             /* Get the information about the spectrum */
             GetSpectrumInfo(scanResult);
+
+            // If we should do an automatic calibration, then do so now
+            if (m_conf->m_calibration.m_enable)
+            {
+                RunInstrumentCalibration(m_sky[0], nullptr, m_detectorSize);
+            }
+
+            m_statusMsg.Format("Reading References");
+            pView->PostMessage(WM_STATUSMSG);
+            if (ReadReferenceFiles()) {
+
+                // we have to call this before exiting the application otherwise we'll have trouble next time we start...
+                CloseUSBConnection();
+                return;
+            }
+
+            InitializeEvaluators(true);
+
+            WriteEvaluationLogFileHeaders();
+
 #ifndef _DEBUG
             if (m_specInfo->isDark)
             {

@@ -68,28 +68,6 @@ void CMeasurement_Traverse::Run() {
         return;
     }
 
-    /* -- The Reference Files -- */
-    // NB!! It is important that the USB-connection is tested before
-    //	the references are read. Since the testing of the USB connection
-    //	counts the number of pixels on the detector, and that number
-    //	is here compared to the number of data-points found in the reference-files
-    m_statusMsg.Format("Reading References");
-    pView->PostMessage(WM_STATUSMSG);
-    if (ReadReferenceFiles()) {
-        // we have to call this before exiting the application otherwise we'll have trouble next time we start...
-        CloseUSBConnection();
-
-        return;
-    }
-
-    /* Initialize the evaluator */
-    for (int fitRgn = 0; fitRgn < m_fitRegionNum; ++fitRgn) {
-        for (int i = 0; i < m_NChannels; ++i) {
-            m_fitRegion[fitRgn].window.specLength = this->m_detectorSize;
-            m_fitRegion[fitRgn].eval[i]->SetFitWindow(m_fitRegion[fitRgn].window);
-        }
-    }
-
     /* -- Init Serial Communication -- */
     m_statusMsg.Format("Initializing communication with spectrometer");
     pView->PostMessage(WM_STATUSMSG);
@@ -103,11 +81,8 @@ void CMeasurement_Traverse::Run() {
         return;
     }
 
-    // Create the output directory and start the evaluation log file.
-    CreateDirectories(); // TODO: Move to before calibration is done.
-    for (int j = 0; j < m_fitRegionNum; ++j) {
-        WriteBeginEvFile(j);
-    }
+    // Create the output directory
+    CreateDirectories();
 
     /* Start the GPS collection thread */
     if (m_useGps)
@@ -277,11 +252,6 @@ void CMeasurement_Traverse::Run() {
                 for (int iterator = 0; iterator < MAX_SPECTRUM_LENGTH; ++iterator) {
                     m_sky[i][iterator] -= m_dark[i][iterator];
                 }
-
-                // Tell the evaluator(s) that the dark-spectrum does not need to be subtracted from the sky-spectrum
-                for (int fitRgn = 0; fitRgn < m_fitRegionNum; ++fitRgn) {
-                    m_fitRegion[fitRgn].eval[i]->m_subtractDarkFromSky = false;
-                }
             }
 
             m_statusMsg.Format("Average value around center channel(sky) %d: %d", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
@@ -289,6 +259,26 @@ void CMeasurement_Traverse::Run() {
 
             /* Get the information about the spectrum */
             GetSpectrumInfo(scanResult);
+
+            // If we should do an automatic calibration, then do so now
+            if (m_conf->m_calibration.m_enable)
+            {
+                RunInstrumentCalibration(m_sky[0], nullptr, m_detectorSize);
+            }
+
+            m_statusMsg.Format("Reading References");
+            pView->PostMessage(WM_STATUSMSG);
+            if (ReadReferenceFiles())
+            {
+                // we have to call this before exiting the application otherwise we'll have trouble next time we start...
+                CloseUSBConnection();
+                return;
+            }
+
+            InitializeEvaluators(true);
+
+            WriteEvaluationLogFileHeaders();
+
 #ifndef _DEBUG
             if (m_specInfo->isDark)
             {
@@ -523,11 +513,6 @@ void CMeasurement_Traverse::Run_Adaptive() {
                 for (int iterator = 0; iterator < MAX_SPECTRUM_LENGTH; ++iterator) {
                     m_sky[i][iterator] -= m_tmpDark[i][iterator];
                 }
-
-                // Tell the evaluator(s) that the dark-spectrum does not need to be subtracted from the sky-spectrum
-                for (int fitRgn = 0; fitRgn < m_fitRegionNum; ++fitRgn) {
-                    m_fitRegion[fitRgn].eval[i]->m_subtractDarkFromSky = false;
-                }
             }
 
             m_statusMsg.Format("Average value around center channel(sky) %d: %d", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
@@ -535,6 +520,26 @@ void CMeasurement_Traverse::Run_Adaptive() {
 
             /* Get the information about the spectrum */
             GetSpectrumInfo(scanResult);
+
+            // If we should do an automatic calibration, then do so now
+            if (m_conf->m_calibration.m_enable)
+            {
+                RunInstrumentCalibration(m_sky[0], nullptr, m_detectorSize);
+            }
+
+            m_statusMsg.Format("Reading References");
+            pView->PostMessage(WM_STATUSMSG);
+            if (ReadReferenceFiles())
+            {
+                // we have to call this before exiting the application otherwise we'll have trouble next time we start...
+                CloseUSBConnection();
+                return;
+            }
+
+            InitializeEvaluators(true);
+
+            WriteEvaluationLogFileHeaders();
+
 #ifndef _DEBUG
             if (m_specInfo->isDark)
             {

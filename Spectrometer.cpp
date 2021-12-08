@@ -2029,6 +2029,28 @@ void CSpectrometer::CreateSpectrum(CSpectrum& spectrum, const double* spec, cons
     }
 }
 
+void CSpectrometer::InitializeEvaluators(bool skySpectrumIsDarkCorrected)
+{
+    for (int fitRgnIdx = 0; fitRgnIdx < m_fitRegionNum; ++fitRgnIdx)
+    {
+        for (int channelIdx = 0; channelIdx < m_NChannels; ++channelIdx)
+        {
+            m_fitRegion[fitRgnIdx].window.specLength = this->m_detectorSize;
+            m_fitRegion[fitRgnIdx].eval[channelIdx]->SetFitWindow(m_fitRegion[fitRgnIdx].window);
+
+            m_fitRegion[fitRgnIdx].eval[channelIdx]->m_subtractDarkFromSky = !skySpectrumIsDarkCorrected;
+        }
+    }
+}
+
+void CSpectrometer::WriteEvaluationLogFileHeaders()
+{
+    for (int fitRgnIdx = 0; fitRgnIdx < m_fitRegionNum; ++fitRgnIdx)
+    {
+        WriteBeginEvFile(fitRgnIdx);
+    }
+}
+
 bool CSpectrometer::RunInstrumentCalibration(const double* measuredSpectrum, const double* darkSpectrum, size_t spectrumLength)
 {
     m_statusMsg.Format("Performing instrument calibration");
