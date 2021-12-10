@@ -16,15 +16,6 @@
 using namespace Evaluation;
 
 // ------------- Free functions used to help out with the calibration -------------
-/*
-
-std::string GetLogFileName()
-{
-    std::stringstream debugFile;
-    debugFile << GetOutputDirectory() << "Debug_InstrumentCalibration.txt";
-    return debugFile.str();
-}
-*/
 
 std::string FormatDateAndTimeOfSpectrum(const novac::CSpectrumInfo& spectrumInformation)
 {
@@ -48,13 +39,8 @@ std::string GetCalibrationFileName(const novac::CSpectrumInfo& spectrumInformati
 
 void RunCalibration(
     InMemoryWavelengthCalibrationController& calibrationController,
-    const double* measuredSpectrum,
-    const double* darkSpectrum,
-    size_t spectrumLength,
     const Configuration::CMobileConfiguration::AutomaticCalibration& autoCalibrationSettings)
 {
-    // calibrationController.m_inputSpectrumFile = scanFile;
-    // calibrationController.m_darkSpectrumFile = darkSpectrum;
     calibrationController.m_solarSpectrumFile = autoCalibrationSettings.m_solarSpectrumFile;
     calibrationController.m_initialCalibrationFile = autoCalibrationSettings.m_initialCalibrationFile;
     calibrationController.m_initialLineShapeFile = autoCalibrationSettings.m_instrumentLineshapeFile;
@@ -171,7 +157,7 @@ bool CRealTimeCalibration::RunInstrumentCalibration(
     calibrationController.m_measuredSpectrum.m_length = static_cast<long>(spectrumLength);
     calibrationController.m_measuredSpectrum.m_info = spectrumInfo;
 
-    RunCalibration(calibrationController, measuredSpectrum, darkSpectrum, spectrumLength, settings.m_calibration);
+    RunCalibration(calibrationController, settings.m_calibration);
 
     // Save new instrument calibration.
     const std::string calibrationFileName = outputDirectory + GetCalibrationFileName(calibrationController.m_calibrationDebug.spectrumInfo);

@@ -375,7 +375,8 @@ void CCalibrateInstrumentLineShape::OnBnClickedSave()
 {
     try
     {
-        // Extract the currently selected line shape
+        // Extract the currently selected line shape.
+        // Notice that there must have been a peak selected and m_controller->FitFunctionToLineShape must have been called (should be done in the event handler)
         const int selectedPeak = m_peaksList.GetCurSel();
         if (selectedPeak < 0 || selectedPeak >= static_cast<int>(m_controller->m_peaksFound.size()))
         {
@@ -394,12 +395,12 @@ void CCalibrateInstrumentLineShape::OnBnClickedSave()
                 m_controller->SaveResultAsClb(dstFileName);
 
                 dstFileName = novac::EnsureFilenameHasSuffix(std::string(destinationFileName), "slf");
-                m_controller->SaveResultAsSlf(selectedPeak, dstFileName);
+                m_controller->SaveResultAsSlf(dstFileName);
             }
             else
             {
                 std::string dstFileName = novac::EnsureFilenameHasSuffix(std::string(destinationFileName), "std");
-                m_controller->SaveResultAsStd(selectedPeak, dstFileName);
+                m_controller->SaveResultAsStd(dstFileName);
             }
         }
     }
