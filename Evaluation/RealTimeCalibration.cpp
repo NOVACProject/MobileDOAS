@@ -9,6 +9,7 @@
 #include <SpectralEvaluation/File/File.h>
 #include <SpectralEvaluation/Calibration/StandardCrossSectionSetup.h>
 #include <SpectralEvaluation/Spectra/SpectrumInfo.h>
+#include <SpectralEvaluation/StringUtils.h>
 
 #include <sstream>
 #include <afxstr.h>
@@ -66,8 +67,9 @@ std::vector<novac::CReferenceFile> CreateStandardReferences(
     std::vector<novac::CReferenceFile> referencesCreated;
 
     referenceController.m_highPassFilter = settings.m_calibration.m_filterReferences;
-    referenceController.m_unitSelection = 0;
+    referenceController.m_unitSelection = 0; // The default unit in MobileDoas is ppmm
 
+    // First the ordinary references
     for (size_t ii = 0; ii < standardCrossSections.NumberOfReferences(); ++ii)
     {
         referenceController.m_convertToAir = standardCrossSections.IsReferenceInVacuum(ii);
@@ -97,6 +99,31 @@ std::vector<novac::CReferenceFile> CreateStandardReferences(
         referencesCreated.push_back(newReference);
     }
 
+    // Save the Fraunhofer reference as well
+    {
+        // Do the convolution
+        referenceController.m_convertToAir = false;
+        referenceController.m_highResolutionCrossSection = standardCrossSections.FraunhoferReferenceFileName();
+        referenceController.m_isPseudoAbsorber = true;
+        referenceController.ConvolveReference(*calibration);
+
+        // Save the result
+        const std::string dstFileName =
+            directoryName +
+            spectrumInformation.m_device +
+            "_Fraunhofer_" +
+            FormatDateAndTimeOfSpectrum(spectrumInformation) +
+            ".txt";
+
+        novac::SaveCrossSectionFile(dstFileName, *(referenceController.m_resultingCrossSection));
+
+        novac::CReferenceFile newReference;
+        newReference.m_specieName = "Fraunhofer";
+        newReference.m_path = dstFileName;
+        newReference.m_isFiltered = referenceController.m_highPassFilter;
+        referencesCreated.push_back(newReference);
+    }
+
     return referencesCreated;
 }
 
@@ -123,10 +150,15 @@ void ReplaceReferences(std::vector<novac::CReferenceFile>& newReferences, Config
 
     // Now replace the references. Notice that this only supports replacing the references of the first channel.
     auto& fitWindow = settings.m_fitWindow[0];
-    fitWindow.nRef = static_cast<int>(newReferences.size());
-    for (size_t idx = 0; idx < newReferences.size(); ++idx)
+    fitWindow.nRef = 0;
+    for (const auto& reference : newReferences)
     {
-        fitWindow.ref[idx] = newReferences[idx];
+        if (!EqualsIgnoringCase(reference.m_specieName, "Fraunhofer"))
+        {
+            // The NovacProgram doesn't use the Fraunhofer reference for determining shift in the real-time evaluations (only in ReEvaluation)
+            fitWindow.ref[fitWindow.nRef] = reference;
+            ++fitWindow.nRef;
+        }
     }
 }
 
