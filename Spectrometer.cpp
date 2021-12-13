@@ -1563,8 +1563,13 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 
             /* If the offset level has changed alot since the last dark, encourage the user to take a new dark spectrum */
             if (m_lastDarkOffset[n] > 10) {/* Make sure this test is not run on the first spectrum collected */
-                if (!nagFlag) {
-                    if (fabs(m_lastDarkOffset[n] - m_specInfo[n].offset) > 20.0) {
+                if (!nagFlag)
+                {
+                    // TODO: Investigate what is a reasonable threshold here for the different supported spectrometer models.
+                    //  The threshold of 20 counts is used for S2000/USB2000 and the value is a rather basic scaling of this to the dynamic range of the spectrometer.
+                    const double threshold = (20 / 4095.0) * m_spectrometerDynRange;
+                    if (threshold > 0.0 && fabs(m_lastDarkOffset[n] - m_specInfo[n].offset) > threshold)
+                    {
                         pView->PostMessage(WM_SHOWDIALOG, DARK_DIALOG);
                         nagFlag = true;
                     }

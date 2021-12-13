@@ -83,8 +83,8 @@ BEGIN
     LTEXT           "High Resolved Solar Spectrum",IDC_STATIC,7,22,100,8
     LTEXT           "Initial Calibration",IDC_STATIC,7,59,56,8
     GROUPBOX        "References",IDC_STATIC,190,93,195,116,WS_GROUP
-    CONTROL         "Replace configured references",IDC_CHECK_REPLACE_USER_DEFINED_REFERENCES,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,202,106,115,10
+    CONTROL         "Generate references and use for evaluation",IDC_CHECK_REPLACE_USER_DEFINED_REFERENCES,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,202,106,158,10
     CONTROL         "High pass filter references",IDC_CHECK_FILTER_REFERENCES,
                     "Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,202,126,102,10
 END
@@ -776,8 +776,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 6,1,0,0
- PRODUCTVERSION 6,1,0,0
+ FILEVERSION 6,3,2,0
+ PRODUCTVERSION 6,3,2,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -794,12 +794,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Chalmers University of Technology"
             VALUE "FileDescription", "MobileDOAS"
-            VALUE "FileVersion", "6.1.0.0"
+            VALUE "FileVersion", "6.3.2.0"
             VALUE "InternalName", "MobileDOAS"
-            VALUE "LegalCopyright", "Copyright (C) 2003-2017"
+            VALUE "LegalCopyright", "Copyright (C) 2003-2021"
             VALUE "OriginalFilename", "MobileDOAS.EXE"
             VALUE "ProductName", "MobileDOAS"
-            VALUE "ProductVersion", "6.1.0.0"
+            VALUE "ProductVersion", "6.3.2.0"
         END
     END
     BLOCK "VarFileInfo"
