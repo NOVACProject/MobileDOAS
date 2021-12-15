@@ -210,7 +210,7 @@ bool CRealTimeCalibration::RunInstrumentCalibration(
         ReplaceReferences(referencesCreated, settings);
 
         // Save the updated settings to file
-        Configuration::ConfigurationFile::Write(settings);
+        // Configuration::ConfigurationFile::Write(settings);
 
         referencesReplaced = true;
     }
