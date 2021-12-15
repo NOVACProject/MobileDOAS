@@ -168,7 +168,8 @@ bool CRealTimeCalibration::RunInstrumentCalibration(
     size_t spectrumLength,
     const novac::CSpectrumInfo& spectrumInfo,
     const std::string& outputDirectory,
-    Configuration::CMobileConfiguration& settings)
+    Configuration::CMobileConfiguration& settings,
+    double spectrometerMaximumIntensityForSingleReadoutOverride)
 {
     bool referencesReplaced = false;
 
@@ -176,6 +177,7 @@ bool CRealTimeCalibration::RunInstrumentCalibration(
     //  user performs the instrument calibrations using the CCalibratePixelToWavelengthDialog.
     // This makes sure we get the same behavior in the dialog and here.
     InMemoryWavelengthCalibrationController calibrationController;
+    calibrationController.m_spectrometerMaximumIntensityForSingleReadout = spectrometerMaximumIntensityForSingleReadoutOverride;
 
     // Construct the measured CSpectrum.
     memcpy(calibrationController.m_measuredSpectrum.m_data, measuredSpectrum, spectrumLength * sizeof(double));

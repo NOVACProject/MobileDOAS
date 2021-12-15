@@ -29,7 +29,8 @@ namespace Evaluation
             size_t spectrumLength,
             const novac::CSpectrumInfo& spectrumInfo,
             const std::string& outputDirectory,
-            Configuration::CMobileConfiguration& settings);
+            Configuration::CMobileConfiguration& settings,
+            double spectrometerMaximumIntensityForSingleReadoutOverride = -1.0);
 
     };
 }

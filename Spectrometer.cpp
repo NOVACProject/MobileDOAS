@@ -2078,7 +2078,8 @@ bool CSpectrometer::RunInstrumentCalibration(const double* measuredSpectrum, con
             spectrumLength,
             spectrumInfo,
             outputDirectory,
-            *m_conf);
+            *m_conf,
+            m_spectrometerDynRange);
 
         if (referencesUpdated)
         {
