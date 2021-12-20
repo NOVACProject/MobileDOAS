@@ -675,6 +675,7 @@ void CCalibratePixelToWavelengthDialog::OnClickedButtonSaveReferences()
         }
 
         // Save the Fraunhofer reference as well
+        if (m_standardCrossSections->FraunhoferReferenceFileName().size() > 0)
         {
             // Do the convolution
             referenceController.m_highPassFilter = false;
