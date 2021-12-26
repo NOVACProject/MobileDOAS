@@ -776,8 +776,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 6,3,2,0
- PRODUCTVERSION 6,3,2,0
+ FILEVERSION 6,4,0,0
+ PRODUCTVERSION 6,4,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -794,12 +794,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Chalmers University of Technology"
             VALUE "FileDescription", "MobileDOAS"
-            VALUE "FileVersion", "6.3.2.0"
+            VALUE "FileVersion", "6.4.0.0"
             VALUE "InternalName", "MobileDOAS"
             VALUE "LegalCopyright", "Copyright (C) 2003-2021"
             VALUE "OriginalFilename", "MobileDOAS.EXE"
             VALUE "ProductName", "MobileDOAS"
-            VALUE "ProductVersion", "6.3.2.0"
+            VALUE "ProductVersion", "6.4.0.0"
         END
     END
     BLOCK "VarFileInfo"
