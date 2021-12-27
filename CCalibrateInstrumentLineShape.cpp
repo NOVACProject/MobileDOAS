@@ -174,7 +174,6 @@ void CCalibrateInstrumentLineShape::UpdateListOfPeaksFound()
 {
     m_peaksList.ResetContent();
 
-    // the elements need to be added in reversed order as new elements are added to the top, not to the bottom of the control
     for each (auto peak in m_controller->m_peaksFound)
     {
         CString fmt;
@@ -381,6 +380,12 @@ void CCalibrateInstrumentLineShape::OnBnClickedSave()
         if (selectedPeak < 0 || selectedPeak >= static_cast<int>(m_controller->m_peaksFound.size()))
         {
             MessageBox("Please select a peak to save in the list box to the left", "No peak selected", MB_OK);
+            return;
+        }
+
+        if ((m_autoDetermineCalibration == FALSE && !m_controller->m_inputSpectrumContainsWavelength) || !m_controller->m_wavelengthCalibrationSucceeded)
+        {
+            MessageBox("The provided spectrum does not contain a valid wavelength calibration and will not produce a valid instrument line shape file. Please make sure that there is a wavelength calibration and try again.", "No wavelength calibration", MB_OK);
             return;
         }
 
