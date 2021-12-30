@@ -1,4 +1,12 @@
 MobileDOAS Release Notes
+
+-----------------------------------------------------
+Version 6.4.0 (December 2021)
+
+* Added instrument calibration dialog where it is possible to create an instrument calibration from mercury spectra or traverse spectra and create references.
+* Added option to start each traverse with an instrument calibration, creating nrew references.
+* Added ability to save instrument calibration to extended STD files in a DOASIS compatible format.
+
 -----------------------------------------------------
 Version 6.3.1 (May 2021)
 

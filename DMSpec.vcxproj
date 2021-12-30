@@ -281,13 +281,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BasicMath.cpp" />
-    <ClCompile Include="Calibration\InstrumentLineshapeCalibrationController.cpp" />
-    <ClCompile Include="Calibration\ReferenceCreationController.cpp" />
-    <ClCompile Include="Calibration\WavelengthCalibrationController.cpp" />
     <ClCompile Include="CCalibrateInstrumentLineShape.cpp" />
     <ClCompile Include="CCalibratePixelToWavelengthDialog.cpp" />
+    <ClCompile Include="CCalibratePixelToWavelengthSetupDialog.cpp" />
     <ClCompile Include="CCalibrateReferencesDialog.cpp" />
+    <ClCompile Include="CCreateStandardReferencesDialog.cpp" />
     <ClCompile Include="CGpsData.cpp" />
+    <ClCompile Include="CLogDialog.cpp" />
     <ClCompile Include="CommentDlg.cpp" />
     <ClCompile Include="Common.cpp" />
     <ClCompile Include="Common\CDateTime.cpp" />
@@ -296,6 +296,8 @@
     <ClCompile Include="Common\SpectrumIO.cpp" />
     <ClCompile Include="Common\XMLFileReader.cpp" />
     <ClCompile Include="Configuration\ConfigurationDialog.cpp" />
+    <ClCompile Include="Configuration\ConfigurationFile.cpp" />
+    <ClCompile Include="Configuration\Configure_Calibration.cpp" />
     <ClCompile Include="Configuration\Configure_Evaluation.cpp" />
     <ClCompile Include="Configuration\Configure_GPS.cpp" />
     <ClCompile Include="Configuration\Configure_Spectrometer.cpp" />
@@ -331,11 +333,10 @@
     <ClCompile Include="Evaluation\Evaluation.cpp" />
     <ClCompile Include="Evaluation\EvaluationResult.cpp" />
     <ClCompile Include="Evaluation\FitWindow.cpp" />
-    <ClCompile Include="Evaluation\ReferenceFile.cpp" />
+    <ClCompile Include="Evaluation\RealTimeCalibration.cpp" />
     <ClCompile Include="Evaluation\ReferenceFitResult.cpp" />
     <ClCompile Include="Evaluation\TraverseResult.cpp" />
     <ClCompile Include="ExportEvLogDlg.cpp" />
-    <ClCompile Include="Fit\MessageLog.cpp" />
     <ClCompile Include="Flux1.cpp" />
     <ClCompile Include="FluxPathListBox.cpp" />
     <ClCompile Include="Flux\Traverse.cpp" />
@@ -377,11 +378,27 @@
     <ClCompile Include="SerialConnection.cpp" />
     <ClCompile Include="ShowFitDlg.cpp" />
     <ClCompile Include="SourceSelectionDlg.cpp" />
+    <ClCompile Include="SpectralEvaluation\src\Calibration\Correspondence.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Calibration\CrossSectionSpectrumGenerator.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="SpectralEvaluation\src\Calibration\FraunhoferSpectrumGeneration.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Calibration\InstrumentCalibration.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="SpectralEvaluation\src\Calibration\InstrumentLineShape.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -401,6 +418,12 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Calibration\StandardCrossSectionSetup.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="SpectralEvaluation\src\Calibration\WavelengthCalibration.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -419,11 +442,35 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\DialogControllers\InstrumentLineshapeCalibrationController.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\DialogControllers\ReferenceCreationController.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\DialogControllers\WavelengthCalibrationController.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="SpectralEvaluation\src\Evaluation\CrossSectionData.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Evaluation\DoasFit.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Evaluation\ReferenceFile.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="SpectralEvaluation\src\File\File.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -443,6 +490,18 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\File\XmlUtil.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Fit\MessageLog.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="SpectralEvaluation\src\GPSData.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -454,6 +513,12 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Log.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="SpectralEvaluation\src\Math\FFT.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -472,6 +537,12 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectralEvaluation\src\Spectra\Scattering.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="SpectralEvaluation\src\Spectra\SpectrometerModel.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -524,14 +595,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BasicMath.h" />
-    <ClInclude Include="Calibration\InstrumentCalibrationInput.h" />
-    <ClInclude Include="Calibration\InstrumentLineshapeCalibrationController.h" />
-    <ClInclude Include="Calibration\ReferenceCreationController.h" />
-    <ClInclude Include="Calibration\WavelengthCalibrationController.h" />
     <ClInclude Include="CCalibrateInstrumentLineShape.h" />
     <ClInclude Include="CCalibratePixelToWavelengthDialog.h" />
+    <ClInclude Include="CCalibratePixelToWavelengthSetupDialog.h" />
     <ClInclude Include="CCalibrateReferencesDialog.h" />
+    <ClInclude Include="CCreateStandardReferencesDialog.h" />
     <ClInclude Include="CGpsData.h" />
+    <ClInclude Include="CLogDialog.h" />
     <ClInclude Include="CommentDlg.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="Common\CDateTime.h" />
@@ -540,6 +610,8 @@
     <ClInclude Include="Common\SpectrumIO.h" />
     <ClInclude Include="Common\XMLFileReader.h" />
     <ClInclude Include="Configuration\ConfigurationDialog.h" />
+    <ClInclude Include="Configuration\ConfigurationFile.h" />
+    <ClInclude Include="Configuration\Configure_Calibration.h" />
     <ClInclude Include="Configuration\Configure_Evaluation.h" />
     <ClInclude Include="Configuration\Configure_GPS.h" />
     <ClInclude Include="Configuration\Configure_Spectrometer.h" />
@@ -570,7 +642,7 @@
     <ClInclude Include="Evaluation\Evaluation.h" />
     <ClInclude Include="Evaluation\EvaluationResult.h" />
     <ClInclude Include="Evaluation\FitWindow.h" />
-    <ClInclude Include="Evaluation\ReferenceFile.h" />
+    <ClInclude Include="Evaluation\RealTimeCalibration.h" />
     <ClInclude Include="Evaluation\ReferenceFitResult.h" />
     <ClInclude Include="Evaluation\TraverseResult.h" />
     <ClInclude Include="ExportEvLogDlg.h" />
@@ -590,7 +662,6 @@
     <ClInclude Include="Fit\ExpFunction.h" />
     <ClInclude Include="Fit\Fit.h" />
     <ClInclude Include="Fit\FitBasic.h" />
-    <ClInclude Include="Fit\FitException.h" />
     <ClInclude Include="Fit\Function.h" />
     <ClInclude Include="Fit\GaussFunction.h" />
     <ClInclude Include="Fit\LeastSquareFit.h" />
@@ -598,7 +669,6 @@
     <ClInclude Include="Fit\LinearInterpolateFunction.h" />
     <ClInclude Include="Fit\LnFunction.h" />
     <ClInclude Include="Fit\Matrix.h" />
-    <ClInclude Include="Fit\MessageLog.h" />
     <ClInclude Include="Fit\Minimizer.h" />
     <ClInclude Include="Fit\MulFunction.h" />
     <ClInclude Include="Fit\NegateFunction.h" />
@@ -629,7 +699,6 @@
     <ClInclude Include="GridCtrl\MemDC.h" />
     <ClInclude Include="GridCtrl\TitleTip.h" />
     <ClInclude Include="InformationDialog.h" />
-    <ClInclude Include="LogDlg.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="MeasGrid.h" />
     <ClInclude Include="MeasurementModes\Measurement_Traverse.h" />
@@ -657,6 +726,10 @@
     <ClInclude Include="SerialConnection.h" />
     <ClInclude Include="SourceSelectionDlg.h" />
     <ClInclude Include="Spectra.h" />
+    <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\DialogControllers\InstrumentCalibrationInput.h" />
+    <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\DialogControllers\InstrumentLineshapeCalibrationController.h" />
+    <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\DialogControllers\ReferenceCreationController.h" />
+    <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\DialogControllers\WavelengthCalibrationController.h" />
     <ClInclude Include="Spectrometer.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="Version.h" />

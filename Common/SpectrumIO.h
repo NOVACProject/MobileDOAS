@@ -8,16 +8,16 @@ struct gpsData;
 class CSpectrumIO
 {
 public:
-	// ------------- Reading in spectra from file -----------------------
+    // ------------- Reading in spectra from file -----------------------
 
-	static int readSTDFile(CString filename, CSpectrum *curSpec);
-	[[deprecated]]
-	static int readTextFile(CString filename, CSpectrum *curSpec);
+    static int readSTDFile(CString filename, CSpectrum* curSpec);
+    [[deprecated]]
+    static int readTextFile(CString filename, CSpectrum* curSpec);
 
-	// ---------------- Writing spectra to file ---------------------
-	static bool WriteStdFile(const CString &fileName, const CSpectrum& spectrum);
+    // ---------------- Writing spectra to file ---------------------
+    static bool WriteStdFile(const CString& fileName, const CSpectrum& spectrum);
 
 private:
-	CSpectrumIO();
-	~CSpectrumIO();
+    CSpectrumIO();
+    ~CSpectrumIO();
 };

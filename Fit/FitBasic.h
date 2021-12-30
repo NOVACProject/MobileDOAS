@@ -171,7 +171,7 @@ catch(CFitException e)
 #if !defined(AFX_FITBASIC_H__127D9ACD_261F_47B2_B62E_796F5487ABCD__INCLUDED_)
 #define AFX_FITBASIC_H__127D9ACD_261F_47B2_B62E_796F5487ABCD__INCLUDED_
 
-#include "FitException.h"
+#include <SpectralEvaluation/Fit/FitException.h>
 
 #if _MSC_VER > 1000
 #pragma once

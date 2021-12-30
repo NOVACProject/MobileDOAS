@@ -40,6 +40,7 @@ public:
     BOOL m_autoDetermineCalibration;
     CButton m_saveButton;
     CStatic m_labelSaveExplanation;
+    CStatic m_labelFitResult;
 
     afx_msg void OnBnClickedButtonBrowseSpectrum();
     afx_msg void OnBnClickedBrowseSpectrumDark();
@@ -76,4 +77,15 @@ private:
     /// Updates the wavelength calibration according to the users choice.
     /// </summary>
     void UpdateWavelengthCalibrationOption();
+
+    /// <summary>
+    /// Updates the explanatory text in the bottom of the screen
+    ///  to the current options by the user.
+    /// </summary>
+    void UpdateExplanation();
+
+    /// <summary>
+    /// Updates the fit-result label with the current result.
+    /// </summary>
+    void UpdateFitResultLabel();
 };

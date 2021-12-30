@@ -6,9 +6,11 @@
 #include "afxdialogex.h"
 #include "resource.h"
 #include "Common.h"
-#include "Calibration/InstrumentLineshapeCalibrationController.h"
+#include <SpectralEvaluation/DialogControllers/InstrumentLineshapeCalibrationController.h>
 #include <SpectralEvaluation/File/File.h>
+#include <SpectralEvaluation/Calibration/InstrumentCalibration.h>
 #include <algorithm>
+#include <sstream>
 
 #undef min
 #undef max
@@ -22,12 +24,12 @@ CCalibrateInstrumentLineShape::CCalibrateInstrumentLineShape(CWnd* pParent /*=nu
     , m_inputSpectrum(_T(""))
     , m_autoDetermineCalibration(FALSE)
 {
-    this->m_controller = new InstrumentLineshapeCalibrationController();
+    m_controller = new InstrumentLineshapeCalibrationController();
 }
 
 CCalibrateInstrumentLineShape::~CCalibrateInstrumentLineShape()
 {
-    delete this->m_controller;
+    delete m_controller;
 }
 
 BOOL CCalibrateInstrumentLineShape::OnInitDialog() {
@@ -69,8 +71,9 @@ BOOL CCalibrateInstrumentLineShape::OnInitDialog() {
 
     m_labelSpectrumContainsNoWavelengthCalibration.ShowWindow(SW_HIDE);
 
-    this->m_saveButton.EnableWindow(FALSE); // disable the save button until the user has selected the emission line to save
-    this->m_labelSaveExplanation.ShowWindow(SW_SHOW);
+    m_saveButton.EnableWindow(FALSE); // disable the save button until the user has selected the emission line to save
+    UpdateExplanation();
+    UpdateFitResultLabel();
 
     return TRUE;  // return TRUE unless you set the focus to a control
 }
@@ -88,6 +91,7 @@ void CCalibrateInstrumentLineShape::DoDataExchange(CDataExchange* pDX)
     DDX_Control(pDX, IDC_STATIC_MINIMAP_HOLDER, m_minimapHolder);
     DDX_Control(pDX, IDC_BUTTON_SAVE, m_saveButton);
     DDX_Control(pDX, IDC_LABEL_SAVE_EXPLANATION, m_labelSaveExplanation);
+    DDX_Control(pDX, IDC_LABEL_FIT_RESULT, m_labelFitResult);
 }
 
 BEGIN_MESSAGE_MAP(CCalibrateInstrumentLineShape, CPropertyPage)
@@ -110,7 +114,7 @@ void CCalibrateInstrumentLineShape::OnBnClickedButtonBrowseSpectrum()
         return;
     }
 
-    this->m_controller->m_inputSpectrumPath = this->m_inputSpectrum;
+    m_controller->m_inputSpectrumPath = m_inputSpectrum;
 
     UpdateLineShape();
 }
@@ -121,7 +125,7 @@ void CCalibrateInstrumentLineShape::OnBnClickedBrowseSpectrumDark()
     {
         return;
     }
-    this->m_controller->m_darkSpectrumPath = this->m_darkSpectrum;
+    m_controller->m_darkSpectrumPath = m_darkSpectrum;
 
     UpdateLineShape();
 }
@@ -130,17 +134,17 @@ void CCalibrateInstrumentLineShape::UpdateLineShape()
 {
     try
     {
-        this->m_controller->m_readWavelengthCalibrationFromFile = this->m_autoDetermineCalibration == 0;
+        m_controller->m_readWavelengthCalibrationFromFile = m_autoDetermineCalibration == 0;
 
         m_controller->Update();
 
         {
-            if (this->m_autoDetermineCalibration == FALSE && !this->m_controller->m_inputSpectrumContainsWavelength)
+            if (m_autoDetermineCalibration == FALSE && !m_controller->m_inputSpectrumContainsWavelength)
             {
                 m_labelSpectrumContainsNoWavelengthCalibration.SetWindowTextA("No calibration in file, using pixels");
                 m_labelSpectrumContainsNoWavelengthCalibration.ShowWindow(SW_SHOW);
             }
-            else if (!this->m_controller->m_wavelengthCalibrationSucceeded)
+            else if (!m_controller->m_wavelengthCalibrationSucceeded)
             {
                 m_labelSpectrumContainsNoWavelengthCalibration.SetWindowTextA("Wavelength calibration failed, using default");
                 m_labelSpectrumContainsNoWavelengthCalibration.ShowWindow(SW_SHOW);
@@ -168,13 +172,12 @@ void CCalibrateInstrumentLineShape::UpdateLineShape()
 
 void CCalibrateInstrumentLineShape::UpdateListOfPeaksFound()
 {
-    this->m_peaksList.ResetContent();
+    m_peaksList.ResetContent();
 
-    // the elements need to be added in reversed order as new elements are added to the top, not to the bottom of the control
     for each (auto peak in m_controller->m_peaksFound)
     {
         CString fmt;
-        if (peak.wavelength > 0)
+        if (peak.wavelength > 0 && m_controller->m_wavelengthCalibrationSucceeded)
         {
             fmt.AppendFormat("%.1lf nm", peak.wavelength);
         }
@@ -182,10 +185,13 @@ void CCalibrateInstrumentLineShape::UpdateListOfPeaksFound()
         {
             fmt.AppendFormat("px: %.0lf", peak.pixel);
         }
-        this->m_peaksList.AddString(fmt);
+        m_peaksList.AddString(fmt);
     }
 
-    this->m_peaksList.AddString("--");
+    m_peaksList.AddString("--");
+
+    m_saveButton.EnableWindow(FALSE);
+    UpdateExplanation();
 }
 
 InstrumentLineshapeCalibrationController::LineShapeFunction OptionToLineShapeFunction(int radioButtonOption)
@@ -204,9 +210,12 @@ void CCalibrateInstrumentLineShape::UpdateFittedLineShape()
     {
         UpdateData(TRUE); // get the selections from the user interface
 
-        const int selectedPeak = this->m_peaksList.GetCurSel();
-        const auto selectedFunctionToFit = OptionToLineShapeFunction(this->m_fitFunctionOption);
+        const int selectedPeak = m_peaksList.GetCurSel();
+        const auto selectedFunctionToFit = OptionToLineShapeFunction(m_fitFunctionOption);
         m_controller->FitFunctionToLineShape(selectedPeak, selectedFunctionToFit);
+
+        UpdateExplanation();
+        UpdateFitResultLabel();
     }
     catch (std::invalid_argument& e)
     {
@@ -220,20 +229,20 @@ void CCalibrateInstrumentLineShape::UpdateFittedLineShape()
 
 void CCalibrateInstrumentLineShape::OnLbnSelchangeFoundPeak()
 {
-    const int selectedElement = this->m_peaksList.GetCurSel();
+    const int selectedElement = m_peaksList.GetCurSel();
 
     UpdateFittedLineShape();
 
-    if (selectedElement >= 0 && selectedElement < static_cast<int>(this->m_controller->m_peaksFound.size()))
+    if (selectedElement >= 0 && selectedElement < static_cast<int>(m_controller->m_peaksFound.size()))
     {
         // zoom in on the selected peak
-        const novac::SpectrumDataPoint selectedPeak = this->m_controller->m_peaksFound[selectedElement];
+        const novac::SpectrumDataPoint selectedPeak = m_controller->m_peaksFound[selectedElement];
         const double leftWidth = selectedPeak.pixel - selectedPeak.leftPixel;
         const double rightWidth = selectedPeak.rightPixel - selectedPeak.pixel;
         const int firstPixel = std::max(static_cast<int>(selectedPeak.pixel - 3 * leftWidth), 0);
-        const int lastPixel = std::min(static_cast<int>(selectedPeak.pixel + 3 * rightWidth), static_cast<int>(this->m_controller->m_inputSpectrumWavelength.size()) - 1);
-        const double lambdaMin = this->m_controller->m_inputSpectrumWavelength[firstPixel];
-        const double lambdaMax = this->m_controller->m_inputSpectrumWavelength[lastPixel];
+        const int lastPixel = std::min(static_cast<int>(selectedPeak.pixel + 3 * rightWidth), static_cast<int>(m_controller->m_resultingCalibration->pixelToWavelengthMapping.size()) - 1);
+        const double lambdaMin = m_controller->m_resultingCalibration->pixelToWavelengthMapping[firstPixel];
+        const double lambdaMax = m_controller->m_resultingCalibration->pixelToWavelengthMapping[lastPixel];
 
         m_spectrumPlot.SetRangeX(lambdaMin, lambdaMax, 1, false);
         m_spectrumPlot.SetRangeY(
@@ -241,15 +250,14 @@ void CCalibrateInstrumentLineShape::OnLbnSelchangeFoundPeak()
             Max(m_controller->m_inputSpectrum.data() + firstPixel, lastPixel - firstPixel),
             true);
 
-        this->m_saveButton.EnableWindow(TRUE);
-        this->m_labelSaveExplanation.ShowWindow(SW_HIDE);
+        m_saveButton.EnableWindow(TRUE);
     }
     else
     {
         // zoom out to show the entire graph
         m_spectrumPlot.SetRangeX(
-            this->m_controller->m_inputSpectrumWavelength.front(),
-            this->m_controller->m_inputSpectrumWavelength.back(),
+            m_controller->m_resultingCalibration->pixelToWavelengthMapping.front(),
+            m_controller->m_resultingCalibration->pixelToWavelengthMapping.back(),
             0,
             false);
         m_spectrumPlot.SetRangeY(
@@ -257,9 +265,11 @@ void CCalibrateInstrumentLineShape::OnLbnSelchangeFoundPeak()
             Max(m_controller->m_inputSpectrum.data(), static_cast<long>(m_controller->m_inputSpectrum.size())),
             true);
 
-        this->m_saveButton.EnableWindow(FALSE);
-        this->m_labelSaveExplanation.ShowWindow(SW_SHOW);
+        m_saveButton.EnableWindow(FALSE);
     }
+
+    UpdateExplanation();
+    UpdateFitResultLabel();
 
     UpdateGraph(false);
 }
@@ -271,12 +281,29 @@ void CCalibrateInstrumentLineShape::UpdateGraph(bool reset)
     /* Draw the spectrum */
     if (m_controller->m_inputSpectrum.size() > 0)
     {
+        if (m_controller->m_wavelengthCalibrationSucceeded)
+        {
+            m_spectrumPlot.SetXUnits("Wavelength");
+        }
+        else
+        {
+            m_spectrumPlot.SetXUnits("Pixels");
+        }
+
         int plotOption = (reset) ? Graph::CGraphCtrl::PLOT_CONNECTED : Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED;
         m_spectrumPlot.SetPlotColor(RGB(255, 0, 0));
-        m_spectrumPlot.XYPlot(m_controller->m_inputSpectrumWavelength.data(), m_controller->m_inputSpectrum.data(), static_cast<int>(m_controller->m_inputSpectrum.size()), plotOption);
+        m_spectrumPlot.XYPlot(
+            m_controller->m_resultingCalibration->pixelToWavelengthMapping.data(),
+            m_controller->m_inputSpectrum.data(),
+            static_cast<int>(m_controller->m_inputSpectrum.size()),
+            plotOption);
 
         m_minimapPlot.SetPlotColor(RGB(255, 0, 0));
-        m_minimapPlot.XYPlot(m_controller->m_inputSpectrumWavelength.data(), m_controller->m_inputSpectrum.data(), static_cast<int>(m_controller->m_inputSpectrum.size()), plotOption);
+        m_minimapPlot.XYPlot(
+            m_controller->m_resultingCalibration->pixelToWavelengthMapping.data(),
+            m_controller->m_inputSpectrum.data(),
+            static_cast<int>(m_controller->m_inputSpectrum.size()),
+            plotOption);
     }
 
     /* Draw the rejects */
@@ -316,13 +343,13 @@ void CCalibrateInstrumentLineShape::UpdateGraph(bool reset)
     }
 
     /* Draw the fitted line shape (if any) */
-    if (m_controller->m_sampledLineShapeFunction != nullptr)
+    if (m_controller->m_resultingCalibration->instrumentLineShape.size() > 0)
     {
         m_spectrumPlot.SetPlotColor(RGB(0, 255, 0));
         m_spectrumPlot.XYPlot(
-            m_controller->m_sampledLineShapeFunction->m_wavelength.data(),
-            m_controller->m_sampledLineShapeFunction->m_data,
-            m_controller->m_sampledLineShapeFunction->m_length,
+            m_controller->m_resultingCalibration->instrumentLineShapeGrid.data(),
+            m_controller->m_resultingCalibration->instrumentLineShape.data(),
+            static_cast<long>(m_controller->m_resultingCalibration->instrumentLineShape.size()),
             Graph::CGraphCtrl::PLOT_CONNECTED | Graph::CGraphCtrl::PLOT_FIXED_AXIS);
     }
 
@@ -347,11 +374,18 @@ void CCalibrateInstrumentLineShape::OnBnClickedSave()
 {
     try
     {
-        // Extract the currently selected line shape
-        const int selectedPeak = this->m_peaksList.GetCurSel();
+        // Extract the currently selected line shape.
+        // Notice that there must have been a peak selected and m_controller->FitFunctionToLineShape must have been called (should be done in the event handler)
+        const int selectedPeak = m_peaksList.GetCurSel();
         if (selectedPeak < 0 || selectedPeak >= static_cast<int>(m_controller->m_peaksFound.size()))
         {
             MessageBox("Please select a peak to save in the list box to the left", "No peak selected", MB_OK);
+            return;
+        }
+
+        if ((m_autoDetermineCalibration == FALSE && !m_controller->m_inputSpectrumContainsWavelength) || !m_controller->m_wavelengthCalibrationSucceeded)
+        {
+            MessageBox("The provided spectrum does not contain a valid wavelength calibration and will not produce a valid instrument line shape file. Please make sure that there is a wavelength calibration and try again.", "No wavelength calibration", MB_OK);
             return;
         }
 
@@ -366,12 +400,12 @@ void CCalibrateInstrumentLineShape::OnBnClickedSave()
                 m_controller->SaveResultAsClb(dstFileName);
 
                 dstFileName = novac::EnsureFilenameHasSuffix(std::string(destinationFileName), "slf");
-                m_controller->SaveResultAsSlf(selectedPeak, dstFileName);
+                m_controller->SaveResultAsSlf(dstFileName);
             }
             else
             {
                 std::string dstFileName = novac::EnsureFilenameHasSuffix(std::string(destinationFileName), "std");
-                m_controller->SaveResultAsStd(selectedPeak, dstFileName);
+                m_controller->SaveResultAsStd(dstFileName);
             }
         }
     }
@@ -387,7 +421,7 @@ void CCalibrateInstrumentLineShape::UpdateWavelengthCalibrationOption()
     {
         UpdateData(TRUE); // get the selections from the user interface
 
-        if (this->m_controller->m_inputSpectrum.size() == 0)
+        if (m_controller->m_inputSpectrum.size() == 0)
         {
             return;
         }
@@ -406,5 +440,61 @@ void CCalibrateInstrumentLineShape::UpdateWavelengthCalibrationOption()
 
 void CCalibrateInstrumentLineShape::OnBnClickedToggleCalibrationFromMercuryLines()
 {
-    this->UpdateWavelengthCalibrationOption();
+    UpdateWavelengthCalibrationOption();
+}
+
+void CCalibrateInstrumentLineShape::UpdateExplanation()
+{
+    const int selectedEmissionLine = m_peaksList.GetCurSel();
+
+    if (selectedEmissionLine >= 0 && selectedEmissionLine < static_cast<int>(m_controller->m_peaksFound.size()))
+    {
+        const auto selectedFunctionToFit = OptionToLineShapeFunction(m_fitFunctionOption);
+
+        if (selectedFunctionToFit == InstrumentLineshapeCalibrationController::LineShapeFunction::Gaussian)
+        {
+            m_labelSaveExplanation.SetWindowTextA("Click Save to save the selected Gaussian instrument line shape to file.");
+        }
+        else if (selectedFunctionToFit == InstrumentLineshapeCalibrationController::LineShapeFunction::SuperGauss)
+        {
+            m_labelSaveExplanation.SetWindowTextA("Click Save to save the selected Super Gaussian instrument line shape to file.");
+        }
+        else
+        {
+            m_labelSaveExplanation.SetWindowTextA("Click Save to save the selected measured instrument line shape to file.");
+        }
+    }
+    else
+    {
+        // default text, no emission line selected.
+        m_labelSaveExplanation.SetWindowTextA("Please select one emission line in the list to the left and (optionally) a function to model as Instrument Line Shape");
+    }
+}
+
+void CCalibrateInstrumentLineShape::UpdateFitResultLabel()
+{
+    const int selectedEmissionLine = m_peaksList.GetCurSel();
+    const auto selectedFunctionToFit = OptionToLineShapeFunction(m_fitFunctionOption);
+
+    if (selectedEmissionLine >= 0 &&
+        selectedEmissionLine < static_cast<int>(m_controller->m_peaksFound.size()) &&
+        selectedFunctionToFit != InstrumentLineshapeCalibrationController::LineShapeFunction::None)
+    {
+        const auto description = m_controller->GetFittedFunctionDescription();
+        {
+            std::stringstream str;
+            for each (auto property in description)
+            {
+                str << property.first << ":\t" << property.second << "\n";
+            }
+            std::string text = str.str();
+            m_labelFitResult.SetWindowTextA(text.c_str());
+        }
+
+        m_labelFitResult.ShowWindow(SW_SHOW);
+    }
+    else
+    {
+        m_labelFitResult.ShowWindow(SW_HIDE);
+    }
 }

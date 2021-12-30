@@ -3,12 +3,12 @@
 class CVersion
 {
 public:
-	CVersion(void);
-	~CVersion(void);
+    CVersion(void);
+    ~CVersion(void);
 
-	static const int majorNumber = 6;
+    static const int majorNumber = 6;
 
-	static const int minorNumber = 3;
+    static const int minorNumber = 4;
 
-	static const int patchNumber = 1;
+    static const int patchNumber = 0;
 };
