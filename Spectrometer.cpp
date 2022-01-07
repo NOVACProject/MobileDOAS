@@ -1266,35 +1266,37 @@ void CSpectrometer::WriteBeginEvFile(int fitRegion) {
     WriteLogFile(evPath, str7);
 }
 
-int CSpectrometer::CountRound(long timeResolution, long serialDelay, long gpsDelay, int* pResults)
+int CSpectrometer::CountRound(long timeResolution, long serialDelay, long gpsDelay, SpectrumSummation& result) const
 {
-    int index, sumOne, nRound;
-    long results[15], rounds[15];
-    double nSpec[15];
-    long totalTime;
-    double maxSpecPerTime;
-    index = 0;
+    int sumOne, nRound;
     sumOne = 0;
     nRound = 0;
 
-    if (Equals(m_spectrometerModel, "USB2000+")) {
+    if (Equals(m_spectrometerModel, "USB2000+"))
+    {
         // the USB2000+ can sum as many spectra as we want in the
         // spectrometer, we therefore don't need to sum anything
         // in the computer
         nRound = 1;
-
-        sumOne = (int)(timeResolution / (1.1 * m_integrationTime));
+        sumOne = std::max(1, (int)(timeResolution / (1.1 * m_integrationTime)));
     }
-    else {
+    else
+    {
+        long results[15];
+        long rounds[15];
+        double nSpec[15];
 
+        // Test the different possibilities for splitting the co-adds beteween the computer and the spectrometer
+        //  and return the variant which gives the maximum number of readouts.
         for (sumOne = 1; sumOne <= 15; sumOne++) {
             nRound = (timeResolution - gpsDelay) / (sumOne * m_integrationTime + serialDelay);
             rounds[sumOne - 1] = nRound;
-            totalTime = (sumOne * m_integrationTime + serialDelay) * nRound + gpsDelay;
+            long totalTime = (sumOne * m_integrationTime + serialDelay) * nRound + gpsDelay;
             results[sumOne - 1] = totalTime;
             nSpec[sumOne - 1] = (double)(sumOne * nRound);
         }
-        maxSpecPerTime = nSpec[0] / (double)results[0];
+        double maxSpecPerTime = nSpec[0] / (double)results[0];
+        int index = 0;
 
         for (int i = 1; i < 15; ++i) {
             if (rounds[i - 1] > 0) {
@@ -1304,6 +1306,7 @@ int CSpectrometer::CountRound(long timeResolution, long serialDelay, long gpsDel
                 }
             }
         }
+
         sumOne = index + 1;
         nRound = (timeResolution - gpsDelay) / (sumOne * m_integrationTime + serialDelay);
         if (nRound <= 0) {
@@ -1311,8 +1314,10 @@ int CSpectrometer::CountRound(long timeResolution, long serialDelay, long gpsDel
             nRound = 1;
         }
     }
-    pResults[0] = sumOne;
-    pResults[1] = nRound;
+
+    result.SumInComputer = nRound;
+    result.SumInSpectrometer = sumOne;
+
     return nRound;
 }
 

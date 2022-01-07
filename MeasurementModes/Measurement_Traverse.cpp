@@ -24,7 +24,6 @@ void CMeasurement_Traverse::Run() {
 #endif
     CString tmpString;
 
-    int roundResult[MAX_N_CHANNELS];
     long serialDelay, gpsDelay;
 
     ShowMessageBox("START", "NOTICE");
@@ -113,8 +112,9 @@ void CMeasurement_Traverse::Run() {
 
     /* Calculate the number of spectra to integrate in spectrometer and in computer */
     m_scanNum++;
-    m_sumInComputer = CountRound(m_timeResolution, serialDelay, gpsDelay, roundResult);
-    m_sumInSpectrometer = roundResult[0];
+    SpectrumSummation spectrumSummation;
+    m_sumInComputer = CountRound(m_timeResolution, serialDelay, gpsDelay, spectrumSummation);
+    m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
     m_totalSpecNum = m_sumInComputer * m_sumInSpectrometer;
     pView->PostMessage(WM_SHOWINTTIME);
 
@@ -144,8 +144,8 @@ void CMeasurement_Traverse::Run() {
             m_integrationTime = AdjustIntegrationTime();
             pView->PostMessage(WM_SHOWDIALOG, CHANGED_EXPOSURETIME);
             m_adjustIntegrationTime = FALSE;
-            m_sumInComputer = CountRound(m_timeResolution, serialDelay, gpsDelay, roundResult);
-            m_sumInSpectrometer = roundResult[0];
+            m_sumInComputer = CountRound(m_timeResolution, serialDelay, gpsDelay, spectrumSummation);
+            m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
             m_totalSpecNum = m_sumInComputer * m_sumInSpectrometer;
             pView->PostMessage(WM_SHOWINTTIME);
         }
@@ -343,7 +343,6 @@ void CMeasurement_Traverse::Run_Adaptive() {
     double scanResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
     CSpectrum measuredSpectrum[MAX_N_CHANNELS];
 
-    int roundResult[MAX_N_CHANNELS];
     long serialDelay, gpsDelay;
 
     std::string startDate;
@@ -493,8 +492,9 @@ void CMeasurement_Traverse::Run_Adaptive() {
 
             // Set the exposure-time
             m_integrationTime = AdjustIntegrationTime();
-            m_sumInComputer = CountRound(m_timeResolution, serialDelay, gpsDelay, roundResult);
-            m_sumInSpectrometer = roundResult[0];
+            SpectrumSummation spectrumSummation;
+            m_sumInComputer = CountRound(m_timeResolution, serialDelay, gpsDelay, spectrumSummation);
+            m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
             m_totalSpecNum = m_sumInComputer * m_sumInSpectrometer;
             pView->PostMessage(WM_SHOWINTTIME);
         }
@@ -549,8 +549,9 @@ void CMeasurement_Traverse::Run_Adaptive() {
 
             // Set the exposure-time
             m_integrationTime = AdjustIntegrationTime();
-            m_sumInComputer = CountRound(m_timeResolution, serialDelay, gpsDelay, roundResult);
-            m_sumInSpectrometer = roundResult[0];
+            SpectrumSummation spectrumSummation;
+            m_sumInComputer = CountRound(m_timeResolution, serialDelay, gpsDelay, spectrumSummation);
+            m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
             m_totalSpecNum = m_sumInComputer * m_sumInSpectrometer;
             pView->PostMessage(WM_SHOWINTTIME);
 
@@ -581,9 +582,9 @@ void CMeasurement_Traverse::Run_Adaptive() {
 
             // Update the exposure-time
             m_integrationTime = AdjustIntegrationTimeToLastIntensity(m_averageSpectrumIntensity[0]);
-
-            m_sumInComputer = CountRound(m_timeResolution, serialDelay, gpsDelay, roundResult);
-            m_sumInSpectrometer = roundResult[0];
+            SpectrumSummation spectrumSummation;
+            m_sumInComputer = CountRound(m_timeResolution, serialDelay, gpsDelay, spectrumSummation);
+            m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
             m_totalSpecNum = m_sumInComputer * m_sumInSpectrometer;
             pView->PostMessage(WM_SHOWINTTIME);
         }
