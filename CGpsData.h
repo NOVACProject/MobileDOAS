@@ -4,7 +4,7 @@
 
 // --------------- This file collects data structures and routines related to GPS reading --------------- 
 
-enum GpsFixQuality
+enum class GpsFixQuality
 {
     INVALID = 0,
     GPS_FIXED = 1,
@@ -16,7 +16,7 @@ enum GpsFixQuality
     SIMULATED = 8
 };
 
-/** Common structure for stroring data read out from the GPS */
+/** Common structure for storing data read out from the GPS */
 struct gpsData {
     gpsData();
     gpsData(const gpsData& other);

@@ -270,7 +270,7 @@ bool CSpectrumIO::WriteStdFile(const CString& fileName, const CSpectrum& spectru
 
     fprintf(f, "%s\n", name);                /* The name of the spectrum */
     fprintf(f, "%s\n", spectrum.spectrometerModel);  /* The name of the spectrometer */
-    fprintf(f, "%s\n", spectrum.spectrometerSerial); // why is there a second output of spectrometer name?
+    fprintf(f, "%s\n", spectrum.spectrometerSerial);
     fprintf(f, "%s\n", spectrum.date.c_str());
     //fprintf(f, "%02d.%02d.%02d\n", spectrum.date[2], spectrum.date[1], spectrum.date[0]);
     fprintf(f, "%02d:%02d:%02d\n", spectrum.startTime[0], spectrum.startTime[1], spectrum.startTime[2]);

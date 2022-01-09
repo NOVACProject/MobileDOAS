@@ -82,7 +82,6 @@ void CMeasurement_Directory::Run()
     WriteEvaluationLogFileHeaders();
 
     // variables used for adaptive mode
-    int roundResult[MAX_N_CHANNELS];
     long serialDelay, gpsDelay;
     // other things to do in adaptive mode
     if (m_conf->m_expTimeMode == m_conf->EXPOSURETIME_ADAPTIVE) {
