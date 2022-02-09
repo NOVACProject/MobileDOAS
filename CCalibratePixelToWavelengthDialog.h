@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Graphs/GraphCtrl.h"
+#include <string>
 
 // CCalibratePixelToWavelengthDialog dialog
 

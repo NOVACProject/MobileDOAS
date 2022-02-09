@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "ConfigurationFile.h"
 #include "MobileConfiguration.h"
+#include <stdexcept>
 
 extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
 

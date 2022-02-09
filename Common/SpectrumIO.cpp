@@ -3,6 +3,7 @@
 #include "../CGpsData.h"
 #include "../Common/CDateTime.h"
 #include <vector>
+#include <cmath>
 
 CSpectrumIO::CSpectrumIO()
 {

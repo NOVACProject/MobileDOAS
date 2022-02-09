@@ -11,6 +11,7 @@
 
 #include <math.h>
 #include <vector>
+#include <string>
 
 #define MAX_TRAVERSE_SHOWN 16384
 
