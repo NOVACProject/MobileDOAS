@@ -76,7 +76,7 @@ namespace Configuration {
         /** The exposure-time to use if we're to use a fixed exposure-time */
         int   m_fixExpTime;
 
-        /** The time-resolution, in ms */
+        /** The time-resolution, i.e. the desired interval between two consecutive spectra. in ms */
         long  m_timeResolution;
 
         /** The saturation range */

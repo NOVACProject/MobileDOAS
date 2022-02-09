@@ -1142,7 +1142,10 @@ bool CSpectrometer::UpdateGpsData(gpsData& gpsInfo)
         gpsDataIsValid = false;
     }
 
-    if (m_spectrumCounter > 0 && (m_spectrumGpsData[m_spectrumCounter].time == m_spectrumGpsData[m_spectrumCounter - 1].time))
+    // Check if the gps-readout seems to be stuck, which can happen at times.
+    // Previously this check was done on two consecutive data-points, however that does not work if the time resolution is 
+    // so high that multiple spectra are read out on a given second. Current check should be good for readouts up to 10 spectra/second
+    if (m_spectrumCounter >= 10 && (m_spectrumGpsData[m_spectrumCounter].time == m_spectrumGpsData[m_spectrumCounter - 10].time))
     {
         gpsDataIsValid = false;
     }
