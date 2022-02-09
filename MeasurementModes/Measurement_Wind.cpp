@@ -27,7 +27,6 @@ void CMeasurement_Wind::Run() {
 #endif
     CString tmpString;
 
-    int roundResult[MAX_N_CHANNELS];
     long serialDelay, gpsDelay;
 
     ShowMessageBox("START", "NOTICE");
@@ -118,8 +117,9 @@ void CMeasurement_Wind::Run() {
     if (m_spectrometerMode != MODE_VIEW) {
         /* Calculate the number of spectra to integrate in spectrometer and in computer */
         m_scanNum++;
-        m_sumInComputer = CountRound(m_timeResolution, serialDelay, gpsDelay, roundResult);
-        m_sumInSpectrometer = roundResult[0];
+        SpectrumSummation spectrumSummation;
+        m_sumInComputer = CountRound(m_timeResolution, serialDelay, gpsDelay, spectrumSummation);
+        m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
         m_totalSpecNum = m_sumInComputer * m_sumInSpectrometer;
         pView->PostMessage(WM_SHOWINTTIME);
 
@@ -159,8 +159,9 @@ void CMeasurement_Wind::Run() {
             m_integrationTime = AdjustIntegrationTime();
             pView->PostMessage(WM_SHOWDIALOG, CHANGED_EXPOSURETIME);
             m_adjustIntegrationTime = FALSE;
-            m_sumInComputer = CountRound(m_timeResolution, serialDelay, gpsDelay, roundResult);
-            m_sumInSpectrometer = roundResult[0];
+            SpectrumSummation spectrumSummation;
+            m_sumInComputer = CountRound(m_timeResolution, serialDelay, gpsDelay, spectrumSummation);
+            m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
             m_totalSpecNum = m_sumInComputer * m_sumInSpectrometer;
             pView->PostMessage(WM_SHOWINTTIME);
         }
@@ -233,7 +234,7 @@ void CMeasurement_Wind::Run() {
             if (!m_specInfo->isDark)
             {
                 ShowMessageBox("It seems like the dark spectrum is not completely dark, consider restarting the program", "Error");
-            }
+        }
 #endif
 
             ShowMessageBox("Point the spectrometer to sky", "Notice");
@@ -241,7 +242,7 @@ void CMeasurement_Wind::Run() {
             m_statusMsg.Format("Measuring the sky spectrum");
             pView->PostMessage(WM_STATUSMSG);
 
-        }
+    }
         else if (m_scanNum == SKY_SPECTRUM) {
             /* -------------- IF THE MEASURED SPECTRUM WAS THE SKY SPECTRUM ------------- */
 
@@ -292,10 +293,10 @@ void CMeasurement_Wind::Run() {
             if (m_specInfo->isDark)
             {
                 ShowMessageBox("It seems like the sky spectrum is dark, consider restarting the program", "Error");
-            }
+        }
 #endif
 
-        }
+}
         else if (m_scanNum > SKY_SPECTRUM) {
             /* -------------- IF THE MEASURED SPECTRUM WAS A NORMAL SPECTRUM ------------- */
 

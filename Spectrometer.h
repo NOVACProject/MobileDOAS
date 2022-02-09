@@ -190,10 +190,23 @@ public:
     // ---------------------- Managing the intensity of the spectra ------------------------
     // -------------------------------------------------------------------------------------
 
-    /** Counts how many spectra should be averaged inside the computer and
-        how many should be averaged inside the spectrometer get the desired
-        timeresolution with the set exposure time. */
-    int CountRound(long timeResolution, long serialDelay, long gpsDelay, int* pResults);
+    /** Basic representation of where spectra should be added, in the spectrometer directly or
+        in the computer after readout */
+    struct SpectrumSummation
+    {
+        int SumInComputer = 1;
+        int SumInSpectrometer = 1;
+    };
+
+    /** Counts how many spectra should be averaged inside the computer and 
+        how many should be averaged inside the spectrometer get the desired 
+        time resolution with the set exposure time.
+        @param timeResolution The set interval betweeen each spectrum to save, in milliseconds.
+        @param serialDelay The necessary delay to read out one spectrum from the spectrometer, in milliseconds.
+        @param gpsDelay The necessary delay to read out the time and position from the GPS, in milliseconds.
+        @param result Will be filled with the result of the calculation.
+        @return Number of spectra to co-add in the computer. */
+    int CountRound(long timeResolution, long serialDelay, long gpsDelay, SpectrumSummation& result) const;
 
     /** Returns the average intensity of the supplied spectrum.
         The pixels which will be used to calculate the intensity are taken from m_conf.
@@ -218,9 +231,9 @@ public:
       and the exposure time they were collected with*/
     long GetInttime(long pSky, long pDark, int intT = 100);
 
-    /** The integration time that is used by the program. In milli seconds.
+    /** The integration time that is used by the program. In milliseconds.
         Maximum value is 65 seconds (from the type). */
-    short    m_integrationTime;
+    short m_integrationTime;
 
     /** The desired intensity of the measured spectra,
         in fractions of the maximum value */
@@ -655,7 +668,7 @@ protected:
     // -------------------- Collecting common behavior between subclasses --------------------
     // ---------------------------------------------------------------------------------------
 
-    /** Sets up the evaluation objects. 
+    /** Sets up the evaluation objects.
         @param skySpectrumIsDarkCorrected set to true if the sky-spectrum used in the evaluation
             has already been dark-corrected before doing the evaluation (normally: true) */
     void InitializeEvaluators(bool skySpectrumIsDarkCorrected);
