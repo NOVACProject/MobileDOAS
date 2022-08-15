@@ -606,7 +606,7 @@ LRESULT CDMSpecView::OnShowStatus(WPARAM wParam, LPARAM lParam)
 
 LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
 {
-    gpsData data;
+    GpsData data;
     static int latNSat = 10;
 
     // if the program is no longer running, then don't try to draw anything more...

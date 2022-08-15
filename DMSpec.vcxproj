@@ -188,7 +188,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(PROJECT_DIR)SpectralEvaluation\include;%JAVA_HOME%\include\win32;%JAVA_HOME%\include;%OMNIDRIVER_HOME%\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PROJECT_DIR)MobileDoasLib\include;$(PROJECT_DIR)SpectralEvaluation\include;%JAVA_HOME%\include\win32;%JAVA_HOME%\include;%OMNIDRIVER_HOME%\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>true</MinimalRebuild>
@@ -238,7 +238,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(PROJECT_DIR)SpectralEvaluation\include;%JAVA_HOME%\include\win32;%JAVA_HOME%\include;%OMNIDRIVER_HOME%\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PROJECT_DIR)MobileDoasLib\include;$(PROJECT_DIR)SpectralEvaluation\include;%JAVA_HOME%\include\win32;%JAVA_HOME%\include;%OMNIDRIVER_HOME%\include</AdditionalIncludeDirectories>
       <StringPooling>true</StringPooling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <SmallerTypeCheck>false</SmallerTypeCheck>
@@ -286,7 +286,6 @@
     <ClCompile Include="CCalibratePixelToWavelengthSetupDialog.cpp" />
     <ClCompile Include="CCalibrateReferencesDialog.cpp" />
     <ClCompile Include="CCreateStandardReferencesDialog.cpp" />
-    <ClCompile Include="CGpsData.cpp" />
     <ClCompile Include="CLogDialog.cpp" />
     <ClCompile Include="CommentDlg.cpp" />
     <ClCompile Include="Common.cpp" />
@@ -608,7 +607,6 @@
     <ClInclude Include="CCalibratePixelToWavelengthSetupDialog.h" />
     <ClInclude Include="CCalibrateReferencesDialog.h" />
     <ClInclude Include="CCreateStandardReferencesDialog.h" />
-    <ClInclude Include="CGpsData.h" />
     <ClInclude Include="CLogDialog.h" />
     <ClInclude Include="CommentDlg.h" />
     <ClInclude Include="Common.h" />
@@ -733,7 +731,6 @@
     <ClInclude Include="RouteGraph.h" />
     <ClInclude Include="SerialConnection.h" />
     <ClInclude Include="SourceSelectionDlg.h" />
-    <ClInclude Include="Spectra.h" />
     <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\DialogControllers\InstrumentCalibrationInput.h" />
     <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\DialogControllers\InstrumentLineshapeCalibrationController.h" />
     <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\DialogControllers\ReferenceCreationController.h" />
@@ -760,6 +757,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="res\DMSpec.rc2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="MobileDoasLib\MobileDoasLib.vcxproj">
+      <Project>{0c7689e4-1214-417d-9083-d561d032454d}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

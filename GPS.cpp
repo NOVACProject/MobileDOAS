@@ -75,7 +75,7 @@ bool CGPS::Connect()
     return true;
 }
 
-void CGPS::Get(gpsData& dst)
+void CGPS::Get(GpsData& dst)
 {
     std::lock_guard<std::mutex> guard(this->m_gpsInfoMutex); // lock the access to the 'm_gpsInfo' while we're copying out the data
     dst = this->m_gpsInfo;
@@ -90,7 +90,7 @@ bool CGPS::ReadGPS()
     gpstxt[0] = 0;
 
     // copy the old data into the temp structure (not all sentences provide all data...)
-    gpsData localGpsInfo = this->m_gpsInfo;
+    GpsData localGpsInfo = this->m_gpsInfo;
 
     do {
         long cnt = 0;
@@ -202,7 +202,7 @@ void GpsAsyncReader::Stop()
     }
 }
 
-void GpsAsyncReader::Get(gpsData& data)
+void GpsAsyncReader::Get(GpsData& data)
 {
     m_gps->Get(data);
 }

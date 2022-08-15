@@ -369,9 +369,6 @@
     <ClCompile Include="Common\CDateTime.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CGpsData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Common\CSpectrum.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -554,9 +551,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SerialConnection.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Spectra.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Spectrometer.h">
@@ -869,9 +863,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Common\CDateTime.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CGpsData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Common\CSpectrum.h">

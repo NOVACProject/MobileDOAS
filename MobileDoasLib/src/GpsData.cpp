@@ -1,35 +1,34 @@
-#include "StdAfx.h"
-#include "CGpsData.h"
+#include <MobileDoasLib/GpsData.h>
 #include <cmath>
 
 //////////////////////////////////////////////////////////////////////
-// gpsData
+// GpsData
 //////////////////////////////////////////////////////////////////////
 
-gpsData::gpsData() {}
+GpsData::GpsData() {}
 
-gpsData::gpsData(const gpsData& other)
+GpsData::GpsData(const GpsData& other)
 {
-    this->latitude = other.latitude;
-    this->longitude = other.longitude;
-    this->altitude = other.altitude;
-    this->time = other.time;
-    this->nSatellitesTracked = other.nSatellitesTracked;
-    this->nSatellitesSeen = other.nSatellitesSeen;
-    this->date = other.date;
-    this->fixQuality = other.fixQuality;
-    this->status = other.status;
-    this->speed = other.speed;
-    this->course = other.course;
+    latitude = other.latitude;
+    longitude = other.longitude;
+    altitude = other.altitude;
+    time = other.time;
+    nSatellitesTracked = other.nSatellitesTracked;
+    nSatellitesSeen = other.nSatellitesSeen;
+    date = other.date;
+    fixQuality = other.fixQuality;
+    status = other.status;
+    speed = other.speed;
+    course = other.course;
 }
 
-gpsData& gpsData::operator=(gpsData other)
+GpsData& GpsData::operator=(GpsData other)
 {
     swap(*this, other);
     return *this;
 }
 
-void swap(gpsData& first, gpsData& second)
+void swap(GpsData& first, GpsData& second)
 {
     using std::swap;
     swap(first.latitude, second.latitude);
@@ -45,7 +44,7 @@ void swap(gpsData& first, gpsData& second)
     swap(first.course, second.course);
 }
 
-bool IsValidGpsData(const gpsData& data)
+bool IsValidGpsData(const GpsData& data)
 {
     if (data.nSatellitesTracked == 0 || data.fixQuality == GpsFixQuality::INVALID)
     {
@@ -98,7 +97,7 @@ bool ChecksumIsCorrect(const std::string& message)
     return (actualChecksum == expectedChecksum);
 }
 
-void SetTime(const std::string& curToken, gpsData& data)
+void SetTime(const std::string& curToken, GpsData& data)
 {
     if (curToken.length() < 6)
     {
@@ -112,7 +111,7 @@ void SetTime(const std::string& curToken, gpsData& data)
         data.time = (long)time;
     }
 }
-void SetDate(const std::string& curToken, gpsData& data)
+void SetDate(const std::string& curToken, GpsData& data)
 {
     if (curToken.length() != 6)
     {
@@ -126,7 +125,7 @@ void SetDate(const std::string& curToken, gpsData& data)
     }
 }
 
-void SetLatitude(const std::string& curToken, gpsData& data)
+void SetLatitude(const std::string& curToken, GpsData& data)
 {
     if (curToken.length() < 3)
     {
@@ -146,7 +145,7 @@ void SetLatitude(const std::string& curToken, gpsData& data)
     }
 }
 
-void SetLongitude(const std::string& curToken, gpsData& data)
+void SetLongitude(const std::string& curToken, GpsData& data)
 {
     if (curToken.length() < 3)
     {
@@ -166,7 +165,7 @@ void SetLongitude(const std::string& curToken, gpsData& data)
     }
 }
 
-void SetHemisphere(const std::string& curToken, gpsData& data)
+void SetHemisphere(const std::string& curToken, GpsData& data)
 {
     if (curToken.size() != 1)
     {
@@ -192,7 +191,7 @@ void SetHemisphere(const std::string& curToken, gpsData& data)
     }
 }
 
-void SetNumberOfSatellitesTracked(const std::string& curToken, gpsData& data)
+void SetNumberOfSatellitesTracked(const std::string& curToken, GpsData& data)
 {
     if (curToken.size() < 1 || curToken.size() > 2)
     {
@@ -204,7 +203,7 @@ void SetNumberOfSatellitesTracked(const std::string& curToken, gpsData& data)
     data.nSatellitesTracked = n;
 }
 
-void SetNumberOfSatellitesSeen(const std::string& curToken, gpsData& data)
+void SetNumberOfSatellitesSeen(const std::string& curToken, GpsData& data)
 {
     if (curToken.size() < 1 || curToken.size() > 2)
     {
@@ -216,7 +215,7 @@ void SetNumberOfSatellitesSeen(const std::string& curToken, gpsData& data)
     data.nSatellitesSeen = n;
 }
 
-void SetFixQuality(const std::string& curToken, gpsData& data)
+void SetFixQuality(const std::string& curToken, GpsData& data)
 {
     if (curToken.size() != 1 || curToken.at(0) < '0' || curToken.at(0) > '9')
     {
@@ -232,7 +231,7 @@ void SetFixQuality(const std::string& curToken, gpsData& data)
 }
 
 
-void SetAltitude(const std::string& curToken, gpsData& data)
+void SetAltitude(const std::string& curToken, GpsData& data)
 {
     if (curToken.size() < 1)
     {
@@ -244,7 +243,7 @@ void SetAltitude(const std::string& curToken, gpsData& data)
     data.altitude = altitude;
 }
 
-void SetAltitudeUnit(const std::string& curToken, gpsData& data)
+void SetAltitudeUnit(const std::string& curToken, GpsData& data)
 {
     if (curToken.size() != 1)
     {
@@ -263,7 +262,7 @@ void SetAltitudeUnit(const std::string& curToken, gpsData& data)
 
 }
 
-void SetStatus(const std::string& curToken, gpsData& data) {
+void SetStatus(const std::string& curToken, GpsData& data) {
     if (curToken.length() == 1)
     {
         data.status = curToken;
@@ -275,7 +274,7 @@ void SetStatus(const std::string& curToken, gpsData& data) {
 }
 
 
-void SetSpeed(const std::string& curToken, gpsData& data) {
+void SetSpeed(const std::string& curToken, GpsData& data) {
     if (curToken.length() == 5)
     {
         data.speed = std::atof(curToken.c_str()); // get speed in knots
@@ -286,7 +285,7 @@ void SetSpeed(const std::string& curToken, gpsData& data) {
     }
 }
 
-void SetCourse(const std::string& curToken, gpsData& data) {
+void SetCourse(const std::string& curToken, GpsData& data) {
     if (curToken.length() == 5)
     {
         data.course = std::atof(curToken.c_str());
@@ -322,9 +321,9 @@ bool ExtractMessage(const char* gpsString, const char* messageType, std::string&
 }
 
 
-// Parses the RMC string (starting with $GPRMC) and fills in the provided gpsData structure
+// Parses the RMC string (starting with $GPRMC) and fills in the provided GpsData structure
 //	@return true if the parsing is successful
-bool ParseRMC(char* gpsString, gpsData& data)
+bool ParseRMC(char* gpsString, GpsData& data)
 {
     const std::string delimiter = ",";
 
@@ -378,9 +377,9 @@ bool ParseRMC(char* gpsString, gpsData& data)
     return true;
 }
 
-// Parses the GGA string (starting with $GPGGA) and fills in the provided gpsData structure
+// Parses the GGA string (starting with $GPGGA) and fills in the provided GpsData structure
 //	@return true if the parsing is successful
-bool ParseGGA(char* gpsString, gpsData& data)
+bool ParseGGA(char* gpsString, GpsData& data)
 {
     const std::string delimiter = ",";
 
@@ -442,9 +441,9 @@ bool ParseGGA(char* gpsString, gpsData& data)
     return true;
 }
 
-// Parses the GSV string (starting with $GPGSV) and fills in the provided gpsData structure
+// Parses the GSV string (starting with $GPGSV) and fills in the provided GpsData structure
 //	@return true if the parsing is successful
-bool ParseGSV(char* gpsString, gpsData& data)
+bool ParseGSV(char* gpsString, GpsData& data)
 {
     const std::string delimiter = ",";
 
@@ -492,7 +491,7 @@ bool ParseGSV(char* gpsString, gpsData& data)
 
 /** Parse the read GPS-Information */
 /** See http://www.gpsinformation.org/dale/nmea.htm */
-bool Parse(char* gpsString, gpsData& data)
+bool Parse(char* gpsString, GpsData& data)
 {
     if (nullptr == gpsString || strlen(gpsString) < 40)
     {

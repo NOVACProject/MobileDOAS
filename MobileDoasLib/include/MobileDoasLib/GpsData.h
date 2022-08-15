@@ -17,13 +17,13 @@ enum class GpsFixQuality
 };
 
 /** Common structure for storing data read out from the GPS */
-struct gpsData {
-    gpsData();
-    gpsData(const gpsData& other);
+struct GpsData {
+    GpsData();
+    GpsData(const GpsData& other);
 
-    gpsData& operator=(gpsData other);
+    GpsData& operator=(GpsData other);
 
-    friend void swap(gpsData& first, gpsData& second);
+    friend void swap(GpsData& first, GpsData& second);
 
     /* Latitude in (decimal) degrees. Positive values corresponds to northern hemisphere. */
     double latitude = 0.0;
@@ -59,14 +59,14 @@ struct gpsData {
     GpsFixQuality fixQuality = GpsFixQuality::INVALID;
 };
 
-/** @return true if the provided gpsData contains a valid GPS readout
+/** @return true if the provided GpsData contains a valid GPS readout
     This checks that any satelite was seen and that the lat/long aren't zero. */
-bool IsValidGpsData(const gpsData& data);
+bool IsValidGpsData(const GpsData& data);
 
 /* Tries to parse the text read from the GPS.
     The parsed information will be filled into the provided 'data.
     @return true if the parsing suceeded, otherwise false. */
-bool Parse(char* gpsString, gpsData& data);
+bool Parse(char* gpsString, GpsData& data);
 
 /* Convert an angle from the raw format of the GPS data DDMM.MMMMM
 into the format DD.DDDDDDD */
