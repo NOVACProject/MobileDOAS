@@ -94,6 +94,12 @@
     <Filter Include="Source Files\SpectralEvaluation\Fit">
       <UniqueIdentifier>{9561066c-9026-453d-be37-99b4d17d5e5e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Spectrometers">
+      <UniqueIdentifier>{dce9206b-ea32-4d58-ad2d-380b3b4d5dd1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Spectrometers">
+      <UniqueIdentifier>{190ede1a-3527-4620-8907-b6843233ba3f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Common.cpp">
@@ -488,6 +494,9 @@
     </ClCompile>
     <ClCompile Include="SpectralEvaluation\src\Evaluation\ReferenceFile.cpp">
       <Filter>Source Files\SpectralEvaluation\Evaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="Spectrometers\OceanOpticsSpectrometerInterface.cpp">
+      <Filter>Source Files\Spectrometers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -909,6 +918,9 @@
     </ClInclude>
     <ClInclude Include="Evaluation\RealTimeCalibration.h">
       <Filter>Header Files\Evaluation</Filter>
+    </ClInclude>
+    <ClInclude Include="Spectrometers\OceanOpticsSpectrometerInterface.h">
+      <Filter>Header Files\Spectrometers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

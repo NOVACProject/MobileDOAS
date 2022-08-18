@@ -13,36 +13,18 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\Measurement">
-      <UniqueIdentifier>{4103b0fc-8de5-446c-be37-aa0bd600cadb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Measurement">
-      <UniqueIdentifier>{9201bcf8-771c-4acd-a8b4-5d952fdf7740}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h">
+    <ClInclude Include="catch.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\MobileDoasLib\GpsData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\MobileDoasLib\Measurement\SpectrometerInterface.h">
-      <Filter>Header Files\Measurement</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MobileDoasLib.cpp">
+    <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\GpsData.cpp">
+    <ClCompile Include="UnitTests_GpsData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Measurement\SpectrometerInterface.cpp">
-      <Filter>Source Files\Measurement</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ReadMe.md" />
   </ItemGroup>
 </Project>

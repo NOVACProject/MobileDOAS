@@ -809,7 +809,7 @@ void CSpectrometer::DoEvaluation(double pSky[][MAX_SPECTRUM_LENGTH], double pDar
 
     ++m_spectrumCounter;
     if (m_spectrumCounter == 65535) {
-        memset((void*)m_spectrumGpsData, 0, sizeof(struct GpsData) * 65536);
+        memset((void*)m_spectrumGpsData, 0, sizeof(struct mobiledoas::GpsData) * 65536);
         m_spectrumCounter = 0;
         m_zeroPosNum = 0;
     }
@@ -1056,7 +1056,7 @@ void CSpectrometer::WriteFluxLog()
 
 
 
-int CSpectrometer::GetGpsPos(GpsData& data) const
+int CSpectrometer::GetGpsPos(mobiledoas::GpsData& data) const
 {
     const int c = this->m_spectrumCounter; // local buffer, to avoid race conditions
 
@@ -1122,7 +1122,7 @@ long CSpectrometer::AverageIntens(double* pSpectrum, long ptotalNum) const {
     return (long)sum;
 }
 
-bool CSpectrometer::UpdateGpsData(GpsData& gpsInfo)
+bool CSpectrometer::UpdateGpsData(mobiledoas::GpsData& gpsInfo)
 {
     // If GPS thread does not exist or is not running
     if (nullptr == m_gps)
@@ -1157,7 +1157,7 @@ bool CSpectrometer::UpdateGpsData(GpsData& gpsInfo)
 
 void CSpectrometer::GetCurrentDateAndTime(std::string& currentDate, long& currentTime)
 {
-    GpsData currentGpsInfo;
+    mobiledoas::GpsData currentGpsInfo;
     const bool couldReadValidGPSData = (m_useGps) ? UpdateGpsData(currentGpsInfo) : false;
     if (couldReadValidGPSData)
     {
@@ -1177,7 +1177,7 @@ void CSpectrometer::GetCurrentDateAndTime(std::string& currentDate, long& curren
 
 void CSpectrometer::GetCurrentDateAndTime(novac::CDateTime& currentDateAndTime)
 {
-    GpsData currentGpsInfo;
+    mobiledoas::GpsData currentGpsInfo;
     const bool couldReadValidGPSData = (m_useGps) ? UpdateGpsData(currentGpsInfo) : false;
     if (couldReadValidGPSData)
     {
@@ -1972,7 +1972,7 @@ long CSpectrometer::GetCurrentTimeFromComputerClock()
         time(&t);
         struct tm* localTime = localtime(&t);
 
-        const GpsData curGpsInfo = m_spectrumGpsData[currentSpectrumCounter];
+        const mobiledoas::GpsData curGpsInfo = m_spectrumGpsData[currentSpectrumCounter];
 
         int hr, min, sec;
         ExtractTime(curGpsInfo, hr, min, sec);

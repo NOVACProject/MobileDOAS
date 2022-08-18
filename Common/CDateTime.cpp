@@ -32,14 +32,14 @@ void GetCurrentDateFromComputerClock(novac::CDateTime& result)
     result.year = tim->tm_year - 100;
 }
 
-void ExtractTime(const GpsData& gpsData, int& hours, int& minutes, int& seconds)
+void ExtractTime(const mobiledoas::GpsData& gpsData, int& hours, int& minutes, int& seconds)
 {
     hours = gpsData.time / 10000;
     minutes = (gpsData.time - hours * 10000) / 100;
     seconds = gpsData.time % 100;
 }
 
-void ExtractDate(const GpsData& gpsData, int& day, int& month, int& year)
+void ExtractDate(const mobiledoas::GpsData& gpsData, int& day, int& month, int& year)
 {
     day = gpsData.date / 10000;
     month = (gpsData.date - day * 10000) / 100;
@@ -49,7 +49,7 @@ void ExtractDate(const GpsData& gpsData, int& day, int& month, int& year)
     assert(month >= 1 && month <= 12);
 }
 
-void ExtractDateAndTime(const GpsData& gpsData, novac::CDateTime& time)
+void ExtractDateAndTime(const mobiledoas::GpsData& gpsData, novac::CDateTime& time)
 {
     time.day = gpsData.date / 10000;
     time.month = (gpsData.date - time.day * 10000) / 100;
@@ -61,14 +61,14 @@ void ExtractDateAndTime(const GpsData& gpsData, novac::CDateTime& time)
     time.millisecond = 0;
 }
 
-std::string GetDate(const GpsData& data)
+std::string GetDate(const mobiledoas::GpsData& data)
 {
     char buffer[7];
     sprintf(buffer, "%06d", data.date);
     return std::string(buffer);
 }
 
-std::string GetDate(const GpsData& data, char separatorCharacter)
+std::string GetDate(const mobiledoas::GpsData& data, char separatorCharacter)
 {
     int day, month, year;
     ExtractDate(data, day, month, year);
@@ -79,7 +79,7 @@ std::string GetDate(const GpsData& data, char separatorCharacter)
 }
 
 
-long GetTime(const GpsData& data)
+long GetTime(const mobiledoas::GpsData& data)
 {
     return data.time;
 }

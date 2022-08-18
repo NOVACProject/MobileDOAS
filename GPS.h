@@ -51,7 +51,7 @@ public:
     /** Retrieving the read out data (this will not communicate with
         the device, only copy out the last read piece of data.
         This will temporarily lock the member 'm_gpsInfo' to avoid race conditions. */
-    void Get(GpsData& dst);
+    void Get(mobiledoas::GpsData& dst);
 
     /* WriteGPSLog and WriteLog are currently not used */
     // void    WriteGPSLog(char *pFile,double *pPos,double pTime);
@@ -70,7 +70,7 @@ private:
     CString m_logFile;
 
     /* The actual information */
-    struct GpsData m_gpsInfo;
+    struct mobiledoas::GpsData m_gpsInfo;
 
     /** This mutex helps to protect the 'gpsInfo' struct such that no two threads
         attempts to read/write it simultaneously */
@@ -94,7 +94,7 @@ public:
 
     /** Retrieving the read out data (this will not communicate with
         the device, only copy out the last read piece of data. */
-    void Get(GpsData& dst);
+    void Get(mobiledoas::GpsData& dst);
 
     /** @return true if the GPS device has got contact with at least one satellite */
     bool GotContact() const;

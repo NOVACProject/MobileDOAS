@@ -380,10 +380,10 @@ public:
         This will NOT call the Gps itself, nor cause any block.
         @return true if the updated data is valid (i.e. if the GPS can retrieve lat/long).
         @return false if the data is not valid or the GPS isn't used. */
-    bool UpdateGpsData(GpsData& gpsInfo);
+    bool UpdateGpsData(mobiledoas::GpsData& gpsInfo);
 
     /** Retrieves the last GPS position */
-    int GetGpsPos(GpsData& data) const;
+    int GetGpsPos(mobiledoas::GpsData& data) const;
 
     /** Retrieves the current time from the system time */
     long GetCurrentTimeFromComputerClock();
@@ -610,7 +610,7 @@ protected:
     // ---------------------------------------------------------------------------------------
 
     /** m_spectrumGpsData[i] holds the Gps information associated with spectrum number 'i' */
-    struct GpsData m_spectrumGpsData[65536];
+    struct mobiledoas::GpsData m_spectrumGpsData[65536];
 
 
     // ---------------------------------------------------------------------------------------

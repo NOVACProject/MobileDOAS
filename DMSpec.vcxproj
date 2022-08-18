@@ -588,6 +588,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Spectrometer.cpp" />
+    <ClCompile Include="Spectrometers\OceanOpticsSpectrometerInterface.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -736,6 +737,7 @@
     <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\DialogControllers\ReferenceCreationController.h" />
     <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\DialogControllers\WavelengthCalibrationController.h" />
     <ClInclude Include="Spectrometer.h" />
+    <ClInclude Include="Spectrometers\OceanOpticsSpectrometerInterface.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="Version.h" />
     <ClInclude Include="WindFieldDlg.h" />

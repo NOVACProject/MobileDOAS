@@ -8,7 +8,10 @@
 
 #include <string>
 
-struct GpsData;
+namespace mobiledoas
+{
+    struct GpsData;
+}
 
 namespace novac
 {
@@ -34,24 +37,24 @@ std::string GetCurrentDateFromComputerClock(char separatorCharacter);
 void GetCurrentDateFromComputerClock(novac::CDateTime& time);
 
 /** Extracts the time from the provided GpsData and separates it into hour-minute-second */
-void ExtractTime(const GpsData& gpsData, int& hours, int& minutes, int& seconds);
+void ExtractTime(const mobiledoas::GpsData& gpsData, int& hours, int& minutes, int& seconds);
 
 /** Extracts the date from the provided GpsData and separates it into day-month-year */
-void ExtractDate(const GpsData& gpsData, int& day, int& month, int& year);
+void ExtractDate(const mobiledoas::GpsData& gpsData, int& day, int& month, int& year);
 
 /** Extracts the date and time from the provided GpsData */
-void ExtractDateAndTime(const GpsData& gpsData, novac::CDateTime& time);
+void ExtractDateAndTime(const mobiledoas::GpsData& gpsData, novac::CDateTime& time);
 
 /** Reads out the data in the provided GpsData and formats it in the format 'ddmmyy' */
-std::string GetDate(const GpsData& data);
+std::string GetDate(const mobiledoas::GpsData& data);
 
 /** Reads out the data in the provided GpsData and formats it as a string with
     the given separator character.
     E.g. the values data.date=120514 (May 12th 2014) and separatorCharacter='.' will return the string "12.05.14" */
-std::string GetDate(const GpsData& data, char separatorCharacter);
+std::string GetDate(const mobiledoas::GpsData& data, char separatorCharacter);
 
 /** Reads out the timestamp in the provided GpsData */
-long GetTime(const GpsData& data);
+long GetTime(const mobiledoas::GpsData& data);
 
 /** This function converts a time value given as an integer to three values (hour, minute second) */
 void GetHrMinSec(int time, int& hr, int& min, int& sec);
