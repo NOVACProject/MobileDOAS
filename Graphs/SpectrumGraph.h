@@ -12,7 +12,7 @@ namespace Graph{
 		/** the size of this graph */
 		CRect rect; 
 
-		/** handle to the parent window, for message handling */
+		/** currentSpectrometerHandle to the parent window, for message handling */
 		CWnd *parentWnd; 
 
 		/** Current wavelength */

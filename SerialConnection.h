@@ -10,7 +10,7 @@ public:
     CSerialConnection(CSerialConnection&& other);
     CSerialConnection& operator=(CSerialConnection&& other);
 
-    // --- This class manages a serial connction handle and is thus not copyable
+    // --- This class manages a serial connction currentSpectrometerHandle and is thus not copyable
     CSerialConnection(const CSerialConnection&) = delete;
     CSerialConnection& operator=(const CSerialConnection&) = delete;
 
@@ -64,7 +64,7 @@ public:
     volatile bool* isRunning = nullptr;
 
 private:
-    // This is the handle to the serial port communication
+    // This is the currentSpectrometerHandle to the serial port communication
     HANDLE hComm;
 
     /* data definition */

@@ -15,7 +15,7 @@ public:
 
     enum { IDD = IDD_CONFIGURE_DIRECTORY };
 
-    /** The local handle to the CMobileConfiguration object that we're changing */
+    /** The local currentSpectrometerHandle to the CMobileConfiguration object that we're changing */
     std::shared_ptr<CMobileConfiguration> m_conf;
 
 protected:

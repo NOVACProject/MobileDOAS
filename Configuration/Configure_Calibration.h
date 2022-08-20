@@ -22,7 +22,7 @@ public:
     // Dialog Data
     enum { IDD = IDD_CONFIGURE_CALIBRATION };
 
-    /** The local handle to the configuration that we're changing */
+    /** The local currentSpectrometerHandle to the configuration that we're changing */
     std::shared_ptr<CMobileConfiguration> m_conf;
 
     afx_msg void OnClickedButtonBrowseSolarSpectrum();

@@ -58,6 +58,12 @@ void OceanOpticsSpectrometerInterface::Stop()
     m_wrapper->stopAveraging(m_spectrometerIndex);
 }
 
+bool OceanOpticsSpectrometerInterface::SetSpectrometer(int spectrometerIndex)
+{
+    std::vector<int> channels{ 0 };
+    return SetSpectrometer(spectrometerIndex);
+}
+
 bool OceanOpticsSpectrometerInterface::SetSpectrometer(int spectrometerIndex, const std::vector<int>& channelIndices)
 {
     if (spectrometerIndex < 0 || spectrometerIndex >= m_numberOfSpectrometersAttached)

@@ -309,7 +309,7 @@ int CSpectrometer::ScanUSB(int sumInComputer, int sumInSpectrometer, double pRes
         // Retreives the spectra from the spectrometer, one vector per channel.
         std::vector<std::vector<double>> spectrumData;
         const int spectrumLength = m_spectrometer->GetNextSpectrum(spectrumData);
-        ASSERT(m_NChannels == spectrumData.size()); // there should be one vector per channel
+        // ASSERT(m_NChannels == spectrumData.size()); // there should be one vector per channel
 
         // Handle errors while reading out the spectrum
         if (spectrumLength == 0)

@@ -26,6 +26,13 @@ namespace mobiledoas
 
         // SetSpectrometer decides on which of the connected spectrometers (of this particular make) to use.
         // Provided spectrometerIndex must be >= 0 and less than the number of devices returned from ScanForDevices.
+        // If the spectrometer has multiple channels, then the first channel will be selected and used.
+        // @return true if the spectrometer connection was made, otherwise false.
+        // This requires that ScanForDevices() has been called successfully.
+        virtual bool SetSpectrometer(int spectrometerIndex) = 0;
+
+        // SetSpectrometer decides on which of the connected spectrometers (of this particular make) to use.
+        // Provided spectrometerIndex must be >= 0 and less than the number of devices returned from ScanForDevices.
         // Provided channelIndices must each be >= 0 and less than the number of channels available on the device.
         // @return true if the spectrometer connection was made, otherwise false.
         // This requires that ScanForDevices() has been called successfully.

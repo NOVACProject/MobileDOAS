@@ -62,7 +62,7 @@
 // conversion from ppmm to mg/m^2 for HCHO
 #define GASFACTOR_HCHO 1.25
 
-// the maximum number of channels on the spectrometer that we can handle 
+// the maximum number of channels on the spectrometer that we can currentSpectrometerHandle 
 #define MAX_N_CHANNELS 2
 
 // The maximum number of fit-regions that we can use at any single time

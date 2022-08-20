@@ -1,24 +1,21 @@
 #pragma once
 
+#include <vector>
 #include <MobileDoasLib/Measurement/SpectrometerInterface.h>
-
-// Forward declaration of the ocean-optics Wrapper class, such that we don't need to 
-// include the OceanOptics headers everywhere..
-class Wrapper;
 
 namespace mobiledoas
 {
-    // OceanOpticsSpectrometerInterface is an implementation of the SpectrometerInterface
+    // AvantesSpectrometerInterface is an implementation of the SpectrometerInterface
     // for accessing OceanOptics spectrometers through USB.
-    class OceanOpticsSpectrometerInterface : public SpectrometerInterface
+    class AvantesSpectrometerInterface : public SpectrometerInterface
     {
     public:
-        OceanOpticsSpectrometerInterface();
-        virtual ~OceanOpticsSpectrometerInterface();
+        AvantesSpectrometerInterface();
+        virtual ~AvantesSpectrometerInterface();
 
         // This object is unfortunately not copyable since it contains a pointer which in itself cannot be copied.
-        OceanOpticsSpectrometerInterface(const OceanOpticsSpectrometerInterface& other) = delete;
-        OceanOpticsSpectrometerInterface& operator=(const OceanOpticsSpectrometerInterface& other) = delete;
+        AvantesSpectrometerInterface(const AvantesSpectrometerInterface& other) = delete;
+        AvantesSpectrometerInterface& operator=(const AvantesSpectrometerInterface& other) = delete;
 
         /** The spectrometer to use, if there are several attached.
             must be at least 0 and always smaller than 'm_numberOfSpectrometersAttached' */
@@ -78,11 +75,8 @@ namespace mobiledoas
 
     private:
 
-
-        /** This is the object through which we will access all of Omnidriver's capabilities
-            This is used to control the OceanOptics Spectrometers through USB.
-            There can be only one Wrapper object in the application!!!  */
-        Wrapper* m_wrapper;
+        // Handling the internal state.
+        void *m_state = nullptr;
 
         // The last error message set by this class (note that the m_wrapper may also have an error message set).
         std::string m_lastErrorMessage;
