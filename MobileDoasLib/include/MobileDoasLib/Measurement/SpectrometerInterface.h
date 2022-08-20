@@ -73,6 +73,7 @@ namespace mobiledoas
         // GetNextSpectrum returns the next spectrum readout. This blocks until there is a spectrum available.
         // This will fill in the values into the provided vector, there will be one vector of data for each channel.
         // @return the number of values read out (the length of the spectrum).
+        // @return zero if something goes wrong while doing the readout (reason can be retrieved using GetLastError()).
         // Reqiures that SetSpectrometer has been called successfully.
         virtual int GetNextSpectrum(std::vector<std::vector<double>>& data) = 0;
 

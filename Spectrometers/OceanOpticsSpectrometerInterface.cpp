@@ -189,6 +189,14 @@ int OceanOpticsSpectrometerInterface::GetNextSpectrum(std::vector<std::vector<do
         memcpy(data[channelIdx].data(), spectrum, spectrumLength * sizeof(double));
     }
 
+    // Check the status of the last readout
+    WrapperExtensions ext = m_wrapper->getWrapperExtensions();
+    if (!ext.isSpectrumValid(m_spectrometerIndex))
+    {
+        m_lastErrorMessage = "Error reading out spectrum, last spectrum may not be valid";
+        return 0;
+    }
+
     m_lastErrorMessage.clear();
 
     return spectrumLength;

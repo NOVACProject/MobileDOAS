@@ -2,10 +2,8 @@
 //
 //////////////////////////////////////////////////////////////////////
 #include "Evaluation/Evaluation.h"
-#include "DMSpecDoc.h"
 #include "GPS.h"
 #include "Configuration/MobileConfiguration.h"
-#include "SerialConnection.h"
 #include "Version.h"
 #include "Common/SpectrumIO.h"
 #include <MobileDoasLib/Measurement/SpectrometerInterface.h>
@@ -13,24 +11,10 @@
 #include <memory>
 #include <limits>
 
-#include <ArrayTypes.h> // located in %OMNIDRIVER_HOME%\include
-#include <Wrapper.h>
-//#include <ADC1000USB.h>
-//#include <ADC1000Channel.h>
-
-
-#if !defined(AFX_COMMUNICATION_H__7C04DDEA_2314_405E_A09D_02B403AC7762__INCLUDED_)
-#define AFX_COMMUNICATION_H__7C04DDEA_2314_405E_A09D_02B403AC7762__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
-
 
 #define WM_STATUSMSG  WM_USER + 8   //define the message for set statusbar message
 #define WM_DRAWCOLUMN  WM_USER + 9
-#define WM_DRAWFLUX   WM_USER +10
-#define WM_ERASECOLUMN  WM_USER +11
 #define WM_DRAWMAX   WM_USER +12
 #define WM_READGPS   WM_USER +14
 #define WM_SHOWINTTIME  WM_USER +15
@@ -726,5 +710,3 @@ private:
     /** Check if spectrum is dark **/
     bool CSpectrometer::CheckIfDark(double spectrum[MAX_SPECTRUM_LENGTH]);
 };
-
-#endif // !defined(AFX_COMMUNICATION_H__7C04DDEA_2314_405E_A09D_02B403AC7762__INCLUDED_)

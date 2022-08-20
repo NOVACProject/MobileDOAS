@@ -308,8 +308,18 @@ int CSpectrometer::ScanUSB(int sumInComputer, int sumInSpectrometer, double pRes
 
         // Retreives the spectra from the spectrometer, one vector per channel.
         std::vector<std::vector<double>> spectrumData;
-        m_spectrometer->GetNextSpectrum(spectrumData);
+        const int spectrumLength = m_spectrometer->GetNextSpectrum(spectrumData);
         ASSERT(m_NChannels == spectrumData.size()); // there should be one vector per channel
+
+        // Handle errors while reading out the spectrum
+        if (spectrumLength == 0)
+        {
+            if (IsSpectrometerDisconnected())
+            {
+                ReconnectWithSpectrometer();
+            }
+            return 0;
+        }
 
         // copies the spectrum-values to the output array
         for (size_t chn = 0; chn < spectrumData.size(); ++chn)
@@ -928,10 +938,6 @@ void CSpectrometer::SetFileName()
     lastidx = i - 1;
 }
 
-/**Get columns
-**@columnList - the array to contain columns
-**@sum    - the number of columns
-*/
 long CSpectrometer::GetColumns(double* columnList, long sum, int fitRegion)
 {
     int i = 0;
