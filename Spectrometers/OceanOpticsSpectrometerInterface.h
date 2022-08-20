@@ -13,13 +13,19 @@ namespace mobiledoas
     class OceanOpticsSpectrometerInterface : public SpectrometerInterface
     {
     public:
+        OceanOpticsSpectrometerInterface();
+        virtual ~OceanOpticsSpectrometerInterface();
 
-        /** The spectrometer to use, if there are several attached
+        // This object is unfortunately not copyable since it contains a pointer which in itself cannot be copied.
+        OceanOpticsSpectrometerInterface(const OceanOpticsSpectrometerInterface& other) = delete;
+        OceanOpticsSpectrometerInterface& operator=(const OceanOpticsSpectrometerInterface& other) = delete;
+
+        /** The spectrometer to use, if there are several attached.
             must be at least 0 and always smaller than 'm_numberOfSpectrometersAttached' */
         int m_spectrometerIndex = 0;
 
-        /** The channel to use on the attached spectrometer */
-        int m_spectrometerChannel = 0;
+        /** The channels to use on the attached spectrometer */
+        std::vector<int> m_spectrometerChannels;
 
         /** The number of spectrometers that are attached to this computer */
         int m_numberOfSpectrometersAttached = 0;
@@ -30,13 +36,17 @@ namespace mobiledoas
 
         virtual void Close() override;
 
-        virtual bool SetSpectrometer(int spectrometerIndex, int channelIndex) override;
+        virtual void Stop() override;
+
+        virtual bool SetSpectrometer(int spectrometerIndex, const std::vector<int>& channelIndices) override;
 
         virtual std::string GetSerial() override;
 
         virtual std::string GetModel() override;
 
-        virtual int GetWavelengths(std::vector<double>& data) override;
+        virtual int GetNumberOfChannels() override;
+
+        virtual int GetWavelengths(std::vector<std::vector<double>>& data) override;
 
         virtual int GetSaturationIntensity() override;
 
@@ -48,7 +58,7 @@ namespace mobiledoas
 
         virtual int GetScansToAverage() override;
 
-        virtual int GetNextSpectrum(std::vector<double>& data) override;
+        virtual int GetNextSpectrum(std::vector<std::vector<double>>& data) override;
 
         virtual bool SupportsDetectorTemperatureControl() override;
 
@@ -70,7 +80,10 @@ namespace mobiledoas
         /** This is the object through which we will access all of Omnidriver's capabilities
             This is used to control the OceanOptics Spectrometers through USB.
             There can be only one Wrapper object in the application!!!  */
-        class Wrapper* m_wrapper;
+        Wrapper* m_wrapper;
+
+        // The last error message set by this class (note that the m_wrapper may also have an error message set).
+        std::string m_lastErrorMessage;
 
     };
 }

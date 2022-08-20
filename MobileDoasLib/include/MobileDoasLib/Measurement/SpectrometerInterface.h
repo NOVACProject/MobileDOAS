@@ -20,12 +20,16 @@ namespace mobiledoas
         // After this, all other methods below will return an error.
         virtual void Close() = 0;
 
+        // Stop will stop all running acquisitions.
+        // This does not close the connections to the spectrometers.
+        virtual void Stop() = 0;
+
         // SetSpectrometer decides on which of the connected spectrometers (of this particular make) to use.
         // Provided spectrometerIndex must be >= 0 and less than the number of devices returned from ScanForDevices.
-        // Provided channelIndex must be >= 0 and less than the number of channels available on the device.
+        // Provided channelIndices must each be >= 0 and less than the number of channels available on the device.
         // @return true if the spectrometer connection was made, otherwise false.
         // This requires that ScanForDevices() has been called successfully.
-        virtual bool SetSpectrometer(int spectrometerIndex, int channelIndex) = 0;
+        virtual bool SetSpectrometer(int spectrometerIndex, const std::vector<int>& channelIndices) = 0;
 
         // GetSerial returns the serial number of the current spectrometer.
         // Reqiures that SetSpectrometer has been called successfully.
@@ -35,12 +39,16 @@ namespace mobiledoas
         // Reqiures that SetSpectrometer has been called successfully.
         virtual std::string GetModel() = 0;
 
+        // GetNumberOfChannels returns the number of channels inside the current spectrometer.
+        // Reqiures that SetSpectrometer has been called successfully.
+        virtual int GetNumberOfChannels() = 0;
+
         // GetWavelengths returns the set wavelength for each pixel on the detector.
         // This requires that the device has a pixel-to-wavelength calibration.
-        // This will fill in the values into the provided vector.
+        // This will fill in the values into the provided vector, there will be one vector of data for each channel.
         // @return the number of values filled in.
         // Reqiures that SetSpectrometer has been called successfully.
-        virtual int GetWavelengths(std::vector<double>& data) = 0;
+        virtual int GetWavelengths(std::vector<std::vector<double>>& data) = 0;
 
         // GetSaturationIntensity returns the maximum intensity in the current spectrometer.
         // Reqiures that SetSpectrometer has been called successfully.
@@ -63,10 +71,10 @@ namespace mobiledoas
         virtual int GetScansToAverage() = 0;
 
         // GetNextSpectrum returns the next spectrum readout. This blocks until there is a spectrum available.
-        // This will fill in the values into the provided vector.
+        // This will fill in the values into the provided vector, there will be one vector of data for each channel.
         // @return the number of values read out (the length of the spectrum).
         // Reqiures that SetSpectrometer has been called successfully.
-        virtual int GetNextSpectrum(std::vector<double>& data) = 0;
+        virtual int GetNextSpectrum(std::vector<std::vector<double>>& data) = 0;
 
         // SupportsDetectorTemperatureControl returns true if this device is able to set a specific temperature on the detector.
         // Reqiures that SetSpectrometer has been called successfully.

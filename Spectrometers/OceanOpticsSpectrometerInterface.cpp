@@ -2,18 +2,41 @@
 #include "OceanOpticsSpectrometerInterface.h"
 
 // The OceanOptics drivers headers, located in %OMNIDRIVER_HOME%\include
+#define WIN32 // The WIN32 flag is also required for x64 development. See the OmniDriver programming manual.
 #include <ArrayTypes.h>
 #include <Wrapper.h>
 //#include <ADC1000USB.h>
 //#include <ADC1000Channel.h>
 
+#include <sstream>
+
 using namespace mobiledoas;
+
+OceanOpticsSpectrometerInterface::OceanOpticsSpectrometerInterface()
+    : m_spectrometerChannels{ 0 }
+{
+    m_wrapper = new Wrapper();
+}
+
+OceanOpticsSpectrometerInterface::~OceanOpticsSpectrometerInterface()
+{
+    delete m_wrapper;
+    m_wrapper = nullptr;
+}
 
 std::vector<std::string> OceanOpticsSpectrometerInterface::ScanForDevices()
 {
-    m_numberOfSpectrometersAttached = m_wrapper->openAllSpectrometers();
-
     std::vector<std::string> serialNumbers;
+
+    const int numberOfSpectrometersFound = m_wrapper->openAllSpectrometers();
+    if (numberOfSpectrometersFound < 0)
+    {
+        // This happens if an error occurs. We should here log the error...
+        auto errorMessage = GetLastError();
+        return serialNumbers;
+    }
+
+    m_numberOfSpectrometersAttached = numberOfSpectrometersFound;
     serialNumbers.resize(m_numberOfSpectrometersAttached);
 
     for (int ii = 0; ii < m_numberOfSpectrometersAttached; ++ii)
@@ -30,21 +53,45 @@ void OceanOpticsSpectrometerInterface::Close()
     m_wrapper->closeAllSpectrometers();
 }
 
-bool OceanOpticsSpectrometerInterface::SetSpectrometer(int spectrometerIndex, int channelIndex)
+void OceanOpticsSpectrometerInterface::Stop()
 {
-    if (spectrometerIndex < 0 || spectrometerIndex > m_numberOfSpectrometersAttached)
+    m_wrapper->stopAveraging(m_spectrometerIndex);
+}
+
+bool OceanOpticsSpectrometerInterface::SetSpectrometer(int spectrometerIndex, const std::vector<int>& channelIndices)
+{
+    if (spectrometerIndex < 0 || spectrometerIndex >= m_numberOfSpectrometersAttached)
     {
+        std::stringstream message;
+        message << "Invalid spectrometer index " << spectrometerIndex << ". Number of spectrometers attached is: " << m_numberOfSpectrometersAttached;
+        m_lastErrorMessage = message.str();
+        return false;
+    }
+    if (channelIndices.size() == 0)
+    {
+        m_lastErrorMessage = "Invalid channel indices provided. At least one channel must be used";
         return false;
     }
 
-    const int nAvailableChannels = m_wrapper->getWrapperExtensions().getNumberOfChannels(spectrometerIndex);
-    if (channelIndex < 0 || channelIndex > nAvailableChannels)
+    // Verify the channel indices to use.
+    // note here, getNumberOfEnabledChannels returns the number of channels which are connected to a working spectrometer,
+    // whereas getNumberOfChannels returns the number of slots for spectrometers (8 for an ADC-1000USB).
+    const int nAvailableChannels = m_wrapper->getWrapperExtensions().getNumberOfEnabledChannels(spectrometerIndex);
+
+    for (int channelIndex : channelIndices)
     {
-        return false;
+        if (channelIndex < 0 || channelIndex > nAvailableChannels)
+        {
+            std::stringstream message;
+            message << "Invalid channel index " << channelIndex << ". Number of channels on current spectrometer is: " << nAvailableChannels;
+            m_lastErrorMessage = message.str();
+            return false;
+        }
     }
 
     m_spectrometerIndex = spectrometerIndex;
-    m_spectrometerChannel = channelIndex;
+    m_spectrometerChannels = channelIndices;
+    m_lastErrorMessage.clear();
 
     return true;
 }
@@ -61,16 +108,26 @@ std::string OceanOpticsSpectrometerInterface::GetModel()
     return std::string{ model };
 }
 
-int OceanOpticsSpectrometerInterface::GetWavelengths(std::vector<double>& data)
+int OceanOpticsSpectrometerInterface::GetNumberOfChannels()
 {
-    DoubleArray wavelengthArray = m_wrapper->getWavelengths(m_spectrometerIndex);
+    WrapperExtensions ext = m_wrapper->getWrapperExtensions();
+    return ext.getNumberOfEnabledChannels(m_spectrometerIndex);
+}
 
-    const int spectrumLength = wavelengthArray.getLength();
-    data.resize(spectrumLength);
+int OceanOpticsSpectrometerInterface::GetWavelengths(std::vector<std::vector<double>>& data)
+{
+    data.resize(m_spectrometerChannels.size());
+    int spectrumLength = 0;
 
-    const double* spectrum = wavelengthArray.getDoubleValues();
-    for (int i = 0; i < wavelengthArray.getLength(); i++) {
-        data[i] = spectrum[i];
+    for (int channelIdx = 0; channelIdx < static_cast<int>(m_spectrometerChannels.size()); ++channelIdx)
+    {
+        DoubleArray wavelengthArray = m_wrapper->getWavelengths(m_spectrometerIndex, channelIdx);
+
+        spectrumLength = wavelengthArray.getLength();
+        data[channelIdx].resize(spectrumLength);
+
+        const double* spectrum = wavelengthArray.getDoubleValues();
+        memcpy(data[channelIdx].data(), spectrum, spectrumLength * sizeof(double));
     }
 
     return spectrumLength;
@@ -78,42 +135,61 @@ int OceanOpticsSpectrometerInterface::GetWavelengths(std::vector<double>& data)
 
 int OceanOpticsSpectrometerInterface::GetSaturationIntensity()
 {
+    // For some spectrometers (notably the SD2000) does getSaturationIntensity return -1 
     WrapperExtensions ext = m_wrapper->getWrapperExtensions();
-    return ext.getSaturationIntensity(m_spectrometerIndex);
+    int saturationIntensity = ext.getSaturationIntensity(m_spectrometerIndex);
+    if (saturationIntensity < 0)
+    {
+        saturationIntensity = m_wrapper->getMaximumIntensity(m_spectrometerIndex);
+    }
+
+    return saturationIntensity;
 }
 
 void OceanOpticsSpectrometerInterface::SetIntegrationTime(int usec)
 {
-    m_wrapper->setIntegrationTime(m_spectrometerIndex, m_spectrometerChannel, usec);
+    for (int chn : m_spectrometerChannels)
+    {
+        m_wrapper->setIntegrationTime(m_spectrometerIndex, chn, usec);
+    }
 }
 
 int OceanOpticsSpectrometerInterface::GetIntegrationTime()
 {
-    return m_wrapper->getIntegrationTime(m_spectrometerIndex, m_spectrometerChannel);
+    return m_wrapper->getIntegrationTime(m_spectrometerIndex, m_spectrometerChannels.front());
 }
 
 void OceanOpticsSpectrometerInterface::SetScansToAverage(int numberOfScansToAverage)
 {
-    m_wrapper->setScansToAverage(m_spectrometerIndex, m_spectrometerChannel, numberOfScansToAverage);
+    for (int chn : m_spectrometerChannels)
+    {
+        m_wrapper->setScansToAverage(m_spectrometerIndex, chn, numberOfScansToAverage);
+    }
 }
 
 int OceanOpticsSpectrometerInterface::GetScansToAverage()
 {
-    return m_wrapper->getScansToAverage(m_spectrometerIndex, m_spectrometerChannel);
+    return m_wrapper->getScansToAverage(m_spectrometerIndex, m_spectrometerChannels.front());
 }
 
-int OceanOpticsSpectrometerInterface::GetNextSpectrum(std::vector<double>& data)
+int OceanOpticsSpectrometerInterface::GetNextSpectrum(std::vector<std::vector<double>>& data)
 {
-    DoubleArray spectrumArray = m_wrapper->getSpectrum(m_spectrometerIndex, m_spectrometerChannel);
+    data.resize(m_spectrometerChannels.size());
+    int spectrumLength = 0;
 
-    // copies the spectrum-values to the output array
-    const int spectrumLength = spectrumArray.getLength();
+    for (int channelIdx = 0; channelIdx < static_cast<int>(m_spectrometerChannels.size()); ++channelIdx)
+    {
+        DoubleArray spectrumArray = m_wrapper->getSpectrum(m_spectrometerIndex, m_spectrometerChannels[channelIdx]);
 
-    data.resize(spectrumLength);
-    const double* spectrum = spectrumArray.getDoubleValues();
-    for (int i = 0; i < spectrumArray.getLength(); i++) {
-        data[i] = spectrum[i];
+        // copies the spectrum-values to the output array
+        spectrumLength = spectrumArray.getLength();
+        data[channelIdx].resize(spectrumLength);
+
+        const double* spectrum = spectrumArray.getDoubleValues();
+        memcpy(data[channelIdx].data(), spectrum, spectrumLength * sizeof(double));
     }
+
+    m_lastErrorMessage.clear();
 
     return spectrumLength;
 }
@@ -161,6 +237,11 @@ double OceanOpticsSpectrometerInterface::GetBoardTemperature()
 
 std::string OceanOpticsSpectrometerInterface::GetLastError()
 {
+    if (!m_lastErrorMessage.empty())
+    {
+        return m_lastErrorMessage;
+    }
+
     auto ex = m_wrapper->getLastException();
     const char* str = ex.getASCII();
     if (str == nullptr)
