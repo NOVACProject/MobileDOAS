@@ -36,7 +36,9 @@ namespace mobiledoas
 
         virtual void Close() override;
 
-        virtual void Stop() override;
+        virtual bool Start() override;
+
+        virtual bool Stop() override;
 
         virtual bool SetSpectrometer(int spectrometerIndex) override;
 

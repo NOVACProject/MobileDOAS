@@ -17,23 +17,15 @@ namespace mobiledoas
         AvantesSpectrometerInterface(const AvantesSpectrometerInterface& other) = delete;
         AvantesSpectrometerInterface& operator=(const AvantesSpectrometerInterface& other) = delete;
 
-        /** The spectrometer to use, if there are several attached.
-            must be at least 0 and always smaller than 'm_numberOfSpectrometersAttached' */
-        int m_spectrometerIndex = 0;
-
-        /** The channels to use on the attached spectrometer */
-        std::vector<int> m_spectrometerChannels;
-
-        /** The number of spectrometers that are attached to this computer */
-        int m_numberOfSpectrometersAttached = 0;
-
 #pragma region Implementing SpectrometerInterface
 
         virtual std::vector<std::string> ScanForDevices() override;
 
         virtual void Close() override;
 
-        virtual void Stop() override;
+        virtual bool Start() override;
+
+        virtual bool Stop() override;
 
         virtual bool SetSpectrometer(int spectrometerIndex) override;
 
@@ -76,10 +68,12 @@ namespace mobiledoas
     private:
 
         // Handling the internal state.
-        void *m_state = nullptr;
+        void* m_state = nullptr;
 
-        // The last error message set by this class (note that the m_wrapper may also have an error message set).
+        // The last error message set by this class.
         std::string m_lastErrorMessage;
 
+        // Cleans up all resources used by this interface.
+        void ReleaseDeviceLibraryResources();
     };
 }

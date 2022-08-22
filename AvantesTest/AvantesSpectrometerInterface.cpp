@@ -15,13 +15,16 @@ struct AvantesSpectrometerInterfaceState
     std::vector<AvsIdentityType> devices;
 
     // The current device, index into 'devices'.
-    int currentDevice = 0;
+    int currentDeviceIdx = 0;
 
     // The current measurement setup.
     MeasConfigType measurementConfig;
 
     // Handle to the currently active device
     AvsHandle currentSpectrometerHandle = INVALID_AVS_HANDLE_VALUE;
+
+    // True if the measurements are currently running on the currentSpectrometerHandle
+    bool measurementIsRunning = false;
 };
 
 void DeactivateCurrentDevice(AvantesSpectrometerInterfaceState* state)
@@ -31,12 +34,14 @@ void DeactivateCurrentDevice(AvantesSpectrometerInterfaceState* state)
         AVS_Deactivate(state->currentSpectrometerHandle);
         state->currentSpectrometerHandle = INVALID_AVS_HANDLE_VALUE;
     }
-    state->currentDevice = 0;
+    state->currentDeviceIdx = 0;
+    state->measurementIsRunning = false;
 }
 
 #pragma endregion
 
 AvantesSpectrometerInterface::AvantesSpectrometerInterface()
+    :m_lastErrorMessage("")
 {
     // initialize the library to work with USB devices.
     AVS_Init(0);
@@ -56,13 +61,7 @@ AvantesSpectrometerInterface::AvantesSpectrometerInterface()
 
 AvantesSpectrometerInterface::~AvantesSpectrometerInterface()
 {
-    // Release the resources
-    AVS_Done();
-
-    // Cleanup the state
-    AvantesSpectrometerInterfaceState* state = (AvantesSpectrometerInterfaceState*)m_state;
-    AVS_Deactivate(state->currentSpectrometerHandle);
-    state->currentSpectrometerHandle = INVALID_AVS_HANDLE_VALUE;
+    ReleaseDeviceLibraryResources();
 
     delete m_state;
     m_state = nullptr;
@@ -76,13 +75,23 @@ std::vector<std::string> AvantesSpectrometerInterface::ScanForDevices()
 
     const int numberOfDevicesFound = AVS_UpdateUSBDevices();
     unsigned int requiredSize = numberOfDevicesFound * sizeof(AvsIdentityType);
-    AVS_GetList(0, &requiredSize, nullptr);
+    int ret = AVS_GetList(0, &requiredSize, nullptr);
+    if (ret == ERR_INVALID_SIZE)
+    {
+        m_lastErrorMessage = "First call to AVS_GetList returned INVALID_SIZE. This indicates a programming error.";
+        return serialnumbers;
+    }
 
     state->devices.resize(numberOfDevicesFound);
-    AVS_GetList(requiredSize, &requiredSize, state->devices.data());
+    ret = AVS_GetList(requiredSize, &requiredSize, state->devices.data());
+    if (ret == ERR_INVALID_SIZE)
+    {
+        m_lastErrorMessage = "Second call to AVS_GetList returned INVALID_SIZE. This indicates a programming error.";
+        return serialnumbers;
+    }
 
     // Reset the current state
-    state->currentDevice = 0;
+    state->currentDeviceIdx = 0;
     DeactivateCurrentDevice(state);
 
     // Extract the serial numbers
@@ -91,17 +100,54 @@ std::vector<std::string> AvantesSpectrometerInterface::ScanForDevices()
         serialnumbers.push_back(state->devices[deviceIdx].SerialNumber);
     }
 
+    m_lastErrorMessage = "";
+
     return serialnumbers;
+}
+
+void AvantesSpectrometerInterface::ReleaseDeviceLibraryResources()
+{
+    // Release the resources
+    AVS_Done();
+
+    // Cleanup the state
+    AvantesSpectrometerInterfaceState* state = (AvantesSpectrometerInterfaceState*)m_state;
+    AVS_Deactivate(state->currentSpectrometerHandle);
+    state->currentSpectrometerHandle = INVALID_AVS_HANDLE_VALUE;
 }
 
 void AvantesSpectrometerInterface::Close()
 {
-
+    ReleaseDeviceLibraryResources();
 }
 
-void AvantesSpectrometerInterface::Stop()
+bool AvantesSpectrometerInterface::Start()
 {
+    AvantesSpectrometerInterfaceState* state = (AvantesSpectrometerInterfaceState*)m_state;
+    if (state->currentSpectrometerHandle == INVALID_AVS_HANDLE_VALUE)
+    {
+        m_lastErrorMessage = "Start failed, no spectrometer selected.";
+        return false;
+    }
 
+    // Calling AVS_MeasureCallback with a value of -1 starts the acquisitions indefinetely
+    int returnCode = AVS_MeasureCallback(state->currentSpectrometerHandle, nullptr, -1);
+    if (returnCode != ERR_SUCCESS)
+    {
+        std::stringstream message;
+        message << "Start failed, AVS_MeasureCallback returned " << returnCode << " which indicates an error.";
+        m_lastErrorMessage = message.str();
+        return false;
+    }
+
+    state->measurementIsRunning = true;
+    return true;
+}
+
+bool AvantesSpectrometerInterface::Stop()
+{
+    // TODO:
+    return true;
 }
 
 bool AvantesSpectrometerInterface::SetSpectrometer(int spectrometerIndex)
@@ -116,7 +162,7 @@ bool AvantesSpectrometerInterface::SetSpectrometer(int spectrometerIndex, const 
     if (spectrometerIndex < 0 || spectrometerIndex >= state->devices.size())
     {
         std::stringstream message;
-        message << "Invalid spectrometer index " << spectrometerIndex << ". Number of spectrometers attached is: " << m_numberOfSpectrometersAttached;
+        message << "Invalid spectrometer index " << spectrometerIndex << ". Number of spectrometers attached is: " << state->devices.size();
         m_lastErrorMessage = message.str();
         return false;
     }
@@ -126,20 +172,41 @@ bool AvantesSpectrometerInterface::SetSpectrometer(int spectrometerIndex, const 
     // Select the current device
     AvsIdentityType* device = &(state->devices[spectrometerIndex]);
     state->currentSpectrometerHandle = AVS_Activate(device);
-    state->currentDevice = spectrometerIndex;
+    state->currentDeviceIdx = spectrometerIndex;
+    if (state->currentSpectrometerHandle == INVALID_AVS_HANDLE_VALUE)
+    {
+        m_lastErrorMessage = "Failed to set spectrometer, AVS_Activate returned Invalid Handle";
+        return false;
+    }
 
     // Get some properties of the device
     unsigned short detectorSize;
-    AVS_GetNumPixels(state->currentSpectrometerHandle, &detectorSize);
+    int returnCode = AVS_GetNumPixels(state->currentSpectrometerHandle, &detectorSize);
+    if (returnCode != ERR_SUCCESS)
+    {
+        std::stringstream msg;
+        msg << "SetSpectrometer failed, AVS_GetNumPixels returned: " << returnCode;
+        m_lastErrorMessage = msg.str();
+        return 0;
+    }
 
     // Prepare the measurement setup
     state->measurementConfig.m_StartPixel = 0;
     state->measurementConfig.m_StopPixel = detectorSize - 1;
     state->measurementConfig.m_IntegrationDelay = 0;
     state->measurementConfig.m_IntegrationTime = 1000;
-    AVS_PrepareMeasure(state->currentSpectrometerHandle, &(state->measurementConfig));
+    int ret = AVS_PrepareMeasure(state->currentSpectrometerHandle, &(state->measurementConfig));
+    if (ret != ERR_SUCCESS)
+    {
+        std::stringstream msg;
+        msg << "PrepareMeasure returned error: " << ret << ", measurement parameters not set.";
+        m_lastErrorMessage = msg.str();
+        return false;
+    }
 
-    return state->currentSpectrometerHandle != INVALID_AVS_HANDLE_VALUE;
+    m_lastErrorMessage = "";
+
+    return true;
 }
 
 std::string AvantesSpectrometerInterface::GetSerial()
@@ -147,43 +214,32 @@ std::string AvantesSpectrometerInterface::GetSerial()
     AvantesSpectrometerInterfaceState* state = (AvantesSpectrometerInterfaceState*)m_state;
     if (state->currentSpectrometerHandle == INVALID_AVS_HANDLE_VALUE)
     {
-        // No spectrometer selected.
+        m_lastErrorMessage = "GetSerial failed, no spectrometer selected.";
         return "";
     }
-    assert(state->currentDevice >= 0 && state->currentDevice < state->devices.size());
-    if (state->currentDevice < 0 || state->currentDevice >= state->devices.size())
+    assert(state->currentDeviceIdx >= 0 && state->currentDeviceIdx < state->devices.size());
+    if (state->currentDeviceIdx < 0 || state->currentDeviceIdx >= state->devices.size())
     {
-        // TODO: this is actually an error..
+        std::stringstream msg;
+        msg << "GetSerial failed, currentDeviceIndex is invalid (" << state->currentDeviceIdx << ") out of " << state->devices.size() << " devices.";
         return "";
     }
 
-    return std::string(state->devices[state->currentDevice].SerialNumber);
+    m_lastErrorMessage = "";
+
+    return std::string(state->devices[state->currentDeviceIdx].SerialNumber);
 }
 
 std::string AvantesSpectrometerInterface::GetModel()
 {
+    // TODO:
     return "";
 }
 
 int AvantesSpectrometerInterface::GetNumberOfChannels()
 {
-    AvantesSpectrometerInterfaceState* state = (AvantesSpectrometerInterfaceState*)m_state;
-    if (state->currentSpectrometerHandle == INVALID_AVS_HANDLE_VALUE)
-    {
-        // No spectrometer selected.
-        return 0;
-    }
-
-    unsigned short numberOfPixels = 0;
-    int returnCode = AVS_GetNumPixels(state->currentSpectrometerHandle, &numberOfPixels);
-
-    if (returnCode != ERR_SUCCESS)
-    {
-        // TODO: Error handling
-        return 0;
-    }
-
-    return static_cast<int>(numberOfPixels);
+    // Avantes spectrometers only support one channel per spectrometer.
+    return 1;
 }
 
 int AvantesSpectrometerInterface::GetWavelengths(std::vector<std::vector<double>>& data)
@@ -191,13 +247,17 @@ int AvantesSpectrometerInterface::GetWavelengths(std::vector<std::vector<double>
     AvantesSpectrometerInterfaceState* state = (AvantesSpectrometerInterfaceState*)m_state;
     if (state->currentSpectrometerHandle == INVALID_AVS_HANDLE_VALUE)
     {
-        // No spectrometer selected.
+        m_lastErrorMessage = "GetWavelengths failed, no spectrometer selected.";
         return 0;
     }
 
-    const int numberOfPixels = GetNumberOfChannels();
-    if (numberOfPixels == 0)
+    unsigned short numberOfPixels = 0;
+    int returnCode = AVS_GetNumPixels(state->currentSpectrometerHandle, &numberOfPixels);
+    if (returnCode != ERR_SUCCESS)
     {
+        std::stringstream msg;
+        msg << "GetWavelengths failed, AVS_GetNumPixels returned: " << returnCode;
+        m_lastErrorMessage = msg.str();
         return 0;
     }
 
@@ -205,27 +265,47 @@ int AvantesSpectrometerInterface::GetWavelengths(std::vector<std::vector<double>
     data.resize(1);
     data[0].resize(numberOfPixels);
 
-    int returnCode = AVS_GetLambda(state->currentSpectrometerHandle, data[0].data());
+    returnCode = AVS_GetLambda(state->currentSpectrometerHandle, data[0].data());
     if (returnCode != ERR_SUCCESS)
     {
-        // TODO: Error handling
+        std::stringstream msg;
+        msg << "GetWavelengths failed, AVS_GetLambda returned: " << returnCode;
+        m_lastErrorMessage = msg.str();
         return 0;
     }
+
+    m_lastErrorMessage = "";
 
     return numberOfPixels;
 }
 
 int AvantesSpectrometerInterface::GetSaturationIntensity()
 {
+    // TODO:
     return 0;
 }
 
 void AvantesSpectrometerInterface::SetIntegrationTime(int usec)
 {
     AvantesSpectrometerInterfaceState* state = (AvantesSpectrometerInterfaceState*)m_state;
-    state->measurementConfig.m_IntegrationTime = usec / 1000.0;
+    if (state->currentSpectrometerHandle == INVALID_AVS_HANDLE_VALUE)
+    {
+        m_lastErrorMessage = "SetIntegrationTime failed, no spectrometer selected.";
+        return;
+    }
 
-    AVS_PrepareMeasure(state->currentSpectrometerHandle, &(state->measurementConfig));
+    state->measurementConfig.m_IntegrationTime = static_cast<float>(usec / 1000.0);
+
+    const int ret = AVS_PrepareMeasure(state->currentSpectrometerHandle, &(state->measurementConfig));
+    if (ret != ERR_SUCCESS)
+    {
+        std::stringstream msg;
+        msg << "SetIntegrationTime failed, AVS_PrepareMeasure returned error: " << ret << ", measurement parameters not set.";
+        m_lastErrorMessage = msg.str();
+        return;
+    }
+
+    m_lastErrorMessage = "";
 }
 
 int AvantesSpectrometerInterface::GetIntegrationTime()
@@ -238,9 +318,24 @@ int AvantesSpectrometerInterface::GetIntegrationTime()
 void AvantesSpectrometerInterface::SetScansToAverage(int numberOfScansToAverage)
 {
     AvantesSpectrometerInterfaceState* state = (AvantesSpectrometerInterfaceState*)m_state;
+    if (state->currentSpectrometerHandle == INVALID_AVS_HANDLE_VALUE)
+    {
+        m_lastErrorMessage = "SetScansToAverage failed, no spectrometer selected.";
+        return;
+    }
+
     state->measurementConfig.m_NrAverages = numberOfScansToAverage;
 
-    AVS_PrepareMeasure(state->currentSpectrometerHandle, &(state->measurementConfig));
+    const int ret = AVS_PrepareMeasure(state->currentSpectrometerHandle, &(state->measurementConfig));
+    if (ret != ERR_SUCCESS)
+    {
+        std::stringstream msg;
+        msg << "SetScansToAverage failed, AVS_PrepareMeasure returned error: " << ret << ", measurement parameters not set.";
+        m_lastErrorMessage = msg.str();
+        return;
+    }
+
+    m_lastErrorMessage = "";
 }
 
 int AvantesSpectrometerInterface::GetScansToAverage()
@@ -254,16 +349,20 @@ int AvantesSpectrometerInterface::GetNextSpectrum(std::vector<std::vector<double
     AvantesSpectrometerInterfaceState* state = (AvantesSpectrometerInterfaceState*)m_state;
     if (state->currentSpectrometerHandle == INVALID_AVS_HANDLE_VALUE)
     {
-        // The user should have selected a spectrometer first..
+        m_lastErrorMessage = "GetNextSpectrum failed, no spectrometer selected.";
         return 0;
     }
 
-    int returnCode = AVS_MeasureCallback(state->currentSpectrometerHandle, nullptr, 1);
-    if (returnCode != ERR_SUCCESS)
+    if (!state->measurementIsRunning)
     {
-        // TODO: Error handling
-        return 0;
+        if (!Start())
+        {
+            m_lastErrorMessage = "GetNextSpectrum failed: " + m_lastErrorMessage;
+            return 0;
+        }
     }
+
+    auto startTime = std::chrono::steady_clock::now();
 
     // Wait for the measurement to complete..
     while (0 == AVS_PollScan(state->currentSpectrometerHandle))
@@ -272,18 +371,25 @@ int AvantesSpectrometerInterface::GetNextSpectrum(std::vector<std::vector<double
     }
 
     // Read out the data.
-    unsigned int timeLabel = 0; // TODO: what is this for?
+    unsigned int timeLabel = 0; // Timestamp of the aquired spectrum. In tens of microseconds since the spectrometer was started. Can bes used to identify spectra.
     // There is only one channel on the Avantes devices, so just set it
     data.resize(1);
     data[0].resize(state->measurementConfig.m_StopPixel - state->measurementConfig.m_StartPixel + 1);
-    returnCode = AVS_GetScopeData(state->currentSpectrometerHandle, &timeLabel, data[0].data());
+    int returnCode = AVS_GetScopeData(state->currentSpectrometerHandle, &timeLabel, data[0].data());
     if (returnCode != ERR_SUCCESS)
     {
-        // TODO: Error handling
+        std::stringstream message;
+        message << "GetNextSpectrum failed, AVS_GetScopeData returned " << returnCode << " which indicates an error.";
+        m_lastErrorMessage = message.str();
         return 0;
     }
 
-    return data[0].size();
+    auto stopTime = std::chrono::steady_clock::now();
+    std::stringstream msg;
+    msg << "Spectrum acquisition took " << std::chrono::duration_cast<std::chrono::milliseconds>(stopTime - startTime).count() << " ms" << std::endl;
+    m_lastErrorMessage = msg.str(); // for debugging...
+
+    return static_cast<int>(data[0].size());
 }
 
 bool AvantesSpectrometerInterface::SupportsDetectorTemperatureControl()
@@ -313,5 +419,5 @@ double AvantesSpectrometerInterface::GetBoardTemperature()
 
 std::string AvantesSpectrometerInterface::GetLastError()
 {
-    return "";
+    return m_lastErrorMessage;
 }

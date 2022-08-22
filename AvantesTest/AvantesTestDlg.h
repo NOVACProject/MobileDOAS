@@ -33,13 +33,17 @@ protected:
     DECLARE_MESSAGE_MAP()
 public:
     CComboBox m_spectrometerCombo;
+    CListBox m_spectrumList;
+    CEdit m_numSpectraEdit;
+    CEdit m_integrationTimeEdit;
+
     afx_msg void OnBnClickedSearchForDevices();
+    afx_msg void OnBnClickedAcquireSpectra();
+    afx_msg void OnCbnSelchangeComboSpectrometers();
+    afx_msg void OnChangeSpectraToAverage();
+    afx_msg void OnChangeIntegrationTime();
 
 private:
     mobiledoas::SpectrometerInterface* m_spectrometer = nullptr;
 
-public:
-    afx_msg void OnBnClickedAcquireSpectra();
-    afx_msg void OnCbnSelchangeComboSpectrometers();
-    CListBox m_spectrumList;
 };

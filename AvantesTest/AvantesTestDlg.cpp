@@ -62,6 +62,8 @@ void CAvantesTestDlg::DoDataExchange(CDataExchange* pDX)
     CDialogEx::DoDataExchange(pDX);
     DDX_Control(pDX, IDC_COMBO_SPECTROMETERS, m_spectrometerCombo);
     DDX_Control(pDX, IDC_LIST_SPECTRUM, m_spectrumList);
+    DDX_Control(pDX, IDC_EDIT_SPECTRA_TO_AVERAGE, m_numSpectraEdit);
+    DDX_Control(pDX, IDC_EDIT_INTEGRATION_TIME, m_integrationTimeEdit);
 }
 
 BEGIN_MESSAGE_MAP(CAvantesTestDlg, CDialogEx)
@@ -71,6 +73,8 @@ BEGIN_MESSAGE_MAP(CAvantesTestDlg, CDialogEx)
     ON_BN_CLICKED(IDC_BUTTON_SEARCH_FOR_DEVICES, &CAvantesTestDlg::OnBnClickedSearchForDevices)
     ON_BN_CLICKED(IDC_BUTTON_ACQUIRE_SPECTRA, &CAvantesTestDlg::OnBnClickedAcquireSpectra)
     ON_CBN_SELCHANGE(IDC_COMBO_SPECTROMETERS, &CAvantesTestDlg::OnCbnSelchangeComboSpectrometers)
+    ON_EN_CHANGE(IDC_EDIT_SPECTRA_TO_AVERAGE, &CAvantesTestDlg::OnChangeSpectraToAverage)
+    ON_EN_CHANGE(IDC_EDIT_INTEGRATION_TIME, &CAvantesTestDlg::OnChangeIntegrationTime)
 END_MESSAGE_MAP()
 
 
@@ -177,8 +181,8 @@ void CAvantesTestDlg::OnBnClickedSearchForDevices()
         str.Format("%s", serial.c_str());
         m_spectrometerCombo.AddString(str);
     }
+    m_spectrometerCombo.SetCurSel(-1);
     m_spectrometerCombo.SetCurSel(0);
-
 }
 
 void CAvantesTestDlg::OnCbnSelchangeComboSpectrometers()
@@ -193,11 +197,24 @@ void CAvantesTestDlg::OnCbnSelchangeComboSpectrometers()
     if (index < 0)
     {
         m_spectrometer->Close();
+        return;
     }
-    else
+
+    if (!m_spectrometer->SetSpectrometer(index))
     {
-        m_spectrometer->SetSpectrometer(index);
+        SetDlgItemText(IDC_STATIC_LASTERROR, m_spectrometer->GetLastError().c_str());
+        return;
     }
+
+    // Update the parameters from the device
+    CString text;
+    text.Format("%d", m_spectrometer->GetIntegrationTime() / 1000); // us to ms
+    SetDlgItemText(IDC_EDIT_INTEGRATION_TIME, text);
+
+    text.Format("%d", m_spectrometer->GetScansToAverage());
+    SetDlgItemText(IDC_EDIT_SPECTRA_TO_AVERAGE, text);
+
+    SetDlgItemText(IDC_STATIC_LASTERROR, m_spectrometer->GetLastError().c_str());
 }
 
 void CAvantesTestDlg::OnBnClickedAcquireSpectra()
@@ -225,4 +242,52 @@ void CAvantesTestDlg::OnBnClickedAcquireSpectra()
         m_spectrumList.AddString(valueStr);
     }
 
+    SetDlgItemText(IDC_STATIC_LASTERROR, m_spectrometer->GetLastError().c_str());
+}
+
+void CAvantesTestDlg::OnChangeSpectraToAverage()
+{
+    // TODO:  If this is a RICHEDIT control, the control will not
+    // send this notification unless you override the CDialogEx::OnInitDialog()
+    // function and call CRichEditCtrl().SetEventMask()
+    // with the ENM_CHANGE flag ORed into the mask.
+
+    UpdateData(TRUE); // Get the values from the dialog
+
+    CString editText;
+    m_numSpectraEdit.GetWindowTextA(editText);
+
+    int numberOfSpectraToAverage = std::atoi((LPCSTR)editText);
+    if (numberOfSpectraToAverage <= 0)
+    {
+        MessageBox("The number of spectra to average must be at least one.");
+        m_numSpectraEdit.SetWindowTextA("1");
+        return;
+    }
+
+    m_spectrometer->SetScansToAverage(numberOfSpectraToAverage);
+}
+
+
+void CAvantesTestDlg::OnChangeIntegrationTime()
+{
+    // TODO:  If this is a RICHEDIT control, the control will not
+    // send this notification unless you override the CDialogEx::OnInitDialog()
+    // function and call CRichEditCtrl().SetEventMask()
+    // with the ENM_CHANGE flag ORed into the mask.
+
+    UpdateData(TRUE); // Get the values from the dialog
+
+    CString editText;
+    m_integrationTimeEdit.GetWindowTextA(editText);
+
+    int interationTime = std::atoi((LPCSTR)editText);
+    if (interationTime <= 0)
+    {
+        MessageBox("The integration time must be at least one ms.");
+        m_integrationTimeEdit.SetWindowTextA("1");
+        return;
+    }
+
+    m_spectrometer->SetIntegrationTime(interationTime * 1000); // ms to us
 }

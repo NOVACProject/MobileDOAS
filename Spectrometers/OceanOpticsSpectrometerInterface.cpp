@@ -53,9 +53,16 @@ void OceanOpticsSpectrometerInterface::Close()
     m_wrapper->closeAllSpectrometers();
 }
 
-void OceanOpticsSpectrometerInterface::Stop()
+bool OceanOpticsSpectrometerInterface::Start()
+{
+    // nothing needs to be done here
+    return true;
+}
+
+bool OceanOpticsSpectrometerInterface::Stop()
 {
     m_wrapper->stopAveraging(m_spectrometerIndex);
+    return true;
 }
 
 bool OceanOpticsSpectrometerInterface::SetSpectrometer(int spectrometerIndex)
