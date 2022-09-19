@@ -2,34 +2,19 @@
 //
 //////////////////////////////////////////////////////////////////////
 #include "Evaluation/Evaluation.h"
-#include "DMSpecDoc.h"
 #include "GPS.h"
 #include "Configuration/MobileConfiguration.h"
-#include "SerialConnection.h"
 #include "Version.h"
 #include "Common/SpectrumIO.h"
+#include <MobileDoasLib/Measurement/SpectrometerInterface.h>
 
 #include <memory>
 #include <limits>
 
-#include <ArrayTypes.h> // located in %OMNIDRIVER_HOME%\include
-#include <Wrapper.h>
-//#include <ADC1000USB.h>
-//#include <ADC1000Channel.h>
-
-
-#if !defined(AFX_COMMUNICATION_H__7C04DDEA_2314_405E_A09D_02B403AC7762__INCLUDED_)
-#define AFX_COMMUNICATION_H__7C04DDEA_2314_405E_A09D_02B403AC7762__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
-
 
 #define WM_STATUSMSG  WM_USER + 8   //define the message for set statusbar message
 #define WM_DRAWCOLUMN  WM_USER + 9
-#define WM_DRAWFLUX   WM_USER +10
-#define WM_ERASECOLUMN  WM_USER +11
 #define WM_DRAWMAX   WM_USER +12
 #define WM_READGPS   WM_USER +14
 #define WM_SHOWINTTIME  WM_USER +15
@@ -168,12 +153,11 @@ public:
     /** This will change the spectrometer to use, to the one with the
         given spectrometerIndex (ranging from 0 to (the number of spectrometers - 1) ).
         If no spectrometer exist with the given index then no changes will be made.
-        @return the spectrometer index actually used
-        */
-    int ChangeSpectrometer(int selectedspec, int channel = 0);
+        @return the spectrometer index actually used */
+    int ChangeSpectrometer(int selectedspec, const std::vector<int>& channelsToUse);
 
     /** This retrieves a list of all spectrometers that are connected to this computer */
-    void GetConnectedSpecs(CList <CString, CString&>& connectedSpectrometers);
+    void GetConnectedSpecs(std::vector<std::string>& connectedSpectrometers);
 
     /** The board temperature, as reported by the spectrometer, in degrees Celsius.
     Set to NaN if this could not be read. */
@@ -198,8 +182,8 @@ public:
         int SumInSpectrometer = 1;
     };
 
-    /** Counts how many spectra should be averaged inside the computer and 
-        how many should be averaged inside the spectrometer get the desired 
+    /** Counts how many spectra should be averaged inside the computer and
+        how many should be averaged inside the spectrometer get the desired
         time resolution with the set exposure time.
         @param timeResolution The set interval betweeen each spectrum to save, in milliseconds.
         @param serialDelay The necessary delay to read out one spectrum from the spectrometer, in milliseconds.
@@ -380,10 +364,10 @@ public:
         This will NOT call the Gps itself, nor cause any block.
         @return true if the updated data is valid (i.e. if the GPS can retrieve lat/long).
         @return false if the data is not valid or the GPS isn't used. */
-    bool UpdateGpsData(gpsData& gpsInfo);
+    bool UpdateGpsData(mobiledoas::GpsData& gpsInfo);
 
     /** Retrieves the last GPS position */
-    int GetGpsPos(gpsData& data) const;
+    int GetGpsPos(mobiledoas::GpsData& data) const;
 
     /** Retrieves the current time from the system time */
     long GetCurrentTimeFromComputerClock();
@@ -610,7 +594,7 @@ protected:
     // ---------------------------------------------------------------------------------------
 
     /** m_spectrumGpsData[i] holds the Gps information associated with spectrum number 'i' */
-    struct gpsData m_spectrumGpsData[65536];
+    struct mobiledoas::GpsData m_spectrumGpsData[65536];
 
 
     // ---------------------------------------------------------------------------------------
@@ -711,10 +695,9 @@ private:
     /** The date and time of when the measurement started */
     CString m_measurementStartTimeStr;
 
-    /** This is the object through which we will access all of Omnidriver's capabilities
-        This is used to control the OceanOptics Spectrometers through USB.
-        There can be only one Wrapper object in the application!!!  */
-    Wrapper m_wrapper;
+    /** This is the object through which we are accessing the spectrometer hardware.
+        Notice that there should only be one such instance in the application. */
+    std::unique_ptr<mobiledoas::SpectrometerInterface> m_spectrometer;
 
     // -------------------- PRIVATE METHODS --------------------
 
@@ -727,5 +710,3 @@ private:
     /** Check if spectrum is dark **/
     bool CSpectrometer::CheckIfDark(double spectrum[MAX_SPECTRUM_LENGTH]);
 };
-
-#endif // !defined(AFX_COMMUNICATION_H__7C04DDEA_2314_405E_A09D_02B403AC7762__INCLUDED_)

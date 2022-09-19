@@ -199,7 +199,7 @@ void CTitleTip::Show(CRect rectTitle, LPCTSTR lpszTitleText, int xoffset /*=0*/,
             rectDisplay.Width(), rectDisplay.Height(), 
             SWP_SHOWWINDOW|SWP_NOACTIVATE );
         
-        // FNA - handle colors correctly
+        // FNA - currentSpectrometerHandle colors correctly
         if (crBackClr != CLR_DEFAULT)
         {
 		    CBrush backBrush(crBackClr);
