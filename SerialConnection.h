@@ -10,7 +10,7 @@ public:
     CSerialConnection(CSerialConnection&& other);
     CSerialConnection& operator=(CSerialConnection&& other);
 
-    // --- This class manages a serial connction currentSpectrometerHandle and is thus not copyable
+    // --- This class manages a serial connection currentSpectrometerHandle and is thus not copyable
     CSerialConnection(const CSerialConnection&) = delete;
     CSerialConnection& operator=(const CSerialConnection&) = delete;
 
@@ -51,7 +51,11 @@ public:
     long Read(void* ptBuf, long byteNum);
     void FlushSerialPort(long timeOut);
     void Close();
+
+    /** InitCommunication sets up the parameters for the serial bus. 
+        @return zero if all is ok. */
     int  InitCommunication();
+
     int  ChangeBaudRate();
     void CloseAll();
     int  ResetSpectrometer(long speed);
@@ -65,24 +69,18 @@ public:
 
 private:
     // This is the currentSpectrometerHandle to the serial port communication
-    HANDLE hComm;
+    HANDLE hComm = nullptr;
 
     /* data definition */
     char serbuf[10];   // the serial communication buffer
-    int  serbufpt;   // current character is serbuf[serbufpt]
+    int  serbufpt = 0;   // current character is serbuf[serbufpt]
 
     char serialPort[20];
-    long m_delay;    /* communication delay */
 
-    long baudrate;    // spectrometer baudrate
-    long sysBaud;    // system baudrate
+    long baudrate = 57600;    // spectrometer baudrate
 
-    long br2;
-    long br1;
-
-    //CString *statusMsg;   /* pointer to spectrometer->m_statusMsg */
-
-    int startChn, stopChn;
+    long br2 = 0;
+    long br1 = 0;
 };
 
 

@@ -107,12 +107,13 @@ namespace mobiledoas
         }
 
         // the time should according to spec be an integer, but has been found to sometimes be a double value
-        double time = std::atof(curToken.c_str());
+        const double time = std::atof(curToken.c_str());
         if (time > 0.0)
         {
             data.time = (long)time;
         }
     }
+
     void SetDate(const std::string& curToken, GpsData& data)
     {
         if (curToken.length() != 6)
@@ -253,7 +254,7 @@ namespace mobiledoas
         data.altitude = altitude;
     }
 
-    void SetAltitudeUnit(const std::string& curToken, GpsData& data)
+    void SetAltitudeUnit(const std::string& curToken, GpsData& /*data*/)
     {
         if (curToken.size() != 1)
         {
@@ -267,9 +268,9 @@ namespace mobiledoas
         }
         else
         {
-            // unknown case...s
+            // unknown case...
+            // TODO: Error handling here
         }
-
     }
 
     void SetStatus(const std::string& curToken, GpsData& data) {
@@ -333,7 +334,7 @@ namespace mobiledoas
 
     // Parses the RMC string (starting with $GPRMC) and fills in the provided GpsData structure
     //	@return true if the parsing is successful
-    bool ParseRMC(char* gpsString, GpsData& data)
+    bool ParseRMC(const char* gpsString, GpsData& data)
     {
         const std::string delimiter = ",";
 
@@ -389,7 +390,7 @@ namespace mobiledoas
 
     // Parses the GGA string (starting with $GPGGA) and fills in the provided GpsData structure
     //	@return true if the parsing is successful
-    bool ParseGGA(char* gpsString, GpsData& data)
+    bool ParseGGA(const char* gpsString, GpsData& data)
     {
         const std::string delimiter = ",";
 
@@ -453,7 +454,7 @@ namespace mobiledoas
 
     // Parses the GSV string (starting with $GPGSV) and fills in the provided GpsData structure
     //	@return true if the parsing is successful
-    bool ParseGSV(char* gpsString, GpsData& data)
+    bool ParseGSV(const char* gpsString, GpsData& data)
     {
         const std::string delimiter = ",";
 
@@ -501,7 +502,7 @@ namespace mobiledoas
 
     /** Parse the read GPS-Information */
     /** See http://www.gpsinformation.org/dale/nmea.htm */
-    bool Parse(char* gpsString, GpsData& data)
+    bool Parse(const char* gpsString, GpsData& data)
     {
         if (nullptr == gpsString || strlen(gpsString) < 40)
         {

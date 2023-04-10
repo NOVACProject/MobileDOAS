@@ -29,22 +29,10 @@ void CMeasurement_View::Run() {
 
     /* Set the delays and initialize the USB-Connection */
     if (m_connectViaUsb) {
-        if (!TestUSBConnection()) {
+        if (!TestSpectrometerConnection()) {
             m_isRunning = false;
             return;
         }
-    }
-
-    /* -- Init Serial Communication -- */
-    m_statusMsg.Format("Initializing communication with spectrometer");
-    pView->PostMessage(WM_STATUSMSG);
-    if (!m_connectViaUsb && serial.InitCommunication()) {
-        ShowMessageBox("Can not initialize the communication", "Error");
-
-        // we have to call this before exiting the application otherwise we'll have trouble next time we start...
-        CloseUSBConnection();
-
-        return;
     }
 
     // Set the integration time
@@ -69,21 +57,9 @@ void CMeasurement_View::Run() {
 
         /* ----------------  Get the spectrum --------------------  */
 
-        // Initialize the spectrometer, if using the serial-port
-        if (!m_connectViaUsb) {
-            if (InitSpectrometer(0, m_integrationTime, m_sumInSpectrometer)) {
-                serial.CloseAll();
-            }
-        }
-
         // Get the next spectrum
         if (Scan(m_sumInComputer, m_sumInSpectrometer, scanResult)) {
-            if (!m_connectViaUsb)
-                serial.CloseAll();
-
-            // we have to call this before exiting the application otherwise we'll have trouble next time we start...
             CloseUSBConnection();
-
             return;
         }
 

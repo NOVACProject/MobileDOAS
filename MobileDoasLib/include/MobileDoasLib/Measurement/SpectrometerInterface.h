@@ -45,6 +45,10 @@ namespace mobiledoas
         // This requires that ScanForDevices() has been called successfully.
         virtual bool SetSpectrometer(int spectrometerIndex, const std::vector<int>& channelIndices) = 0;
 
+        // GetReadoutDelay returns the expected delay for a single readout from this spectrometer.
+        // The readout typically depends on the connection type between the computer and the device.
+        virtual int GetReadoutDelay() = 0;
+
         // GetSerial returns the serial number of the current spectrometer.
         // Requires that SetSpectrometer has been called successfully.
         virtual std::string GetSerial() = 0;

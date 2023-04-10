@@ -19,7 +19,7 @@ namespace mobiledoas
         SIMULATED = 8
     };
 
-    /** Common structure for storing data read out from the GPS */
+    /** GpsData is a basic structure for storing data read out from the GPS */
     struct GpsData {
         GpsData();
         GpsData(const GpsData& other);
@@ -53,10 +53,10 @@ namespace mobiledoas
         std::string status = "NA";
 
         /* Speed over ground in m/s */
-        double speed;
+        double speed = 0.0;
 
         /* Track angle in degrees */
-        double course;
+        double course = 0.0;
 
         /* The quality of the GPS-fix */
         GpsFixQuality fixQuality = GpsFixQuality::INVALID;
@@ -69,6 +69,6 @@ namespace mobiledoas
     /* Tries to parse the text read from the GPS.
         The parsed information will be filled into the provided 'data.
         @return true if the parsing suceeded, otherwise false. */
-    bool Parse(char* gpsString, GpsData& data);
+    bool Parse(const char* gpsString, GpsData& data);
 
 }

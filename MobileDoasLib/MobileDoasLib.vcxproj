@@ -112,7 +112,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
@@ -121,6 +121,7 @@
       </PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(PROJECT_DIR)include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -152,13 +153,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
+    <ClInclude Include="include\MobileDoasLib\Definitions.h" />
     <ClInclude Include="include\MobileDoasLib\GpsData.h" />
     <ClInclude Include="include\MobileDoasLib\Measurement\SpectrometerInterface.h" />
+    <ClInclude Include="include\MobileDoasLib\Measurement\SpectrumUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MobileDoasLib.cpp" />
     <ClCompile Include="src\GpsData.cpp" />
     <ClCompile Include="src\Measurement\SpectrometerInterface.cpp" />
+    <ClCompile Include="src\Measurement\SpectrumUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.md" />

@@ -16,6 +16,8 @@
 #include <SpectralEvaluation/Spectra/SpectrumInfo.h>
 #include "Evaluation/RealTimeCalibration.h"
 #include "Spectrometers/OceanOpticsSpectrometerInterface.h"
+#include "Spectrometers/OceanOpticsSpectrometerSerialInterface.h"
+#include <MobileDoasLib/Measurement/SpectrumUtils.h>
 #include <numeric>
 #include <sstream>
 
@@ -26,8 +28,6 @@ extern CString g_exePath;  // <-- This is the path to the executable. This is a 
 static char THIS_FILE[] = __FILE__;
 #define new DEBUG_NEW
 #endif
-
-#define SERIALDELAY 2000
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -73,10 +73,6 @@ CSpectrometer::CSpectrometer()
 
     m_lastDarkOffset[0] = 0;
     m_lastDarkOffset[1] = 0;
-
-    if (!m_connectViaUsb) {
-        serial.isRunning = &m_isRunning;
-    }
 
     m_timeDiffToUtc = 0;
 
@@ -134,155 +130,8 @@ long CSpectrometer::GetTimeValue_UMT()
     return timeValue;
 }
 
-//-----------------------------------------------------------------
-int CSpectrometer::InitSpectrometer(short channel, short inttime, short sumSpec) {
 
-    if (m_connectViaUsb) {
-        return 0;
-    }
-    else {
-        /* If we are using the serial connection */
-        unsigned short sbuf;
-        char txt[256];
-        unsigned char* p;
-        sbuf = 257;
-        p = (unsigned char*)&channel;
-        txt[0] = 'H';
-        txt[1] = p[1];
-        txt[2] = p[0];
-        serial.Write(txt, 3);
-
-        while (serial.Check(30))
-            serial.Read(&txt, 1);
-
-        p = (unsigned char*)&inttime;
-        txt[0] = 'I';
-        txt[1] = p[1];
-        txt[2] = p[0];
-        serial.Write(txt, 3);
-
-        while (serial.Check(30))
-            serial.Read(&txt, 1);
-
-        p = (unsigned char*)&sumSpec;
-        txt[0] = 'A';
-        txt[1] = p[1];
-        txt[2] = p[0];
-        serial.Write(txt, 3);
-
-        while (serial.Check(30))
-            serial.Read(&txt, 1);
-
-        return 0;
-    }
-}
-//-----------------------------------------------------------------
-/**This function is to collect data from single spectrometer
-** @sumInComputer - the times to collect data
-** @sumInSpectrometer - the number of spectra to gather in spectrometer
-** @chn - 0 , use one spectrometer
-*/
 int CSpectrometer::Scan(int sumInComputer, int sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]) {
-
-    if (m_connectViaUsb) {
-        return ScanUSB(sumInComputer, sumInSpectrometer, pResult);
-    }
-
-    unsigned short sbuf[8192];
-    char txt[256];
-    char* bptr;
-
-    long maxlen, isum;
-    int i, j, n;
-    double* smem1;
-
-    smem1 = 0;
-
-    maxlen = 65536;
-    smem1 = (double*)malloc(sizeof(double) * (2 + maxlen)); // initialize one buffer
-    if (smem1 == 0) {
-        ShowMessageBox("Not enough memory", "");
-        return 1;
-    }
-    memset((void*)smem1, 0, sizeof(double) * (2 + maxlen));
-
-    //get gps information
-
-    //SetFileName();
-    //scan the serial port
-    for (isum = 0; isum < sumInComputer; ++isum) {
-
-        //Empty the serial buffer
-        serial.FlushSerialPort(100);
-        //Send command to spectrometer for sending data
-        txt[0] = 'S';
-        bptr = (char*)&sbuf[0];
-        serial.Write(txt, 1);
-
-        txt[0] = 0;
-
-        if (serial.Check(1000)) {
-            serial.Read(txt, 1);
-        }
-
-        //wait first byte to come
-        long waitTime = sumInSpectrometer * m_integrationTime + SERIALDELAY;
-
-        serial.Check(waitTime);
-
-
-        //checkSerial 100 ms is for reading all data from buffer
-        i = 0;
-        while (serial.Check(300) && i < 16384)
-        {
-            j = serial.Read(&bptr[i], 16384 - i);
-            i += j;
-        }
-        if (i == 0)
-        {
-            free(smem1);
-            ShowMessageBox("Timeout", "SERROR");
-            return 1;
-        }
-        if ((sbuf[0] != 0xffff) && m_isRunning)
-        {
-
-            free(smem1);
-            ShowMessageBox("First byte of transmission is incorrect", "");
-            return 1;
-        }
-
-        //delete header byte number
-        i = i / 2 - 8;
-
-
-        for (j = 0; j < i; j++)
-            sbuf[j] = Common::Swp(sbuf[j + 8]);
-
-
-        smem1[0] = i;
-        for (j = 0; j < smem1[0]; j++) {
-            //smem1[2+j*2]+=j*dw1;
-            smem1[3 + j * 2] += sbuf[j];
-        }
-    }
-
-
-    for (n = 0; n < smem1[0]; n++)
-        pResult[0][n] = smem1[3 + n * 2] / (sumInComputer * sumInSpectrometer);
-
-    if (smem1)
-        free(smem1);
-
-    return 0;
-}
-
-/**This function is to collect data from a spectrometer using the USB-Port
-** @sumInComputer - the times to collect data
-** @sumInSpectrometer - the number of spectra to gather in spectrometer
-
-*/
-int CSpectrometer::ScanUSB(int sumInComputer, int sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]) {
 
     // clear the old spectrum
     memset(pResult, 0, MAX_N_CHANNELS * MAX_SPECTRUM_LENGTH * sizeof(double));
@@ -396,10 +245,22 @@ void CSpectrometer::ApplyEvaluationSettings()
 void CSpectrometer::ApplySettings() {
     CString msg;
 
-    // The settings for the serial-port
-    serial.SetBaudrate(m_conf->m_baudrate);
-    serial.SetPort(m_conf->m_serialPort);
+
     m_connectViaUsb = (m_conf->m_spectrometerConnection == Configuration::CMobileConfiguration::CONNECTION_USB);
+
+    // TODO: Make it possible to also use some other spectrometer make.
+    if (!m_connectViaUsb) {
+        // serial.isRunning = &m_isRunning;
+        auto spec = std::make_unique<mobiledoas::OceanOpticsSpectrometerSerialInterface>();
+        spec->SetBaudrate(m_conf->m_baudrate);
+        spec->SetPort(m_conf->m_serialPort);
+        m_spectrometer = std::move(spec);
+    }
+    else {
+        m_spectrometer = std::make_unique<mobiledoas::OceanOpticsSpectrometerInterface>();
+    }
+
+
     m_NChannels = m_conf->m_nChannels;
     bool error = false;
     if (m_NChannels > MAX_N_CHANNELS) {
@@ -1232,14 +1093,14 @@ void CSpectrometer::WriteBeginEvFile(int fitRegion) {
     str2.Format("BASENAME=%s\nWINDSPEED=%f\nWINDDIRECTION=%f\n", (LPCSTR)m_measurementBaseName, m_windSpeed, m_windAngle);
     str3 = TEXT("***copy of related configuration file ***\n");
 
-    if (!m_connectViaUsb) {
-        str4.Format("SPEC_BAUD=%d\nSERIALPORT=%s\nGPSBAUD=%d\nGPSPORT=%s\nTIMERESOLUTION=%d\n",
-            serial.GetBaudrate(), serial.GetPort(), m_GPSBaudRate, m_GPSPort, m_timeResolution);
-    }
-    else {
-        str4.Format("SERIALPORT=USB\nGPSBAUD=%d\nGPSPORT=%s\nTIMERESOLUTION=%d\n",
-            m_GPSBaudRate, m_GPSPort, m_timeResolution);
-    }
+    // if (!m_connectViaUsb) {
+    //    str4.Format("SPEC_BAUD=%d\nSERIALPORT=%s\nGPSBAUD=%d\nGPSPORT=%s\nTIMERESOLUTION=%d\n",
+    //        serial.GetBaudrate(), serial.GetPort(), m_GPSBaudRate, m_GPSPort, m_timeResolution);
+    // }
+    // else {
+    str4.Format("SERIALPORT=USB\nGPSBAUD=%d\nGPSPORT=%s\nTIMERESOLUTION=%d\n",
+        m_GPSBaudRate, m_GPSPort, m_timeResolution);
+    // }
 
     str5.Format("FIXEXPTIME=%d\nFITFROM=%d\nFITTO=%d\nPOLYNOM=%d\n",
         m_fixexptime, m_fitRegion[fitRegion].window.fitLow, m_fitRegion[fitRegion].window.fitHigh, m_fitRegion[fitRegion].window.polyOrder);
@@ -1281,8 +1142,12 @@ void CSpectrometer::WriteBeginEvFile(int fitRegion) {
     WriteLogFile(evPath, str7);
 }
 
-int CSpectrometer::CountRound(long timeResolution, long serialDelay, long gpsDelay, SpectrumSummation& result) const
+int CSpectrometer::CountRound(long timeResolution, SpectrumSummation& result) const
 {
+
+    const long serialDelay = m_spectrometer->GetReadoutDelay();
+    const long gpsDelay = 10;
+
     int sumOne, nRound;
     sumOne = 0;
     nRound = 0;
@@ -1349,7 +1214,7 @@ void CSpectrometer::GetConnectedSpecs(std::vector<std::string>& connectedSpectro
     connectedSpectrometers = m_spectrometer->ScanForDevices();
 }
 
-int CSpectrometer::TestUSBConnection() {
+int CSpectrometer::TestSpectrometerConnection() {
     m_spectrometerIndex = 0; // assume that we will use spectrometer #1
 
     m_statusMsg.Format("Searching for attached spectrometers"); pView->PostMessage(WM_STATUSMSG);
@@ -1360,12 +1225,7 @@ int CSpectrometer::TestUSBConnection() {
     m_numberOfSpectrometersAttached = connectedSpectrometers.size();
 
     // Check the number of spectrometers attached
-    if (m_numberOfSpectrometersAttached == -1)
-    {
-        // something went wrong!
-        m_spectrometer->GetLastError();
-    }
-    else if (m_numberOfSpectrometersAttached == 0)
+    if (m_numberOfSpectrometersAttached == 0)
     {
         ShowMessageBox("No spectrometer found. Make sure that the spectrometer is attached properly to the USB-port and the driver is installed.", "Error");
         return 0;
@@ -1564,12 +1424,7 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
         m_specInfo[n].offset = GetOffset(spectrum[n]);
 
         // Check if this spectrum is dark
-        /*bool isDark = false;
-        if (fabs(m_averageSpectrumIntensity[n] - m_specInfo[n].offset) < 4.0) {
-            isDark = true;
-        }*/
-
-        bool isDark = CheckIfDark(spectrum[n]);
+        const bool isDark = mobiledoas::CheckIfDark(spectrum[n], m_detectorSize);
 
         if (isDark) {
             m_specInfo[n].isDark = true;
@@ -1734,43 +1589,6 @@ void CSpectrometer::UpdateMobileLog() {
     }
 }
 
-bool CSpectrometer::CheckIfDark(double spectrum[MAX_SPECTRUM_LENGTH]) {
-    // consider pixels 50 to 70. Remove the highest 3 in case they are 'hot'. Then calculate the average:
-    std::vector<double> vec;
-    double m_darkIntensity;
-    double m_spectrumIntensity;
-
-    for (int i = 50; i < 70; i++) {
-        vec.push_back(spectrum[i]);
-    }
-    for (int i = 0; i < 3; i++) {
-        vec.erase(max_element(vec.begin(), vec.end()));
-    }
-    m_darkIntensity = std::accumulate(vec.begin(), vec.end(), 0.0) / vec.size();
-
-    // now calculate the average of the middle 20 pixels, again excluding the 3 highest intensities. 
-    vec.clear();
-    int start = floor(m_detectorSize / 2) - 10;
-    int end = floor(m_detectorSize / 2) + 10;
-    for (int i = start; i < end; i++) {
-        vec.push_back(spectrum[i]);
-    }
-    for (int i = 0; i < 3; i++) {
-        vec.erase(max_element(vec.begin(), vec.end()));
-    }
-    m_spectrumIntensity = std::accumulate(vec.begin(), vec.end(), 0.0) / vec.size();
-
-    // the spectrum is considered dark if the center intensity is less than twice as high as the dark intensity.
-    // this should be applicable to any spectrometer, as long as pixels 50 to 70 are dark (which is true for NOVAC spectrometers).
-    double ratio = m_spectrumIntensity / m_darkIntensity;
-    if (ratio > 2.0) {
-        return false;
-    }
-    else {
-        return true;
-    }
-}
-
 short CSpectrometer::AdjustIntegrationTime() {
     double skySpec[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
     m_sumInSpectrometer = 1;
@@ -1797,23 +1615,11 @@ short CSpectrometer::AdjustIntegrationTime() {
     // The clever setting failed... revert to simple trial and error...
     m_integrationTime = 100;
     while (1) {
-        // if necessary, initialize the spectrometer
-        if (!m_connectViaUsb) {
-            if (InitSpectrometer(0, m_integrationTime, m_sumInSpectrometer)) {
-                serial.CloseAll();
-                ShowMessageBox("Failed to initialize spectrometer", "Error");
-                return -1;
-            }
-        }
-
         m_statusMsg.Format("Measuring the intensity");
         pView->PostMessage(WM_STATUSMSG);
 
         // measure the intensity
         if (Scan(1, m_sumInSpectrometer, skySpec)) {
-            if (!m_connectViaUsb) {
-                serial.CloseAll();
-            }
             return -1;
         }
 
@@ -1895,35 +1701,16 @@ short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxEx
     }
 
     m_integrationTime = (short)minExpTime;
-    if (!m_connectViaUsb) {
-        if (InitSpectrometer(0, m_integrationTime, m_sumInSpectrometer)) {
-            serial.CloseAll();
-            ShowMessageBox("Failed to initialize spectrometer", "Error");
-            return -1;
-        }
-    }
+
     // measure the intensity
     if (Scan(1, m_sumInSpectrometer, skySpec)) {
-        if (!m_connectViaUsb) {
-            serial.CloseAll();
-        }
         return -1;
     }
     int int_short = AverageIntens(skySpec[0], 1);
 
     m_integrationTime = (short)maxExpTime;
-    if (!m_connectViaUsb) {
-        if (InitSpectrometer(0, m_integrationTime, m_sumInSpectrometer)) {
-            serial.CloseAll();
-            ShowMessageBox("Failed to initialize spectrometer", "Error");
-            return -1;
-        }
-    }
     // measure the intensity
     if (Scan(1, m_sumInSpectrometer, skySpec)) {
-        if (!m_connectViaUsb) {
-            serial.CloseAll();
-        }
         return -1;
     }
     int int_long = AverageIntens(skySpec[0], 1);
@@ -1944,17 +1731,7 @@ short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxEx
     }
 
     // Try out the calculated intensity to see if it works...
-    if (!m_connectViaUsb) {
-        if (InitSpectrometer(0, m_integrationTime, m_sumInSpectrometer)) {
-            serial.CloseAll();
-            ShowMessageBox("Failed to initialize spectrometer", "Error");
-            return -1;
-        }
-    }
     if (Scan(1, m_sumInSpectrometer, skySpec)) {
-        if (!m_connectViaUsb) {
-            serial.CloseAll();
-        }
         return -1;
     }
     int finalInt = AverageIntens(skySpec[0], 1);

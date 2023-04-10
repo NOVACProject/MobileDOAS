@@ -5,14 +5,12 @@
 
 #include <iostream>
 
-CSerialConnection::CSerialConnection(void)
-{
-    baudrate = 57600;
-    serbufpt = 0;
-    hComm = nullptr;
+CSerialConnection::CSerialConnection() {
+    memset(serbuf, 0, sizeof(serbuf));
+    sprintf(this->serialPort, "COM0");
 }
 
-CSerialConnection::~CSerialConnection(void)
+CSerialConnection::~CSerialConnection()
 {
     this->Close();
 }
@@ -24,13 +22,9 @@ CSerialConnection::CSerialConnection(CSerialConnection&& other)
     this->br1 = other.br1;
     this->br2 = other.br2;
     this->isRunning = std::move(other.isRunning);
-    this->m_delay = other.m_delay;
     memcpy(this->serbuf, other.serbuf, sizeof(serbuf));
     this->serbufpt = std::move(other.serbufpt);
     memcpy(this->serialPort, other.serialPort, sizeof(serialPort));
-    this->startChn = other.startChn;
-    this->stopChn = other.stopChn;
-    this->sysBaud = other.sysBaud;
 
     other.hComm = nullptr;
 }
@@ -42,13 +36,9 @@ CSerialConnection& CSerialConnection::operator=(CSerialConnection&& other)
     this->br1 = other.br1;
     this->br2 = other.br2;
     this->isRunning = std::move(other.isRunning);
-    this->m_delay = other.m_delay;
     memcpy(this->serbuf, other.serbuf, sizeof(serbuf));
     this->serbufpt = std::move(other.serbufpt);
     memcpy(this->serialPort, other.serialPort, sizeof(serialPort));
-    this->startChn = other.startChn;
-    this->stopChn = other.stopChn;
-    this->sysBaud = other.sysBaud;
 
     other.hComm = nullptr;
 

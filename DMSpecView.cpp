@@ -969,7 +969,7 @@ void CDMSpecView::OnControlStop()
             m_Spectrometer->Stop();
             Sleep(500);
             WaitForSingleObject(hThread, INFINITE);
-            m_Spectrometer->serial.Close();
+            m_Spectrometer->CloseUSBConnection();
             AfxGetApp()->EndWaitCursor();
             MessageBox(TEXT("Spectrum collection has been stopped"), NULL, MB_OK);
         }

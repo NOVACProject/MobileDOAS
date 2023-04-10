@@ -44,6 +44,8 @@ namespace mobiledoas
 
         virtual bool SetSpectrometer(int spectrometerIndex, const std::vector<int>& channelIndices) override;
 
+        virtual int GetReadoutDelay() override { return 20; }
+
         virtual std::string GetSerial() override;
 
         virtual std::string GetModel() override;

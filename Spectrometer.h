@@ -87,7 +87,7 @@ public:
     int Stop();
 
     /** The measurement mode */
-    SPECTROMETER_MODE   m_spectrometerMode;
+    SPECTROMETER_MODE m_spectrometerMode;
 
     /* Collects a spectrum from the spectrometer.
         @param sumInComputer - the number of spectra to add together in the computer
@@ -98,16 +98,6 @@ public:
         @return 1 if the collection failed or the collection should stop
          */
     int Scan(int sumInComputer, int sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]);
-
-    /* Collects a spectrum from the spectrometer using the USB-connection
-        @param sumInComputer - the number of spectra to add together in the computer
-        @param sumInSpectrometer - the number of spectra to add together in the spectrometer
-        @param pResult - will on successful return be filled with the measured spectrum. Returned spectrum
-            is an average of the (sumInComputer*sumInSpectrometer) collected spectra.
-        @return 0 on success
-        @return 1 if the collection failed or the collection should stop
-        */
-    int ScanUSB(int sumInComputer, int sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]);
 
     /** The number of channels in the spectrometer to use */
     int m_NChannels;
@@ -190,7 +180,7 @@ public:
         @param gpsDelay The necessary delay to read out the time and position from the GPS, in milliseconds.
         @param result Will be filled with the result of the calculation.
         @return Number of spectra to co-add in the computer. */
-    int CountRound(long timeResolution, long serialDelay, long gpsDelay, SpectrumSummation& result) const;
+    int CountRound(long timeResolution, SpectrumSummation& result) const;
 
     /** Returns the average intensity of the supplied spectrum.
         The pixels which will be used to calculate the intensity are taken from m_conf.
@@ -391,24 +381,11 @@ public:
     long m_GPSBaudRate = 9600;
 
 
-    // ----------------------------- Handling the serial communication -----------------
-
-    /** The serial-communication object. This is used if we are to communicate with
-        the spectrometer through the serial port */
-    CSerialConnection serial;
-
-    /** Initializes the spectrometer. Only necessary if we're using the serial port
-        @param channel - the channel to use (0 <-> master, 1 <-> slave, 257 <-> master & slave)
-        @param inttime - the integration time to use (in milli seconds)
-        @param sumSpec - the number of spectra to co-add in the spectrometer
-    */
-    int InitSpectrometer(short channel, short inttime, short sumSpec);
-
     // ------------------- Handling the USB-Connection  --------------------
 
     /** Called to test the USB-connection.
         @return 1 if successful, else 0 */
-    int TestUSBConnection();
+    int TestSpectrometerConnection();
 
     /** Called to close the USB-connection. Should only be done
         when we're about to stop collecting spectra */
@@ -706,7 +683,4 @@ private:
         the spectra are at the desired percent of max.
         NB: Called from the function 'AdjustIntegrationTime' !!! */
     short AdjustIntegrationTime_Calculate(long minExpTime, long maxExpTime);
-
-    /** Check if spectrum is dark **/
-    bool CSpectrometer::CheckIfDark(double spectrum[MAX_SPECTRUM_LENGTH]);
 };

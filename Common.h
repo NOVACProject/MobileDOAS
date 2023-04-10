@@ -12,6 +12,7 @@
 #include <math.h>
 #include <vector>
 #include <string>
+#include <MobileDoasLib/Definitions.h>
 
 #define MAX_TRAVERSE_SHOWN 16384
 
@@ -62,14 +63,6 @@
 // conversion from ppmm to mg/m^2 for HCHO
 #define GASFACTOR_HCHO 1.25
 
-// the maximum number of channels on the spectrometer that we can currentSpectrometerHandle 
-#define MAX_N_CHANNELS 2
-
-// The maximum number of fit-regions that we can use at any single time
-#define MAX_FIT_WINDOWS 2
-
-// the maximum length of any single spectrum
-#define MAX_SPECTRUM_LENGTH 3648
 
 // function returns
 #define SUCCESS true
@@ -178,11 +171,6 @@ public:
             is given in 'fileName'. */
     static void GuessSpecieName(const CString& fileName, CString& specie);
 
-    // ------------- BINARY FUNCTIONS ------------------
-
-    /** This function swaps the place of the MostSignificantByte and
-            the LeastSignificantByte of the given number */
-    static unsigned short Swp(unsigned short in);
 
     // --------------------------------------------------------------------
     // ---------------------- DATE & TIME ---------------------------------

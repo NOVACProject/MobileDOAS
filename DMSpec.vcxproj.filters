@@ -498,6 +498,9 @@
     <ClCompile Include="Spectrometers\OceanOpticsSpectrometerInterface.cpp">
       <Filter>Source Files\Spectrometers</Filter>
     </ClCompile>
+    <ClCompile Include="Spectrometers\OceanOpticsSpectrometerSerialInterface.cpp">
+      <Filter>Source Files\Spectrometers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DMSpec.rc">
@@ -920,6 +923,9 @@
       <Filter>Header Files\Evaluation</Filter>
     </ClInclude>
     <ClInclude Include="Spectrometers\OceanOpticsSpectrometerInterface.h">
+      <Filter>Header Files\Spectrometers</Filter>
+    </ClInclude>
+    <ClInclude Include="Spectrometers\OceanOpticsSpectrometerSerialInterface.h">
       <Filter>Header Files\Spectrometers</Filter>
     </ClInclude>
   </ItemGroup>

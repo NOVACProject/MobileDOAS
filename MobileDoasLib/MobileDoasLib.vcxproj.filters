@@ -30,6 +30,12 @@
     <ClInclude Include="include\MobileDoasLib\Measurement\SpectrometerInterface.h">
       <Filter>Header Files\Measurement</Filter>
     </ClInclude>
+    <ClInclude Include="include\MobileDoasLib\Measurement\SpectrumUtils.h">
+      <Filter>Header Files\Measurement</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MobileDoasLib\Definitions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MobileDoasLib.cpp">
@@ -39,6 +45,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Measurement\SpectrometerInterface.cpp">
+      <Filter>Source Files\Measurement</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Measurement\SpectrumUtils.cpp">
       <Filter>Source Files\Measurement</Filter>
     </ClCompile>
   </ItemGroup>
