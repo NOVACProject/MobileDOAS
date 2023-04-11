@@ -106,7 +106,6 @@ CSpectrometer::~CSpectrometer()
 }
 
 
-
 long CSpectrometer::GetTimeValue_UMT()
 {
     struct tm* tim;
@@ -1219,7 +1218,7 @@ int CSpectrometer::TestSpectrometerConnection() {
     // Change the selected spectrometer. This will also fill in the parameters about the spectrometer
     this->m_spectrometerIndex = ChangeSpectrometer(m_spectrometerIndex, channelIndices);
 
-    return 1;
+    return (this->m_spectrometerIndex >= 0);
 }
 
 bool CSpectrometer::IsSpectrometerDisconnected()
@@ -1311,7 +1310,18 @@ int CSpectrometer::ChangeSpectrometer(int selectedspec, const std::vector<int>& 
     m_spectrometer->SetScansToAverage(1);  // only retrieve one single spectrum
 
     std::vector<std::vector<double>> spectrumData;
-    m_spectrometer->GetNextSpectrum(spectrumData);
+    int returnCode = m_spectrometer->GetNextSpectrum(spectrumData);
+    if (returnCode == 0) {
+        std::string errorMessage = m_spectrometer->GetLastError();
+        if (errorMessage.size() > 0) {
+            MessageBox(nullptr, (std::string("Failed to retrieve spectrum, error was: ") + errorMessage).c_str(), "Error getting spectrum", MB_OK);
+        }
+        else {
+            MessageBox(nullptr, "Failed to retrieve spectrum, unknown error", "Error getting spectrum", MB_OK);
+        }
+        return -1;
+    }
+
     ASSERT(spectrumData.size() == m_NChannels);
     ASSERT(spectrumData[0].size() > 0);
     m_detectorSize = spectrumData[0].size();
@@ -1320,7 +1330,6 @@ int CSpectrometer::ChangeSpectrometer(int selectedspec, const std::vector<int>& 
     std::vector<std::vector<double>> wavelengthData;
     m_spectrometer->GetWavelengths(wavelengthData);
     ASSERT(wavelengthData.size() == m_NChannels);
-    ASSERT(wavelengthData[0].size() == spectrumData[0].size());
     memcpy(m_wavelength[m_spectrometerChannel], wavelengthData[0].data(), m_detectorSize * sizeof(double));
 
     m_statusMsg.Format("Detector size is %d", m_detectorSize); pView->PostMessage(WM_STATUSMSG);

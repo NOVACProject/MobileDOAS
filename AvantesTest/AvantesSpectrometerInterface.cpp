@@ -3,6 +3,7 @@
 #include "include/avantes/avaspec.h"
 #include <sstream>
 #include <thread>
+#include <iostream>
 
 using namespace mobiledoas;
 using namespace std::chrono_literals;
@@ -121,6 +122,16 @@ void AvantesSpectrometerInterface::Close()
     ReleaseDeviceLibraryResources();
 }
 
+
+void onMeasuredSpectrum(AvsHandle* /*handle*/, int* status) {
+    if (status == nullptr) {
+        std::cout << "null status" << std::endl;
+        return;
+    }
+
+    std::cout << " onMeasuredSpectrum called with status: " << *status << std::endl;
+}
+
 bool AvantesSpectrometerInterface::Start()
 {
     AvantesSpectrometerInterfaceState* state = (AvantesSpectrometerInterfaceState*)m_state;
@@ -131,7 +142,7 @@ bool AvantesSpectrometerInterface::Start()
     }
 
     // Calling AVS_MeasureCallback with a value of -1 starts the acquisitions indefinetely
-    int returnCode = AVS_MeasureCallback(state->currentSpectrometerHandle, nullptr, -1);
+    int returnCode = AVS_MeasureCallback(state->currentSpectrometerHandle, onMeasuredSpectrum, 1);
     if (returnCode != ERR_SUCCESS)
     {
         std::stringstream message;
@@ -369,6 +380,8 @@ int AvantesSpectrometerInterface::GetNextSpectrum(std::vector<std::vector<double
     {
         std::this_thread::sleep_for(1ms);
     }
+
+    state->measurementIsRunning = false;
 
     // Read out the data.
     unsigned int timeLabel = 0; // Timestamp of the aquired spectrum. In tens of microseconds since the spectrometer was started. Can bes used to identify spectra.

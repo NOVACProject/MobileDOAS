@@ -383,7 +383,10 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam) {
 
     // --- Get the data ---
     size = std::min(long(199), m_Spectrometer->GetColumnNumber());
+
+    intensity.resize(size);
     m_Spectrometer->GetIntensity(intensity, size);
+
     m_Spectrometer->GetColumns(column[0], size, 0);
     m_Spectrometer->GetColumnErrors(columnErr[0], size, 0);
     if (fitRegionNum > 1) {

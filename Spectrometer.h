@@ -185,7 +185,7 @@ public:
     /** This will change the spectrometer to use, to the one with the
         given spectrometerIndex (ranging from 0 to (the number of spectrometers - 1) ).
         If no spectrometer exist with the given index then no changes will be made.
-        @return the spectrometer index actually used */
+        @return the spectrometer index actually used (-1 if something goes wrong). */
     int ChangeSpectrometer(int selectedspec, const std::vector<int>& channelsToUse);
 
     /** Retrieves the last evaluated column.

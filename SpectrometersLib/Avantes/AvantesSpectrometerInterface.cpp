@@ -8,6 +8,8 @@
 #include <thread>
 #include <assert.h>
 
+#include <iostream>
+
 using namespace mobiledoas;
 using namespace avantes;
 using namespace std::chrono_literals;
@@ -27,6 +29,9 @@ struct AvantesSpectrometerInterfaceState
 
     // Handle to the currently active device
     AvsHandle currentSpectrometerHandle = INVALID_AVS_HANDLE_VALUE;
+
+    // The dynamic range of the currently active device
+    double currentSpectrometerDynamicRange = 0;
 
     // True if the measurements are currently running on the currentSpectrometerHandle
     bool measurementIsRunning = false;
@@ -112,6 +117,9 @@ std::vector<std::string> AvantesSpectrometerInterface::ScanForDevices()
 
 void AvantesSpectrometerInterface::ReleaseDeviceLibraryResources()
 {
+    // Stop any running measurements, if any.
+    Stop();
+
     // Release the resources
     AVS_Done();
 
@@ -126,6 +134,15 @@ void AvantesSpectrometerInterface::Close()
     ReleaseDeviceLibraryResources();
 }
 
+void onMeasuredSpectrum(AvsHandle* /*handle*/, int* status) {
+    if (status == nullptr) {
+        std::cout << "null status" << std::endl;
+        return;
+    }
+
+    std::cout << " onMeasuredSpectrum called with status: " << *status << std::endl;
+}
+
 bool AvantesSpectrometerInterface::Start()
 {
     AvantesSpectrometerInterfaceState* state = (AvantesSpectrometerInterfaceState*)m_state;
@@ -135,8 +152,9 @@ bool AvantesSpectrometerInterface::Start()
         return false;
     }
 
-    // Calling AVS_MeasureCallback with a value of -1 starts the acquisitions indefinetely
-    int returnCode = AVS_MeasureCallback(state->currentSpectrometerHandle, nullptr, -1);
+    // Calling AVS_MeasureCallback with a value of -1 starts the acquisitions indefinetely - however, this has been found to lock the application
+    // when a previous instance has not been terminated gracefully and is hence avoided.
+    int returnCode = AVS_MeasureCallback(state->currentSpectrometerHandle, onMeasuredSpectrum, 1);
     if (returnCode != ERR_SUCCESS)
     {
         std::stringstream message;
@@ -151,7 +169,23 @@ bool AvantesSpectrometerInterface::Start()
 
 bool AvantesSpectrometerInterface::Stop()
 {
-    // TODO:
+    AvantesSpectrometerInterfaceState* state = (AvantesSpectrometerInterfaceState*)m_state;
+    if (state->currentSpectrometerHandle == INVALID_AVS_HANDLE_VALUE)
+    {
+        // Not an error, this can happen in the normal flow
+        return false;
+    }
+
+    int returnCode = AVS_StopMeasure(state->currentSpectrometerHandle);
+    if (returnCode != ERR_SUCCESS)
+    {
+        std::stringstream message;
+        message << "Stop failed, AVS_StopMeasure returned " << returnCode << " which indicates an error.";
+        m_lastErrorMessage = message.str();
+        return false;
+    }
+
+    state->measurementIsRunning = false;
     return true;
 }
 
@@ -193,6 +227,23 @@ bool AvantesSpectrometerInterface::SetSpectrometer(int spectrometerIndex, const 
         msg << "SetSpectrometer failed, AVS_GetNumPixels returned: " << returnCode;
         m_lastErrorMessage = msg.str();
         return 0;
+    }
+
+    // Get the dynamic range of the device. This is by default set to 14-bits (16384) but can be expanded to 16-bits for some device types.
+    // Attempt to set the range to 16 bits, if this fails then we know that the range is currently 14-bits.
+    returnCode = AVS_UseHighResAdc(state->currentSpectrometerHandle, true);
+    if (returnCode == ERR_SUCCESS) {
+        state->currentSpectrometerDynamicRange = 65535.0;
+    }
+    else if (returnCode == ERR_OPERATION_NOT_SUPPORTED) {
+        state->currentSpectrometerDynamicRange = 16383.75;
+    }
+    else {
+        std::stringstream msg;
+        msg << "Error happened in SetSpectrometer, AVS_UseHighResAdc returned: " << returnCode;
+        m_lastErrorMessage = msg.str();
+
+        state->currentSpectrometerDynamicRange = 16383.75;
     }
 
     // Prepare the measurement setup
@@ -237,6 +288,7 @@ std::string AvantesSpectrometerInterface::GetSerial()
 
 std::string AvantesSpectrometerInterface::GetModel()
 {
+
     // TODO:
     return "";
 }
@@ -286,8 +338,14 @@ int AvantesSpectrometerInterface::GetWavelengths(std::vector<std::vector<double>
 
 int AvantesSpectrometerInterface::GetSaturationIntensity()
 {
-    // TODO:
-    return 0;
+    AvantesSpectrometerInterfaceState* state = (AvantesSpectrometerInterfaceState*)m_state;
+    if (state->currentSpectrometerHandle == INVALID_AVS_HANDLE_VALUE)
+    {
+        m_lastErrorMessage = "GetSaturationIntensity failed, no spectrometer selected.";
+        return 0;
+    }
+
+    return int(state->currentSpectrometerDynamicRange);
 }
 
 void AvantesSpectrometerInterface::SetIntegrationTime(int usec)
@@ -299,7 +357,15 @@ void AvantesSpectrometerInterface::SetIntegrationTime(int usec)
         return;
     }
 
-    state->measurementConfig.m_IntegrationTime = static_cast<float>(usec / 1000.0);
+    const float newIntegrationTime = static_cast<float>(usec / 1000.0);
+    if (std::abs(newIntegrationTime - state->measurementConfig.m_IntegrationTime) < 0.001) {
+        // Nothing to change
+        return;
+    }
+
+    Stop(); // Stop the currently running measurement, if any.
+
+    state->measurementConfig.m_IntegrationTime = newIntegrationTime;
 
     const int ret = AVS_PrepareMeasure(state->currentSpectrometerHandle, &(state->measurementConfig));
     if (ret != ERR_SUCCESS)
@@ -322,12 +388,26 @@ int AvantesSpectrometerInterface::GetIntegrationTime()
 
 void AvantesSpectrometerInterface::SetScansToAverage(int numberOfScansToAverage)
 {
+    if (numberOfScansToAverage <= 0) {
+        std::stringstream msg;
+        msg << "SetScansToAverage failed from bad input value: " << numberOfScansToAverage;
+        m_lastErrorMessage = msg.str();
+        return;
+    }
+
     AvantesSpectrometerInterfaceState* state = (AvantesSpectrometerInterfaceState*)m_state;
     if (state->currentSpectrometerHandle == INVALID_AVS_HANDLE_VALUE)
     {
         m_lastErrorMessage = "SetScansToAverage failed, no spectrometer selected.";
         return;
     }
+
+    if (uint32(numberOfScansToAverage) == state->measurementConfig.m_NrAverages) {
+        // Nothing to change
+        return;
+    }
+
+    Stop(); // Stop the currently running measurement, if any.
 
     state->measurementConfig.m_NrAverages = numberOfScansToAverage;
 
@@ -374,6 +454,8 @@ int AvantesSpectrometerInterface::GetNextSpectrum(std::vector<std::vector<double
     {
         std::this_thread::sleep_for(1ms);
     }
+
+    state->measurementIsRunning = false;
 
     // Read out the data.
     unsigned int timeLabel = 0; // Timestamp of the aquired spectrum. In tens of microseconds since the spectrometer was started. Can bes used to identify spectra.
