@@ -53,6 +53,7 @@ using namespace ReEvaluation;
 
 
 CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
+CFormView* pView; // <-- The main window
 
 /////////////////////////////////////////////////////////////////////////////
 // CDMSpecView

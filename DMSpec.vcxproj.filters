@@ -100,6 +100,9 @@
     <Filter Include="Source Files\Spectrometers">
       <UniqueIdentifier>{190ede1a-3527-4620-8907-b6843233ba3f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\SpectralEvaluation">
+      <UniqueIdentifier>{fb8f7482-43fd-4e9c-9933-afc689e09040}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Common.cpp">
@@ -927,6 +930,9 @@
     </ClInclude>
     <ClInclude Include="Spectrometers\OceanOpticsSpectrometerSerialInterface.h">
       <Filter>Header Files\Spectrometers</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\StringUtils.h">
+      <Filter>Header Files\SpectralEvaluation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

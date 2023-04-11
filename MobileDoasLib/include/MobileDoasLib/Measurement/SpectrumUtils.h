@@ -11,5 +11,10 @@ namespace mobiledoas
     *   TODO: This could need some adaptation to different spectrometer models **/
     bool CheckIfDark(double spectrum[MAX_SPECTRUM_LENGTH], int detectorSize);
 
+    /** Returns the average intensity of the supplied spectrum in the given spectrum region.
+    *   The region is centered at specCenter with a width of 2*specCenterHalfWidth pixels.
+    *   @param pSpectrum pointer to the first pixel in the measured spectrum.
+    *        This is assumed to be MAX_SPECTRUM_LENGTH number of pixels long. */
+    long AverageIntensity(double* pSpectrum, long specCenter, long specCenterHalfWidth);
 
 }

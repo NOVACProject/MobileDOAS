@@ -35,8 +35,6 @@
 // Possible modes for the spectrometer
 const enum SPECTROMETER_MODE { MODE_TRAVERSE, MODE_WIND, MODE_VIEW, MODE_DIRECTORY };
 
-extern CFormView* pView;
-
 namespace novac
 {
     class CDateTime;
@@ -118,7 +116,7 @@ public:
 
     /** Contains the name of the spectrometer, if USB-Connection
         is used this is the serial number of the spectrometer */
-    CString m_spectrometerName;
+    std::string m_spectrometerName;
 
     /** The number of pixels on the spectrometer's detector.
         To keep track of how long spectra we should receive */
@@ -128,7 +126,7 @@ public:
     long m_spectrometerDynRange;
 
     /** The model of the spectrometer */
-    CString m_spectrometerModel;
+    std::string m_spectrometerModel;
 
     /** The spectrometer to use, if there are several attached
         must be at least 0 and always smaller than 'm_numberOfSpectrometersAttached' */
@@ -147,7 +145,7 @@ public:
     int ChangeSpectrometer(int selectedspec, const std::vector<int>& channelsToUse);
 
     /** This retrieves a list of all spectrometers that are connected to this computer */
-    void GetConnectedSpecs(std::vector<std::string>& connectedSpectrometers);
+    void GetConnectedSpectrometers(std::vector<std::string>& connectedSpectrometers);
 
     /** The board temperature, as reported by the spectrometer, in degrees Celsius.
     Set to NaN if this could not be read. */
@@ -181,13 +179,6 @@ public:
         @param result Will be filled with the result of the calculation.
         @return Number of spectra to co-add in the computer. */
     int CountRound(long timeResolution, SpectrumSummation& result) const;
-
-    /** Returns the average intensity of the supplied spectrum.
-        The pixels which will be used to calculate the intensity are taken from m_conf.
-        @param pSpectrum pointer to the first pixel in the measured spectrum.
-            This is assumed to be MAX_SPECTRUM_LENGTH number of pixels long.
-        @param totalNum the number of spectra co-added (not averaged) into the supplied spectrum. */
-    long AverageIntens(double* pSpectrum, long totalNum) const;
 
     /** Makes the initial adjustments and sets the
         parameter 'm_integrationTime' so that intensity of

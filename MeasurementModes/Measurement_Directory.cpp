@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "Measurement_Directory.h"
+#include <MobileDoasLib/Measurement/SpectrumUtils.h>
 
 extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
+extern CFormView* pView; // <-- The main window
 
 CMeasurement_Directory::CMeasurement_Directory()
 {
@@ -89,7 +91,7 @@ void CMeasurement_Directory::Run()
         for (int i = 0; i < MAX_SPECTRUM_LENGTH; ++i) {
             m_darkCur[0][i] = m_darkCur[0][i] - m_offset[0][i];
         }
-        m_averageSpectrumIntensity[0] = AverageIntens(m_sky[0], 1);
+        m_averageSpectrumIntensity[0] = mobiledoas::AverageIntensity(m_sky[0], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
 
         // remove the dark spectrum from sky
         GetDark();
@@ -209,7 +211,7 @@ bool CMeasurement_Directory::ProcessSpectrum(CString latestSpectrum) {
         pView->PostMessage(WM_READGPS);
 
         // calculate average intensity
-        m_averageSpectrumIntensity[channel] = AverageIntens(m_curSpectrum[channel], 1);
+        m_averageSpectrumIntensity[channel] = mobiledoas::AverageIntensity(m_curSpectrum[channel], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
         vIntensity.Append(m_averageSpectrumIntensity[channel]);
 
         // get spectrum info

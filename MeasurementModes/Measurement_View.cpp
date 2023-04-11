@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "measurement_view.h"
+#include <MobileDoasLib/Measurement/SpectrumUtils.h>
 
 extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
+extern CFormView* pView; // <-- The main window
 
 CMeasurement_View::CMeasurement_View(void)
 {
@@ -74,7 +76,7 @@ void CMeasurement_View::Run() {
         /* -------------- IF THE MEASURED SPECTRUM WAS A NORMAL SPECTRUM ------------- */
 
         for (int i = 0; i < m_NChannels; ++i) {
-            m_averageSpectrumIntensity[i] = AverageIntens(tmpSpec[i], 1);
+            m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(tmpSpec[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
         }
 
         if (m_specInfo->isDark)

@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "measurement_traverse.h"
+#include <MobileDoasLib/Measurement/SpectrumUtils.h>
 
 extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
+extern CFormView* pView; // <-- The main window
 
 CMeasurement_Traverse::CMeasurement_Traverse(void)
 {
@@ -169,7 +171,7 @@ void CMeasurement_Traverse::Run() {
 
             pView->PostMessage(WM_DRAWSPECTRUM);//draw dark spectrum
             for (int i = 0; i < m_NChannels; ++i) {
-                m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i], 1);
+                m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(scanResult[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
             }
             m_statusMsg.Format("Average value around center channel(dark) %d: %d", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
             pView->PostMessage(WM_STATUSMSG);
@@ -196,7 +198,7 @@ void CMeasurement_Traverse::Run() {
             pView->PostMessage(WM_DRAWSPECTRUM);//draw sky spectrum
 
             for (int i = 0; i < m_NChannels; ++i) {
-                m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i], 1);
+                m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(scanResult[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
 
                 // remove the dark spectrum
                 for (int iterator = 0; iterator < MAX_SPECTRUM_LENGTH; ++iterator) {
@@ -237,7 +239,7 @@ void CMeasurement_Traverse::Run() {
             /* -------------- IF THE MEASURED SPECTRUM WAS A NORMAL SPECTRUM ------------- */
 
             for (int i = 0; i < m_NChannels; ++i) {
-                m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i], 1);
+                m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(scanResult[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
             }
 
             /* Get the information about the spectrum */
@@ -360,7 +362,7 @@ void CMeasurement_Traverse::Run_Adaptive() {
 
             pView->PostMessage(WM_DRAWSPECTRUM);//draw offset spectrum
             for (int i = 0; i < m_NChannels; ++i) {
-                m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i], 1);
+                m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(scanResult[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
             }
             m_statusMsg.Format("Average value around center channel(offset) %d: %d", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
             pView->PostMessage(WM_STATUSMSG);
@@ -396,7 +398,7 @@ void CMeasurement_Traverse::Run_Adaptive() {
 
             pView->PostMessage(WM_DRAWSPECTRUM);//draw dark spectrum
             for (int i = 0; i < m_NChannels; ++i) {
-                m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i], 1);
+                m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(scanResult[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
             }
             m_statusMsg.Format("Average value around center channel(dark current) %d: %d", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
             pView->PostMessage(WM_STATUSMSG);
@@ -425,7 +427,7 @@ void CMeasurement_Traverse::Run_Adaptive() {
             pView->PostMessage(WM_DRAWSPECTRUM);//draw sky spectrum
 
             for (int i = 0; i < m_NChannels; ++i) {
-                m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i], 1);
+                m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(scanResult[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
 
                 // remove the dark spectrum
                 GetDark();
@@ -477,7 +479,7 @@ void CMeasurement_Traverse::Run_Adaptive() {
         } else if (m_scanNum > SKY_SPECTRUM) {
             /* -------------- IF THE MEASURED SPECTRUM WAS A NORMAL SPECTRUM ------------- */
             for (int i = 0; i < m_NChannels; ++i) {
-                m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i], 1);
+                m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(scanResult[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
             }
 
             /* Get the information about the spectrum */

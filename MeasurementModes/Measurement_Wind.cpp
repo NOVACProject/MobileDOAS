@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "measurement_wind.h"
+#include <MobileDoasLib/Measurement/SpectrumUtils.h>
 
 extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
+extern CFormView* pView; // <-- The main window
 
 CMeasurement_Wind::CMeasurement_Wind(void)
 {
@@ -178,7 +180,7 @@ void CMeasurement_Wind::Run() {
 
             pView->PostMessage(WM_DRAWSPECTRUM);//draw dark spectrum
             for (int i = 0; i < m_NChannels; ++i) {
-                m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i], 1);
+                m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(scanResult[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
             }
             m_statusMsg.Format("Average value around center channel(dark) %d: %d", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
             pView->PostMessage(WM_STATUSMSG);
@@ -206,7 +208,7 @@ void CMeasurement_Wind::Run() {
             pView->PostMessage(WM_DRAWSPECTRUM);//draw sky spectrum
 
             for (int i = 0; i < m_NChannels; ++i) {
-                m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i], 1);
+                m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(scanResult[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
 
                 // remove the dark spectrum
                 for (int iterator = 0; iterator < MAX_SPECTRUM_LENGTH; ++iterator) {
@@ -256,7 +258,7 @@ void CMeasurement_Wind::Run() {
             /* -------------- IF THE MEASURED SPECTRUM WAS A NORMAL SPECTRUM ------------- */
 
             for (int i = 0; i < m_NChannels; ++i) {
-                m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i], 1);
+                m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(scanResult[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
             }
 
             /* Get the information about the spectrum */

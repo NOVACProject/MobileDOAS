@@ -39,3 +39,24 @@ bool mobiledoas::CheckIfDark(double spectrum[MAX_SPECTRUM_LENGTH], int detectorS
         return true;
     }
 }
+
+// TODO: This needs tests and validation of the input parameters
+long mobiledoas::AverageIntensity(double* pSpectrum, long specCenter, long specCenterHalfWidth) {
+
+    double sum = 0.0;
+    long num;
+    // take the average of the 10 pixel surrounding the spec center
+    if (specCenter<= specCenterHalfWidth)
+        specCenter= specCenterHalfWidth;
+    if (specCenter>= MAX_SPECTRUM_LENGTH - specCenterHalfWidth)
+        specCenter= MAX_SPECTRUM_LENGTH - 2 * specCenterHalfWidth;
+
+    for (int j = specCenter- specCenterHalfWidth; j < specCenter+ specCenterHalfWidth; j++) {
+        sum += pSpectrum[j];
+    }
+
+    num = 2 * specCenterHalfWidth;
+    sum = fabs(sum / (double)num);
+
+    return (long)sum;
+}

@@ -18,10 +18,11 @@
 #include "Spectrometers/OceanOpticsSpectrometerInterface.h"
 #include "Spectrometers/OceanOpticsSpectrometerSerialInterface.h"
 #include <MobileDoasLib/Measurement/SpectrumUtils.h>
-#include <numeric>
+#include <SpectralEvaluation/StringUtils.h>
 #include <sstream>
 
 extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
+extern CFormView* pView; // <-- The main window
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -33,7 +34,6 @@ static char THIS_FILE[] = __FILE__;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CFormView* pView;
 
 CSpectrometer::CSpectrometer()
     : m_useGps(true), m_connectViaUsb(true), m_scanNum(0), m_spectrumCounter(0) {
@@ -52,7 +52,7 @@ CSpectrometer::CSpectrometer()
     m_windAngle = 0;
     m_detectorSize = 2048;
     m_spectrometerDynRange = 4095;
-    m_spectrometerModel.Format("Unknown");
+    m_spectrometerModel = "Unknown";
     m_flux = 0; //initiate flux value in this variable
     m_maxColumn = 100;
     m_integrationTime = 100;
@@ -968,33 +968,6 @@ void CSpectrometer::Sing(double factor)
     PlaySound(fileToPlay, 0, SND_SYNC);
 }
 
-// TODO: What is ptotalNum for?  Seems it is always 1.
-long CSpectrometer::AverageIntens(double* pSpectrum, long ptotalNum) const {
-    double sum = 0.0;
-    long num;
-    // take the average of the 10 pixel surrounding the spec center
-    if (m_conf->m_specCenter <= m_conf->m_specCenterHalfWidth)
-        m_conf->m_specCenter = m_conf->m_specCenterHalfWidth;
-    if (m_conf->m_specCenter >= MAX_SPECTRUM_LENGTH - m_conf->m_specCenterHalfWidth)
-        m_conf->m_specCenter = MAX_SPECTRUM_LENGTH - 2 * m_conf->m_specCenterHalfWidth;
-
-    for (int j = m_conf->m_specCenter - m_conf->m_specCenterHalfWidth; j < m_conf->m_specCenter + m_conf->m_specCenterHalfWidth; j++) {
-        sum += pSpectrum[j];
-    }
-
-    if (ptotalNum != 0) {
-        num = 2 * m_conf->m_specCenterHalfWidth * ptotalNum;
-        sum = fabs(sum / (double)num);
-    }
-    else {
-        num = 2 * m_conf->m_specCenterHalfWidth;
-        sum = fabs(sum / (double)num);
-        ShowMessageBox("TOTAL SUM = 0", "ERROR");
-        //Show information on screen
-    }
-    return (long)sum;
-}
-
 bool CSpectrometer::UpdateGpsData(mobiledoas::GpsData& gpsInfo)
 {
     // If GPS thread does not exist or is not running
@@ -1152,7 +1125,7 @@ int CSpectrometer::CountRound(long timeResolution, SpectrumSummation& result) co
     sumOne = 0;
     nRound = 0;
 
-    if (Equals(m_spectrometerModel, "USB2000+"))
+    if (EqualsIgnoringCase(m_spectrometerModel, "USB2000+"))
     {
         // the USB2000+ can sum as many spectra as we want in the
         // spectrometer, we therefore don't need to sum anything
@@ -1209,7 +1182,7 @@ double* CSpectrometer::GetWavelengths(int channel) {
     return m_wavelength[channel];
 }
 
-void CSpectrometer::GetConnectedSpecs(std::vector<std::string>& connectedSpectrometers) {
+void CSpectrometer::GetConnectedSpectrometers(std::vector<std::string>& connectedSpectrometers) {
 
     connectedSpectrometers = m_spectrometer->ScanForDevices();
 }
@@ -1252,14 +1225,14 @@ int CSpectrometer::TestSpectrometerConnection() {
                 m_spectrometerIndex = k;
             }
         }
-        m_spectrometerName.Format(selectedSerial);
+        m_spectrometerName = (LPCSTR)selectedSerial;
     }
     else
     {
-        m_spectrometerName.Format("%s", connectedSpectrometers[0].c_str());
+        m_spectrometerName = connectedSpectrometers[0];
     }
 
-    m_statusMsg.Format("Will use spectrometer %s.", (LPCSTR)m_spectrometerName); pView->PostMessage(WM_STATUSMSG);
+    m_statusMsg.Format("Will use spectrometer %s.", m_spectrometerName.c_str()); pView->PostMessage(WM_STATUSMSG);
 
     // Setup the channels to use
     std::vector<int> channelIndices;
@@ -1339,7 +1312,7 @@ int CSpectrometer::ChangeSpectrometer(int selectedspec, const std::vector<int>& 
     pView->PostMessage(WM_CHANGEDSPEC);
 
     // Get the spectrometer model
-    m_spectrometerModel.Format("%s", m_spectrometer->GetModel().c_str());
+    m_spectrometerModel = m_spectrometer->GetModel();
     m_spectrometerDynRange = m_spectrometer->GetSaturationIntensity();
 
     const int nofChannelsAvailable = m_spectrometer->GetNumberOfChannels();
@@ -1352,8 +1325,8 @@ int CSpectrometer::ChangeSpectrometer(int selectedspec, const std::vector<int>& 
     }
 
     if (m_spectrometerDynRange < 0) {
-        if (Equals(m_spectrometerModel, "USB4000") || Equals(m_spectrometerModel, "HR4000") ||
-            Equals(m_spectrometerModel, "USB2000+") || Equals(m_spectrometerModel, "QE65000")) {
+        if (EqualsIgnoringCase(m_spectrometerModel, "USB4000") || EqualsIgnoringCase(m_spectrometerModel, "HR4000") ||
+            EqualsIgnoringCase(m_spectrometerModel, "USB2000+") || EqualsIgnoringCase(m_spectrometerModel, "QE65000")) {
             m_spectrometerDynRange = 65536;
         }
         else {
@@ -1361,10 +1334,10 @@ int CSpectrometer::ChangeSpectrometer(int selectedspec, const std::vector<int>& 
         }
     }
 
-    m_statusMsg.Format("Will use spectrometer #%d (%s).", m_spectrometerIndex, (LPCSTR)m_spectrometerModel); pView->PostMessage(WM_STATUSMSG);
+    m_statusMsg.Format("Will use spectrometer #%d (%s).", m_spectrometerIndex, m_spectrometerModel.c_str()); pView->PostMessage(WM_STATUSMSG);
 
     // Get a spectrum
-    m_statusMsg.Format("Attempting to retrieve a spectrum from %s", (LPCSTR)m_spectrometerName); pView->PostMessage(WM_STATUSMSG);
+    m_statusMsg.Format("Attempting to retrieve a spectrum from %s", m_spectrometerName.c_str()); pView->PostMessage(WM_STATUSMSG);
 
     m_spectrometer->SetIntegrationTime(3000); // use 3 ms exp-time
     m_spectrometer->SetScansToAverage(1);  // only retrieve one single spectrum
@@ -1624,7 +1597,7 @@ short CSpectrometer::AdjustIntegrationTime() {
         }
 
         // Get the intensity of the sky and the dark spectra
-        skyInt = AverageIntens(skySpec[0], 1);
+        skyInt = mobiledoas::AverageIntensity(skySpec[0], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
         darkInt = (long)GetOffset(skySpec[0]);
 
         // Draw the measured sky spectrum on the screen.
@@ -1706,14 +1679,14 @@ short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxEx
     if (Scan(1, m_sumInSpectrometer, skySpec)) {
         return -1;
     }
-    int int_short = AverageIntens(skySpec[0], 1);
+    int int_short = mobiledoas::AverageIntensity(skySpec[0], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
 
     m_integrationTime = (short)maxExpTime;
     // measure the intensity
     if (Scan(1, m_sumInSpectrometer, skySpec)) {
         return -1;
     }
-    int int_long = AverageIntens(skySpec[0], 1);
+    int int_long = mobiledoas::AverageIntensity(skySpec[0], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
 
     // This will only work if the spectrum is not saturated at the maximum exposure-time
     if (int_long > 0.9 * m_spectrometerDynRange) {
@@ -1734,7 +1707,7 @@ short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxEx
     if (Scan(1, m_sumInSpectrometer, skySpec)) {
         return -1;
     }
-    int finalInt = AverageIntens(skySpec[0], 1);
+    int finalInt = mobiledoas::AverageIntensity(skySpec[0], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
 
     int desiredInt = (int)(m_spectrometerDynRange * m_percent);
     if ((finalInt - desiredInt) / desiredInt > 0.2) {
@@ -1811,8 +1784,8 @@ void CSpectrometer::CreateSpectrum(CSpectrum& spectrum, const double* spec, cons
     spectrum.length = m_detectorSize;
     spectrum.exposureTime = m_integrationTime;
     spectrum.date = startDate;
-    spectrum.spectrometerModel = m_spectrometerModel;
-    spectrum.spectrometerSerial = m_spectrometerName;
+    spectrum.spectrometerModel = m_spectrometerModel.c_str();
+    spectrum.spectrometerSerial = m_spectrometerName.c_str();
     spectrum.scans = m_totalSpecNum;
     spectrum.name = m_measurementBaseName;
     spectrum.fitHigh = m_conf->m_fitWindow->fitHigh;

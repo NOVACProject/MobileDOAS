@@ -8,6 +8,7 @@
 #include "../DMSpec.h"
 #include "SpectrumSettingsDlg.h"
 #include <algorithm>
+#include <SpectralEvaluation/StringUtils.h>
 
 int GetLargestDivisorBelow16(int n);
 
@@ -117,7 +118,7 @@ void CSpectrumSettingsDlg::SaveToSpectrometer() {
     // set the parameters
     m_Spectrometer->m_integrationTime = m_exptime;
     m_Spectrometer->m_totalSpecNum = m_average;
-    if (Equals(m_Spectrometer->m_spectrometerModel, "USB2000+")) {
+    if (EqualsIgnoringCase(m_Spectrometer->m_spectrometerModel, "USB2000+")) {
         m_Spectrometer->m_sumInSpectrometer = m_average;
         m_Spectrometer->m_sumInComputer = 1;
     }
@@ -230,7 +231,7 @@ void CSpectrumSettingsDlg::OnChangeSpinAverage(NMHDR* pNMHDR, LRESULT* pResult)
 void CSpectrumSettingsDlg::UpdateListOfSpectrometers()
 {
     std::vector<std::string> spectrometers;
-    m_Spectrometer->GetConnectedSpecs(spectrometers);
+    m_Spectrometer->GetConnectedSpectrometers(spectrometers);
 
     if (spectrometers.size() == 0 || (m_Spectrometer->m_spectrometerIndex < 0 || m_Spectrometer->m_spectrometerIndex >= spectrometers.size()))
     {
@@ -265,7 +266,7 @@ LRESULT CSpectrumSettingsDlg::OnChangeSpectrometer(WPARAM wParam, LPARAM lParam)
 {
 
     std::vector<std::string> spectrometers;
-    m_Spectrometer->GetConnectedSpecs(spectrometers);
+    m_Spectrometer->GetConnectedSpectrometers(spectrometers);
 
     // build the list 
     m_comboSpecs.ResetContent();
