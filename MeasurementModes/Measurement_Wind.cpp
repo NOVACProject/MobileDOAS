@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "measurement_wind.h"
+#include "../Common/SpectrumIO.h"
 #include <MobileDoasLib/Measurement/SpectrumUtils.h>
 
 extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
@@ -145,7 +146,7 @@ void CMeasurement_Wind::Run() {
 
         // Get the next spectrum
         if (Scan(m_sumInComputer, m_sumInSpectrometer, scanResult)) {
-            CloseUSBConnection();
+            CloseSpectrometerConnection();
             return;
         }
 
@@ -238,7 +239,7 @@ void CMeasurement_Wind::Run() {
             if (ReadReferenceFiles()) {
 
                 // we have to call this before exiting the application otherwise we'll have trouble next time we start...
-                CloseUSBConnection();
+                CloseSpectrometerConnection();
                 return;
             }
 
@@ -270,7 +271,7 @@ void CMeasurement_Wind::Run() {
                 m_statusMsg.Format("Average value around center channel %d: %d", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
 
             pView->PostMessage(WM_STATUSMSG);
-            vIntensity.Append(m_averageSpectrumIntensity[0]);
+            m_intensityOfMeasuredSpectrum.push_back(m_averageSpectrumIntensity[0]);
 
             if (m_spectrometerMode != MODE_VIEW) {
                 /* Evaluate */
@@ -304,7 +305,7 @@ void CMeasurement_Wind::Run() {
     }
 
     // we have to call this before exiting the application otherwise we'll have trouble next time we start...
-    CloseUSBConnection();
+    CloseSpectrometerConnection();
 
     return;
 }

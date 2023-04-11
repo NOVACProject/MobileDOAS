@@ -17,4 +17,7 @@ namespace mobiledoas
     *        This is assumed to be MAX_SPECTRUM_LENGTH number of pixels long. */
     long AverageIntensity(double* pSpectrum, long specCenter, long specCenterHalfWidth);
 
+    /** Retrieves the (electronic-)offset of the supplied spectrum */
+    double GetOffset(double spectrum[MAX_SPECTRUM_LENGTH]);
+
 }

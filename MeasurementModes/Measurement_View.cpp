@@ -29,12 +29,9 @@ void CMeasurement_View::Run() {
     // Convert the settings from the CMobileConfiuration-format to the internal CSpectrometer-format
     ApplySettings();
 
-    /* Set the delays and initialize the USB-Connection */
-    if (m_connectViaUsb) {
-        if (!TestSpectrometerConnection()) {
-            m_isRunning = false;
-            return;
-        }
+    if (!TestSpectrometerConnection()) {
+        m_isRunning = false;
+        return;
     }
 
     // Set the integration time
@@ -61,7 +58,7 @@ void CMeasurement_View::Run() {
 
         // Get the next spectrum
         if (Scan(m_sumInComputer, m_sumInSpectrometer, scanResult)) {
-            CloseUSBConnection();
+            CloseSpectrometerConnection();
             return;
         }
 
@@ -85,7 +82,7 @@ void CMeasurement_View::Run() {
             m_statusMsg.Format("Average value around center channel %d: %d", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
 
         pView->PostMessage(WM_STATUSMSG);
-        vIntensity.Append(m_averageSpectrumIntensity[0]);
+        m_intensityOfMeasuredSpectrum.push_back(m_averageSpectrumIntensity[0]);
 
         pView->PostMessage(WM_DRAWSPECTRUM);
     }
@@ -98,7 +95,7 @@ void CMeasurement_View::Run() {
     m_scanNum++;
 
     // we have to call this before exiting the application otherwise we'll have trouble next time we start...
-    CloseUSBConnection();
+    CloseSpectrometerConnection();
 
     return;
 }

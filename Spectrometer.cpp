@@ -10,6 +10,7 @@
 #include "DMSpec.h"
 #include "Spectrometer.h"
 #include "Common/CDateTime.h"
+#include "Common/SpectrumIO.h"
 #include <algorithm>
 #include "Dialogs/SelectionDialog.h"
 #include <SpectralEvaluation/StringUtils.h>
@@ -146,7 +147,6 @@ int CSpectrometer::Scan(int sumInComputer, int sumInSpectrometer, double pResult
     m_spectrometer->SetIntegrationTime(m_integrationTime * 1000);
     m_spectrometer->SetScansToAverage(sumInSpectrometer);
 
-
     // Get the spectrum
     for (int readoutNumber = 0; readoutNumber < sumInComputer; ++readoutNumber)
     {
@@ -158,7 +158,6 @@ int CSpectrometer::Scan(int sumInComputer, int sumInSpectrometer, double pResult
         // Retreives the spectra from the spectrometer, one vector per channel.
         std::vector<std::vector<double>> spectrumData;
         const int spectrumLength = m_spectrometer->GetNextSpectrum(spectrumData);
-        // ASSERT(m_NChannels == spectrumData.size()); // there should be one vector per channel
 
         // Handle errors while reading out the spectrum
         if (spectrumLength == 0)
@@ -862,44 +861,35 @@ long CSpectrometer::GetLatLongAlt(double* la, double* lo, double* al, long sum) 
     return i;
 }
 
-/* returns the latest position */
-void CSpectrometer::GetCurrentPos(double* la, double* lo, double* al) {
-    long nColumns = m_fitRegion[0].vColumn[0].GetSize();
-
-    if (la != 0)
-        la[0] = m_spectrumGpsData[nColumns - 1].latitude;
-    if (lo != 0)
-        lo[0] = m_spectrumGpsData[nColumns - 1].longitude;
-    if (al != 0)
-        al[0] = m_spectrumGpsData[nColumns - 1].altitude;
-}
-
-long CSpectrometer::GetCurrentGPSTime() {
-    long nColumns = m_fitRegion[0].vColumn[0].GetSize();
-
-    return this->m_spectrumGpsData[nColumns].time;
-}
-
-long CSpectrometer::GetIntensity(double* list, long sum)
+int CSpectrometer::GetGpsPos(mobiledoas::GpsData& data) const
 {
-    int i = 0;
+    const int c = this->m_spectrumCounter; // local buffer, to avoid race conditions
 
-    long size = vIntensity.GetSize();
-    if (size > 0)
-    {
-        if (sum > size)
-            sum = size;
+    data = m_spectrumGpsData[c];
 
-        for (i = 0; i < sum; i++)
-        {
+    return c;
+}
 
-            list[i] = vIntensity.GetAt(size - sum + i);
+bool CSpectrometer::GpsGotContact() const {
 
-        }
-
+    if (m_gps == nullptr) {
+        return false;
     }
 
-    return i;
+    return this->m_gps->GotContact();
+}
+
+long CSpectrometer::GetIntensity(std::vector<double>& list, long sum)
+{
+    const long size = static_cast<long>(m_intensityOfMeasuredSpectrum.size());
+    const long numberOfValues = std::min(sum, size);
+
+    for (long i = 0; i < numberOfValues; i++)
+    {
+        list[i] = m_intensityOfMeasuredSpectrum[size - sum + i];
+    }
+
+    return numberOfValues;
 }
 
 long CSpectrometer::GetColumnNumber()
@@ -925,17 +915,6 @@ void CSpectrometer::WriteFluxLog()
     fprintf(f, "%f\n", m_flux);
 
     fclose(f);
-}
-
-
-
-int CSpectrometer::GetGpsPos(mobiledoas::GpsData& data) const
-{
-    const int c = this->m_spectrumCounter; // local buffer, to avoid race conditions
-
-    data = m_spectrumGpsData[c];
-
-    return c;
 }
 
 void CSpectrometer::Sing(double factor)
@@ -1178,10 +1157,6 @@ double* CSpectrometer::GetSpectrum(int channel) {
     return m_curSpectrum[channel];
 }
 
-double* CSpectrometer::GetWavelengths(int channel) {
-    return m_wavelength[channel];
-}
-
 void CSpectrometer::GetConnectedSpectrometers(std::vector<std::string>& connectedSpectrometers) {
 
     connectedSpectrometers = m_spectrometer->ScanForDevices();
@@ -1361,7 +1336,7 @@ int CSpectrometer::ChangeSpectrometer(int selectedspec, const std::vector<int>& 
 }
 
 
-void CSpectrometer::CloseUSBConnection()
+void CSpectrometer::CloseSpectrometerConnection()
 {
     m_spectrometer->Close();
 }
@@ -1394,7 +1369,7 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 
   /* The offset is judged as the average intensity in pixels 6 - 18 */
     for (int n = 0; n < m_NChannels; ++n) {
-        m_specInfo[n].offset = GetOffset(spectrum[n]);
+        m_specInfo[n].offset = mobiledoas::GetOffset(spectrum[n]);
 
         // Check if this spectrum is dark
         const bool isDark = mobiledoas::CheckIfDark(spectrum[n], m_detectorSize);
@@ -1512,15 +1487,6 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
     }
 }
 
-double CSpectrometer::GetOffset(double spectrum[MAX_SPECTRUM_LENGTH]) {
-    double offset = 0.0;
-    for (int i = 6; i < 18; ++i) {
-        offset += spectrum[i];
-    }
-    offset /= 12;
-
-    return offset;
-}
 
 void CSpectrometer::UpdateMobileLog() {
     char txt[256];
@@ -1598,7 +1564,7 @@ short CSpectrometer::AdjustIntegrationTime() {
 
         // Get the intensity of the sky and the dark spectra
         skyInt = mobiledoas::AverageIntensity(skySpec[0], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
-        darkInt = (long)GetOffset(skySpec[0]);
+        darkInt = (long)mobiledoas::GetOffset(skySpec[0]);
 
         // Draw the measured sky spectrum on the screen.
         for (int i = 0; i < m_NChannels; ++i) {

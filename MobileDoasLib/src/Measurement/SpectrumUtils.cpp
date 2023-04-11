@@ -46,12 +46,12 @@ long mobiledoas::AverageIntensity(double* pSpectrum, long specCenter, long specC
     double sum = 0.0;
     long num;
     // take the average of the 10 pixel surrounding the spec center
-    if (specCenter<= specCenterHalfWidth)
-        specCenter= specCenterHalfWidth;
-    if (specCenter>= MAX_SPECTRUM_LENGTH - specCenterHalfWidth)
-        specCenter= MAX_SPECTRUM_LENGTH - 2 * specCenterHalfWidth;
+    if (specCenter <= specCenterHalfWidth)
+        specCenter = specCenterHalfWidth;
+    if (specCenter >= MAX_SPECTRUM_LENGTH - specCenterHalfWidth)
+        specCenter = MAX_SPECTRUM_LENGTH - 2 * specCenterHalfWidth;
 
-    for (int j = specCenter- specCenterHalfWidth; j < specCenter+ specCenterHalfWidth; j++) {
+    for (int j = specCenter - specCenterHalfWidth; j < specCenter + specCenterHalfWidth; j++) {
         sum += pSpectrum[j];
     }
 
@@ -59,4 +59,16 @@ long mobiledoas::AverageIntensity(double* pSpectrum, long specCenter, long specC
     sum = fabs(sum / (double)num);
 
     return (long)sum;
+}
+
+// TODO: This needs tests and validation of the input parameters
+double mobiledoas::GetOffset(double spectrum[MAX_SPECTRUM_LENGTH]) {
+
+    double offset = 0.0;
+    for (int i = 6; i < 18; ++i) {
+        offset += spectrum[i];
+    }
+    offset /= 12;
+
+    return offset;
 }

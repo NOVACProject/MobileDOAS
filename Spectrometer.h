@@ -1,11 +1,7 @@
-// Spectrometer.h: interface for the CSpectrometer class.
-//
-//////////////////////////////////////////////////////////////////////
 #include "Evaluation/Evaluation.h"
 #include "GPS.h"
 #include "Configuration/MobileConfiguration.h"
 #include "Version.h"
-#include "Common/SpectrumIO.h"
 #include <MobileDoasLib/Measurement/SpectrometerInterface.h>
 
 #include <memory>
@@ -35,10 +31,12 @@
 // Possible modes for the spectrometer
 const enum SPECTROMETER_MODE { MODE_TRAVERSE, MODE_WIND, MODE_VIEW, MODE_DIRECTORY };
 
+// Forward declarations
 namespace novac
 {
     class CDateTime;
 }
+class CSpectrum;
 
 /** The class <b>CSpectrometer</b> is the base class used when communicating with the
     spectrometer. This holds all basic functions for USB or serial communication,
@@ -48,6 +46,7 @@ namespace novac
     be of one of the inherited classes (currently: CMeasurement_Traverse, CMeasurement_Wind
     and CMeasurement_View).
 */
+
 
 class CSpectrometer
 {
@@ -87,18 +86,14 @@ public:
     /** The measurement mode */
     SPECTROMETER_MODE m_spectrometerMode;
 
-    /* Collects a spectrum from the spectrometer.
-        @param sumInComputer - the number of spectra to add together in the computer
-        @param sumInSpectrometer - the number of spectra to add together in the spectrometer
-        @param pResult - will on successful return be filled with the measured spectrum. Returned spectrum
-            is an average of the (sumInComputer*sumInSpectrometer) collected spectra.
-        @return 0 on success
-        @return 1 if the collection failed or the collection should stop
-         */
-    int Scan(int sumInComputer, int sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]);
+    /** Retrieves the current date and time either from the GPS or from the computer time (if no valid gps-data). */
+    void GetCurrentDateAndTime(std::string& currentDate, long& currentTime);
 
-    /** The number of channels in the spectrometer to use */
-    int m_NChannels;
+    /** Retrieves the current date and time either from the GPS or from the computer time (if no valid gps-data). */
+    void GetCurrentDateAndTime(novac::CDateTime& currentDateAndTime);
+
+    /** This is the text to show in the status bar of the program*/
+    CString m_statusMsg;
 
     /** The number of spectra to average before writing to file / updating flux.
         This is equal to m_sumInSpectrometer * m_sumInComputer */
@@ -110,6 +105,157 @@ public:
     /** Number of spectra to average in computer */
     int m_sumInComputer;
 
+    /** The integration time that is used by the program. In milliseconds.
+        Maximum value is 65 seconds (from the type). */
+    short m_integrationTime;
+
+    /** The detector temperature, as reported by the spectrometer, in degrees Celsius.
+    Set to NaN if this could not be read. */
+    double detectorTemperature = std::numeric_limits<double>::quiet_NaN();
+
+    /** If detector temperature is within 2 degrees of set point temperature than set to true. */
+    bool detectorTemperatureIsSetPointTemp = false;
+
+    /** The model of the spectrometer */
+    std::string m_spectrometerModel;
+
+    /** The dynamic range of the spectrometer */
+    long m_spectrometerDynRange;
+
+    /** The number of pixels on the spectrometer's detector.
+        To keep track of how long spectra we should receive */
+    long m_detectorSize;
+
+    /** The number of channels in the spectrometer to use */
+    int m_NChannels;
+
+    /** The channel to use on the attached spectrometer, this is only used if m_NChannels == 1 */
+    int m_spectrometerChannel;
+
+    /** The spectrometer to use, if there are several attached
+        must be at least 0 and always smaller than 'm_numberOfSpectrometersAttached' */
+    int m_spectrometerIndex;
+
+    /** The scaled (and possibly shifted) references that were fitted
+        to the measured spectrum. This is used for plotting mostly.
+        TODO: This should not be publicly available. */
+    double m_fitResult[MAX_FIT_WINDOWS][MAX_SPECTRUM_LENGTH];
+
+    /** Retrieves the last collected spectrum from the given channel */
+    double* GetSpectrum(int channel);
+
+    /** @return the number of spectra that have been collected so far */
+    long GetColumnNumber();
+
+    /** Retrieves the last GPS position */
+    int GetGpsPos(mobiledoas::GpsData& data) const;
+
+    /** @return true if the GPS currently has connectact with satellites */
+    bool GpsGotContact() const;
+
+    /** Retrieves the intensities for the (at most) 'sum' collected spectra
+        @param list (out) - will on return be filled with the intensities
+        @param sum (in) the desired number of intensities.
+        @return - the number of intensities actually filled into 'list' */
+    long GetIntensity(std::vector<double>& list, long sum);
+
+    /** Retrieves the last 'sum' evaluated columns
+        @param (out) a pointer to an array, will on return be filled with at most 'sum' retrieved columns
+        @param sum (in) the desired number of columns to retrieve
+        @param fitRegion (in) - the fit region that we want to have the columns for
+    */
+    long GetColumns(double* columnList, long sum, int fitRegion = 0);
+
+    /** Retrieves the last 'sum' estimated columns errors
+        @param (out) a pointer to an array, will on return be filled with at most 'sum' estimated columns errors
+        @param sum (in) the desired number of columns errors to retrieve
+        @param fitRegion (in) - the fit region that we want to have the columns errors for
+    */
+    long GetColumnErrors(double* columnList, long sum, int fitRegion = 0);
+
+    /** Gets the number of spectra that are averaged in the spectrometer and in the computer */
+    void GetNSpecAverage(int& averageInSpectrometer, int& averageInComputer);
+
+    /* Create Spectrum data object. */
+    void CreateSpectrum(CSpectrum& spectrum, const double* spec, const std::string& startDate, long startTime, long elapsedSecond);
+
+    /** This retrieves a list of all spectrometers that are connected to this computer */
+    void GetConnectedSpectrometers(std::vector<std::string>& connectedSpectrometers);
+
+    /** This will change the spectrometer to use, to the one with the
+        given spectrometerIndex (ranging from 0 to (the number of spectrometers - 1) ).
+        If no spectrometer exist with the given index then no changes will be made.
+        @return the spectrometer index actually used */
+    int ChangeSpectrometer(int selectedspec, const std::vector<int>& channelsToUse);
+
+    /** Retrieves the last evaluated column.
+        @return a pointer to 'm_result' */
+    double* GetLastColumn();
+
+    /** Retrieves the lower range for the fit region for
+        fit window number 'region' */
+    inline int GetFitLow(int region = 0) const {
+        return m_fitRegion[region].window.fitLow;
+    }
+
+    /** Retrieves the upper range for the fit region for
+        fit window number 'region' */
+    inline int GetFitHigh(int region = 0) const {
+        return m_fitRegion[region].window.fitHigh;
+    }
+
+    /** Copies out the last read and processed (high-pass filtered) spectrum. Useful for plotting.
+        @return number of copied data points. */
+    unsigned int GetProcessedSpectrum(double* dst, unsigned int maxNofElements, int chn = 0) const;
+
+    /** Retrieves the number of fit regions that we are evaluating
+        each spectrum in */
+    inline int GetFitRegionNum() const {
+        return m_fitRegionNum;
+    }
+
+    long GetNumberOfSpectraAcquired() const {
+        return m_scanNum;
+    }
+
+    /** Retrieves the name of the fit region with the given index. */
+    inline const CString& GetFitWindowName(int windowNum) const {
+        return m_fitRegion[windowNum].window.name;
+    }
+
+    /** @return the currently used integration time, in milli seconds */
+    long RequestIntTime() { return (long)m_integrationTime; }
+
+    /** Returns the last calculated flux */
+    double GetFlux() { return m_flux; }
+
+    /** Retrieve the position for the (at most) 'sum' spectra.
+        @param la (out) - will on return be filled with the latitudes
+        @param lo (out) - will on return be filled with the longitudes
+        @param al (out) - will on return be filled with the altitudes
+        @param sum (in) - the desired number of positions */
+    long GetLatLongAlt(double* la, double* lo, double* al, long sum);
+
+    /** Sets the wind speed, wind direction and basename from the
+        Graphical User Interface */
+    void SetUserParameters(double windspeed, double winddirection, char* baseName);
+
+    CString CurrentOutputDirectory() const { return m_subFolder; }
+
+    void RequestIntegrationTimeChange() { this->m_adjustIntegrationTime = TRUE; }
+
+protected:
+
+    /* Collects a spectrum from the spectrometer.
+        @param sumInComputer - the number of spectra to add together in the computer
+        @param sumInSpectrometer - the number of spectra to add together in the spectrometer
+        @param pResult - will on successful return be filled with the measured spectrum. Returned spectrum
+            is an average of the (sumInComputer*sumInSpectrometer) collected spectra.
+        @return 0 on success
+        @return 1 if the collection failed or the collection should stop
+         */
+    int Scan(int sumInComputer, int sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]);
+
     /** the desired time resolution of the measurement
         (i.e. how often a spectrum should) be stored to file. In milliseconds */
     long m_timeResolution;
@@ -118,45 +264,12 @@ public:
         is used this is the serial number of the spectrometer */
     std::string m_spectrometerName;
 
-    /** The number of pixels on the spectrometer's detector.
-        To keep track of how long spectra we should receive */
-    long m_detectorSize;
-
-    /** The dynamic range of the spectrometer */
-    long m_spectrometerDynRange;
-
-    /** The model of the spectrometer */
-    std::string m_spectrometerModel;
-
-    /** The spectrometer to use, if there are several attached
-        must be at least 0 and always smaller than 'm_numberOfSpectrometersAttached' */
-    int m_spectrometerIndex;
-
-    /** The channel to use on the attached spectrometer, this is only used if m_NChannels == 1 */
-    int m_spectrometerChannel;
-
     /** The number of spectrometers that are attached to this computer */
     int m_numberOfSpectrometersAttached;
-
-    /** This will change the spectrometer to use, to the one with the
-        given spectrometerIndex (ranging from 0 to (the number of spectrometers - 1) ).
-        If no spectrometer exist with the given index then no changes will be made.
-        @return the spectrometer index actually used */
-    int ChangeSpectrometer(int selectedspec, const std::vector<int>& channelsToUse);
-
-    /** This retrieves a list of all spectrometers that are connected to this computer */
-    void GetConnectedSpectrometers(std::vector<std::string>& connectedSpectrometers);
 
     /** The board temperature, as reported by the spectrometer, in degrees Celsius.
     Set to NaN if this could not be read. */
     double boardTemperature = std::numeric_limits<double>::quiet_NaN();
-
-    /** The detector temperature, as reported by the spectrometer, in degrees Celsius.
-    Set to NaN if this could not be read. */
-    double detectorTemperature = std::numeric_limits<double>::quiet_NaN();
-
-    /** If detector temperature is within 2 degrees of set point temperature than set to true. */
-    bool detectorTemperatureIsSetPointTemp = false;
 
     // -------------------------------------------------------------------------------------
     // ---------------------- Managing the intensity of the spectra ------------------------
@@ -196,10 +309,6 @@ public:
       and the exposure time they were collected with*/
     long GetInttime(long pSky, long pDark, int intT = 100);
 
-    /** The integration time that is used by the program. In milliseconds.
-        Maximum value is 65 seconds (from the type). */
-    short m_integrationTime;
-
     /** The desired intensity of the measured spectra,
         in fractions of the maximum value */
     double m_percent;
@@ -214,17 +323,10 @@ public:
     /** fills up the 'specInfo' structure with information from the supplied spectrum */
     void GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]);
 
-    /** Retrieves the (electronic-)offset of the supplied spectrum */
-    double GetOffset(double spectrum[MAX_SPECTRUM_LENGTH]);
-
     /* -------  The spectra ----------- */
 
     /** The exposure time that we should use to collect the dark current spectrum */
     static const int DARK_CURRENT_EXPTIME = 10000;
-
-    /** The scaled (and possibly shifted) references that were fitted
-        to the measured spectrum. This is used for plotting mostly */
-    double m_fitResult[MAX_FIT_WINDOWS][MAX_SPECTRUM_LENGTH];
 
     /** Called to calculate the flux in real-time (during the scope of the measurement)
         @return the accumulated flux so far */
@@ -282,8 +384,8 @@ public:
         spectrometer channel. Same as evaluateResult[0][0] */
     double m_result[6]; /* [column, columnError, shift, shiftError, squeeze, squeezeError] */
 
-    /** This is an array holding the intensities of the so far collected spectra */
-    CVector vIntensity;
+    /** This is an array holding the intensities of the so far collected spectra. */
+    std::vector<double> m_intensityOfMeasuredSpectrum;
 
     // ---------------------------------------------------------------
     // --------------------------- Output ----------------------------
@@ -326,15 +428,6 @@ public:
         This is set by 'SetFileName()' */
     CString m_stdfileName[MAX_N_CHANNELS];
 
-    /** Retrieves the current date and time either from the GPS or from the computer time (if no valid gps-data). */
-    void GetCurrentDateAndTime(std::string& currentDate, long& currentTime);
-
-    /** Retrieves the current date and time either from the GPS or from the computer time (if no valid gps-data). */
-    void GetCurrentDateAndTime(novac::CDateTime& currentDateAndTime);
-
-    /* Create Spectrum data object. */
-    void CreateSpectrum(CSpectrum& spectrum, const double* spec, const std::string& startDate, long startTime, long elapsedSecond);
-
 
     // ---------------------------------------------------------------
     // ----------------------- The GPS -------------------------------
@@ -346,9 +439,6 @@ public:
         @return true if the updated data is valid (i.e. if the GPS can retrieve lat/long).
         @return false if the data is not valid or the GPS isn't used. */
     bool UpdateGpsData(mobiledoas::GpsData& gpsInfo);
-
-    /** Retrieves the last GPS position */
-    int GetGpsPos(mobiledoas::GpsData& data) const;
 
     /** Retrieves the current time from the system time */
     long GetCurrentTimeFromComputerClock();
@@ -378,9 +468,9 @@ public:
         @return 1 if successful, else 0 */
     int TestSpectrometerConnection();
 
-    /** Called to close the USB-connection. Should only be done
+    /** Called to close the connection with the spectrometer. Should only be done
         when we're about to stop collecting spectra */
-    void CloseUSBConnection();
+    void CloseSpectrometerConnection();
 
     /** @return true if the spectrometer has been disconnected */
     bool IsSpectrometerDisconnected();
@@ -417,107 +507,6 @@ public:
     /** Updates the mobile-log... This is used to store the
         users preferences between runs */
     void UpdateMobileLog();
-
-    //  ----------------- Communicating with other parts of the program -----------------
-
-    /** Gets the number of spectra that are averaged in the spectrometer and in the computer */
-    void GetNSpecAverage(int& averageInSpectrometer, int& averageInComputer);
-
-    /** Retrieves the last evaluated column.
-        @return a pointer to 'm_result' */
-    double* GetLastColumn();
-
-    /** Returns the last calculated flux */
-    double GetFlux() { return m_flux; }
-
-    /** Retrieves the last 'sum' evaluated columns
-        @param (out) a pointer to an array, will on return be filled with at most 'sum' retrieved columns
-        @param sum (in) the desired number of columns to retrieve
-        @param fitRegion (in) - the fit region that we want to have the columns for
-    */
-    long GetColumns(double* columnList, long sum, int fitRegion = 0);
-
-    /** Retrieves the last 'sum' estimated columns errors
-        @param (out) a pointer to an array, will on return be filled with at most 'sum' estimated columns errors
-        @param sum (in) the desired number of columns errors to retrieve
-        @param fitRegion (in) - the fit region that we want to have the columns errors for
-    */
-    long GetColumnErrors(double* columnList, long sum, int fitRegion = 0);
-
-    /** Retrieve the position for the (at most) 'sum' spectra.
-        @param la (out) - will on return be filled with the latitudes
-        @param lo (out) - will on return be filled with the longitudes
-        @param al (out) - will on return be filled with the altitudes
-        @param sum (in) - the desired number of positions */
-    long GetLatLongAlt(double* la, double* lo, double* al, long sum);
-
-    /** Retrieves the position for the last collected spectrum
-        @param la (out) - will on return be filled with the latitude
-        @param lo (out) - will on return be filled with the longitude
-        @param al (out) - will on return be filled with the altitude */
-    void GetCurrentPos(double* la, double* lo, double* al);
-
-    /** Retrieves the GPS-time for the last collected spectrum as a
-        long. */
-    long GetCurrentGPSTime();
-
-    /** Retrieves the intensities for the (at most) 'sum' collected spectra
-        @param list (out) - will on return be filled with the intensities
-        @param sum (in) the desired number of intensities.
-        @return - the number of intensities actually filled into 'list' */
-    long GetIntensity(double* list, long sum);
-
-    /** Sets the wind speed, wind direction and basename from the
-        Graphical User Interface */
-    void SetUserParameters(double windspeed, double winddirection, char* baseName);
-
-    /** Retrieves the last collected spectrum from the given channel */
-    double* GetSpectrum(int channel);
-
-    /** Retrieves the wavelength-calibration for the given channel */
-    double* GetWavelengths(int channel);
-
-    /** @return the number of spectra that have been collected so far */
-    long GetColumnNumber();
-
-    /** @return the currently used integration time, in milli seconds */
-    long RequestIntTime() { return (long)m_integrationTime; }
-
-    /** This is the text to show in the status bar of the program*/
-    CString m_statusMsg;
-
-    /** Retrieves the lower range for the fit region for
-        fit window number 'region' */
-    inline int GetFitLow(int region = 0) const {
-        return m_fitRegion[region].window.fitLow;
-    }
-
-    /** Retrieves the upper range for the fit region for
-        fit window number 'region' */
-    inline int GetFitHigh(int region = 0) const {
-        return m_fitRegion[region].window.fitHigh;
-    }
-
-    /** Retrieves the number of fit regions that we are evaluating
-        each spectrum in */
-    inline int GetFitRegionNum() const {
-        return m_fitRegionNum;
-    }
-
-    /** Retrieves the name of the fit region with the given index. */
-    inline const CString& GetFitWindowName(int windowNum) const {
-        return m_fitRegion[windowNum].window.name;
-    }
-
-    long GetNumberOfSpectraAcquired() const {
-        return m_scanNum;
-    }
-
-    /** Copies out the last read and processed (high-pass filtered) spectrum. Useful for plotting.
-        @return number of copied data points. */
-    unsigned int GetProcessedSpectrum(double* dst, unsigned int maxNofElements, int chn = 0) const;
-
-protected:
 
     /** This is 'true' if we should use the USB-port, if 'false'
         then we should use the serial port */

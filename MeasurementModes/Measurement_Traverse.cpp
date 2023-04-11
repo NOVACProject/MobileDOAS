@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "measurement_traverse.h"
+#include "../Common/SpectrumIO.h"
 #include <MobileDoasLib/Measurement/SpectrumUtils.h>
 
 extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
@@ -135,7 +136,7 @@ void CMeasurement_Traverse::Run() {
             }
         } else {
             if (Scan(m_sumInComputer, m_sumInSpectrometer, scanResult)) {
-                CloseUSBConnection();
+                CloseSpectrometerConnection();
                 return;
             }
         }
@@ -221,7 +222,7 @@ void CMeasurement_Traverse::Run() {
             pView->PostMessage(WM_STATUSMSG);
             if (ReadReferenceFiles()) {
                 // we have to call this before exiting the application otherwise we'll have trouble next time we start...
-                CloseUSBConnection();
+                CloseSpectrometerConnection();
                 return;
             }
 
@@ -252,7 +253,7 @@ void CMeasurement_Traverse::Run() {
             }
 
             pView->PostMessage(WM_STATUSMSG);
-            vIntensity.Append(m_averageSpectrumIntensity[0]);
+            m_intensityOfMeasuredSpectrum.push_back(m_averageSpectrumIntensity[0]);
 
             /* Evaluate */
             GetDark();
@@ -281,7 +282,7 @@ void CMeasurement_Traverse::Run() {
     }
 
     // we have to call this before exiting the application otherwise we'll have trouble next time we start...
-    CloseUSBConnection();
+    CloseSpectrometerConnection();
 
     return;
 }
@@ -337,7 +338,7 @@ void CMeasurement_Traverse::Run_Adaptive() {
             }
         } else {
             if (Scan(m_sumInComputer, m_sumInSpectrometer, scanResult)) {
-                CloseUSBConnection();
+                CloseSpectrometerConnection();
                 return;
             }
         }
@@ -453,7 +454,7 @@ void CMeasurement_Traverse::Run_Adaptive() {
             if (ReadReferenceFiles())
             {
                 // we have to call this before exiting the application otherwise we'll have trouble next time we start...
-                CloseUSBConnection();
+                CloseSpectrometerConnection();
                 return;
             }
 
@@ -493,7 +494,7 @@ void CMeasurement_Traverse::Run_Adaptive() {
             }
 
             pView->PostMessage(WM_STATUSMSG);
-            vIntensity.Append(m_averageSpectrumIntensity[0]);
+            m_intensityOfMeasuredSpectrum.push_back(m_averageSpectrumIntensity[0]);
 
             /* Evaluate */
             GetDark();
@@ -518,7 +519,7 @@ void CMeasurement_Traverse::Run_Adaptive() {
     }
 
     // we have to call this before exiting the application otherwise we'll have trouble next time we start...
-    CloseUSBConnection();
+    CloseSpectrometerConnection();
 
     return;
 }

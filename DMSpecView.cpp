@@ -322,7 +322,7 @@ CDMSpecDoc* CDMSpecView::GetDocument() // non-debug version is inline
 LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam) {
     double column[2][5000];		// the evaluated columns in each of the fit-regions
     double columnErr[2][5000];	// the error bars of the evaluated columns in each of the fit-regions
-    double intensity[2][5000];
+    std::vector<double> intensity;
     long size;
     double maxColumn, minColumn, lowLimit;
     CString cCon;		// the concentration str
@@ -346,7 +346,6 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam) {
     // Reset, is this really necessary??
     memset((void*)column, 0, sizeof(double) * 10000);
     memset((void*)columnErr, 0, sizeof(double) * 10000);
-    memset((void*)intensity, 0, sizeof(double) * 10000);
 
     // Get the last value and the total number of values
     result = m_Spectrometer->GetLastColumn();
@@ -387,7 +386,7 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam) {
 
     // --- Get the data ---
     size = std::min(long(199), m_Spectrometer->GetColumnNumber());
-    m_Spectrometer->GetIntensity(intensity[0], size);
+    m_Spectrometer->GetIntensity(intensity, size);
     m_Spectrometer->GetColumns(column[0], size, 0);
     m_Spectrometer->GetColumnErrors(columnErr[0], size, 0);
     if (fitRegionNum > 1) {
@@ -397,7 +396,7 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam) {
 
     // -- Convert the intensity to saturation ratio
     for (int k = 0; k < size; ++k) {
-        intensity[0][k] = intensity[0][k] * 100.0 / dynRange;
+        intensity[k] = intensity[k] * 100.0 / dynRange;
     }
 
     maxColumn = 0.0;
@@ -405,7 +404,7 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam) {
 
     // -- Get the limits for the data ---
     for (int i = 0; i < size; i++) {
-        if (intensity[0][i] > intensityLimit) {
+        if (intensity[i] > intensityLimit) {
             maxColumn = std::max(maxColumn, fabs(column[0][i]));
             minColumn = std::min(minColumn, column[0][i]);
             if (fitRegionNum > 1) {
@@ -464,7 +463,7 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam) {
     }
 
     // Draw the intensities
-    m_ColumnPlot.DrawCircles(m_columnChartXAxisValues.data(), intensity[0], size, Graph::CGraphCtrl::PLOT_SECOND_AXIS);
+    m_ColumnPlot.DrawCircles(m_columnChartXAxisValues.data(), intensity.data(), size, Graph::CGraphCtrl::PLOT_SECOND_AXIS);
 
     // Draw the spectrum
     DrawSpectrum();
@@ -666,7 +665,7 @@ LRESULT CDMSpecView::OnReadGPS(WPARAM wParam, LPARAM lParam)
     this->SetDlgItemText(IDC_NGPSSAT, nSat);
 
 
-    if (!(m_spectrometerMode == MODE_DIRECTORY) && !m_Spectrometer->m_gps->GotContact())
+    if (!(m_spectrometerMode == MODE_DIRECTORY) && !m_Spectrometer->GpsGotContact())
     {
         // If the communication with the GPS is broken (e.g. device unplugged)
         COLORREF warning = RGB(255, 75, 75);
@@ -720,7 +719,7 @@ void CDMSpecView::OnControlCountflux() {
     if (s_spectrometerAcquisitionThreadIsRunning)
     {
         double flux = m_Spectrometer->GetFlux();
-        m_Spectrometer->WriteFluxLog();
+        // m_Spectrometer->WriteFluxLog();
 
         CString str;
         str.Format("By now the flux is %f", flux);
@@ -773,7 +772,7 @@ void CDMSpecView::OnControlStart()
         CString cfgFile = g_exePath + TEXT("cfg.xml");
         std::unique_ptr<Configuration::CMobileConfiguration> conf;
         conf.reset(new Configuration::CMobileConfiguration(cfgFile));
-         if (conf->m_spectrometerConnection == conf->CONNECTION_DIRECTORY) {
+        if (conf->m_spectrometerConnection == conf->CONNECTION_DIRECTORY) {
             OnControlProcessSpectraFromDirectory();
             return;
         }
@@ -970,7 +969,6 @@ void CDMSpecView::OnControlStop()
             m_Spectrometer->Stop();
             Sleep(500);
             WaitForSingleObject(hThread, INFINITE);
-            m_Spectrometer->CloseUSBConnection();
             AfxGetApp()->EndWaitCursor();
             MessageBox(TEXT("Spectrum collection has been stopped"), NULL, MB_OK);
         }
@@ -1270,9 +1268,13 @@ void CDMSpecView::OnControlAddComment() {
 
     if (s_spectrometerAcquisitionThreadIsRunning)
     {
-        m_Spectrometer->GetCurrentPos(&cdlg.lat, &cdlg.lon, &cdlg.alt);
-        cdlg.t = m_Spectrometer->GetCurrentGPSTime();
-        cdlg.outputDir.Format(m_Spectrometer->m_subFolder);
+        mobiledoas::GpsData gps;
+        m_Spectrometer->GetGpsPos(gps);
+        cdlg.lat = gps.latitude;
+        cdlg.lon = gps.longitude;
+        cdlg.alt = gps.altitude;
+        cdlg.t = gps.time;
+        cdlg.outputDir = m_Spectrometer->CurrentOutputDirectory();
     }
     else
     {
@@ -1304,8 +1306,9 @@ void CDMSpecView::OnUpdateControlReevaluate(CCmdUI* pCmdUI) {
 }
 void CDMSpecView::OnConfigurationChangeexposuretime()
 {
-    if (m_Spectrometer != nullptr)
-        m_Spectrometer->m_adjustIntegrationTime = TRUE;
+    if (m_Spectrometer != nullptr) {
+        m_Spectrometer->RequestIntegrationTimeChange();
+    }
 }
 void CDMSpecView::OnMenuAnalysisWindSpeedMeasurement()
 {

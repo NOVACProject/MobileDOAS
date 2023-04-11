@@ -7,6 +7,7 @@
 #include "stdafx.h"
 #include "../DMSpec.h"
 #include "SpectrumSettingsDlg.h"
+#include "../Common/SpectrumIO.h"
 #include <algorithm>
 #include <SpectralEvaluation/StringUtils.h>
 

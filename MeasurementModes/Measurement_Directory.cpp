@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Measurement_Directory.h"
+#include "../Common/SpectrumIO.h"
 #include <MobileDoasLib/Measurement/SpectrumUtils.h>
 
 extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
@@ -83,8 +84,6 @@ void CMeasurement_Directory::Run()
 
     WriteEvaluationLogFileHeaders();
 
-    // variables used for adaptive mode
-    long serialDelay, gpsDelay;
     // other things to do in adaptive mode
     if (m_conf->m_expTimeMode == m_conf->EXPOSURETIME_ADAPTIVE) {
         // subtrace offset from dark
@@ -98,15 +97,6 @@ void CMeasurement_Directory::Run()
         for (int iterator = 0; iterator < MAX_SPECTRUM_LENGTH; ++iterator) {
             m_sky[0][iterator] -= m_tmpDark[0][iterator];
         }
-
-        /* Set the delays and initialize the USB-Connection */
-        if (m_connectViaUsb) {
-            serialDelay = 10;
-        }
-        else {
-            serialDelay = 2300;
-        }
-        gpsDelay = 10;
     }
 
     WIN32_FIND_DATA ffd;
@@ -212,7 +202,7 @@ bool CMeasurement_Directory::ProcessSpectrum(CString latestSpectrum) {
 
         // calculate average intensity
         m_averageSpectrumIntensity[channel] = mobiledoas::AverageIntensity(m_curSpectrum[channel], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
-        vIntensity.Append(m_averageSpectrumIntensity[channel]);
+        m_intensityOfMeasuredSpectrum.push_back(m_averageSpectrumIntensity[channel]);
 
         // get spectrum info
         GetSpectrumInfo(m_curSpectrum);
