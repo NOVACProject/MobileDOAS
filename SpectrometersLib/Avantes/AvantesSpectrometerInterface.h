@@ -1,26 +1,23 @@
 #pragma once
 
-#include <MobileDoasLib/Measurement/SpectrometerInterface.h>
-#include "../SerialConnection.h"
+#ifdef MANUFACTURER_SUPPORT_AVANTES 
 
-namespace mobiledoas
+#include <vector>
+#include <MobileDoasLib/Measurement/SpectrometerInterface.h>
+
+namespace avantes
 {
-    // OceanOpticsSpectrometerSerialInterface is an implementation of the SpectrometerInterface
-    // for accessing OceanOptics spectrometers through Serial.
-    class OceanOpticsSpectrometerSerialInterface : public SpectrometerInterface
+    // AvantesSpectrometerInterface is an implementation of the SpectrometerInterface
+    // for accessing OceanOptics spectrometers through USB.
+    class AvantesSpectrometerInterface : public mobiledoas::SpectrometerInterface
     {
     public:
-        OceanOpticsSpectrometerSerialInterface();
-        virtual ~OceanOpticsSpectrometerSerialInterface();
+        AvantesSpectrometerInterface();
+        virtual ~AvantesSpectrometerInterface();
 
         // This object is unfortunately not copyable since it contains a pointer which in itself cannot be copied.
-        OceanOpticsSpectrometerSerialInterface(const OceanOpticsSpectrometerSerialInterface& other) = delete;
-        OceanOpticsSpectrometerSerialInterface& operator=(const OceanOpticsSpectrometerSerialInterface& other) = delete;
-
-        void SetBaudrate(long speed);
-
-        void SetPort(const CString& port);
-
+        AvantesSpectrometerInterface(const AvantesSpectrometerInterface& other) = delete;
+        AvantesSpectrometerInterface& operator=(const AvantesSpectrometerInterface& other) = delete;
 
 #pragma region Implementing SpectrometerInterface
 
@@ -36,7 +33,7 @@ namespace mobiledoas
 
         virtual bool SetSpectrometer(int spectrometerIndex, const std::vector<int>& channelIndices) override;
 
-        virtual int GetReadoutDelay() override { return 500; }
+        virtual int GetReadoutDelay() override { return 20; }
 
         virtual std::string GetSerial() override;
 
@@ -74,22 +71,15 @@ namespace mobiledoas
 
     private:
 
-        /** The serial-communication object.*/
-        CSerialConnection serial;
+        // Handling the internal state.
+        void* m_state = nullptr;
 
         // The last error message set by this class.
         std::string m_lastErrorMessage;
 
-        // The number of spectra to co-add in the spectrometer
-        int m_sumInSpectrometer = 15;
-
-        // The integration time, in milliseconds
-        short m_integrationTime = 100;
-
-        /** Initializes the spectrometer.
-            @param channel - the channel to use (0 <-> master, 1 <-> slave, 257 <-> master & slave)
-            @param inttime - the integration time to use (in milli seconds)
-            @param sumSpec - the number of spectra to co-add in the spectrometer */
-        int InitSpectrometer(short channel, short inttime, short sumSpec);
+        // Cleans up all resources used by this interface.
+        void ReleaseDeviceLibraryResources();
     };
 }
+
+#endif // MANUFACTURER_SUPPORT_AVANTES 

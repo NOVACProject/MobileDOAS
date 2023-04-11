@@ -6,8 +6,10 @@
 extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
 extern CFormView* pView; // <-- The main window
 
-CMeasurement_Traverse::CMeasurement_Traverse(void)
+CMeasurement_Traverse::CMeasurement_Traverse(std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface)
+    : CSpectrometer(std::move(spectrometerInterface))
 {
+    m_spectrometerMode = MODE_TRAVERSE;
 }
 
 CMeasurement_Traverse::~CMeasurement_Traverse(void)
@@ -74,7 +76,8 @@ void CMeasurement_Traverse::Run() {
     if (0 == m_fixexptime) {
         ShowMessageBox("Please point the spectrometer to sky", "Notice");
         AdjustIntegrationTime();
-    } else {
+    }
+    else {
         m_integrationTime = (short)m_fixexptime;
     }
 
@@ -134,7 +137,8 @@ void CMeasurement_Traverse::Run() {
                     scanResult[i][j] = 0;
                 }
             }
-        } else {
+        }
+        else {
             if (Scan(m_sumInComputer, m_sumInSpectrometer, scanResult)) {
                 CloseSpectrometerConnection();
                 return;
@@ -191,7 +195,8 @@ void CMeasurement_Traverse::Run() {
             m_statusMsg.Format("Measuring the sky spectrum");
             pView->PostMessage(WM_STATUSMSG);
 
-        } else if (m_scanNum == SKY_SPECTRUM) {
+        }
+        else if (m_scanNum == SKY_SPECTRUM) {
             /* -------------- IF THE MEASURED SPECTRUM WAS THE SKY SPECTRUM ------------- */
 
             memcpy((void*)m_sky, (void*)scanResult, sizeof(double) * MAX_N_CHANNELS * MAX_SPECTRUM_LENGTH);
@@ -236,7 +241,8 @@ void CMeasurement_Traverse::Run() {
             }
 #endif
 
-        } else if (m_scanNum > SKY_SPECTRUM) {
+        }
+        else if (m_scanNum > SKY_SPECTRUM) {
             /* -------------- IF THE MEASURED SPECTRUM WAS A NORMAL SPECTRUM ------------- */
 
             for (int i = 0; i < m_NChannels; ++i) {
@@ -248,7 +254,8 @@ void CMeasurement_Traverse::Run() {
 
             if (m_specInfo->isDark) {
                 m_statusMsg.Format("Average value around center channel %d: %d (Dark)", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
-            } else {
+            }
+            else {
                 m_statusMsg.Format("Average value around center channel %d: %d", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
             }
 
@@ -336,7 +343,8 @@ void CMeasurement_Traverse::Run_Adaptive() {
                     scanResult[i][j] = 0;
                 }
             }
-        } else {
+        }
+        else {
             if (Scan(m_sumInComputer, m_sumInSpectrometer, scanResult)) {
                 CloseSpectrometerConnection();
                 return;
@@ -387,7 +395,8 @@ void CMeasurement_Traverse::Run_Adaptive() {
             m_totalSpecNum = m_sumInSpectrometer * m_sumInComputer;
             pView->PostMessage(WM_SHOWINTTIME);
 
-        } else if (m_scanNum == DARKCURRENT_SPECTRUM) {
+        }
+        else if (m_scanNum == DARKCURRENT_SPECTRUM) {
 
             /* -------------- IF THE MEASURED SPECTRUM WAS THE DARK-CURRENT SPECTRUM ------------- */
             for (int j = 0; j < m_NChannels; ++j) {
@@ -477,7 +486,8 @@ void CMeasurement_Traverse::Run_Adaptive() {
             m_totalSpecNum = m_sumInComputer * m_sumInSpectrometer;
             pView->PostMessage(WM_SHOWINTTIME);
 
-        } else if (m_scanNum > SKY_SPECTRUM) {
+        }
+        else if (m_scanNum > SKY_SPECTRUM) {
             /* -------------- IF THE MEASURED SPECTRUM WAS A NORMAL SPECTRUM ------------- */
             for (int i = 0; i < m_NChannels; ++i) {
                 m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(scanResult[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
@@ -489,7 +499,8 @@ void CMeasurement_Traverse::Run_Adaptive() {
             if (m_specInfo->isDark) {
                 m_statusMsg.Format("Average value around center channel %d: %d (Dark)", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
 
-            } else {
+            }
+            else {
                 m_statusMsg.Format("Average value around center channel %d: %d", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
             }
 

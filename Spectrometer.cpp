@@ -16,8 +16,6 @@
 #include <SpectralEvaluation/StringUtils.h>
 #include <SpectralEvaluation/Spectra/SpectrumInfo.h>
 #include "Evaluation/RealTimeCalibration.h"
-#include "Spectrometers/OceanOpticsSpectrometerInterface.h"
-#include "Spectrometers/OceanOpticsSpectrometerSerialInterface.h"
 #include <MobileDoasLib/Measurement/SpectrumUtils.h>
 #include <SpectralEvaluation/StringUtils.h>
 #include <sstream>
@@ -36,13 +34,12 @@ static char THIS_FILE[] = __FILE__;
 //////////////////////////////////////////////////////////////////////
 
 
-CSpectrometer::CSpectrometer()
+CSpectrometer::CSpectrometer(std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface)
     : m_useGps(true), m_connectViaUsb(true), m_scanNum(0), m_spectrumCounter(0) {
 
     sprintf(m_GPSPort, "COM5");
 
-    // TODO: Make it possible to also use some other spectrometer make.
-    m_spectrometer = std::make_unique<mobiledoas::OceanOpticsSpectrometerInterface>();
+    m_spectrometer = std::move(spectrometerInterface);
 
     m_isRunning = true;
     m_spectrometerMode = MODE_TRAVERSE; // default mode
@@ -248,17 +245,13 @@ void CSpectrometer::ApplySettings() {
     m_connectViaUsb = (m_conf->m_spectrometerConnection == Configuration::CMobileConfiguration::CONNECTION_USB);
 
     // TODO: Make it possible to also use some other spectrometer make.
-    if (!m_connectViaUsb) {
-        // serial.isRunning = &m_isRunning;
-        auto spec = std::make_unique<mobiledoas::OceanOpticsSpectrometerSerialInterface>();
-        spec->SetBaudrate(m_conf->m_baudrate);
-        spec->SetPort(m_conf->m_serialPort);
-        m_spectrometer = std::move(spec);
-    }
-    else {
-        m_spectrometer = std::make_unique<mobiledoas::OceanOpticsSpectrometerInterface>();
-    }
-
+    //if (!m_connectViaUsb) {
+    //    // serial.isRunning = &m_isRunning;
+    //    auto spec = std::make_unique<mobiledoas::OceanOpticsSpectrometerSerialInterface>();
+    //    spec->SetBaudrate(m_conf->m_baudrate);
+    //    spec->SetPort(m_conf->m_serialPort);
+    //    m_spectrometer = std::move(spec);
+    //}
 
     m_NChannels = m_conf->m_nChannels;
     bool error = false;

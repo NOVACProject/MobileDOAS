@@ -5,8 +5,10 @@
 extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
 extern CFormView* pView; // <-- The main window
 
-CMeasurement_View::CMeasurement_View(void)
+CMeasurement_View::CMeasurement_View(std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface)
+    : CSpectrometer(std::move(spectrometerInterface))
 {
+    m_spectrometerMode = MODE_VIEW;
 }
 
 CMeasurement_View::~CMeasurement_View(void)

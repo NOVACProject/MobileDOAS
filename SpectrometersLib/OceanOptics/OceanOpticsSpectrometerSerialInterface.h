@@ -1,34 +1,28 @@
 #pragma once
 
+#ifdef MANUFACTURER_SUPPORT_OCEANOPTICS
+
 #include <MobileDoasLib/Measurement/SpectrometerInterface.h>
+#include <MobileDoasLib/Communication/SerialConnection.h>
 
-// Forward declaration of the ocean-optics Wrapper class, such that we don't need to 
-// include the OceanOptics headers everywhere..
-class Wrapper;
-
-namespace mobiledoas
+namespace oceanoptics
 {
-    // OceanOpticsSpectrometerInterface is an implementation of the SpectrometerInterface
-    // for accessing OceanOptics spectrometers through USB.
-    class OceanOpticsSpectrometerInterface : public SpectrometerInterface
+    // OceanOpticsSpectrometerSerialInterface is an implementation of the SpectrometerInterface
+    // for accessing OceanOptics spectrometers through Serial.
+    class OceanOpticsSpectrometerSerialInterface : public mobiledoas::SpectrometerInterface
     {
     public:
-        OceanOpticsSpectrometerInterface();
-        virtual ~OceanOpticsSpectrometerInterface();
+        OceanOpticsSpectrometerSerialInterface();
+        virtual ~OceanOpticsSpectrometerSerialInterface();
 
         // This object is unfortunately not copyable since it contains a pointer which in itself cannot be copied.
-        OceanOpticsSpectrometerInterface(const OceanOpticsSpectrometerInterface& other) = delete;
-        OceanOpticsSpectrometerInterface& operator=(const OceanOpticsSpectrometerInterface& other) = delete;
+        OceanOpticsSpectrometerSerialInterface(const OceanOpticsSpectrometerSerialInterface& other) = delete;
+        OceanOpticsSpectrometerSerialInterface& operator=(const OceanOpticsSpectrometerSerialInterface& other) = delete;
 
-        /** The spectrometer to use, if there are several attached.
-            must be at least 0 and always smaller than 'm_numberOfSpectrometersAttached' */
-        int m_spectrometerIndex = 0;
+        void SetBaudrate(long speed);
 
-        /** The channels to use on the attached spectrometer */
-        std::vector<int> m_spectrometerChannels;
+        void SetPort(const std::string& port);
 
-        /** The number of spectrometers that are attached to this computer */
-        int m_numberOfSpectrometersAttached = 0;
 
 #pragma region Implementing SpectrometerInterface
 
@@ -44,7 +38,7 @@ namespace mobiledoas
 
         virtual bool SetSpectrometer(int spectrometerIndex, const std::vector<int>& channelIndices) override;
 
-        virtual int GetReadoutDelay() override { return 20; }
+        virtual int GetReadoutDelay() override { return 500; }
 
         virtual std::string GetSerial() override;
 
@@ -82,14 +76,24 @@ namespace mobiledoas
 
     private:
 
+        /** The serial-communication object.*/
+        mobiledoas::CSerialConnection serial;
 
-        /** This is the object through which we will access all of Omnidriver's capabilities
-            This is used to control the OceanOptics Spectrometers through USB.
-            There can be only one Wrapper object in the application!!!  */
-        Wrapper* m_wrapper;
-
-        // The last error message set by this class (note that the m_wrapper may also have an error message set).
+        // The last error message set by this class.
         std::string m_lastErrorMessage;
 
+        // The number of spectra to co-add in the spectrometer
+        int m_sumInSpectrometer = 15;
+
+        // The integration time, in milliseconds
+        short m_integrationTime = 100;
+
+        /** Initializes the spectrometer.
+            @param channel - the channel to use (0 <-> master, 1 <-> slave, 257 <-> master & slave)
+            @param inttime - the integration time to use (in milli seconds)
+            @param sumSpec - the number of spectra to co-add in the spectrometer */
+        int InitSpectrometer(short channel, short inttime, short sumSpec);
     };
 }
+
+#endif // MANUFACTURER_SUPPORT_OCEANOPTICS

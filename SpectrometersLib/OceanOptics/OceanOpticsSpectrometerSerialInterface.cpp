@@ -1,4 +1,7 @@
-#include "StdAfx.h"
+#include "pch.h"
+
+#ifdef MANUFACTURER_SUPPORT_OCEANOPTICS
+
 #include "OceanOpticsSpectrometerSerialInterface.h"
 
 #include <sstream>
@@ -6,6 +9,7 @@
 #define SERIALDELAY 2000
 
 using namespace mobiledoas;
+using namespace oceanoptics;
 
 OceanOpticsSpectrometerSerialInterface::OceanOpticsSpectrometerSerialInterface()
 {
@@ -20,7 +24,7 @@ void OceanOpticsSpectrometerSerialInterface::SetBaudrate(long speed)
     serial.SetBaudrate(speed);
 }
 
-void OceanOpticsSpectrometerSerialInterface::SetPort(const CString& port)
+void OceanOpticsSpectrometerSerialInterface::SetPort(const std::string& port)
 {
     serial.SetPort(port);
 }
@@ -53,12 +57,12 @@ bool OceanOpticsSpectrometerSerialInterface::Stop()
     return true;
 }
 
-bool OceanOpticsSpectrometerSerialInterface::SetSpectrometer(int spectrometerIndex)
+bool OceanOpticsSpectrometerSerialInterface::SetSpectrometer(int /*spectrometerIndex*/)
 {
     return false;
 }
 
-bool OceanOpticsSpectrometerSerialInterface::SetSpectrometer(int spectrometerIndex, const std::vector<int>& channelIndices)
+bool OceanOpticsSpectrometerSerialInterface::SetSpectrometer(int /*spectrometerIndex*/, const std::vector<int>& /*channelIndices*/)
 {
     return true;
 }
@@ -80,7 +84,7 @@ int OceanOpticsSpectrometerSerialInterface::GetNumberOfChannels()
     return 1;
 }
 
-int OceanOpticsSpectrometerSerialInterface::GetWavelengths(std::vector<std::vector<double>>& data)
+int OceanOpticsSpectrometerSerialInterface::GetWavelengths(std::vector<std::vector<double>>& /*data*/)
 {
     // TODO: Implement
     return 0;
@@ -94,9 +98,10 @@ int OceanOpticsSpectrometerSerialInterface::GetSaturationIntensity()
 
 void OceanOpticsSpectrometerSerialInterface::SetIntegrationTime(int usec)
 {
-    m_integrationTime = usec / 1000;
+    // TODO: This could very well overflow, need to notify the user when this happens.
+    m_integrationTime = static_cast<short>(usec / 1000);
 
-    InitSpectrometer(0, m_integrationTime, this->m_sumInSpectrometer);
+    InitSpectrometer(0, m_integrationTime, static_cast<short>(m_sumInSpectrometer));
 }
 
 int OceanOpticsSpectrometerSerialInterface::GetIntegrationTime()
@@ -108,7 +113,7 @@ void OceanOpticsSpectrometerSerialInterface::SetScansToAverage(int numberOfScans
 {
     m_sumInSpectrometer = numberOfScansToAverage;
 
-    InitSpectrometer(0, this->m_integrationTime, numberOfScansToAverage);
+    InitSpectrometer(0, m_integrationTime, static_cast<short>(numberOfScansToAverage));
 }
 
 int OceanOpticsSpectrometerSerialInterface::GetScansToAverage()
@@ -285,3 +290,5 @@ int OceanOpticsSpectrometerSerialInterface::InitSpectrometer(short channel, shor
 
     return 0;
 }
+
+#endif // MANUFACTURER_SUPPORT_OCEANOPTICS

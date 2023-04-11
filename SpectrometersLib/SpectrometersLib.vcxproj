@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{0c7689e4-1214-417d-9083-d561d032454d}</ProjectGuid>
-    <RootNamespace>MobileDoasLib</RootNamespace>
+    <ProjectGuid>{6cb8f413-8c91-4335-88ca-a34f2f10f773}</ProjectGuid>
+    <RootNamespace>SpectrometersLib</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -76,10 +76,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(PROJECT_DIR)include</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>%JAVA_HOME%\include;%JAVA_HOME%\include\win32;%OMNIDRIVER_HOME%\include;$(PROJECT_DIR)..\MobileDoasLib\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -96,10 +95,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(PROJECT_DIR)include</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>%JAVA_HOME%\include;%JAVA_HOME%\include\win32;%OMNIDRIVER_HOME%\include;$(PROJECT_DIR)..\MobileDoasLib\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -116,18 +114,20 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(PROJECT_DIR)include</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalIncludeDirectories>%JAVA_HOME%\include;%JAVA_HOME%\include\win32;%OMNIDRIVER_HOME%\include;$(PROJECT_DIR)..\MobileDoasLib\include</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>
       </SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalDependencies>$(PROJECT_DIR)Avantes\lib\avaspecx64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -137,10 +137,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(PROJECT_DIR)include</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>%JAVA_HOME%\include;%JAVA_HOME%\include\win32;%OMNIDRIVER_HOME%\include;$(PROJECT_DIR)..\MobileDoasLib\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -150,24 +149,37 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalDependencies>$(PROJECT_DIR)Avantes\lib\avaspecx64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Avantes\AvantesSpectrometerInterface.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="include\MobileDoasLib\Communication\SerialConnection.h" />
-    <ClInclude Include="include\MobileDoasLib\Definitions.h" />
-    <ClInclude Include="include\MobileDoasLib\GpsData.h" />
-    <ClInclude Include="include\MobileDoasLib\Measurement\SpectrometerInterface.h" />
-    <ClInclude Include="include\MobileDoasLib\Measurement\SpectrumUtils.h" />
+    <ClInclude Include="include\SpectrometersLib\Spectrometers.h" />
+    <ClInclude Include="OceanOptics\OceanOpticsSpectrometerInterface.h" />
+    <ClInclude Include="OceanOptics\OceanOpticsSpectrometerSerialInterface.h" />
+    <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MobileDoasLib.cpp" />
-    <ClCompile Include="src\Communication\SerialConnection.cpp" />
-    <ClCompile Include="src\GpsData.cpp" />
-    <ClCompile Include="src\Measurement\SpectrometerInterface.cpp" />
-    <ClCompile Include="src\Measurement\SpectrumUtils.cpp" />
+    <ClCompile Include="Avantes\AvantesSpectrometerInterface.cpp" />
+    <ClCompile Include="OceanOptics\OceanOpticsSpectrometerInterface.cpp" />
+    <ClCompile Include="OceanOptics\OceanOpticsSpectrometerSerialInterface.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SpectrometersLib.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ReadMe.md" />
+    <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MobileDoasLib\MobileDoasLib.vcxproj">
+      <Project>{0c7689e4-1214-417d-9083-d561d032454d}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

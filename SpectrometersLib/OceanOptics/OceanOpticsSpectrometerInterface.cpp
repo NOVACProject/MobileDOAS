@@ -1,16 +1,17 @@
-#include "StdAfx.h"
+#include "pch.h"
+
+#ifdef MANUFACTURER_SUPPORT_OCEANOPTICS
+
 #include "OceanOpticsSpectrometerInterface.h"
 
 // The OceanOptics drivers headers, located in %OMNIDRIVER_HOME%\include
 #define WIN32 // The WIN32 flag is also required for x64 development. See the OmniDriver programming manual.
 #include <ArrayTypes.h>
 #include <Wrapper.h>
-//#include <ADC1000USB.h>
-//#include <ADC1000Channel.h>
-
 #include <sstream>
 
 using namespace mobiledoas;
+using namespace oceanoptics;
 
 OceanOpticsSpectrometerInterface::OceanOpticsSpectrometerInterface()
     : m_spectrometerChannels{ 0 }
@@ -271,3 +272,5 @@ std::string OceanOpticsSpectrometerInterface::GetLastError()
     }
     return std::string{ str };
 }
+
+#endif // MANUFACTURER_SUPPORT_OCEANOPTICS

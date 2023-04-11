@@ -11,6 +11,8 @@ namespace mobiledoas
     {
     public:
 
+        virtual ~SpectrometerInterface() {}
+
         // ScanDevices searches for spectrometers connected to this computer.
         // This must be called before any other of the methods in this class.
         // @return the serial numbers of the devices found.

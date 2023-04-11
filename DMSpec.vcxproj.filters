@@ -94,12 +94,6 @@
     <Filter Include="Source Files\SpectralEvaluation\Fit">
       <UniqueIdentifier>{9561066c-9026-453d-be37-99b4d17d5e5e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Spectrometers">
-      <UniqueIdentifier>{dce9206b-ea32-4d58-ad2d-380b3b4d5dd1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Spectrometers">
-      <UniqueIdentifier>{190ede1a-3527-4620-8907-b6843233ba3f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\SpectralEvaluation">
       <UniqueIdentifier>{fb8f7482-43fd-4e9c-9933-afc689e09040}</UniqueIdentifier>
     </Filter>
@@ -151,9 +145,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Controls\ReferenceFileControl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SerialConnection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Spectrometer.cpp">
@@ -498,11 +489,11 @@
     <ClCompile Include="SpectralEvaluation\src\Evaluation\ReferenceFile.cpp">
       <Filter>Source Files\SpectralEvaluation\Evaluation</Filter>
     </ClCompile>
-    <ClCompile Include="Spectrometers\OceanOpticsSpectrometerInterface.cpp">
-      <Filter>Source Files\Spectrometers</Filter>
+    <ClCompile Include="SerialConnection.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Spectrometers\OceanOpticsSpectrometerSerialInterface.cpp">
-      <Filter>Source Files\Spectrometers</Filter>
+    <ClCompile Include="MeasurementSetup.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -563,9 +554,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SerialConnection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Spectrometer.h">
@@ -925,14 +913,14 @@
     <ClInclude Include="Evaluation\RealTimeCalibration.h">
       <Filter>Header Files\Evaluation</Filter>
     </ClInclude>
-    <ClInclude Include="Spectrometers\OceanOpticsSpectrometerInterface.h">
-      <Filter>Header Files\Spectrometers</Filter>
-    </ClInclude>
-    <ClInclude Include="Spectrometers\OceanOpticsSpectrometerSerialInterface.h">
-      <Filter>Header Files\Spectrometers</Filter>
-    </ClInclude>
     <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\StringUtils.h">
       <Filter>Header Files\SpectralEvaluation</Filter>
+    </ClInclude>
+    <ClInclude Include="SerialConnection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MeasurementSetup.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

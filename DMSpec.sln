@@ -10,6 +10,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MobileDoasLibTest", "Mobile
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AvantesTest", "AvantesTest\AvantesTest.vcxproj", "{5104BFCA-906D-481A-A122-0C94E04570AC}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SpectrometersLib", "SpectrometersLib\SpectrometersLib.vcxproj", "{6CB8F413-8C91-4335-88CA-A34F2F10F773}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -50,6 +52,14 @@ Global
 		{5104BFCA-906D-481A-A122-0C94E04570AC}.Release|Win32.Build.0 = Release|Win32
 		{5104BFCA-906D-481A-A122-0C94E04570AC}.Release|x64.ActiveCfg = Release|x64
 		{5104BFCA-906D-481A-A122-0C94E04570AC}.Release|x64.Build.0 = Release|x64
+		{6CB8F413-8C91-4335-88CA-A34F2F10F773}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6CB8F413-8C91-4335-88CA-A34F2F10F773}.Debug|Win32.Build.0 = Debug|Win32
+		{6CB8F413-8C91-4335-88CA-A34F2F10F773}.Debug|x64.ActiveCfg = Debug|x64
+		{6CB8F413-8C91-4335-88CA-A34F2F10F773}.Debug|x64.Build.0 = Debug|x64
+		{6CB8F413-8C91-4335-88CA-A34F2F10F773}.Release|Win32.ActiveCfg = Release|Win32
+		{6CB8F413-8C91-4335-88CA-A34F2F10F773}.Release|Win32.Build.0 = Release|Win32
+		{6CB8F413-8C91-4335-88CA-A34F2F10F773}.Release|x64.ActiveCfg = Release|x64
+		{6CB8F413-8C91-4335-88CA-A34F2F10F773}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -9,8 +9,8 @@
 class CMeasurement_Wind : public CSpectrometer
 {
 public:
-    CMeasurement_Wind(void);
-    ~CMeasurement_Wind(void);
+    CMeasurement_Wind(std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface);
+    virtual ~CMeasurement_Wind(void);
 
     /** This is used to make a dual-beam wind measurement, with each spectrum having the
         same exposure-time

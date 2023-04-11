@@ -64,7 +64,7 @@ protected:
     }FitRegion;
 
 public:
-    CSpectrometer();
+    CSpectrometer(std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface);
     virtual ~CSpectrometer();
 
     /* Running */

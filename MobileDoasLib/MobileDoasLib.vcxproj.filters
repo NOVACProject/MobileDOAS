@@ -19,6 +19,12 @@
     <Filter Include="Source Files\Measurement">
       <UniqueIdentifier>{9201bcf8-771c-4acd-a8b4-5d952fdf7740}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Communication">
+      <UniqueIdentifier>{8166965e-a5a2-4aba-90aa-3fbfccf3ea50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Communication">
+      <UniqueIdentifier>{573e90f6-9ded-4d89-80fb-042bacf16bbe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -36,6 +42,9 @@
     <ClInclude Include="include\MobileDoasLib\Definitions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\MobileDoasLib\Communication\SerialConnection.h">
+      <Filter>Header Files\Communication</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MobileDoasLib.cpp">
@@ -49,6 +58,9 @@
     </ClCompile>
     <ClCompile Include="src\Measurement\SpectrumUtils.cpp">
       <Filter>Source Files\Measurement</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Communication\SerialConnection.cpp">
+      <Filter>Source Files\Communication</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

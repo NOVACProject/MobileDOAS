@@ -31,10 +31,7 @@
 #include "Configuration/Configure_Directory.h"
 #include "Configuration/Configure_Calibration.h"
 
-#include "MeasurementModes/Measurement_Traverse.h"
-#include "MeasurementModes/Measurement_Wind.h"
-#include "MeasurementModes/Measurement_View.h"
-#include "MeasurementModes/Measurement_Directory.h"
+#include "MeasurementSetup.h"
 #include <algorithm>
 #include <Mmsystem.h>	// used for PlaySound
 
@@ -786,9 +783,8 @@ void CDMSpecView::OnControlStart()
             return;
         }
 
-        // Initialize a new CSpectromber object, this is the one
-        //  which actually does everything...
-        m_Spectrometer = new CMeasurement_Traverse();
+        // Initialize a new CSpectromber object, this is the one which actually does everything...
+        m_Spectrometer = CreateSpectrometer(MODE_TRAVERSE);
 
         // Copy the settings that the user typed in the dialog
         char text[100];
@@ -830,9 +826,9 @@ void CDMSpecView::OnControlViewSpectra() {
     if (!s_spectrometerAcquisitionThreadIsRunning)
     {
         CDMSpecDoc* pDoc = GetDocument();
-        CMeasurement_View* spec = new CMeasurement_View();
-        this->m_Spectrometer = (CSpectrometer*)spec;
-        m_Spectrometer->m_spectrometerMode = MODE_VIEW;
+
+        m_Spectrometer = CreateSpectrometer(MODE_VIEW);
+
         memset(text, 0, (size_t)100);
 
         pSpecThread = AfxBeginThread(CollectSpectra, (LPVOID)(m_Spectrometer), THREAD_PRIORITY_LOWEST, 0, 0, NULL);
@@ -840,7 +836,7 @@ void CDMSpecView::OnControlViewSpectra() {
         m_spectrometerMode = MODE_VIEW;
 
         // Show the window that makes it possible to change the exposure time
-        m_specSettingsDlg.m_Spectrometer = spec;
+        m_specSettingsDlg.m_Spectrometer = m_Spectrometer;
         if (!IsWindow(m_specSettingsDlg)) {
             m_specSettingsDlg.Create(IDD_SPECTRUM_SETTINGS_DLG, this);
         }
@@ -885,8 +881,8 @@ void CDMSpecView::OnControlViewSpectra() {
 void CDMSpecView::OnControlProcessSpectraFromDirectory() {
 
     CDMSpecDoc* pDoc = GetDocument();
-    CMeasurement_Directory* spec = new CMeasurement_Directory();
-    this->m_Spectrometer = (CSpectrometer*)spec;
+
+    m_Spectrometer = CreateSpectrometer(MODE_DIRECTORY);
 
     pSpecThread = AfxBeginThread(CollectSpectra, (LPVOID)(m_Spectrometer), THREAD_PRIORITY_LOWEST, 0, 0, NULL);
     s_spectrometerAcquisitionThreadIsRunning = true;
@@ -919,9 +915,8 @@ void CDMSpecView::OnControlStartWindMeasurement()
             return;
         }
 
-        // Initialize a new CSpectromber object, this is the one
-        //  which actually does everything...
-        m_Spectrometer = new CMeasurement_Wind();
+        // Initialize a new CSpectrometer object, this is the one which actually does everything...
+        m_Spectrometer = CreateSpectrometer(MODE_WIND);
 
         // Set the measurement mode to wind-speed measurement
         m_Spectrometer->m_spectrometerMode = MODE_WIND;
