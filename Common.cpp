@@ -506,7 +506,7 @@ std::vector<CString> Common::BrowseForFiles()
                         return filenames;
                     }
                     //
-                    // You can add your own code here to handle the results.
+                    // You can add your own code here to currentSpectrometerHandle the results.
                     //
                     results->Release();
                 }
@@ -613,17 +613,6 @@ void Common::GetDirectory(CString& fileName) {
     fileName = fileName.Left(position + 1);
 }
 
-unsigned short Common::Swp(unsigned short in)
-{
-    unsigned char* p1, * p2;
-    unsigned short ut;
-
-    p1 = (unsigned char*)&ut;
-    p2 = (unsigned char*)&in;
-    p1[0] = p2[1];
-    p1[1] = p2[0];
-    return(ut);
-}
 
 /** Takes a given year and month and returns the number of days in that month. */
 int	Common::DaysInMonth(int year, int month) {

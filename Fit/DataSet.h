@@ -1,7 +1,7 @@
 /**
 * DataSet.h
 *
-* Contains a simple interface to handle data sets.
+* Contains a simple interface to currentSpectrometerHandle data sets.
 *
 * @author		\URL[Stefan Kraus]{http://stefan@00kraus.de} @ \URL[IWR, Image Processing Group]{http://klimt.iwr.uni-heidelberg.de}
 * @version		1.0 @ 2001/09/09

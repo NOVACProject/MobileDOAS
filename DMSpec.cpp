@@ -16,6 +16,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+extern CFormView* pView; // <-- The main window
+
 /////////////////////////////////////////////////////////////////////////////
 // CDMSpecApp
 

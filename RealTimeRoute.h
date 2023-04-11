@@ -11,57 +11,57 @@
 
 namespace Dialogs
 {
-	class CRealTimeRoute : public CDialog {
-		DECLARE_DYNAMIC(CRealTimeRoute)
+    class CRealTimeRoute : public CDialog {
+        DECLARE_DYNAMIC(CRealTimeRoute)
 
-	private: 
-		CStatic m_plotArea;
-		int m_legendWidth;
+    private:
+        CStatic m_plotArea;
+        int m_legendWidth;
 
-	public:
-		CRealTimeRoute(CWnd* pParent = nullptr);   // standard constructor
-		virtual ~CRealTimeRoute();
+    public:
+        CRealTimeRoute(CWnd* pParent = nullptr);   // standard constructor
+        virtual ~CRealTimeRoute();
 
-		// Dialog Data
-		enum { IDD = IDD_REALTIME_ROUTE_DLG };
+        // Dialog Data
+        enum { IDD = IDD_REALTIME_ROUTE_DLG };
 
-	protected:
-		virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+    protected:
+        virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
-	  /* the plot */
-		::Graph::CRouteGraph   m_gpsPlot;
+        /* the plot */
+        ::Graph::CRouteGraph   m_gpsPlot;
 
-		DECLARE_MESSAGE_MAP()
-	public:
-		virtual BOOL OnInitDialog();
+        DECLARE_MESSAGE_MAP()
+    public:
+        virtual BOOL OnInitDialog();
 
-		bool    fVisible;
+        bool    fVisible;
 
-		CSpectrometer *m_spectrometer;
+        CSpectrometer* m_spectrometer;
 
-		long    m_pointNum;
-		double  m_lon[65536]; // TODO: Convert this to std::vector
-		double  m_lat[65536]; // TODO: Convert this to std::vector
-		double  m_col[65536]; // TODO: Convert this to std::vector
-		double  m_colmax;
-		double  m_colmin;
-		double  m_int[65536]; // TODO: Convert this to std::vector
+        long    m_pointNum;
+        double  m_lon[65536]; // TODO: Convert this to std::vector
+        double  m_lat[65536]; // TODO: Convert this to std::vector
+        double  m_col[65536]; // TODO: Convert this to std::vector
+        double  m_colmax;
+        double  m_colmin;
+        std::vector<double> m_int;
 
-		struct plotRange m_range;
-		double m_srcLat, m_srcLon;
+        struct plotRange m_range;
+        double m_srcLat, m_srcLon;
 
-		double m_intensityLimit; // points with intensity below 'm_intensityLimit' will not be shown
+        double m_intensityLimit; // points with intensity below 'm_intensityLimit' will not be shown
 
-		/* Plotting the data */
-		void   DrawRouteGraph();
+        /* Plotting the data */
+        void   DrawRouteGraph();
 
-		void   ReadData();
+        void   ReadData();
 
-		afx_msg void OnSize(UINT nType, int cx, int cy);
+        afx_msg void OnSize(UINT nType, int cx, int cy);
 
-		virtual BOOL Create(UINT nID, CWnd* pParentWnd = nullptr);
-		afx_msg void OnClose();
-	};
+        virtual BOOL Create(UINT nID, CWnd* pParentWnd = nullptr);
+        afx_msg void OnClose();
+    };
 
 }
 #endif

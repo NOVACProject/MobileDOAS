@@ -1,12 +1,16 @@
 #include "stdafx.h"
 #include "Measurement_Directory.h"
+#include "../Common/SpectrumIO.h"
+#include <MobileDoasLib/Measurement/SpectrumUtils.h>
 
 extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
+extern CFormView* pView; // <-- The main window
 
-CMeasurement_Directory::CMeasurement_Directory()
+CMeasurement_Directory::CMeasurement_Directory(std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface)
+    : CSpectrometer(std::move(spectrometerInterface))
 {
+    m_spectrometerMode = MODE_DIRECTORY;
 }
-
 
 CMeasurement_Directory::~CMeasurement_Directory()
 {
@@ -81,30 +85,19 @@ void CMeasurement_Directory::Run()
 
     WriteEvaluationLogFileHeaders();
 
-    // variables used for adaptive mode
-    long serialDelay, gpsDelay;
     // other things to do in adaptive mode
     if (m_conf->m_expTimeMode == m_conf->EXPOSURETIME_ADAPTIVE) {
         // subtrace offset from dark
         for (int i = 0; i < MAX_SPECTRUM_LENGTH; ++i) {
             m_darkCur[0][i] = m_darkCur[0][i] - m_offset[0][i];
         }
-        m_averageSpectrumIntensity[0] = AverageIntens(m_sky[0], 1);
+        m_averageSpectrumIntensity[0] = mobiledoas::AverageIntensity(m_sky[0], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
 
         // remove the dark spectrum from sky
         GetDark();
         for (int iterator = 0; iterator < MAX_SPECTRUM_LENGTH; ++iterator) {
             m_sky[0][iterator] -= m_tmpDark[0][iterator];
         }
-
-        /* Set the delays and initialize the USB-Connection */
-        if (m_connectViaUsb) {
-            serialDelay = 10;
-        }
-        else {
-            serialDelay = 2300;
-        }
-        gpsDelay = 10;
     }
 
     WIN32_FIND_DATA ffd;
@@ -209,8 +202,8 @@ bool CMeasurement_Directory::ProcessSpectrum(CString latestSpectrum) {
         pView->PostMessage(WM_READGPS);
 
         // calculate average intensity
-        m_averageSpectrumIntensity[channel] = AverageIntens(m_curSpectrum[channel], 1);
-        vIntensity.Append(m_averageSpectrumIntensity[channel]);
+        m_averageSpectrumIntensity[channel] = mobiledoas::AverageIntensity(m_curSpectrum[channel], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
+        m_intensityOfMeasuredSpectrum.push_back(m_averageSpectrumIntensity[channel]);
 
         // get spectrum info
         GetSpectrumInfo(m_curSpectrum);
@@ -226,7 +219,7 @@ bool CMeasurement_Directory::ProcessSpectrum(CString latestSpectrum) {
 }
 
 bool CMeasurement_Directory::ReadSky() {
-    WIN32_FIND_DATA ffd; // handle to spec file
+    WIN32_FIND_DATA ffd; // currentSpectrometerHandle to spec file
     CString specfile; // spec file name
     CSpectrum spec; // spectrum object
     CString filter; // spec file filter
@@ -259,7 +252,7 @@ bool CMeasurement_Directory::ReadSky() {
 }
 
 bool CMeasurement_Directory::ReadDark() {
-    WIN32_FIND_DATA ffd; // handle to spec file
+    WIN32_FIND_DATA ffd; // currentSpectrometerHandle to spec file
     CString specfile; // spec file name
     CSpectrum spec; // spectrum object
     CString filter; // spec file filter
@@ -287,7 +280,7 @@ bool CMeasurement_Directory::ReadDark() {
 }
 
 bool CMeasurement_Directory::ReadDarkcur() {
-    WIN32_FIND_DATA ffd; // handle to spec file
+    WIN32_FIND_DATA ffd; // currentSpectrometerHandle to spec file
     CString specfile; // spec file name
     CSpectrum spec; // spectrum object
     CString filter; // spec file filter
@@ -315,7 +308,7 @@ bool CMeasurement_Directory::ReadDarkcur() {
 }
 
 bool CMeasurement_Directory::ReadOffset() {
-    WIN32_FIND_DATA ffd; // handle to spec file
+    WIN32_FIND_DATA ffd; // currentSpectrometerHandle to spec file
     CString specfile; // spec file name
     CSpectrum spec; // spectrum object
     CString filter; // spec file filter

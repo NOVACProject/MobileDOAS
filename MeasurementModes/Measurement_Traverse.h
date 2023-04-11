@@ -9,8 +9,8 @@
 class CMeasurement_Traverse : public CSpectrometer
 {
 public:
-    CMeasurement_Traverse(void);
-    ~CMeasurement_Traverse(void);
+    CMeasurement_Traverse(std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface);
+    virtual ~CMeasurement_Traverse();
 
     /** This is used to make a standard traverse, with each spectrum having the
         same exposure-time

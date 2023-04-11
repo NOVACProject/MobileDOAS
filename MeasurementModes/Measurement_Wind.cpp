@@ -1,10 +1,15 @@
 #include "stdafx.h"
 #include "measurement_wind.h"
+#include "../Common/SpectrumIO.h"
+#include <MobileDoasLib/Measurement/SpectrumUtils.h>
 
 extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
+extern CFormView* pView; // <-- The main window
 
-CMeasurement_Wind::CMeasurement_Wind(void)
+CMeasurement_Wind::CMeasurement_Wind(std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface)
+    : CSpectrometer(std::move(spectrometerInterface))
 {
+    m_spectrometerMode = MODE_WIND;
 }
 
 CMeasurement_Wind::~CMeasurement_Wind(void)
@@ -27,8 +32,6 @@ void CMeasurement_Wind::Run() {
 #endif
     CString tmpString;
 
-    long serialDelay, gpsDelay;
-
     ShowMessageBox("START", "NOTICE");
 
     // Read configuration file
@@ -50,39 +53,8 @@ void CMeasurement_Wind::Run() {
     UpdateMobileLog();
 
     /* Set the delays and initialize the USB-Connection */
-    if (m_connectViaUsb) {
-        serialDelay = 10;
-        if (!TestUSBConnection()) {
-            m_isRunning = false;
-            return;
-        }
-    }
-    else {
-        serialDelay = 2300;
-    }
-    gpsDelay = 10;
-
-    /* Error Check */
-    if (serialDelay >= this->m_timeResolution) {
-        CString tmpStr;
-        tmpStr.Format("Error In cfg.xml: The time resolution is smaller than the serial delay. Please Change and restart. Set Time Resolution = %d [s]. Set Serial Delay = %d [s]", this->m_timeResolution, serialDelay);
-        ShowMessageBox(tmpStr, "Error");
-
-        // we have to call this before exiting the application otherwise we'll have trouble next time we start...
-        CloseUSBConnection();
-
-        return;
-    }
-
-    /* -- Init Serial Communication -- */
-    m_statusMsg.Format("Initializing communication with spectrometer");
-    pView->PostMessage(WM_STATUSMSG);
-    if (!m_connectViaUsb && serial.InitCommunication()) {
-        ShowMessageBox("Can not initialize the communication", "Error");
-
-        // we have to call this before exiting the application otherwise we'll have trouble next time we start...
-        CloseUSBConnection();
-
+    if (!TestSpectrometerConnection()) {
+        m_isRunning = false;
         return;
     }
 
@@ -118,7 +90,7 @@ void CMeasurement_Wind::Run() {
         /* Calculate the number of spectra to integrate in spectrometer and in computer */
         m_scanNum++;
         SpectrumSummation spectrumSummation;
-        m_sumInComputer = CountRound(m_timeResolution, serialDelay, gpsDelay, spectrumSummation);
+        m_sumInComputer = CountRound(m_timeResolution, spectrumSummation);
         m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
         m_totalSpecNum = m_sumInComputer * m_sumInSpectrometer;
         pView->PostMessage(WM_SHOWINTTIME);
@@ -160,7 +132,7 @@ void CMeasurement_Wind::Run() {
             pView->PostMessage(WM_SHOWDIALOG, CHANGED_EXPOSURETIME);
             m_adjustIntegrationTime = FALSE;
             SpectrumSummation spectrumSummation;
-            m_sumInComputer = CountRound(m_timeResolution, serialDelay, gpsDelay, spectrumSummation);
+            m_sumInComputer = CountRound(m_timeResolution, spectrumSummation);
             m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
             m_totalSpecNum = m_sumInComputer * m_sumInSpectrometer;
             pView->PostMessage(WM_SHOWINTTIME);
@@ -174,21 +146,9 @@ void CMeasurement_Wind::Run() {
 
         cStart = clock();
 
-        // Initialize the spectrometer, if using the serial-port
-        if (!m_connectViaUsb) {
-            if (InitSpectrometer(0, m_integrationTime, m_sumInSpectrometer)) {
-                serial.CloseAll();
-            }
-        }
-
         // Get the next spectrum
         if (Scan(m_sumInComputer, m_sumInSpectrometer, scanResult)) {
-            if (!m_connectViaUsb)
-                serial.CloseAll();
-
-            // we have to call this before exiting the application otherwise we'll have trouble next time we start...
-            CloseUSBConnection();
-
+            CloseSpectrometerConnection();
             return;
         }
 
@@ -223,7 +183,7 @@ void CMeasurement_Wind::Run() {
 
             pView->PostMessage(WM_DRAWSPECTRUM);//draw dark spectrum
             for (int i = 0; i < m_NChannels; ++i) {
-                m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i], 1);
+                m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(scanResult[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
             }
             m_statusMsg.Format("Average value around center channel(dark) %d: %d", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
             pView->PostMessage(WM_STATUSMSG);
@@ -234,7 +194,7 @@ void CMeasurement_Wind::Run() {
             if (!m_specInfo->isDark)
             {
                 ShowMessageBox("It seems like the dark spectrum is not completely dark, consider restarting the program", "Error");
-        }
+            }
 #endif
 
             ShowMessageBox("Point the spectrometer to sky", "Notice");
@@ -242,7 +202,7 @@ void CMeasurement_Wind::Run() {
             m_statusMsg.Format("Measuring the sky spectrum");
             pView->PostMessage(WM_STATUSMSG);
 
-    }
+        }
         else if (m_scanNum == SKY_SPECTRUM) {
             /* -------------- IF THE MEASURED SPECTRUM WAS THE SKY SPECTRUM ------------- */
 
@@ -251,7 +211,7 @@ void CMeasurement_Wind::Run() {
             pView->PostMessage(WM_DRAWSPECTRUM);//draw sky spectrum
 
             for (int i = 0; i < m_NChannels; ++i) {
-                m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i], 1);
+                m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(scanResult[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
 
                 // remove the dark spectrum
                 for (int iterator = 0; iterator < MAX_SPECTRUM_LENGTH; ++iterator) {
@@ -281,7 +241,7 @@ void CMeasurement_Wind::Run() {
             if (ReadReferenceFiles()) {
 
                 // we have to call this before exiting the application otherwise we'll have trouble next time we start...
-                CloseUSBConnection();
+                CloseSpectrometerConnection();
                 return;
             }
 
@@ -293,15 +253,15 @@ void CMeasurement_Wind::Run() {
             if (m_specInfo->isDark)
             {
                 ShowMessageBox("It seems like the sky spectrum is dark, consider restarting the program", "Error");
-        }
+            }
 #endif
 
-}
+        }
         else if (m_scanNum > SKY_SPECTRUM) {
             /* -------------- IF THE MEASURED SPECTRUM WAS A NORMAL SPECTRUM ------------- */
 
             for (int i = 0; i < m_NChannels; ++i) {
-                m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i], 1);
+                m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(scanResult[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
             }
 
             /* Get the information about the spectrum */
@@ -313,13 +273,14 @@ void CMeasurement_Wind::Run() {
                 m_statusMsg.Format("Average value around center channel %d: %d", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
 
             pView->PostMessage(WM_STATUSMSG);
-            vIntensity.Append(m_averageSpectrumIntensity[0]);
+            m_intensityOfMeasuredSpectrum.push_back(m_averageSpectrumIntensity[0]);
 
             if (m_spectrometerMode != MODE_VIEW) {
                 /* Evaluate */
                 GetDark();
                 GetSky();
                 DoEvaluation(m_tmpSky, m_tmpDark, scanResult);
+
             }
             else {
                 pView->PostMessage(WM_DRAWSPECTRUM);
@@ -346,7 +307,7 @@ void CMeasurement_Wind::Run() {
     }
 
     // we have to call this before exiting the application otherwise we'll have trouble next time we start...
-    CloseUSBConnection();
+    CloseSpectrometerConnection();
 
     return;
 }

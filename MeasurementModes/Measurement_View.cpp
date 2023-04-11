@@ -1,10 +1,14 @@
 #include "stdafx.h"
 #include "measurement_view.h"
+#include <MobileDoasLib/Measurement/SpectrumUtils.h>
 
 extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
+extern CFormView* pView; // <-- The main window
 
-CMeasurement_View::CMeasurement_View(void)
+CMeasurement_View::CMeasurement_View(std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface)
+    : CSpectrometer(std::move(spectrometerInterface))
 {
+    m_spectrometerMode = MODE_VIEW;
 }
 
 CMeasurement_View::~CMeasurement_View(void)
@@ -27,23 +31,8 @@ void CMeasurement_View::Run() {
     // Convert the settings from the CMobileConfiuration-format to the internal CSpectrometer-format
     ApplySettings();
 
-    /* Set the delays and initialize the USB-Connection */
-    if (m_connectViaUsb) {
-        if (!TestUSBConnection()) {
-            m_isRunning = false;
-            return;
-        }
-    }
-
-    /* -- Init Serial Communication -- */
-    m_statusMsg.Format("Initializing communication with spectrometer");
-    pView->PostMessage(WM_STATUSMSG);
-    if (!m_connectViaUsb && serial.InitCommunication()) {
-        ShowMessageBox("Can not initialize the communication", "Error");
-
-        // we have to call this before exiting the application otherwise we'll have trouble next time we start...
-        CloseUSBConnection();
-
+    if (!TestSpectrometerConnection()) {
+        m_isRunning = false;
         return;
     }
 
@@ -69,21 +58,9 @@ void CMeasurement_View::Run() {
 
         /* ----------------  Get the spectrum --------------------  */
 
-        // Initialize the spectrometer, if using the serial-port
-        if (!m_connectViaUsb) {
-            if (InitSpectrometer(0, m_integrationTime, m_sumInSpectrometer)) {
-                serial.CloseAll();
-            }
-        }
-
         // Get the next spectrum
         if (Scan(m_sumInComputer, m_sumInSpectrometer, scanResult)) {
-            if (!m_connectViaUsb)
-                serial.CloseAll();
-
-            // we have to call this before exiting the application otherwise we'll have trouble next time we start...
-            CloseUSBConnection();
-
+            CloseSpectrometerConnection();
             return;
         }
 
@@ -98,7 +75,7 @@ void CMeasurement_View::Run() {
         /* -------------- IF THE MEASURED SPECTRUM WAS A NORMAL SPECTRUM ------------- */
 
         for (int i = 0; i < m_NChannels; ++i) {
-            m_averageSpectrumIntensity[i] = AverageIntens(tmpSpec[i], 1);
+            m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(tmpSpec[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
         }
 
         if (m_specInfo->isDark)
@@ -107,7 +84,7 @@ void CMeasurement_View::Run() {
             m_statusMsg.Format("Average value around center channel %d: %d", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
 
         pView->PostMessage(WM_STATUSMSG);
-        vIntensity.Append(m_averageSpectrumIntensity[0]);
+        m_intensityOfMeasuredSpectrum.push_back(m_averageSpectrumIntensity[0]);
 
         pView->PostMessage(WM_DRAWSPECTRUM);
     }
@@ -120,7 +97,7 @@ void CMeasurement_View::Run() {
     m_scanNum++;
 
     // we have to call this before exiting the application otherwise we'll have trouble next time we start...
-    CloseUSBConnection();
+    CloseSpectrometerConnection();
 
     return;
 }

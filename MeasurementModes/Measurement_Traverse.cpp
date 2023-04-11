@@ -1,10 +1,15 @@
 #include "stdafx.h"
 #include "measurement_traverse.h"
+#include "../Common/SpectrumIO.h"
+#include <MobileDoasLib/Measurement/SpectrumUtils.h>
 
 extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
+extern CFormView* pView; // <-- The main window
 
-CMeasurement_Traverse::CMeasurement_Traverse(void)
+CMeasurement_Traverse::CMeasurement_Traverse(std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface)
+    : CSpectrometer(std::move(spectrometerInterface))
 {
+    m_spectrometerMode = MODE_TRAVERSE;
 }
 
 CMeasurement_Traverse::~CMeasurement_Traverse(void)
@@ -24,8 +29,6 @@ void CMeasurement_Traverse::Run() {
 #endif
     CString tmpString;
 
-    long serialDelay, gpsDelay;
-
     ShowMessageBox("START", "NOTICE");
 
     // Read configuration file
@@ -44,39 +47,8 @@ void CMeasurement_Traverse::Run() {
     UpdateMobileLog();
 
     /* Set the delays and initialize the USB-Connection */
-    if (m_connectViaUsb) {
-        serialDelay = 10;
-        if (!TestUSBConnection()) {
-            m_isRunning = false;
-            return;
-        }
-    }
-    else {
-        serialDelay = 2300;
-    }
-    gpsDelay = 10;
-
-    /* Error Check */
-    if (serialDelay >= this->m_timeResolution) {
-        CString tmpStr;
-        tmpStr.Format("Error In cfg.xml: The time resolution is smaller than the serial delay. Please Change and restart. Set Time Resolution = %d [s]. Set Serial Delay = %d [s]", this->m_timeResolution, serialDelay);
-        ShowMessageBox(tmpStr, "Error");
-
-        // we have to call this before exiting the application otherwise we'll have trouble next time we start...
-        CloseUSBConnection();
-        return;
-    }
-
-    /* -- Init Serial Communication -- */
-    m_statusMsg.Format("Initializing communication with spectrometer");
-    pView->PostMessage(WM_STATUSMSG);
-    if (!m_connectViaUsb && serial.InitCommunication())
-    {
-        ShowMessageBox("Can not initialize the communication", "Error");
-
-        // we have to call this before exiting the application otherwise we'll have trouble next time we start...
-        CloseUSBConnection();
-
+    if (!TestSpectrometerConnection()) {
+        m_isRunning = false;
         return;
     }
 
@@ -84,8 +56,7 @@ void CMeasurement_Traverse::Run() {
     CreateDirectories();
 
     /* Start the GPS collection thread */
-    if (m_useGps)
-    {
+    if (m_useGps) {
         m_gps = new GpsAsyncReader(m_GPSPort, m_GPSBaudRate);
     }
 
@@ -113,7 +84,7 @@ void CMeasurement_Traverse::Run() {
     /* Calculate the number of spectra to integrate in spectrometer and in computer */
     m_scanNum++;
     SpectrumSummation spectrumSummation;
-    m_sumInComputer = CountRound(m_timeResolution, serialDelay, gpsDelay, spectrumSummation);
+    m_sumInComputer = CountRound(m_timeResolution, spectrumSummation);
     m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
     m_totalSpecNum = m_sumInComputer * m_sumInSpectrometer;
     pView->PostMessage(WM_SHOWINTTIME);
@@ -144,7 +115,7 @@ void CMeasurement_Traverse::Run() {
             m_integrationTime = AdjustIntegrationTime();
             pView->PostMessage(WM_SHOWDIALOG, CHANGED_EXPOSURETIME);
             m_adjustIntegrationTime = FALSE;
-            m_sumInComputer = CountRound(m_timeResolution, serialDelay, gpsDelay, spectrumSummation);
+            m_sumInComputer = CountRound(m_timeResolution, spectrumSummation);
             m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
             m_totalSpecNum = m_sumInComputer * m_sumInSpectrometer;
             pView->PostMessage(WM_SHOWINTTIME);
@@ -158,13 +129,6 @@ void CMeasurement_Traverse::Run() {
 
         cStart = clock();
 
-        // Initialize the spectrometer, if using the serial-port
-        if (!m_connectViaUsb) {
-            if (InitSpectrometer(0, m_integrationTime, m_sumInSpectrometer)) {
-                serial.CloseAll();
-            }
-        }
-
         // Get the next spectrum
         if (m_scanNum == DARK_SPECTRUM && m_conf->m_noDark) {
             // don't bother with dark if skipping dark; just set all to 0
@@ -176,13 +140,7 @@ void CMeasurement_Traverse::Run() {
         }
         else {
             if (Scan(m_sumInComputer, m_sumInSpectrometer, scanResult)) {
-                if (!m_connectViaUsb) {
-                    serial.CloseAll();
-                }
-
-                // we have to call this before exiting the application otherwise we'll have trouble next time we start...
-                CloseUSBConnection();
-
+                CloseSpectrometerConnection();
                 return;
             }
         }
@@ -218,16 +176,16 @@ void CMeasurement_Traverse::Run() {
 
             pView->PostMessage(WM_DRAWSPECTRUM);//draw dark spectrum
             for (int i = 0; i < m_NChannels; ++i) {
-                m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i], 1);
+                m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(scanResult[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
             }
             m_statusMsg.Format("Average value around center channel(dark) %d: %d", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
             pView->PostMessage(WM_STATUSMSG);
 
             /* Get the information about the spectrum */
             GetSpectrumInfo(scanResult);
+
 #ifndef _DEBUG
-            if (!m_specInfo->isDark)
-            {
+            if (!m_specInfo->isDark) {
                 ShowMessageBox("It seems like the dark spectrum is not completely dark, consider restarting the program", "Error");
             }
 #endif
@@ -246,7 +204,7 @@ void CMeasurement_Traverse::Run() {
             pView->PostMessage(WM_DRAWSPECTRUM);//draw sky spectrum
 
             for (int i = 0; i < m_NChannels; ++i) {
-                m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i], 1);
+                m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(scanResult[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
 
                 // remove the dark spectrum
                 for (int iterator = 0; iterator < MAX_SPECTRUM_LENGTH; ++iterator) {
@@ -261,17 +219,15 @@ void CMeasurement_Traverse::Run() {
             GetSpectrumInfo(scanResult);
 
             // If we should do an automatic calibration, then do so now
-            if (m_conf->m_calibration.m_enable)
-            {
+            if (m_conf->m_calibration.m_enable) {
                 RunInstrumentCalibration(m_sky[0], nullptr, m_detectorSize);
             }
 
             m_statusMsg.Format("Reading References");
             pView->PostMessage(WM_STATUSMSG);
-            if (ReadReferenceFiles())
-            {
+            if (ReadReferenceFiles()) {
                 // we have to call this before exiting the application otherwise we'll have trouble next time we start...
-                CloseUSBConnection();
+                CloseSpectrometerConnection();
                 return;
             }
 
@@ -280,8 +236,7 @@ void CMeasurement_Traverse::Run() {
             WriteEvaluationLogFileHeaders();
 
 #ifndef _DEBUG
-            if (m_specInfo->isDark)
-            {
+            if (m_specInfo->isDark) {
                 ShowMessageBox("It seems like the sky spectrum is dark, consider restarting the program", "Error");
             }
 #endif
@@ -291,7 +246,7 @@ void CMeasurement_Traverse::Run() {
             /* -------------- IF THE MEASURED SPECTRUM WAS A NORMAL SPECTRUM ------------- */
 
             for (int i = 0; i < m_NChannels; ++i) {
-                m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i], 1);
+                m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(scanResult[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
             }
 
             /* Get the information about the spectrum */
@@ -305,7 +260,7 @@ void CMeasurement_Traverse::Run() {
             }
 
             pView->PostMessage(WM_STATUSMSG);
-            vIntensity.Append(m_averageSpectrumIntensity[0]);
+            m_intensityOfMeasuredSpectrum.push_back(m_averageSpectrumIntensity[0]);
 
             /* Evaluate */
             GetDark();
@@ -334,29 +289,19 @@ void CMeasurement_Traverse::Run() {
     }
 
     // we have to call this before exiting the application otherwise we'll have trouble next time we start...
-    CloseUSBConnection();
+    CloseSpectrometerConnection();
 
     return;
 }
 
 void CMeasurement_Traverse::Run_Adaptive() {
+
     double scanResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
     CSpectrum measuredSpectrum[MAX_N_CHANNELS];
-
-    long serialDelay, gpsDelay;
 
     std::string startDate;
     long startTime, elapsedSecond;
     clock_t cStart, cFinish;
-
-    /* Set the delays and initialize the USB-Connection */
-    if (m_connectViaUsb) {
-        serialDelay = 10;
-    }
-    else {
-        serialDelay = 2300;
-    }
-    gpsDelay = 10;
 
     // The various spectra to collect, this defines the order in which they are collected
     int OFFSET_SPECTRUM = 1;
@@ -390,14 +335,7 @@ void CMeasurement_Traverse::Run_Adaptive() {
         /* ------------ Get the date, time and position --------------- */
         GetCurrentDateAndTime(startDate, startTime);
 
-        // Initialize the spectrometer, if using the serial-port
-        if (!m_connectViaUsb) {
-            if (InitSpectrometer(0, m_integrationTime, m_sumInSpectrometer)) {
-                serial.CloseAll();
-            }
-        }
-
-        // Get the next spectrum		// Get the next spectrum
+        // Get the next spectrum
         if (m_scanNum == DARKCURRENT_SPECTRUM && m_conf->m_noDark) {
             // don't bother with dark if skipping dark; just set all to 0
             for (int i = 0; i < m_NChannels; ++i) {
@@ -407,16 +345,8 @@ void CMeasurement_Traverse::Run_Adaptive() {
             }
         }
         else {
-            if (Scan(m_sumInComputer, m_sumInSpectrometer, scanResult))
-            {
-                if (!m_connectViaUsb)
-                {
-                    serial.CloseAll();
-                }
-
-                // we have to call this before exiting the application otherwise we'll have trouble next time we start...
-                CloseUSBConnection();
-
+            if (Scan(m_sumInComputer, m_sumInSpectrometer, scanResult)) {
+                CloseSpectrometerConnection();
                 return;
             }
         }
@@ -441,7 +371,7 @@ void CMeasurement_Traverse::Run_Adaptive() {
 
             pView->PostMessage(WM_DRAWSPECTRUM);//draw offset spectrum
             for (int i = 0; i < m_NChannels; ++i) {
-                m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i], 1);
+                m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(scanResult[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
             }
             m_statusMsg.Format("Average value around center channel(offset) %d: %d", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
             pView->PostMessage(WM_STATUSMSG);
@@ -464,6 +394,7 @@ void CMeasurement_Traverse::Run_Adaptive() {
             m_sumInSpectrometer = 1;
             m_totalSpecNum = m_sumInSpectrometer * m_sumInComputer;
             pView->PostMessage(WM_SHOWINTTIME);
+
         }
         else if (m_scanNum == DARKCURRENT_SPECTRUM) {
 
@@ -477,7 +408,7 @@ void CMeasurement_Traverse::Run_Adaptive() {
 
             pView->PostMessage(WM_DRAWSPECTRUM);//draw dark spectrum
             for (int i = 0; i < m_NChannels; ++i) {
-                m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i], 1);
+                m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(scanResult[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
             }
             m_statusMsg.Format("Average value around center channel(dark current) %d: %d", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
             pView->PostMessage(WM_STATUSMSG);
@@ -493,7 +424,7 @@ void CMeasurement_Traverse::Run_Adaptive() {
             // Set the exposure-time
             m_integrationTime = AdjustIntegrationTime();
             SpectrumSummation spectrumSummation;
-            m_sumInComputer = CountRound(m_timeResolution, serialDelay, gpsDelay, spectrumSummation);
+            m_sumInComputer = CountRound(m_timeResolution, spectrumSummation);
             m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
             m_totalSpecNum = m_sumInComputer * m_sumInSpectrometer;
             pView->PostMessage(WM_SHOWINTTIME);
@@ -506,7 +437,7 @@ void CMeasurement_Traverse::Run_Adaptive() {
             pView->PostMessage(WM_DRAWSPECTRUM);//draw sky spectrum
 
             for (int i = 0; i < m_NChannels; ++i) {
-                m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i], 1);
+                m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(scanResult[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
 
                 // remove the dark spectrum
                 GetDark();
@@ -532,7 +463,7 @@ void CMeasurement_Traverse::Run_Adaptive() {
             if (ReadReferenceFiles())
             {
                 // we have to call this before exiting the application otherwise we'll have trouble next time we start...
-                CloseUSBConnection();
+                CloseSpectrometerConnection();
                 return;
             }
 
@@ -550,7 +481,7 @@ void CMeasurement_Traverse::Run_Adaptive() {
             // Set the exposure-time
             m_integrationTime = AdjustIntegrationTime();
             SpectrumSummation spectrumSummation;
-            m_sumInComputer = CountRound(m_timeResolution, serialDelay, gpsDelay, spectrumSummation);
+            m_sumInComputer = CountRound(m_timeResolution, spectrumSummation);
             m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
             m_totalSpecNum = m_sumInComputer * m_sumInSpectrometer;
             pView->PostMessage(WM_SHOWINTTIME);
@@ -559,7 +490,7 @@ void CMeasurement_Traverse::Run_Adaptive() {
         else if (m_scanNum > SKY_SPECTRUM) {
             /* -------------- IF THE MEASURED SPECTRUM WAS A NORMAL SPECTRUM ------------- */
             for (int i = 0; i < m_NChannels; ++i) {
-                m_averageSpectrumIntensity[i] = AverageIntens(scanResult[i], 1);
+                m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(scanResult[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
             }
 
             /* Get the information about the spectrum */
@@ -567,13 +498,14 @@ void CMeasurement_Traverse::Run_Adaptive() {
 
             if (m_specInfo->isDark) {
                 m_statusMsg.Format("Average value around center channel %d: %d (Dark)", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
+
             }
             else {
                 m_statusMsg.Format("Average value around center channel %d: %d", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
             }
 
             pView->PostMessage(WM_STATUSMSG);
-            vIntensity.Append(m_averageSpectrumIntensity[0]);
+            m_intensityOfMeasuredSpectrum.push_back(m_averageSpectrumIntensity[0]);
 
             /* Evaluate */
             GetDark();
@@ -583,7 +515,7 @@ void CMeasurement_Traverse::Run_Adaptive() {
             // Update the exposure-time
             m_integrationTime = AdjustIntegrationTimeToLastIntensity(m_averageSpectrumIntensity[0]);
             SpectrumSummation spectrumSummation;
-            m_sumInComputer = CountRound(m_timeResolution, serialDelay, gpsDelay, spectrumSummation);
+            m_sumInComputer = CountRound(m_timeResolution, spectrumSummation);
             m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
             m_totalSpecNum = m_sumInComputer * m_sumInSpectrometer;
             pView->PostMessage(WM_SHOWINTTIME);
@@ -598,7 +530,7 @@ void CMeasurement_Traverse::Run_Adaptive() {
     }
 
     // we have to call this before exiting the application otherwise we'll have trouble next time we start...
-    CloseUSBConnection();
+    CloseSpectrometerConnection();
 
     return;
 }

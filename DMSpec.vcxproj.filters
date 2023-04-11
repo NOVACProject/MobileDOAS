@@ -94,6 +94,9 @@
     <Filter Include="Source Files\SpectralEvaluation\Fit">
       <UniqueIdentifier>{9561066c-9026-453d-be37-99b4d17d5e5e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\SpectralEvaluation">
+      <UniqueIdentifier>{fb8f7482-43fd-4e9c-9933-afc689e09040}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Common.cpp">
@@ -142,9 +145,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Controls\ReferenceFileControl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SerialConnection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Spectrometer.cpp">
@@ -369,9 +369,6 @@
     <ClCompile Include="Common\CDateTime.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CGpsData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Common\CSpectrum.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -492,6 +489,12 @@
     <ClCompile Include="SpectralEvaluation\src\Evaluation\ReferenceFile.cpp">
       <Filter>Source Files\SpectralEvaluation\Evaluation</Filter>
     </ClCompile>
+    <ClCompile Include="SerialConnection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MeasurementSetup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DMSpec.rc">
@@ -551,12 +554,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SerialConnection.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Spectra.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Spectrometer.h">
@@ -871,9 +868,6 @@
     <ClInclude Include="Common\CDateTime.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CGpsData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Common\CSpectrum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -918,6 +912,15 @@
     </ClInclude>
     <ClInclude Include="Evaluation\RealTimeCalibration.h">
       <Filter>Header Files\Evaluation</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\StringUtils.h">
+      <Filter>Header Files\SpectralEvaluation</Filter>
+    </ClInclude>
+    <ClInclude Include="SerialConnection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MeasurementSetup.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
