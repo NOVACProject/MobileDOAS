@@ -1059,10 +1059,10 @@ void CSpectrometer::WriteBeginEvFile(int fitRegion) {
 
     // Write some additional information about the spectrometer
     str1.Format("***Spectrometer Information***\n");
-    str1.AppendFormat("SERIAL=%s\n", m_spectrometerName);
+    str1.AppendFormat("SERIAL=%s\n", m_spectrometerName.c_str());
     str1.AppendFormat("DETECTORSIZE=%d\n", m_detectorSize);
     str1.AppendFormat("DYNAMICRANGE=%d\n", m_spectrometerDynRange);
-    str1.AppendFormat("MODEL=%s\n", m_spectrometerModel);
+    str1.AppendFormat("MODEL=%s\n", m_spectrometerModel.c_str());
     WriteLogFile(evPath, str1);
 
     // The header-line

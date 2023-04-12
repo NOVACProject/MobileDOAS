@@ -33,6 +33,9 @@ struct AvantesSpectrometerInterfaceState
     // The dynamic range of the currently active device
     double currentSpectrometerDynamicRange = 0;
 
+    // The properties of the current device, contains information such as the number of pixels on the detector and the type of the detector.
+    DeviceConfigType currentDeviceConfiguration;
+
     // True if the measurements are currently running on the currentSpectrometerHandle
     bool measurementIsRunning = false;
 };
@@ -54,6 +57,7 @@ AvantesSpectrometerInterface::AvantesSpectrometerInterface()
     :m_lastErrorMessage("")
 {
     // initialize the library to work with USB devices.
+    // Notice that it is possible to support Ethernet devices here as well by changing the port number here.
     AVS_Init(0);
 
     auto state = new AvantesSpectrometerInterfaceState();
@@ -218,13 +222,13 @@ bool AvantesSpectrometerInterface::SetSpectrometer(int spectrometerIndex, const 
         return false;
     }
 
-    // Get some properties of the device
-    unsigned short detectorSize;
-    int returnCode = AVS_GetNumPixels(state->currentSpectrometerHandle, &detectorSize);
+    // Get some properties of the device. Notice that this does in fact return quite a bit more data than what is used here...
+    unsigned int configSize = sizeof(DeviceConfigType);
+    int returnCode = AVS_GetParameter(state->currentSpectrometerHandle, configSize, &configSize, &(state->currentDeviceConfiguration));
     if (returnCode != ERR_SUCCESS)
     {
         std::stringstream msg;
-        msg << "SetSpectrometer failed, AVS_GetNumPixels returned: " << returnCode;
+        msg << "SetSpectrometer failed, AVS_GetParameter returned: " << returnCode;
         m_lastErrorMessage = msg.str();
         return 0;
     }
@@ -248,7 +252,7 @@ bool AvantesSpectrometerInterface::SetSpectrometer(int spectrometerIndex, const 
 
     // Prepare the measurement setup
     state->measurementConfig.m_StartPixel = 0;
-    state->measurementConfig.m_StopPixel = detectorSize - 1;
+    state->measurementConfig.m_StopPixel = state->currentDeviceConfiguration.m_Detector.m_NrPixels - 1;
     state->measurementConfig.m_IntegrationDelay = 0;
     state->measurementConfig.m_IntegrationTime = 1000;
     int ret = AVS_PrepareMeasure(state->currentSpectrometerHandle, &(state->measurementConfig));
@@ -288,9 +292,8 @@ std::string AvantesSpectrometerInterface::GetSerial()
 
 std::string AvantesSpectrometerInterface::GetModel()
 {
-
-    // TODO:
-    return "";
+    // I have not found a way to read this out from the device itself, use a hard-coded value.
+    return "AVASPEC";
 }
 
 int AvantesSpectrometerInterface::GetNumberOfChannels()
