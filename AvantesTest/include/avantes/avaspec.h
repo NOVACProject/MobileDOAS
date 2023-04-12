@@ -528,7 +528,7 @@ DLL_INT AVS_GetList
 //
 // Parameters : a_pDeviceId: AvsIdentity of desired spectrometer
 //
-// Returns    : AvsHandle: currentSpectrometerHandle to be used in subsequent calls
+// Returns    : AvsHandle: handle to be used in subsequent calls
 //              INVALID_HANDLE_VALUE: in case of error
 //
 // Remark(s)  : -
@@ -543,7 +543,7 @@ DLL_AvsHandle AVS_Activate( AvsIdentityType* a_pDeviceId );
 // Description: AVS_ActivateConn: depending on the define, either the Windows Message 
 //              version or the callback version is used.
 //              Windows Message version: the WM_CONN_STATUS message is sent to the window 
-//              with the a_hWnd currentSpectrometerHandle.
+//              with the a_hWnd handle.
 //              Callback version: Activates selected spectrometer for communication and 
 //              registers a Connection Status callback routine. This callback routine 
 //              will be called by the DLL when a connection status change has
@@ -554,12 +554,12 @@ DLL_AvsHandle AVS_Activate( AvsIdentityType* a_pDeviceId );
 //              before. For now the function works only for Ethernet interface.
 //
 // Parameters : a_pDeviceId: AvsIdentity of desired spectrometer
-//              a_hWnd     : currentSpectrometerHandle of window to which the WM_COMM_STATUS message should
+//              a_hWnd     : handle of window to which the WM_COMM_STATUS message should
 //                           be sent
 //              __Conn     : function pointer which is called by the AvaSpec library
 //                           on Ethernet connection status change
 //
-// Returns    : AvsHandle: currentSpectrometerHandle to be used in subsequent calls
+// Returns    : AvsHandle: handle to be used in subsequent calls
 //              INVALID_HANDLE_VALUE: in case of error
 //
 // Remark(s)  : -
@@ -578,7 +578,7 @@ DLL_AvsHandle AVS_ActivateConnCb(AvsIdentityType* a_pDeviceId, void(*__Conn)(Avs
 //
 // Description  : De-activates selected spectrometer for communication
 //
-// Parameters   : a_hDevice    : Device currentSpectrometerHandle from AVS_Activate
+// Parameters   : a_hDevice    : Device handle from AVS_Activate
 //
 // Returns      : -
 //
@@ -595,7 +595,7 @@ DLL_bool AVS_Deactivate
 //
 // Name         : AVS_GetHandleFromSerial
 //
-// Description  : Searches serial number for currentSpectrometerHandle id.
+// Description  : Searches serial number for handle id.
 //
 // Parameters   : a_pSerial    : serial number
 //
@@ -618,10 +618,10 @@ DLL_INT AVS_GetStatusBySerial( char *a_pSerial, int *a_status );
 //
 // Name         : AVS_Register
 //
-// Description  : Installs an application windows currentSpectrometerHandle to which device
+// Description  : Installs an application windows handle to which device
 //                attachment/removal messages have to be sent
 //
-// Parameters   : a_hWnd    : application window currentSpectrometerHandle
+// Parameters   : a_hWnd    : application window handle
 //
 // Returns      : -
 //
@@ -636,8 +636,8 @@ DLL_bool AVS_Register( void *a_Hwnd );
 //
 // Description  : Start measurement
 //
-// Parameters   : a_hDevice         : device currentSpectrometerHandle
-//                a_hWnd            : currentSpectrometerHandle of window to which ready message
+// Parameters   : a_hDevice         : device handle
+//                a_hWnd            : handle of window to which ready message
 //                                    should be sent
 //                a_Nmsr            : number of measurements requested
 //                                    (-1 is continous)
@@ -669,13 +669,13 @@ DLL_INT AVS_MeasureLV( AvsHandle a_hDevice, LVUserEventRef *msg, int param, shor
 // Description  : Prepares measurement on the spectrometer using the specified
 //                measurement configuration.
 //
-// Parameters   : a_hDevice     : device currentSpectrometerHandle
+// Parameters   : a_hDevice     : device handle
 //                a_pMeasConfig : pointer to buffer containing a measurement
 //                                configuration
 //
 // Returns      : SUCCESS       : parameters are set
 //                ERROR_DEVICE_UNINITIALISED : no communication
-//                ERROR_INVALID_DEVICE_ID    : currentSpectrometerHandle unknown
+//                ERROR_INVALID_DEVICE_ID    : handle unknown
 //                ERROR_INVALID_PARAMETER    : measurement configuration invalid
 //
 // Remark(s)    : -
@@ -690,7 +690,7 @@ DLL_INT AVS_PrepareMeasure( AvsHandle a_hDevice, MeasConfigType* a_pMeasConfig )
 // Description  : Stops the measurements (needed if Nmsr = infinite), can also
 //                be used to stop a pending measurement with long integrationtime
 //
-// Parameters   : a_hDevice : device currentSpectrometerHandle
+// Parameters   : a_hDevice : device handle
 //
 // Returns      : integer         : 0, ok
 //                                  error code, communication error
@@ -706,7 +706,7 @@ DLL_INT AVS_StopMeasure( AvsHandle a_hDevice );
 //
 // Description  : Poll advent of new data (e.g. for VB, LabVIEW)
 //
-// Parameters   : a_hDevice : device currentSpectrometerHandle
+// Parameters   : a_hDevice : device handle
 //
 // Returns      : Integer, 0 when data are not ready
 //                         1 when data are available
@@ -723,7 +723,7 @@ DLL_INT AVS_PollScan( AvsHandle a_hDevice );
 //
 // Description  : Returns the values for each pixel
 //
-// Parameters   : a_hDevice     : device currentSpectrometerHandle
+// Parameters   : a_hDevice     : device handle
 //                a_pTimeLabel  : ticks count last pixel of spectrum is received
 //                                by microcontroller, ticks in 10 mS units since
 //                                spectrometer started
@@ -744,7 +744,7 @@ DLL_INT AVS_GetScopeData( AvsHandle a_hDevice, unsigned int* a_pTimeLabel, doubl
 //
 // Description  : Returns for each pixel whether the pixel was saturated or not
 //
-// Parameters   : a_hDevice : device currentSpectrometerHandle
+// Parameters   : a_hDevice : device handle
 //                a_pSaturated  : pointer to array of unsigned chars containing
 //                                0 or 1 depending on whether the pixel is saturated or not,
 //                                array size equal to number of pixels
@@ -767,7 +767,7 @@ DLL_INT AVS_GetSaturatedPixels
 //
 // Description  : Returns the wavelength values corresponding to the pixels
 //
-// Parameters   : a_hDevice     : device currentSpectrometerHandle
+// Parameters   : a_hDevice     : device handle
 //                a_pWaveLength : pointer to array of doubles,
 //                                array size equal to number of pixels
 //
@@ -785,7 +785,7 @@ DLL_INT AVS_GetLambda( AvsHandle a_hDevice, double* a_pWaveLength);
 //
 // Description  : Returns the number of pixels
 //
-// Parameters   : a_hDevice     : device currentSpectrometerHandle
+// Parameters   : a_hDevice     : device handle
 //                a_pNumPixels  : buffer to store number of pixels
 //
 // Returns      : integer       : 0, number of pixels available
@@ -802,7 +802,7 @@ DLL_INT AVS_GetNumPixels( AvsHandle a_hDevice, unsigned short* a_pNumPixels );
 //
 // Description  : Returns the device parameter structure
 //
-// Parameters   : a_hDevice     : device currentSpectrometerHandle
+// Parameters   : a_hDevice     : device handle
 //                a_Size        : size of a_pDeviceParm buffer
 //                a_pRequiredSize: needed buffer size
 //                a_pDeviceParm : pointer to allocated buffer
@@ -827,7 +827,7 @@ DLL_INT AVS_GetParameter
 //
 // Description  : Sets device parameters
 //
-// Parameters   : a_hDevice    : device currentSpectrometerHandle
+// Parameters   : a_hDevice    : device handle
 //                a_pDeviceParm: structure containing device parameters
 //
 // Returns      : integer      : 0, ok
@@ -852,7 +852,7 @@ DLL_INT AVS_SetParameter
 //               specific device configuration is set by the AvaSpec function
 //               AVS_SetParameter(), as defined in this document. 
 //
-// Parameters  : a_hDevice: device currentSpectrometerHandle
+// Parameters  : a_hDevice: device handle
 //
 // Returns     : integer : 0, ok
 //                         error code, communication error
@@ -869,7 +869,7 @@ DLL_INT AVS_ResetParameter
 //
 // Description  : Returns the status of the software version of the different parts.
 //
-// Parameters   : a_hDevice : device currentSpectrometerHandle
+// Parameters   : a_hDevice : device handle
 //                a_pFPGAVersion, pointer to buffer to store version (16 chars)
 //                a_pFirmwareVersion, pointer to buffer to store version (16 chars)
 //            	  a_pDLLVersion pointer to buffer to store version (16 chars)
@@ -913,7 +913,7 @@ DLL_INT AVS_GetDLLVersion
 //                DLL takes care of dividing Nmsr request into Nmsr number
 //                of single measurement requests.
 //
-// Parameters   : a_hDevice : device currentSpectrometerHandle
+// Parameters   : a_hDevice : device handle
 //                a_Enable  : enables/disables support
 //
 // Returns      : integer         : 0, ok
@@ -958,7 +958,7 @@ DLL_INT AVS_SetPrescanMode
 //                Data is not longer treated as 14-bit data.
 //                Will also influence gain and offset checks.
 //
-// Parameters   : a_hDevice : device currentSpectrometerHandle
+// Parameters   : a_hDevice : device handle
 //              : a_Enable  : true = 16bit resolution, false = 14bit resolution
 //
 // Returns      : integer         : 0, ok
@@ -979,7 +979,7 @@ DLL_INT AVS_UseHighResAdc
 //
 // Description  : Returns the status of the specified digital input
 //
-// Parameters   : a_hDevice : device currentSpectrometerHandle
+// Parameters   : a_hDevice : device handle
 //                a_AnalogInId  : input identifier
 //                a_pAnalogIn   : pointer to buffer to store result
 //
@@ -1002,7 +1002,7 @@ DLL_INT AVS_GetAnalogIn
 //
 // Description  : Returns the state of the digital input
 //
-// Parameters   : a_hDevice : device currentSpectrometerHandle
+// Parameters   : a_hDevice : device handle
 //                a_DigInId : digital input
 //                a_pDigIn  : value of digital input
 //
@@ -1025,7 +1025,7 @@ DLL_INT AVS_GetDigIn
 //
 // Description  : Sets analog output
 //
-// Parameters   : a_hDevice       : device currentSpectrometerHandle
+// Parameters   : a_hDevice       : device handle
 //                a_PortId        : output identifier
 //                a_Value         : output value in Volts (0 - 3.3)
 //
@@ -1048,7 +1048,7 @@ DLL_INT AVS_SetAnalogOut
 //
 // Description  : Sets state of digital output
 //
-// Parameters   : a_hDevice : device currentSpectrometerHandle
+// Parameters   : a_hDevice : device handle
 //                a_PortId  : digital output id.
 //                a_Status  : new state digital output
 //
@@ -1071,7 +1071,7 @@ DLL_INT AVS_SetDigOut
 //
 // Description  : Sets state of pwm output
 //
-// Parameters   : a_hDevice : device currentSpectrometerHandle
+// Parameters   : a_hDevice : device handle
 //                a_PortId  : digital output id.
 //                a_Freq    : desired PWM frequency (500 - 300000 Hz0
 //                a_Duty    : percentage high time in single PWM period
@@ -1097,7 +1097,7 @@ DLL_INT AVS_SetPwmOut
 // Description: Returns the optical black pixel values of the last performed
 //              measurement. 
 //
-// Parameters : a_hDevice   : device currentSpectrometerHandle
+// Parameters : a_hDevice   : device handle
 //              a_pDarkData : array of double, 	size=18 for the AvaSpec-2048-USB2 and AvaSpec-2048L-USB2
 //						size=13 for the AvaSpec-3648-USB2
 //						size= 8 for the AvaSpec-2048x14-USB2
@@ -1184,7 +1184,7 @@ DLL_INT AVS_SetSensitivityMode
 //
 // Description: Returns the ip config of the device
 //
-// Parameters : a_hDevice	  : device currentSpectrometerHandle
+// Parameters : a_hDevice	  : device handle
 //              a_Data        : structure which contains the Ip config of the device
 //
 // Returns    : integer,  1, on success
@@ -1201,7 +1201,7 @@ DLL_INT AVS_GetIpConfig( AvsHandle a_hDevice, EthernetSettingsType *a_Data );
 //
 // Description  : Returns the values for each pixel
 //
-// Parameters   : a_hDevice       : device currentSpectrometerHandle
+// Parameters   : a_hDevice       : device handle
 //                a_Multifactor   : multiplication factor in stray light algorithm
 //                a_pSrcSpectrum  : pointer to source array of doubles containing scope
 //                                  minus dark values, array size equal to number of pixels
@@ -1229,7 +1229,7 @@ DLL_INT AVS_SuppressStrayLight
 // Description: Indicates that the device is alive (send from host to its client) where the
 //              response contains additional spectrometer information.
 //
-// Parameters : a_hDevice: device currentSpectrometerHandle
+// Parameters : a_hDevice: device handle
 //              a_pHbReq: bitmapped Heartbeat request values (input), see Interface Requirement  
 //                        Specification (doc ID 020388) for the full description of the Heartbeat request.
 //              a_pHbResp: Heartbeat response structure (output), as received from the spectrometer
@@ -1248,7 +1248,7 @@ DLL_INT AVS_Heartbeat( AvsHandle a_hDevice, HeartbeatReqType *a_pHbReq, Heartbea
 //
 // Description: After this command is replied the device will perform a hard reset.
 //                 
-// Parameters : a_hDevice: device currentSpectrometerHandle
+// Parameters : a_hDevice: device handle
 //
 // Returns    : integer: 0, ok
 //                       <0 on error
@@ -1263,7 +1263,7 @@ DLL_INT AVS_ResetDevice( AvsHandle a_hDevice );
 //
 // Description  : Returns the OEM part of the device parameter structure
 //
-// Parameters   : a_hDevice   : device currentSpectrometerHandle
+// Parameters   : a_hDevice   : device handle
 //                a_pOemData  : pointer to allocated buffer in which the 
 //                              OEM data will be copied.
 //
@@ -1283,7 +1283,7 @@ DLL_INT AVS_GetOemParameter
 //
 // Description  : Sets the OEM part of the device parameter
 //
-// Parameters   : a_hDevice   : Device currentSpectrometerHandle
+// Parameters   : a_hDevice   : Device handle
 //                a_pOemData  : Structure containing OEM data which will be 
 //                              copied in the Device Configuration
 //
@@ -1318,7 +1318,7 @@ DLL_bool AVS_EnableLogging(bool a_EnableLogging);
 //
 // Description  : Returns the device type
 //
-// Parameters   : a_hDevice   : Device currentSpectrometerHandle
+// Parameters   : a_hDevice   : Device handle
 //				  a_pDeviceType : pointer to variable for copying the device type value to
 //
 // Returns      : integer     : ERR_SUCCESS on succesfully retrieving the device type
@@ -1337,13 +1337,13 @@ DLL_INT AVS_GetDeviceType(AvsHandle a_hDevice, AvsDeviceType* a_pDeviceType);
 //              AVS_SetDstrStatus: depending on the define, either the Windows Message 
 //              version or the callback version is used.
 //              Windows Message version: the WM_DSTR_STATUS message is sent to the window 
-//              with the a_hWnd currentSpectrometerHandle.
+//              with the a_hWnd handle.
 //              Callback version: Registers a DSTR Status callback routine.
 //              This callback routine will be called by the DLL when a DSTR status change 
 //              has occured. 
 //
-// Parameters : a_hDevice  : Device currentSpectrometerHandle
-//              a_hWnd     : currentSpectrometerHandle of window to which the WM_DSTR_STATUS message should
+// Parameters : a_hDevice  : Device handle
+//              a_hWnd     : handle of window to which the WM_DSTR_STATUS message should
 //                           be sent
 //              __Dstr     : function pointer which is called by the AvaSpec library
 //                           on DSTR status change
@@ -1369,7 +1369,7 @@ DLL_INT AVS_SetDstrStatusCallback(AvsHandle a_hDevice, void(*__Dstr)(AvsHandle*,
 // Description: Reads the DSTR (Dynamic StoreToRam) status which is received 
 //              from  the spectrometer
 //
-// Parameters : a_hDevice: device currentSpectrometerHandle
+// Parameters : a_hDevice: device handle
 //              a_pDstrStatus: pointer to the DSTR status context. See the 
 //                             DstrStatusType struct type for the full 
 //                             description of the DSTR status.

@@ -219,7 +219,7 @@ bool CMeasurement_Directory::ProcessSpectrum(CString latestSpectrum) {
 }
 
 bool CMeasurement_Directory::ReadSky() {
-    WIN32_FIND_DATA ffd; // currentSpectrometerHandle to spec file
+    WIN32_FIND_DATA ffd; // handle to spec file
     CString specfile; // spec file name
     CSpectrum spec; // spectrum object
     CString filter; // spec file filter
@@ -252,7 +252,7 @@ bool CMeasurement_Directory::ReadSky() {
 }
 
 bool CMeasurement_Directory::ReadDark() {
-    WIN32_FIND_DATA ffd; // currentSpectrometerHandle to spec file
+    WIN32_FIND_DATA ffd; // handle to spec file
     CString specfile; // spec file name
     CSpectrum spec; // spectrum object
     CString filter; // spec file filter
@@ -280,7 +280,7 @@ bool CMeasurement_Directory::ReadDark() {
 }
 
 bool CMeasurement_Directory::ReadDarkcur() {
-    WIN32_FIND_DATA ffd; // currentSpectrometerHandle to spec file
+    WIN32_FIND_DATA ffd; // handle to spec file
     CString specfile; // spec file name
     CSpectrum spec; // spectrum object
     CString filter; // spec file filter
@@ -308,7 +308,7 @@ bool CMeasurement_Directory::ReadDarkcur() {
 }
 
 bool CMeasurement_Directory::ReadOffset() {
-    WIN32_FIND_DATA ffd; // currentSpectrometerHandle to spec file
+    WIN32_FIND_DATA ffd; // handle to spec file
     CString specfile; // spec file name
     CSpectrum spec; // spectrum object
     CString filter; // spec file filter

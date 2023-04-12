@@ -33,7 +33,7 @@ namespace FileHandler
 
         // ------------------- variables ---------------
 
-        /** A currentSpectrometerHandle to the file to read from. */
+        /** A handle to the file to read from. */
         CStdioFile* m_File;
 
         /** The number of lines that has been read from the file */

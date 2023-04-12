@@ -2,7 +2,7 @@
 
 // Commonly used definitions througout the MobileDoas program
 
-// the maximum number of channels on the spectrometer that we can currentSpectrometerHandle 
+// the maximum number of channels on the spectrometer that we can handle 
 #define MAX_N_CHANNELS 2
 
 // The maximum number of fit-regions that we can use at any single time

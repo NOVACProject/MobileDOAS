@@ -19,7 +19,7 @@ namespace mobiledoas {
         CSerialConnection(CSerialConnection&& other);
         CSerialConnection& operator=(CSerialConnection&& other);
 
-        // --- This class manages a serial connection currentSpectrometerHandle and is thus not copyable
+        // --- This class manages a serial connection handle and is thus not copyable
         CSerialConnection(const CSerialConnection&) = delete;
         CSerialConnection& operator=(const CSerialConnection&) = delete;
 
@@ -77,7 +77,7 @@ namespace mobiledoas {
         volatile bool* isRunning = nullptr;
 
     private:
-        // This is the currentSpectrometerHandle to the serial port communication
+        // This is the handle to the serial port communication
         HANDLE hComm = nullptr;
 
         /* data definition */

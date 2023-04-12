@@ -458,7 +458,7 @@ int AvantesSpectrometerInterface::GetNextSpectrum(std::vector<std::vector<double
     state->measurementIsRunning = false;
 
     // Read out the data.
-    unsigned int timeLabel = 0; // Timestamp of the aquired spectrum. In tens of microseconds since the spectrometer was started. Can bes used to identify spectra.
+    unsigned int timeLabel = 0; // Timestamp of the aquired spectrum. In tens of microseconds since the spectrometer was started. Can be used to identify spectra.
     // There is only one channel on the Avantes devices, so just set it
     data.resize(1);
     data[0].resize(state->measurementConfig.m_StopPixel - state->measurementConfig.m_StartPixel + 1);

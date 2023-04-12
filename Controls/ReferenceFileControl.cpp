@@ -34,7 +34,7 @@ void CReferenceFileControl::OnEndEditCell(int nRow, int nCol, CString str) {
     if (index < 0 || index > MAX_N_REFERENCES)
         return; // TODO - add a message
 
-    // A currentSpectrometerHandle to the reference file
+    // A handle to the reference file
     novac::CReferenceFile& ref = m_window->ref[index];
 
     // If the name was changed

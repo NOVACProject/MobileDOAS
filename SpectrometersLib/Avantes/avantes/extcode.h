@@ -13,7 +13,7 @@ extern "C" {
 #pragma pack(1)
 typedef struct _EventSend 
 {
-	int currentSpectrometerHandle;
+	int handle;
 	int result;
 
 } EVENT_SEND;

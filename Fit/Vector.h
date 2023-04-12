@@ -51,7 +51,7 @@ namespace MathFit
 	};
 
 	/**
-	* This class encapsulates the basic functions needed to currentSpectrometerHandle one dimensional vectors.
+	* This class encapsulates the basic functions needed to handle one dimensional vectors.
 	*
 	* @author		\URL[Stefan Kraus]{http://stefan@00kraus.de} @ \URL[IWR, Image Processing Group]{http://klimt.iwr.uni-heidelberg.de}
 	* @version		1.0 @ 2001/09/09

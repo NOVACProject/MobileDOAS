@@ -50,7 +50,7 @@ CSerialConnection& CSerialConnection::operator=(CSerialConnection&& other)
 
 void CSerialConnection::SetPort(int portNumber)
 {
-    // This construct makes it possible to currentSpectrometerHandle COM-ports above 9
+    // This construct makes it possible to handle COM-ports above 9
     if (portNumber > 9)
     {
         sprintf_s(this->serialPort, "\\\\.\\COM%d", portNumber);

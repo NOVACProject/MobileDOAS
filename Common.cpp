@@ -506,7 +506,7 @@ std::vector<CString> Common::BrowseForFiles()
                         return filenames;
                     }
                     //
-                    // You can add your own code here to currentSpectrometerHandle the results.
+                    // You can add your own code here to handle the results.
                     //
                     results->Release();
                 }

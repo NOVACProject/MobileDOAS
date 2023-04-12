@@ -18,7 +18,7 @@ public:
     // Dialog Data
     enum { IDD = IDD_CONFIGURE_GPS };
 
-    /** The local currentSpectrometerHandle to the configuration that we're changing */
+    /** The local handle to the configuration that we're changing */
     std::shared_ptr<CMobileConfiguration> m_conf;
 
     // ----------------------- EVENT HANDLERS -------------------------

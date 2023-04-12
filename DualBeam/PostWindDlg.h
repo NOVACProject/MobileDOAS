@@ -11,7 +11,7 @@ class CPostWindDlg : public CDialog
     DECLARE_DYNAMIC(CPostWindDlg)
 
 public:
-    /** The number of time series which we can currentSpectrometerHandle, normally two. */
+    /** The number of time series which we can handle, normally two. */
     static const int MAX_N_SERIES = 2;
 
     /* The maximum length of 'corr', 'delay' and 'ws'. */

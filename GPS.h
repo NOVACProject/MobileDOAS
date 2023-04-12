@@ -32,7 +32,7 @@ public:
 
     ~CGPS();
 
-    // --- This class manages a serial connction currentSpectrometerHandle and is thus not copyable
+    // --- This class manages a serial connection handle and is thus not copyable
     CGPS(const CGPS&) = delete;
     CGPS& operator=(const CGPS&) = delete;
 
@@ -100,7 +100,7 @@ public:
     bool GotContact() const;
 
 private:
-    /** A currentSpectrometerHandle to the GPS-reader. This is owned by the background thread, not by us,
+    /** A handleto the GPS-reader. This is owned by the background thread, not by us,
         and will be terminated once the background thread finishes. */
     CGPS* m_gps = nullptr;
 

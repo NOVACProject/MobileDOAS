@@ -3,7 +3,7 @@
 // MFC Grid Control - Drag/Drop target implementation
 //
 // CGridDropTarget is an OLE drop target for CGridCtrl. All it does
-// is currentSpectrometerHandle the drag and drop windows messages and pass them
+// is handle the drag and drop windows messages and pass them
 // directly onto the grid control.
 //
 // Written by Chris Maunder <cmaunder@mail.com>
