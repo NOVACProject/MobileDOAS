@@ -83,7 +83,7 @@ void CMeasurement_Traverse::Run() {
 
     /* Calculate the number of spectra to integrate in spectrometer and in computer */
     m_scanNum++;
-    SpectrumSummation spectrumSummation;
+    mobiledoas::SpectrumSummation spectrumSummation;
     m_sumInComputer = CountRound(m_timeResolution, spectrumSummation);
     m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
     m_totalSpecNum = m_sumInComputer * m_sumInSpectrometer;
@@ -423,7 +423,7 @@ void CMeasurement_Traverse::Run_Adaptive() {
 
             // Set the exposure-time
             m_integrationTime = AdjustIntegrationTime();
-            SpectrumSummation spectrumSummation;
+            mobiledoas::SpectrumSummation spectrumSummation;
             m_sumInComputer = CountRound(m_timeResolution, spectrumSummation);
             m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
             m_totalSpecNum = m_sumInComputer * m_sumInSpectrometer;
@@ -480,7 +480,7 @@ void CMeasurement_Traverse::Run_Adaptive() {
 
             // Set the exposure-time
             m_integrationTime = AdjustIntegrationTime();
-            SpectrumSummation spectrumSummation;
+            mobiledoas::SpectrumSummation spectrumSummation;
             m_sumInComputer = CountRound(m_timeResolution, spectrumSummation);
             m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
             m_totalSpecNum = m_sumInComputer * m_sumInSpectrometer;
@@ -514,7 +514,7 @@ void CMeasurement_Traverse::Run_Adaptive() {
 
             // Update the exposure-time
             m_integrationTime = AdjustIntegrationTimeToLastIntensity(m_averageSpectrumIntensity[0]);
-            SpectrumSummation spectrumSummation;
+            mobiledoas::SpectrumSummation spectrumSummation;
             m_sumInComputer = CountRound(m_timeResolution, spectrumSummation);
             m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
             m_totalSpecNum = m_sumInComputer * m_sumInSpectrometer;

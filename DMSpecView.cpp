@@ -317,19 +317,12 @@ CDMSpecDoc* CDMSpecView::GetDocument() // non-debug version is inline
 /////////////////////////////////////////////////////////////////////////////
 // CDMSpecView message handlers
 LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam) {
-    double column[2][5000];		// the evaluated columns in each of the fit-regions
-    double columnErr[2][5000];	// the error bars of the evaluated columns in each of the fit-regions
-    std::vector<double> intensity;
-    long size;
-    double maxColumn, minColumn, lowLimit;
+
     CString cCon;		// the concentration str
     CString cShift;		//shift str
     CString cSqueeze;	//squeeze str
     CString cScanNo;	//scanned spectra number after sky and dark spectra
     CString cTemp;		// detector temperature
-    long scanNo;
-    double* result;
-    long	dynRange;
 
     // if the program is no longer running, then don't try to draw anything more...
     if (!s_spectrometerAcquisitionThreadIsRunning)
@@ -337,26 +330,22 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam) {
         return 0;
     }
 
-    dynRange = m_Spectrometer->m_spectrometerDynRange;
-    int intensityLimit = (100 - m_intensitySliderLow.GetPos());
-
-    // Reset, is this really necessary??
-    memset((void*)column, 0, sizeof(double) * 10000);
-    memset((void*)columnErr, 0, sizeof(double) * 10000);
+    const long dynRange = m_Spectrometer->m_spectrometerDynRange;
+    const int intensityLimit = (100 - m_intensitySliderLow.GetPos());
 
     // Get the last value and the total number of values
-    result = m_Spectrometer->GetLastColumn();
-    scanNo = m_Spectrometer->GetNumberOfSpectraAcquired() - 2;
+    BasicDoasResult lastEvaluationResult;
+    m_Spectrometer->GetLastColumn(lastEvaluationResult);
+    const long scanNo = m_Spectrometer->GetNumberOfSpectraAcquired() - 2;
 
     // Get the number of channels used and the number of fit-regions used
-    int nChannels = m_Spectrometer->m_NChannels;
-    int fitRegionNum = m_Spectrometer->GetFitRegionNum();
+    const int nChannels = m_Spectrometer->m_NChannels;
+    const int fitRegionNum = m_Spectrometer->GetFitRegionNum();
 
-    // --- Update the concentration, shift and squeeze ---
-    //cCon.Format("%.2lf ± %.2lf",result[0], result[1]);
-    cCon.Format("%.2lf \u00B1 %.2lf", result[0], result[1]);
-    cShift.Format("%.1f", result[2]);
-    cSqueeze.Format("%.1f", result[4]);
+    // --- Update the column, shift and squeeze ---
+    cCon.Format("%.2lf \u00B1 %.2lf", lastEvaluationResult.column, lastEvaluationResult.columnError);
+    cShift.Format("%.1f", lastEvaluationResult.shift);
+    cSqueeze.Format("%.1f", lastEvaluationResult.squeeze);
     cScanNo.Format("%d", scanNo);
     this->SetDlgItemText(IDC_CONCENTRATION, cCon);
     this->SetDlgItemText(IDC_SH, cShift);
@@ -382,16 +371,24 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam) {
     this->SetDlgItemText(IDC_TEMPERATURE, cTemp);
 
     // --- Get the data ---
-    size = std::min(long(199), m_Spectrometer->GetColumnNumber());
+    const long size = std::min(long(199), m_Spectrometer->GetColumnNumber());
 
-    intensity.resize(size);
+    std::vector<double> intensity(size);
     m_Spectrometer->GetIntensity(intensity, size);
 
-    m_Spectrometer->GetColumns(column[0], size, 0);
-    m_Spectrometer->GetColumnErrors(columnErr[0], size, 0);
+    std::vector<double> masterChannelColumns(size);
+    std::vector<double> masterChannelColumnErrors(size);
+    m_Spectrometer->GetColumns(masterChannelColumns.data(), size, 0);
+    m_Spectrometer->GetColumnErrors(masterChannelColumnErrors.data(), size, 0);
+
+
+    std::vector<double> slaveChannelColumns;
+    std::vector<double> slaveChannelColumnErrors;
     if (fitRegionNum > 1) {
-        m_Spectrometer->GetColumns(column[1], size, 1);
-        m_Spectrometer->GetColumnErrors(columnErr[1], size, 1);
+        slaveChannelColumns.resize(size);
+        slaveChannelColumnErrors.resize(size);
+        m_Spectrometer->GetColumns(slaveChannelColumns.data(), size, 1);
+        m_Spectrometer->GetColumnErrors(slaveChannelColumnErrors.data(), size, 1);
     }
 
     // -- Convert the intensity to saturation ratio
@@ -399,21 +396,21 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam) {
         intensity[k] = intensity[k] * 100.0 / dynRange;
     }
 
-    maxColumn = 0.0;
-    minColumn = 0.0;
+    double maxColumn = 0.0;
+    double minColumn = 0.0;
 
     // -- Get the limits for the data ---
     for (int i = 0; i < size; i++) {
         if (intensity[i] > intensityLimit) {
-            maxColumn = std::max(maxColumn, fabs(column[0][i]));
-            minColumn = std::min(minColumn, column[0][i]);
+            maxColumn = std::max(maxColumn, std::abs(masterChannelColumns[i]));
+            minColumn = std::min(minColumn, masterChannelColumns[i]);
             if (fitRegionNum > 1) {
-                maxColumn = std::max(maxColumn, fabs(column[1][i]));
-                minColumn = std::min(minColumn, column[1][i]);
+                maxColumn = std::max(maxColumn, std::abs(slaveChannelColumns[i]));
+                minColumn = std::min(minColumn, slaveChannelColumns[i]);
             }
         }
     }
-    lowLimit = (-1.25) * fabs(minColumn);
+    const double lowLimit = (-1.25) * std::abs(minColumn);
     m_columnLimit = 1.25 * maxColumn;
 
     if (m_columnLimit == 0) {
@@ -429,36 +426,36 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam) {
         if (fitRegionNum == 1) {
             m_ColumnPlot.SetPlotColor(m_PlotColor[0]);
             if (m_showErrorBar) {
-                m_ColumnPlot.BarChart(m_columnChartXAxisValues.data(), column[0], columnErr[0], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+                m_ColumnPlot.BarChart(m_columnChartXAxisValues.data(), masterChannelColumns.data(), masterChannelColumnErrors.data(), size, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
             }
             else {
-                m_ColumnPlot.BarChart(m_columnChartXAxisValues.data(), column[0], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+                m_ColumnPlot.BarChart(m_columnChartXAxisValues.data(), masterChannelColumns.data(), size, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
             }
         }
         else {
             m_ColumnPlot.SetPlotColor(m_PlotColor[0]);
             if (m_showErrorBar) {
-                m_ColumnPlot.BarChart2(m_columnChartXAxisValues.data(), column[0], column[1], columnErr[0], columnErr[1], m_PlotColor[1], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+                m_ColumnPlot.BarChart2(m_columnChartXAxisValues.data(), masterChannelColumns.data(), slaveChannelColumns.data(), masterChannelColumnErrors.data(), slaveChannelColumnErrors.data(), m_PlotColor[1], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
             }
             else {
-                m_ColumnPlot.BarChart2(m_columnChartXAxisValues.data(), column[0], column[1], m_PlotColor[1], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+                m_ColumnPlot.BarChart2(m_columnChartXAxisValues.data(), masterChannelColumns.data(), slaveChannelColumns.data(), m_PlotColor[1], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
             }
         }
     }
     else if (m_spectrometerMode == MODE_WIND) {
         if (m_showErrorBar) {
             m_ColumnPlot.SetPlotColor(m_PlotColor[0]);
-            m_ColumnPlot.XYPlot(m_columnChartXAxisValues.data(), column[0], NULL, NULL, columnErr[0], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
+            m_ColumnPlot.XYPlot(m_columnChartXAxisValues.data(), masterChannelColumns.data(), NULL, NULL, masterChannelColumnErrors.data(), size, Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
 
             m_ColumnPlot.SetPlotColor(m_PlotColor[1]);
-            m_ColumnPlot.XYPlot(m_columnChartXAxisValues.data(), column[1], NULL, NULL, columnErr[1], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
+            m_ColumnPlot.XYPlot(m_columnChartXAxisValues.data(), slaveChannelColumns.data(), NULL, NULL, slaveChannelColumnErrors.data(), size, Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
         }
         else {
             m_ColumnPlot.SetPlotColor(m_PlotColor[0]);
-            m_ColumnPlot.XYPlot(m_columnChartXAxisValues.data(), column[0], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
+            m_ColumnPlot.XYPlot(m_columnChartXAxisValues.data(), masterChannelColumns.data(), size, Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
 
             m_ColumnPlot.SetPlotColor(m_PlotColor[1]);
-            m_ColumnPlot.XYPlot(m_columnChartXAxisValues.data(), column[1], size, Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
+            m_ColumnPlot.XYPlot(m_columnChartXAxisValues.data(), slaveChannelColumns.data(), size, Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
         }
     }
 
@@ -480,6 +477,7 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam) {
 
     return 0;
 }
+
 LRESULT CDMSpecView::OnDrawSpectrum(WPARAM wParam, LPARAM lParam)
 {
     // to not overload the computer, make sure that we don't draw too often...

@@ -1,8 +1,8 @@
 #include "Evaluation/Evaluation.h"
 #include "GPS.h"
 #include "Configuration/MobileConfiguration.h"
-#include "Version.h"
 #include <MobileDoasLib/Measurement/SpectrometerInterface.h>
+#include <MobileDoasLib/Measurement/SpectrumUtils.h>
 
 #include <memory>
 #include <limits>
@@ -32,11 +32,25 @@
 const enum SPECTROMETER_MODE { MODE_TRAVERSE, MODE_WIND, MODE_VIEW, MODE_DIRECTORY };
 
 // Forward declarations
-namespace novac
-{
+namespace novac {
     class CDateTime;
 }
 class CSpectrum;
+
+struct BasicDoasResult {
+
+    double column = 0.0;
+
+    double columnError = 0.0;
+
+    double shift = 0.0;
+
+    double shiftError = 0.0;
+
+    double squeeze = 0.0;
+
+    double squeezeError = 0.0;
+};
 
 /** The class <b>CSpectrometer</b> is the base class used when communicating with the
     spectrometer. This holds all basic functions for USB or serial communication,
@@ -48,6 +62,8 @@ class CSpectrum;
 */
 
 
+// TODO: Try to clean up the storing of the results here. The evaluated columns from the master channel are stored in m_fitRegion[idx].vColumn[0],
+// the corresponding errors in m_fitRegion[idx].vColumn[1] and the intensities of these spectra in m_intensityOfMeasuredSpectrum...
 class CSpectrometer
 {
 protected:
@@ -188,9 +204,9 @@ public:
         @return the spectrometer index actually used (-1 if something goes wrong). */
     int ChangeSpectrometer(int selectedspec, const std::vector<int>& channelsToUse);
 
-    /** Retrieves the last evaluated column.
-        @return a pointer to 'm_result' */
-    double* GetLastColumn();
+    /** Retrieves the last evaluated column, columnError, shift, shiftError, squeeze and squeezeError
+        for the main evaluated specie in this traverse */
+    void GetLastColumn(BasicDoasResult& evaluationResult);
 
     /** Retrieves the lower range for the fit region for
         fit window number 'region' */
@@ -275,14 +291,6 @@ protected:
     // ---------------------- Managing the intensity of the spectra ------------------------
     // -------------------------------------------------------------------------------------
 
-    /** Basic representation of where spectra should be added, in the spectrometer directly or
-        in the computer after readout */
-    struct SpectrumSummation
-    {
-        int SumInComputer = 1;
-        int SumInSpectrometer = 1;
-    };
-
     /** Counts how many spectra should be averaged inside the computer and
         how many should be averaged inside the spectrometer get the desired
         time resolution with the set exposure time.
@@ -291,7 +299,7 @@ protected:
         @param gpsDelay The necessary delay to read out the time and position from the GPS, in milliseconds.
         @param result Will be filled with the result of the calculation.
         @return Number of spectra to co-add in the computer. */
-    int CountRound(long timeResolution, SpectrumSummation& result) const;
+    int CountRound(long timeResolution, mobiledoas::SpectrumSummation& result) const;
 
     /** Makes the initial adjustments and sets the
         parameter 'm_integrationTime' so that intensity of
@@ -379,10 +387,6 @@ protected:
         evaluateResult[i][j][5] is the estimated squeeze error for spectrum j in fit window i.
     */
     double evaluateResult[MAX_FIT_WINDOWS][MAX_N_CHANNELS][6];
-
-    /** This is the evaluation result in the first fit-window for the first
-        spectrometer channel. Same as evaluateResult[0][0] */
-    double m_result[6]; /* [column, columnError, shift, shiftError, squeeze, squeezeError] */
 
     /** This is an array holding the intensities of the so far collected spectra. */
     std::vector<double> m_intensityOfMeasuredSpectrum;

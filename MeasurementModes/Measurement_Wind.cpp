@@ -89,7 +89,7 @@ void CMeasurement_Wind::Run() {
     if (m_spectrometerMode != MODE_VIEW) {
         /* Calculate the number of spectra to integrate in spectrometer and in computer */
         m_scanNum++;
-        SpectrumSummation spectrumSummation;
+        mobiledoas::SpectrumSummation spectrumSummation;
         m_sumInComputer = CountRound(m_timeResolution, spectrumSummation);
         m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
         m_totalSpecNum = m_sumInComputer * m_sumInSpectrometer;
@@ -131,7 +131,7 @@ void CMeasurement_Wind::Run() {
             m_integrationTime = AdjustIntegrationTime();
             pView->PostMessage(WM_SHOWDIALOG, CHANGED_EXPOSURETIME);
             m_adjustIntegrationTime = FALSE;
-            SpectrumSummation spectrumSummation;
+            mobiledoas::SpectrumSummation spectrumSummation;
             m_sumInComputer = CountRound(m_timeResolution, spectrumSummation);
             m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
             m_totalSpecNum = m_sumInComputer * m_sumInSpectrometer;

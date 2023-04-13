@@ -320,7 +320,7 @@ int CSpectrometer::CheckSettings() {
         int nRows = 0;
         FILE* f = fopen(m_fitRegion[0].window.ref[k].m_path.c_str(), "r");
         if (nullptr == f) {
-            fileName.Format("%s%s", g_exePath, m_fitRegion[0].window.ref[k].m_path.c_str());
+            fileName.Format("%s%s", (LPCSTR)g_exePath, m_fitRegion[0].window.ref[k].m_path.c_str());
             f = fopen(fileName, "r");
             if (nullptr == f) {
                 msgStr.Format("Cannot open reference file : %s for reading.", m_fitRegion[0].window.ref[k].m_path.c_str());
@@ -508,18 +508,15 @@ double CSpectrometer::CountFlux(double windSpeed, double windAngle)
         return flux;
     }
 }
-/** This function is to return the current column value and angle(in degree)
-**
-*/
-double* CSpectrometer::GetLastColumn() {
-    m_result[0] = evaluateResult[0][0][0]; //column
-    m_result[1] = evaluateResult[0][0][1]; //columnError
-    m_result[2] = evaluateResult[0][0][2]; //shift
-    m_result[3] = evaluateResult[0][0][3]; //shiftError
-    m_result[4] = evaluateResult[0][0][4]; //squeeze
-    m_result[5] = evaluateResult[0][0][5]; //squeezeError
 
-    return m_result;
+void CSpectrometer::GetLastColumn(BasicDoasResult& evaluationResult) {
+
+    evaluationResult.column = evaluateResult[0][0][0];
+    evaluationResult.columnError = evaluateResult[0][0][1];
+    evaluationResult.shift = evaluateResult[0][0][2];
+    evaluationResult.shiftError = evaluateResult[0][0][3];
+    evaluationResult.squeeze = evaluateResult[0][0][4];
+    evaluationResult.squeezeError = evaluateResult[0][0][5];
 }
 
 void CSpectrometer::GetDark() {
@@ -1086,63 +1083,14 @@ void CSpectrometer::WriteBeginEvFile(int fitRegion) {
     WriteLogFile(evPath, str7);
 }
 
-int CSpectrometer::CountRound(long timeResolution, SpectrumSummation& result) const
-{
+int CSpectrometer::CountRound(long timeResolution, mobiledoas::SpectrumSummation& result) const {
 
-    const long serialDelay = m_spectrometer->GetReadoutDelay();
-    const long gpsDelay = 10;
-
-    int sumOne, nRound;
-    sumOne = 0;
-    nRound = 0;
-
-    if (EqualsIgnoringCase(m_spectrometerModel, "USB2000+"))
-    {
-        // the USB2000+ can sum as many spectra as we want in the
-        // spectrometer, we therefore don't need to sum anything
-        // in the computer
-        nRound = 1;
-        sumOne = std::max(1, (int)(timeResolution / (1.1 * m_integrationTime)));
-    }
-    else
-    {
-        long results[15];
-        long rounds[15];
-        double nSpec[15];
-
-        // Test the different possibilities for splitting the co-adds beteween the computer and the spectrometer
-        //  and return the variant which gives the maximum number of readouts.
-        for (sumOne = 1; sumOne <= 15; sumOne++) {
-            nRound = (timeResolution - gpsDelay) / (sumOne * m_integrationTime + serialDelay);
-            rounds[sumOne - 1] = nRound;
-            long totalTime = (sumOne * m_integrationTime + serialDelay) * nRound + gpsDelay;
-            results[sumOne - 1] = totalTime;
-            nSpec[sumOne - 1] = (double)(sumOne * nRound);
-        }
-        double maxSpecPerTime = nSpec[0] / (double)results[0];
-        int index = 0;
-
-        for (int i = 1; i < 15; ++i) {
-            if (rounds[i - 1] > 0) {
-                if (results[i] <= 1.1 * timeResolution && nSpec[i] / (double)results[i] >= maxSpecPerTime) {
-                    maxSpecPerTime = nSpec[i] / (double)results[i];
-                    index = i;
-                }
-            }
-        }
-
-        sumOne = index + 1;
-        nRound = (timeResolution - gpsDelay) / (sumOne * m_integrationTime + serialDelay);
-        if (nRound <= 0) {
-            sumOne = 1;
-            nRound = 1;
-        }
+    int maximumNumberToAddInDevice = 15;
+    if (m_spectrometerModel == "USB2000+" || m_spectrometerModel == "AVANTES") {
+        maximumNumberToAddInDevice = 1000;
     }
 
-    result.SumInComputer = nRound;
-    result.SumInSpectrometer = sumOne;
-
-    return nRound;
+    return mobiledoas::CountRound(timeResolution, m_integrationTime, m_spectrometer->GetReadoutDelay(), maximumNumberToAddInDevice, result);
 }
 
 double* CSpectrometer::GetSpectrum(int channel) {

@@ -72,3 +72,60 @@ double mobiledoas::GetOffset(double spectrum[MAX_SPECTRUM_LENGTH]) {
 
     return offset;
 }
+
+// TODO: This needs tests and validation of the input parameters
+int mobiledoas::CountRound(long timeResolution, long integrationTimeMs, long readoutDelay, long maximumAveragesInSpectrometer, mobiledoas::SpectrumSummation& result)
+{
+
+    const long gpsDelay = 10;
+
+    int sumOne = 0;
+    int nRound = 0;
+
+    if (maximumAveragesInSpectrometer > 100)
+    {
+        // Some devices, such as the USB2000+ or the AVANTES devices can sum as many spectra as we want in the
+        // spectrometer, we therefore don't need to sum anything in the computer.
+        nRound = 1;
+        sumOne = std::max(1, (int)(timeResolution / (1.1 * integrationTimeMs)));
+    }
+    else
+    {
+        long results[15];
+        long rounds[15];
+        double nSpec[15];
+
+        // Test the different possibilities for splitting the co-adds beteween the computer and the spectrometer
+        //  and return the variant which gives the maximum number of readouts.
+        for (sumOne = 1; sumOne <= 15; sumOne++) {
+            nRound = (timeResolution - gpsDelay) / (sumOne * integrationTimeMs + readoutDelay);
+            rounds[sumOne - 1] = nRound;
+            long totalTime = (sumOne * integrationTimeMs + readoutDelay) * nRound + gpsDelay;
+            results[sumOne - 1] = totalTime;
+            nSpec[sumOne - 1] = (double)(sumOne * nRound);
+        }
+        double maxSpecPerTime = nSpec[0] / (double)results[0];
+        int index = 0;
+
+        for (int i = 1; i < 15; ++i) {
+            if (rounds[i - 1] > 0) {
+                if (results[i] <= 1.1 * timeResolution && nSpec[i] / (double)results[i] >= maxSpecPerTime) {
+                    maxSpecPerTime = nSpec[i] / (double)results[i];
+                    index = i;
+                }
+            }
+        }
+
+        sumOne = index + 1;
+        nRound = (timeResolution - gpsDelay) / (sumOne * integrationTimeMs + readoutDelay);
+        if (nRound <= 0) {
+            sumOne = 1;
+            nRound = 1;
+        }
+    }
+
+    result.SumInComputer = nRound;
+    result.SumInSpectrometer = sumOne;
+
+    return nRound;
+}
