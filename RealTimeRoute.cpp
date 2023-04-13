@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "DMSpec.h"
 #include "RealTimeRoute.h"
+#include "Spectrometer.h"
 #include <algorithm>
 
 // CRealTimeRoute dialog
@@ -13,11 +14,14 @@ using namespace Dialogs;
 
 IMPLEMENT_DYNAMIC(CRealTimeRoute, CDialog)
 CRealTimeRoute::CRealTimeRoute(CWnd* pParent /*=NULL*/)
-    : CDialog(CRealTimeRoute::IDD, pParent)
+    : CDialog(CRealTimeRoute::IDD, pParent),
+    m_pointNum(0), fVisible(false), m_intensityLimit(400), m_legendWidth(0), m_spectrometer(nullptr), m_srcLat(0.0), m_srcLon(0.0)
 {
-    m_pointNum = 0;
-    fVisible = false;
-    m_intensityLimit = 400;
+    // There is a maximum size to the dataset available, stick to that
+    m_lat.resize(65536);
+    m_lon.resize(65536);
+    m_col.resize(65536);
+    m_int.resize(65536);
 }
 
 CRealTimeRoute::~CRealTimeRoute()
@@ -84,7 +88,7 @@ void CRealTimeRoute::DrawRouteGraph()
     m_gpsPlot.SetRange(m_range.minLat, m_range.maxLat, nofDecimals, m_range.minLon, m_range.maxLon, nofDecimals);
 
     // Draw route plot
-    m_gpsPlot.DrawCircles(m_lon, m_lat, m_col, m_pointNum);
+    m_gpsPlot.DrawCircles(m_lon.data(), m_lat.data(), m_col.data(), m_pointNum);
 
     // draw min/max col label
     m_gpsPlot.SetPlotColor(RGB(255, 255, 255));
@@ -120,7 +124,7 @@ void CRealTimeRoute::ReadData() {
         return;
 
     long sum = std::min(65535L, m_spectrometer->GetColumnNumber()); // limit the number here since the vectors aren't long enough...
-    m_spectrometer->GetLatLongAlt(m_lat, m_lon, nullptr, sum);
+    m_spectrometer->GetLatLongAlt(m_lat.data(), m_lon.data(), nullptr, sum);
     m_spectrometer->GetColumns(m_col, sum);
     m_spectrometer->GetIntensity(m_int, sum);
 
@@ -149,36 +153,34 @@ void CRealTimeRoute::ReadData() {
     m_range.maxLon = m_lon[0];
     m_range.minLat = m_lat[0];
     m_range.minLon = m_lon[0];
-    m_colmax = m_col[0];
-    m_colmin = m_col[0];
+    double maximumColumn = m_col[0];
+    double minimumColumn = m_col[0];
     for (int i = 0; i < sum; i++) {
         m_range.maxLat = std::max(m_range.maxLat, m_lat[i]);
         m_range.maxLon = std::max(m_range.maxLon, m_lon[i]);
         m_range.minLat = std::min(m_range.minLat, m_lat[i]);
         m_range.minLon = std::min(m_range.minLon, m_lon[i]);
-        if (m_col[i] > m_colmax) {
-            m_colmax = m_col[i];
+        if (m_col[i] > maximumColumn) {
+            maximumColumn = m_col[i];
         }
-        if (m_col[i] < m_colmin) {
-            m_colmin = m_col[i];
+        if (m_col[i] < minimumColumn) {
+            minimumColumn = m_col[i];
         }
     }
     // update legend max/min col
     CString maxcol;
-    maxcol.Format("%.1f", m_colmax);
+    maxcol.Format("%.1f", maximumColumn);
     this->SetDlgItemText(IDC_STATIC_MAXCOL, maxcol);
     CString mincol;
-    mincol.Format("%.1f", m_colmin);
+    mincol.Format("%.1f", minimumColumn);
     this->SetDlgItemText(IDC_STATIC_MINCOL, mincol);
     CString midcol;
-    midcol.Format("%.1f", (m_colmax + m_colmin) / 2);
+    midcol.Format("%.1f", (maximumColumn + minimumColumn) / 2);
     this->SetDlgItemText(IDC_STATIC_MIDCOL, midcol);
 }
 
 void CRealTimeRoute::OnClose()
 {
-    // TODO: Add your message handler code here and/or call default
-
     fVisible = false;
     this->DestroyWindow();
     CDialog::OnClose();

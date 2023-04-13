@@ -1,5 +1,4 @@
-#include "StdAfx.h"
-#include "CDateTime.h"
+#include <MobileDoasLib/DateTime.h>
 #include <MobileDoasLib/GpsData.h>
 #include <SpectralEvaluation/DateTime.h>
 
@@ -12,24 +11,25 @@ std::string GetCurrentDateFromComputerClock(char separatorCharacter)
     char startDate[32];
     time_t t;
     time(&t);
-    struct tm* tim = localtime(&t);
-    int mon = tim->tm_mon + 1;
-    int day = tim->tm_mday;
-    int year = tim->tm_year - 100; // only good for 21st century
-    sprintf(startDate, "%02d%c%02d%c%02d", day, separatorCharacter, mon, separatorCharacter, year);
+    struct tm tim;
+    localtime_s(&tim, &t);
+    int mon = tim.tm_mon + 1;
+    int day = tim.tm_mday;
+    int year = tim.tm_year - 100; // only good for 21st century
+    sprintf_s(startDate,  "%02d%c%02d%c%02d", day, separatorCharacter, mon, separatorCharacter, year);
 
     return std::string(startDate, 8);
 }
 
 void GetCurrentDateFromComputerClock(novac::CDateTime& result)
 {
-    char startDate[32];
     time_t t;
     time(&t);
-    struct tm* tim = localtime(&t);
-    result.month = tim->tm_mon + 1;
-    result.day = tim->tm_mday;
-    result.year = tim->tm_year - 100;
+    struct tm tim;
+    localtime_s(&tim, &t);
+    result.month = static_cast<unsigned char>(tim.tm_mon + 1);
+    result.day = static_cast<unsigned char>(tim.tm_mday);
+    result.year = static_cast<unsigned char>(tim.tm_year - 100);
 }
 
 void ExtractTime(const mobiledoas::GpsData& gpsData, int& hours, int& minutes, int& seconds)
@@ -51,12 +51,12 @@ void ExtractDate(const mobiledoas::GpsData& gpsData, int& day, int& month, int& 
 
 void ExtractDateAndTime(const mobiledoas::GpsData& gpsData, novac::CDateTime& time)
 {
-    time.day = gpsData.date / 10000;
-    time.month = (gpsData.date - time.day * 10000) / 100;
+    time.day = static_cast<unsigned char>(gpsData.date / 10000);
+    time.month = static_cast<unsigned char>((gpsData.date - time.day * 10000) / 100);
     time.year = gpsData.date % 100;
 
-    time.hour = gpsData.time / 10000;
-    time.minute = (gpsData.time - time.hour * 10000) / 100;
+    time.hour = static_cast<unsigned char>(gpsData.time / 10000);
+    time.minute = static_cast<unsigned char>((gpsData.time - time.hour * 10000) / 100);
     time.second = gpsData.time % 100;
     time.millisecond = 0;
 }
@@ -64,7 +64,7 @@ void ExtractDateAndTime(const mobiledoas::GpsData& gpsData, novac::CDateTime& ti
 std::string GetDate(const mobiledoas::GpsData& data)
 {
     char buffer[7];
-    sprintf(buffer, "%06d", data.date);
+    sprintf_s(buffer, "%06d", data.date);
     return std::string(buffer);
 }
 
@@ -74,7 +74,7 @@ std::string GetDate(const mobiledoas::GpsData& data, char separatorCharacter)
     ExtractDate(data, day, month, year);
 
     char buffer[64];
-    sprintf(buffer, "%02d%c%02d%c%02d", day, separatorCharacter, month, separatorCharacter, year);
+    sprintf_s(buffer, "%02d%c%02d%c%02d", day, separatorCharacter, month, separatorCharacter, year);
     return std::string(buffer);
 }
 
@@ -108,7 +108,7 @@ std::string FormatTime(long hhmmss, char separatorCharacter)
     GetHrMinSec(hhmmss, hr, min, sec);
 
     char msgBuffer[64];
-    sprintf(msgBuffer, "%02d%c%02d%c%02d", hr, separatorCharacter, min, separatorCharacter, sec);
+    sprintf_s(msgBuffer, "%02d%c%02d%c%02d", hr, separatorCharacter, min, separatorCharacter, sec);
 
     return std::string(msgBuffer);
 }

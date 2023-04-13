@@ -289,7 +289,6 @@
     <ClCompile Include="CLogDialog.cpp" />
     <ClCompile Include="CommentDlg.cpp" />
     <ClCompile Include="Common.cpp" />
-    <ClCompile Include="Common\CDateTime.cpp" />
     <ClCompile Include="Common\CSpectrum.cpp" />
     <ClCompile Include="Common\KMLFileHandler.cpp" />
     <ClCompile Include="Common\SpectrumIO.cpp" />
@@ -611,7 +610,6 @@
     <ClInclude Include="CLogDialog.h" />
     <ClInclude Include="CommentDlg.h" />
     <ClInclude Include="Common.h" />
-    <ClInclude Include="Common\CDateTime.h" />
     <ClInclude Include="Common\CSpectrum.h" />
     <ClInclude Include="Common\KMLFileHandler.h" />
     <ClInclude Include="Common\SpectrumIO.h" />

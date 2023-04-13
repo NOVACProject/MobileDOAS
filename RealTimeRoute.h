@@ -3,9 +3,9 @@
 #define _REALTIMEROUTE_
 
 #include "RouteGraph.h"
-#include "Common.h"
 #include "afxwin.h"
-#include "Spectrometer.h"
+
+class CSpectrometer;
 
 // CRealTimeRoute dialog
 
@@ -13,10 +13,6 @@ namespace Dialogs
 {
     class CRealTimeRoute : public CDialog {
         DECLARE_DYNAMIC(CRealTimeRoute)
-
-    private:
-        CStatic m_plotArea;
-        int m_legendWidth;
 
     public:
         CRealTimeRoute(CWnd* pParent = nullptr);   // standard constructor
@@ -33,35 +29,41 @@ namespace Dialogs
 
         DECLARE_MESSAGE_MAP()
     public:
-        virtual BOOL OnInitDialog();
 
-        bool    fVisible;
-
-        CSpectrometer* m_spectrometer;
-
-        long    m_pointNum;
-        double  m_lon[65536]; // TODO: Convert this to std::vector
-        double  m_lat[65536]; // TODO: Convert this to std::vector
-        double  m_col[65536]; // TODO: Convert this to std::vector
-        double  m_colmax;
-        double  m_colmin;
-        std::vector<double> m_int;
-
-        struct plotRange m_range;
-        double m_srcLat, m_srcLon;
+        bool fVisible;
 
         double m_intensityLimit; // points with intensity below 'm_intensityLimit' will not be shown
 
-        /* Plotting the data */
-        void   DrawRouteGraph();
+        CSpectrometer* m_spectrometer;
 
-        void   ReadData();
+        virtual BOOL OnInitDialog();
+
+        /* Plotting the data */
+        void DrawRouteGraph();
+
+        void ReadData();
 
         afx_msg void OnSize(UINT nType, int cx, int cy);
 
         virtual BOOL Create(UINT nID, CWnd* pParentWnd = nullptr);
         afx_msg void OnClose();
-    };
 
+    private:
+
+        long  m_pointNum;
+        std::vector<double>  m_lon;
+        std::vector<double>  m_lat;
+
+        std::vector<double> m_col;
+        std::vector<double> m_int;
+
+        struct plotRange m_range;
+        double m_srcLat;
+        double m_srcLon;
+
+        CStatic m_plotArea;
+        int m_legendWidth;
+
+    };
 }
 #endif

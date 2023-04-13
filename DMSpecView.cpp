@@ -11,7 +11,7 @@
 #include "DMSpecDoc.h"
 #include "DMSpecView.h"
 #include "MainFrm.h"
-#include "Common/CDateTime.h"
+#include <MobileDoasLib/DateTime.h>
 
 #include "PostFluxDlg.h"
 #include "Flux1.h"
@@ -370,7 +370,7 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam) {
     }
     this->SetDlgItemText(IDC_TEMPERATURE, cTemp);
 
-    // --- Get the data ---
+    // --- Get the data, but plot mo more than 199 values (to keep the graph readable) ---
     const long size = std::min(long(199), m_Spectrometer->GetColumnNumber());
 
     std::vector<double> intensity(size);
@@ -378,8 +378,8 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam) {
 
     std::vector<double> masterChannelColumns(size);
     std::vector<double> masterChannelColumnErrors(size);
-    m_Spectrometer->GetColumns(masterChannelColumns.data(), size, 0);
-    m_Spectrometer->GetColumnErrors(masterChannelColumnErrors.data(), size, 0);
+    m_Spectrometer->GetColumns(masterChannelColumns, size, 0);
+    m_Spectrometer->GetColumnErrors(masterChannelColumnErrors, size, 0);
 
 
     std::vector<double> slaveChannelColumns;
@@ -387,8 +387,8 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam) {
     if (fitRegionNum > 1) {
         slaveChannelColumns.resize(size);
         slaveChannelColumnErrors.resize(size);
-        m_Spectrometer->GetColumns(slaveChannelColumns.data(), size, 1);
-        m_Spectrometer->GetColumnErrors(slaveChannelColumnErrors.data(), size, 1);
+        m_Spectrometer->GetColumns(slaveChannelColumns, size, 1);
+        m_Spectrometer->GetColumnErrors(slaveChannelColumnErrors, size, 1);
     }
 
     // -- Convert the intensity to saturation ratio

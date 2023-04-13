@@ -787,44 +787,36 @@ void CSpectrometer::SetFileName()
     lastidx = i - 1;
 }
 
-long CSpectrometer::GetColumns(double* columnList, long sum, int fitRegion)
+long CSpectrometer::GetColumns(std::vector<double>& list, long maxNumberOfValues, int fitRegion) const
 {
-    int i = 0;
 
-    long columnSize = m_fitRegion[fitRegion].vColumn[0].GetSize();
-    if (columnSize > 0)
+    const long numberOfValuesAvailable = m_fitRegion[fitRegion].vColumn[0].GetSize();
+    const long numberOfValuesToRead = std::min(numberOfValuesAvailable, maxNumberOfValues);
+
+    if (numberOfValuesAvailable > 0)
     {
-        if (sum > columnSize)
-            sum = columnSize;
-
-        for (i = 0; i < sum; ++i) {
-            columnList[i] = m_fitRegion[fitRegion].vColumn[0].GetAt(columnSize - sum + i);
+        for (int i = 0; i < numberOfValuesToRead; ++i) {
+            list[i] = m_fitRegion[fitRegion].vColumn[0].GetAt(numberOfValuesAvailable - numberOfValuesToRead + i);
         }
     }
 
-    return i;
+    return numberOfValuesToRead;
 }
 
-/**Get columnerrors
-**@columnList - the array to contain column errors
-**@sum    - the number of column errors
-*/
-long CSpectrometer::GetColumnErrors(double* columnErrList, long sum, int fitRegion)
+long CSpectrometer::GetColumnErrors(std::vector<double>& list, long maxNumberOfValues, int fitRegion) const
 {
-    int i = 0;
 
-    long columnSize = m_fitRegion[fitRegion].vColumn[0].GetSize();
-    if (columnSize > 0)
+    const long numberOfValuesAvailable = m_fitRegion[fitRegion].vColumn[0].GetSize();
+    const long numberOfValuesToRead = std::min(numberOfValuesAvailable, maxNumberOfValues);
+
+    if (numberOfValuesAvailable > 0)
     {
-        if (sum > columnSize)
-            sum = columnSize;
-
-        for (i = 0; i < sum; ++i) {
-            columnErrList[i] = m_fitRegion[fitRegion].vColumn[1].GetAt(columnSize - sum + i);
+        for (int i = 0; i < numberOfValuesToRead; ++i) {
+            list[i] = m_fitRegion[fitRegion].vColumn[1].GetAt(numberOfValuesAvailable - numberOfValuesToRead + i);
         }
     }
 
-    return i;
+    return numberOfValuesToRead;
 }
 
 /* Get the gps-positions */
@@ -868,7 +860,7 @@ bool CSpectrometer::GpsGotContact() const {
     return this->m_gps->GotContact();
 }
 
-long CSpectrometer::GetIntensity(std::vector<double>& list, long sum)
+long CSpectrometer::GetIntensity(std::vector<double>& list, long sum) const
 {
     const long size = static_cast<long>(m_intensityOfMeasuredSpectrum.size());
     const long numberOfValues = std::min(sum, size);

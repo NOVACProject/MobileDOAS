@@ -24,7 +24,7 @@ public:
         and using the provided baudrate.
         @param pCOMPort The name of the COM-port to use. This must be on the form 'COMN' where 'N' is an integer.
         @param baudrate The baudrate to use in the communication. */
-    CGPS(const char* pCOMPort, long baudrate);
+    CGPS(const char* pCOMPort, long baudrate, std::string& outputDirectory);
 
     /** Creates a GPS receiver instance using the provided serial instance. This will take ownership
         of the serial port. NOTICE the provided instance of SerialConnection must not be used elsewhere. */
@@ -53,10 +53,6 @@ public:
         This will temporarily lock the member 'm_gpsInfo' to avoid race conditions. */
     void Get(mobiledoas::GpsData& dst);
 
-    /* WriteGPSLog and WriteLog are currently not used */
-    // void    WriteGPSLog(char *pFile,double *pPos,double pTime);
-    // void    WriteLog(char *pFile,char* txt);
-
     /* Running the GPS collection */
     void CloseSerial();
 
@@ -67,7 +63,7 @@ public:
 private:
 
     /** The gps-logfile*/
-    CString m_logFile;
+    std::string m_logFile;
 
     /* The actual information */
     struct mobiledoas::GpsData m_gpsInfo;
@@ -85,7 +81,7 @@ private:
 class GpsAsyncReader
 {
 public:
-    GpsAsyncReader(const char* pCOMPort, long baudrate);
+    GpsAsyncReader(const char* pCOMPort, long baudrate, std::string& outputDirectory);
     GpsAsyncReader(CGPS&& gps);
     ~GpsAsyncReader();
 
@@ -105,7 +101,7 @@ private:
     CGPS* m_gps = nullptr;
 
     /** The gps-reading thread. */
-    CWinThread* m_gpsThread = nullptr;
+    std::thread m_gpsThread;
 };
 
 #endif // !defined(AFX_GPS_H__EBAA5A71_5FAD_46B7_90C6_B5DBE3408F77__INCLUDED_)

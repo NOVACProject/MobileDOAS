@@ -12,8 +12,6 @@ static char THIS_FILE[] = __FILE__;
 #define new DEBUG_NEW
 #endif
 
-extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -23,9 +21,11 @@ CGPS::CGPS()
 {
 }
 
-CGPS::CGPS(const char* pCOMPort, long pBaudrate)
+CGPS::CGPS(const char* pCOMPort, long pBaudrate, std::string& outputDirectory)
     : m_gpsInfo(), fRun(false)
 {
+    m_logFile = outputDirectory + "/gps.log";
+
     serial.SetBaudrate(pBaudrate);
     serial.SetPort(pCOMPort);
 
@@ -126,14 +126,16 @@ bool CGPS::ReadGPS()
     }
 
 #ifdef _DEBUG
-    m_logFile.Format("gps.log"); // for testing only
-    if (strlen(m_logFile) > 0) {
-        FILE* f = fopen(g_exePath + m_logFile, "a+");
-        fprintf(f, "%1d\t%ld\t", localGpsInfo.date, localGpsInfo.time);
-        fprintf(f, "%lf\t%lf\t%lf\t", localGpsInfo.latitude, localGpsInfo.longitude, localGpsInfo.altitude);
-        fprintf(f, "%ld\t", localGpsInfo.nSatellitesTracked);
-        fprintf(f, "%ld\n", localGpsInfo.nSatellitesSeen);
-        fclose(f);
+    if (m_logFile.size() > 0) {
+        FILE* f = fopen(m_logFile.c_str(), "a+");
+        if (f != nullptr)
+        {
+            fprintf(f, "%1d\t%ld\t", localGpsInfo.date, localGpsInfo.time);
+            fprintf(f, "%lf\t%lf\t%lf\t", localGpsInfo.latitude, localGpsInfo.longitude, localGpsInfo.altitude);
+            fprintf(f, "%ld\t", localGpsInfo.nSatellitesTracked);
+            fprintf(f, "%ld\n", localGpsInfo.nSatellitesSeen);
+            fclose(f);
+        }
     }
 #endif
 
@@ -147,9 +149,8 @@ void CGPS::CloseSerial()
 
 /** The async GPS data collection thread. This will take ownership of the CGPS which is passed in as reference
     and delete it when we're done. */
-UINT CollectGPSData(LPVOID pParam)
+UINT CollectGPSData(CGPS* gps)
 {
-    CGPS* gps = (CGPS*)pParam;
     gps->fRun = true;
 
     while (gps->fRun)
@@ -176,16 +177,18 @@ UINT CollectGPSData(LPVOID pParam)
     return 0;
 }
 
-GpsAsyncReader::GpsAsyncReader(const char* pCOMPort, long baudrate)
+GpsAsyncReader::GpsAsyncReader(const char* pCOMPort, long baudrate, std::string& outputDirectory)
 {
-    m_gps = new CGPS(pCOMPort, baudrate);
-    m_gpsThread = AfxBeginThread(CollectGPSData, (LPVOID)m_gps, THREAD_PRIORITY_NORMAL, 0, 0, nullptr);
+    m_gps = new CGPS(pCOMPort, baudrate, outputDirectory);
+
+    m_gpsThread = std::thread(&CollectGPSData, m_gps); // AfxBeginThread(CollectGPSData, (LPVOID)m_gps, THREAD_PRIORITY_NORMAL, 0, 0, nullptr);
 }
 
 GpsAsyncReader::GpsAsyncReader(CGPS&& gps)
 {
     m_gps = new CGPS(std::move(gps));
-    m_gpsThread = AfxBeginThread(CollectGPSData, (LPVOID)m_gps, THREAD_PRIORITY_NORMAL, 0, 0, nullptr);
+
+    m_gpsThread = std::thread(&CollectGPSData, m_gps); // AfxBeginThread(CollectGPSData, (LPVOID)m_gps, THREAD_PRIORITY_NORMAL, 0, 0, nullptr);
 }
 
 

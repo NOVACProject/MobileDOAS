@@ -169,25 +169,25 @@ public:
     /** @return true if the GPS currently has connectact with satellites */
     bool GpsGotContact() const;
 
-    /** Retrieves the intensities for the (at most) 'sum' collected spectra
+    /** Retrieves the intensities for the (at most) 'maxNumberOfValues' collected spectra
         @param list (out) - will on return be filled with the intensities
         @param sum (in) the desired number of intensities.
         @return - the number of intensities actually filled into 'list' */
-    long GetIntensity(std::vector<double>& list, long sum);
+    long GetIntensity(std::vector<double>& list, long maxNumberOfValues) const;
 
-    /** Retrieves the last 'sum' evaluated columns
-        @param (out) a pointer to an array, will on return be filled with at most 'sum' retrieved columns
-        @param sum (in) the desired number of columns to retrieve
+    /** Retrieves the last 'maxNumberOfValues' evaluated columns
+        @param list - will will on return be filled with the last 'maxNumberOfValues' retrieved columns
+        @param maxNumberOfValues (in) the desired number of columns to retrieve
         @param fitRegion (in) - the fit region that we want to have the columns for
     */
-    long GetColumns(double* columnList, long sum, int fitRegion = 0);
+    long GetColumns(std::vector<double>& list, long maxNumberOfValues, int fitRegion = 0) const;
 
-    /** Retrieves the last 'sum' estimated columns errors
-        @param (out) a pointer to an array, will on return be filled with at most 'sum' estimated columns errors
-        @param sum (in) the desired number of columns errors to retrieve
-        @param fitRegion (in) - the fit region that we want to have the columns errors for
+    /** Retrieves the last 'maxNumberOfValues' estimated column errors.
+        @param list - will will on return be filled with the last 'maxNumberOfValues' retrieved column errors
+        @param maxNumberOfValues (in) the desired number of column errors to retrieve
+        @param fitRegion (in) - the fit region that we want to have the columns for
     */
-    long GetColumnErrors(double* columnList, long sum, int fitRegion = 0);
+    long GetColumnErrors(std::vector<double>& list, long maxNumberOfValues, int fitRegion = 0) const;
 
     /** Gets the number of spectra that are averaged in the spectrometer and in the computer */
     void GetNSpecAverage(int& averageInSpectrometer, int& averageInComputer);

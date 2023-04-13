@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Common/CDateTime.h"
+#include <MobileDoasLib/DateTime.h>
 #include <afxtempl.h>
 
 namespace Flux

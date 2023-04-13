@@ -366,9 +366,6 @@
     <ClCompile Include="SpectralEvaluation\src\StringUtils.cpp">
       <Filter>Source Files\SpectralEvaluation</Filter>
     </ClCompile>
-    <ClCompile Include="Common\CDateTime.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Common\CSpectrum.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -863,9 +860,6 @@
       <Filter>Header Files\Controls</Filter>
     </ClInclude>
     <ClInclude Include="CSpectrometerCalibrationDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CDateTime.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Common\CSpectrum.h">

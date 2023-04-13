@@ -64,7 +64,7 @@ void CMeasurement_Wind::Run() {
         /* Start the GPS collection thread */
         if (m_useGps)
         {
-            m_gps = new GpsAsyncReader(m_GPSPort, m_GPSBaudRate);
+            m_gps = new GpsAsyncReader(m_GPSPort, m_GPSBaudRate, std::string((LPCSTR)g_exePath));
         }
     }
 
