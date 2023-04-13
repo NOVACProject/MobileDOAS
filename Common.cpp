@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 #include <string>
+#include <MobileDoasLib/GpsData.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -254,99 +255,7 @@ bool FormatErrorCode(DWORD error, CString& string) {
     return false;
 }
 
-/* Calculates the distance in meters between the point (lat1, lon1) and the point
-  (lat2, lon2).
-    @lat1 - latitude of position 1  [degrees]
-    @lon1 - longitude of position 1 [degrees]
-    @lat2 - latitude of position 2  [degrees]
-    @lon2 - longitude of position 2 [degrees]
-*/
-double GPSDistance(double lat1, double lon1, double lat2, double lon2) {
-    const double R_Earth = 6367000;
-    double distance, dlon, dlat, a, c;
-    lat1 = lat1 * DEGREETORAD;
-    lat2 = lat2 * DEGREETORAD;
-    lon1 = lon1 * DEGREETORAD;
-    lon2 = lon2 * DEGREETORAD;
-    dlon = lon2 - lon1;
-    dlat = lat2 - lat1;
-    a = pow((sin(dlat / 2)), 2) + cos(lat1) * cos(lat2) * pow((sin(dlon / 2)), 2);
-    c = 2 * asin(min(1, sqrt(a)));
-    distance = R_Earth * c;
 
-    return distance;
-
-}
-
-/** Calculate the bearing from point 1 to point 2.
-  Bearing is here defined as the angle between the direction to point 2 (at point 1)
-    and the direction to north (at point 1).
-*@lat1 - the latitude of beginning point,   [degree]
-*@lon1 - the longitude of beginning point,  [degree]
-*@lat2 - the latitude of ending point,      [degree]
-*@lon2 - the longitude of ending point,     [degree]
-*/
-double GPSBearing(double lat1, double lon1, double lat2, double lon2) {
-    double angle, dLat, dLon;
-
-    lat1 = lat1 * DEGREETORAD;
-    lat2 = lat2 * DEGREETORAD;
-    lon1 = lon1 * DEGREETORAD;
-    lon2 = lon2 * DEGREETORAD;
-
-    dLat = lat1 - lat2;
-    dLon = lon1 - lon2;
-
-    if ((dLon == 0) && (dLat == 0))
-        angle = 0;
-    else
-        angle = atan2(-sin(dLon) * cos(lat2),
-            cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon));
-
-    /*  	angle = atan2(lon1*cos(lat1)-lon2*cos(lat2), lat1-lat2); */
-
-    if (angle < 0)
-        angle = TWO_PI + angle;
-
-    angle = RADTODEGREE * angle;
-    return angle;
-}
-
-/** This function calculates the latitude and longitude for a point
-        which is the distance 'dist' m and bearing 'az' degrees from
-        the point defied by 'lat1' and 'lon1' */
-void CalculateDestination(double lat1, double lon1, double dist, double az, double& lat2, double& lon2) {
-    const double R_Earth = 6367000; // radius of the earth
-
-    double dR = dist / R_Earth;
-
-    // convert to radians
-    lat1 = lat1 * DEGREETORAD;
-    lon1 = lon1 * DEGREETORAD;
-    az = az * DEGREETORAD;
-
-    // calculate the second point
-    lat2 = asin(sin(lat1) * cos(dR) + cos(lat1) * sin(dR) * cos(az));
-
-    lon2 = lon1 + atan2(sin(az) * sin(dR) * cos(lat1), cos(dR) - sin(lat1) * sin(lat2));
-
-    // convert back to degrees
-    lat2 = lat2 * RADTODEGREE;
-    lon2 = lon2 * RADTODEGREE;
-}
-
-
-double GetWindFactor(double lat1, double lon1, double lat2, double lon2, double windAngle) {
-    double windFactor, travelAngle, difAngle;
-
-    travelAngle = DEGREETORAD * GPSBearing(lat1, lon1, lat2, lon2);
-
-    /* plumeAngle = pi + windAngle */
-    difAngle = travelAngle + 1.5 * M_PI - windAngle * DEGREETORAD;	// this is the difference between travel direction and plume direction
-    windFactor = cos(difAngle);
-
-    return windFactor;
-}
 
 bool Common::BrowseForDirectory(CString& folder)
 {
@@ -611,30 +520,4 @@ void Common::GetFileName(CString& fileName)
 void Common::GetDirectory(CString& fileName) {
     int position = fileName.ReverseFind('\\');
     fileName = fileName.Left(position + 1);
-}
-
-
-/** Takes a given year and month and returns the number of days in that month. */
-int	Common::DaysInMonth(int year, int month) {
-    static int nDays[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-
-    // detect non-existing months.
-    if (month < 1 || month > 12)
-        return 0;
-
-    // If the month is not february, then it's easy!!!
-    if (month != 2)
-        return nDays[month - 1];
-
-    // If february, then check for leap-years
-    if (year % 4 != 0)
-        return 28; // not a leap-year
-
-    if (year % 400 == 0) // every year dividable by 400 is a leap-year
-        return 29;
-
-    if (year % 100 == 0) // years diviable by 4 and by 100 are not leap-years
-        return 28;
-    else
-        return 29;		// years dividable by 4 and not by 100 are leap-years
 }

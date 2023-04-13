@@ -71,4 +71,18 @@ namespace mobiledoas
         @return true if the parsing suceeded, otherwise false. */
     bool Parse(const char* gpsString, GpsData& data);
 
+    /* GPSDistance returns the distance in meters between the two points defined
+          by (lat1,lon1) and (lat2, lon2). All angles must be in degrees */
+    double GPSDistance(double lat1, double lon1, double lat2, double lon2);
+
+    /* GPSBearing returns the initial bearing (degrees) when travelling from
+          the point defined by (lat1, lon1) to the point (lat2, lon2).
+          All angles must be in degrees */
+    double GPSBearing(double lat1, double lon1, double lat2, double lon2);
+
+    /** CalculateDestination calculates the latitude and longitude for point
+            which is the distance 'dist' (in meters) and bearing 'az' degrees from
+            the point defied by 'lat1' and 'lon1' */
+    void CalculateDestination(double lat1, double lon1, double dist, double az, double& lat2, double& lon2);
+
 }

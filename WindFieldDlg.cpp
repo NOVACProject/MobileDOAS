@@ -6,8 +6,6 @@
 #include "WindFieldDlg.h"
 #include "Common.h"
 
-using namespace Flux;
-
 extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
 
 // CWindFieldDlg dialog
@@ -18,7 +16,7 @@ CWindFieldDlg::CWindFieldDlg(CWnd* pParent /*=NULL*/)
 {
     m_flux = nullptr;
     m_windfile.Format("");
-    m_windField = new CWindField();
+    m_windField = new mobiledoas::CWindField();
     m_useTimeShift = 0;
     m_timeShift = 0;
 }
@@ -171,10 +169,10 @@ void CWindFieldDlg::DrawField() {
     int nPoints = m_windField->GetWindField(curLayer, curHour, MAX_SPECTRUM_LENGTH, lat, lon, r, t);
 
     // get the ranges for the data
-    double minLat = Min(lat, nPoints);
-    double maxLat = Max(lat, nPoints);
-    double minLon = Min(lon, nPoints);
-    double maxLon = Max(lon, nPoints);
+    double minLat = MinValue(lat, nPoints);
+    double maxLat = MaxValue(lat, nPoints);
+    double minLon = MinValue(lon, nPoints);
+    double maxLon = MaxValue(lon, nPoints);
     double marginSpace = 0.05 * max(maxLon - minLon, maxLat - minLat);
     m_graph.SetRange(minLon - marginSpace, maxLon + marginSpace, 3, minLat - marginSpace, maxLat + marginSpace, 3);
 
@@ -215,7 +213,7 @@ void CWindFieldDlg::OnOK()
             delete(m_flux->m_windField);
 
         m_flux->m_useWindField = true;
-        m_flux->m_windField = new CWindField(*m_windField);
+        m_flux->m_windField = new mobiledoas::CWindField(*m_windField);
         if (m_useTimeShift) {
             m_flux->m_windField->UseTimeShift(true);
             m_flux->m_windField->SetTimeShift(m_timeShift);

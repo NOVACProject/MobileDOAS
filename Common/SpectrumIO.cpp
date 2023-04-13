@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "SpectrumIO.h"
 #include <MobileDoasLib/GpsData.h>
-#include "../Common/CDateTime.h"
+#include <MobileDoasLib/DateTime.h>
 #include <vector>
 #include <cmath>
 

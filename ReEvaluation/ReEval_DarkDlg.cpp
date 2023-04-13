@@ -113,8 +113,8 @@ void CReEval_DarkDlg::DrawOffsetPlot(){
 		right = MAX_TRAVERSE_SHOWN-1;
 	}
 
-  double maxOffset = Max(m_reeval->m_offset[0], m_reeval->m_recordNum[0]);
-  double minOffset = Min(m_reeval->m_offset[0], m_reeval->m_recordNum[0]);
+  double maxOffset = MaxValue(m_reeval->m_offset[0], m_reeval->m_recordNum[0]);
+  double minOffset = MinValue(m_reeval->m_offset[0], m_reeval->m_recordNum[0]);
 
   if(left == right)
     return;

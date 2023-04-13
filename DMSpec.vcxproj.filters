@@ -17,9 +17,6 @@
     <Filter Include="Source Files\Dialogs">
       <UniqueIdentifier>{45d4d4b6-2db5-4ac7-8181-239727962155}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Flux">
-      <UniqueIdentifier>{8a56f27c-02e7-4d6f-a956-12ab1ba91361}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Evaluation">
       <UniqueIdentifier>{31dec120-6a27-4713-bbd5-5a0bf3620c94}</UniqueIdentifier>
     </Filter>
@@ -48,17 +45,11 @@
     <Filter Include="Header Files\Dialogs">
       <UniqueIdentifier>{4f22f1d8-7fd2-4a86-b621-ce41f415a41d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Flux">
-      <UniqueIdentifier>{25dd6c9c-aacb-40ad-a66d-2419845fb305}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Evaluation">
       <UniqueIdentifier>{67d797af-80e9-4f60-bf8f-e21faca8cdff}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\DualBeam">
       <UniqueIdentifier>{b536726b-d3e9-4712-985b-49311d19310d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\FileHandling">
-      <UniqueIdentifier>{f57d66b1-c986-466f-af77-8c9aedbd2f1e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Controls">
       <UniqueIdentifier>{8900d27d-b3cd-4869-80b6-00766ab983ac}</UniqueIdentifier>
@@ -114,13 +105,7 @@
     <ClCompile Include="EvaluationLogFileHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Flux1.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GPS.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Common\KMLFileHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Controls\Label.cpp">
@@ -260,12 +245,6 @@
     </ClCompile>
     <ClCompile Include="WindFieldDlg.cpp">
       <Filter>Source Files\Dialogs</Filter>
-    </ClCompile>
-    <ClCompile Include="Flux\Traverse.cpp">
-      <Filter>Source Files\Flux</Filter>
-    </ClCompile>
-    <ClCompile Include="Flux\WindField.cpp">
-      <Filter>Source Files\Flux</Filter>
     </ClCompile>
     <ClCompile Include="Evaluation\Evaluation.cpp">
       <Filter>Source Files\Evaluation</Filter>
@@ -514,13 +493,7 @@
     <ClInclude Include="EvaluationLogFileHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Flux1.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GPS.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\KMLFileHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Controls\Label.h">
@@ -768,12 +741,6 @@
     </ClInclude>
     <ClInclude Include="WindFieldDlg.h">
       <Filter>Header Files\Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="Flux\Traverse.h">
-      <Filter>Header Files\Flux</Filter>
-    </ClInclude>
-    <ClInclude Include="Flux\WindField.h">
-      <Filter>Header Files\Flux</Filter>
     </ClInclude>
     <ClInclude Include="Evaluation\Evaluation.h">
       <Filter>Header Files\Evaluation</Filter>

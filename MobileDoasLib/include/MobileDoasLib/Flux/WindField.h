@@ -1,9 +1,10 @@
 #pragma once
 
 #include <MobileDoasLib/DateTime.h>
-#include <afxtempl.h>
+#include <vector>
+#include <memory>
 
-namespace Flux
+namespace mobiledoas
 {
     class Wind {
     public:
@@ -18,9 +19,9 @@ namespace Flux
     class CWindField
     {
     public:
-        CWindField(void);
+        CWindField();
         CWindField(CWindField& wf);
-        ~CWindField(void);
+        ~CWindField();
 
         /** The maximum number of layers that we can store */
         static const int  MAX_LAYERS = 64;
@@ -40,7 +41,7 @@ namespace Flux
             @param nPoints - the number of data points in the arrays = the number of interpolations to do.
             @param windSpeed - will be filled with interpolated windspeeds when the function returns.
             @param windDirection - will be filled with interpolated wind directions when the function returns. */
-        int Interpolate(const double* lat, const double* lon, const Time* times, int layer, int nPoints, double* windSpeed, double* windDirection, int mode = INTERPOLATION_NEAREST);
+        int Interpolate(const double* lat, const double* lon, const mobiledoas::Time* times, int layer, int nPoints, double* windSpeed, double* windDirection, int mode = INTERPOLATION_NEAREST);
 
         /** gives the wind field at the given altitude layer for the given hour
             @param maxPoints - the maximum number of datapoints to fill in.
@@ -76,7 +77,7 @@ namespace Flux
 
         /** A set of lists, one list for every layer in altitude.
             Each list contains the datapoints for that layer. */
-        CList<Wind*, Wind*> m_wind[MAX_LAYERS][MAX_HOURS];
+        std::vector<Wind> m_wind[MAX_LAYERS][MAX_HOURS];
 
         /** How many altitude layers that are defined */
         long m_nAltitudes;
@@ -99,11 +100,11 @@ namespace Flux
         int AltitudeIndex(double altitude);
 
         /** This function sorts the supplied list of winds. */
-        static int SortList(CList<Wind*, Wind*>& m_wind);
+        static int SortList(std::vector<Wind>& m_wind);
 
         /** Returns the nearest neigbour to the supplied point from the list o points.
             @return - a pointer to the nearest point.
             @return - NULL if anything goes wrong.*/
-        static Wind* NearestNeighbour(const CList<Wind*, Wind*>& wind, double point_Lat, double point_Lon, bool sorted);
+        static std::unique_ptr<Wind> NearestNeighbour(const std::vector<Wind>& wind, double point_Lat, double point_Lon, bool sorted);
     };
 }

@@ -290,7 +290,6 @@
     <ClCompile Include="CommentDlg.cpp" />
     <ClCompile Include="Common.cpp" />
     <ClCompile Include="Common\CSpectrum.cpp" />
-    <ClCompile Include="Common\KMLFileHandler.cpp" />
     <ClCompile Include="Common\SpectrumIO.cpp" />
     <ClCompile Include="Common\XMLFileReader.cpp" />
     <ClCompile Include="Configuration\ConfigurationDialog.cpp" />
@@ -335,10 +334,7 @@
     <ClCompile Include="Evaluation\ReferenceFitResult.cpp" />
     <ClCompile Include="Evaluation\TraverseResult.cpp" />
     <ClCompile Include="ExportEvLogDlg.cpp" />
-    <ClCompile Include="Flux1.cpp" />
     <ClCompile Include="FluxPathListBox.cpp" />
-    <ClCompile Include="Flux\Traverse.cpp" />
-    <ClCompile Include="Flux\WindField.cpp" />
     <ClCompile Include="GPS.cpp" />
     <ClCompile Include="Graphs\ColumnGraph.cpp" />
     <ClCompile Include="Graphs\GraphCtrl.cpp" />
@@ -611,7 +607,6 @@
     <ClInclude Include="CommentDlg.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="Common\CSpectrum.h" />
-    <ClInclude Include="Common\KMLFileHandler.h" />
     <ClInclude Include="Common\SpectrumIO.h" />
     <ClInclude Include="Common\XMLFileReader.h" />
     <ClInclude Include="Configuration\ConfigurationDialog.h" />
@@ -688,10 +683,7 @@
     <ClInclude Include="Fit\StatisticVector.h" />
     <ClInclude Include="Fit\SumFunction.h" />
     <ClInclude Include="Fit\Vector.h" />
-    <ClInclude Include="Flux1.h" />
     <ClInclude Include="FluxPathListBox.h" />
-    <ClInclude Include="Flux\Traverse.h" />
-    <ClInclude Include="Flux\WindField.h" />
     <ClInclude Include="GPS.h" />
     <ClInclude Include="Graphs\ColumnGraph.h" />
     <ClInclude Include="Graphs\GraphCtrl.h" />

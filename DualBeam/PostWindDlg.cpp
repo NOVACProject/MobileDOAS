@@ -1,8 +1,11 @@
 #include "stdafx.h"
 #include "../DMSpec.h"
 #include "PostWindDlg.h"
-#include "../Flux1.h"
+#include <MobileDoasLib/Flux/Flux1.h>
 #include <stdexcept>
+
+#undef max
+#undef min
 
 // CPostWindDlg dialog
 
@@ -110,12 +113,12 @@ bool CPostWindDlg::ReadEvaluationLog(int channelIndex) {
     // the index in the traverse which we should read. Setting this to zero always assumes that we will always use
     //	the first species in the traverse to evaluate the windspeed...
     const int specieIndex = 0;
-    Flux::CFlux flux;		// The CFlux object helps with reading the data from the eval-log
+    mobiledoas::CFlux flux;		// The CFlux object helps with reading the data from the eval-log
     int nChannels = 1;		// the number of channels in the data-file
     double fileVersion = 0;	// the file-version of the evalution-log file
 
     // Read the header of the log file and see if it is an ok file
-    int fileType = flux.ReadSettingFile(m_evalLog[channelIndex], nChannels, fileVersion);
+    int fileType = flux.ReadSettingFile((LPCSTR)m_evalLog[channelIndex], nChannels, fileVersion);
     if (fileType != 1) {
         MessageBox(TEXT("The file is not evaluation log file with right format.\nPlease choose a right file"), NULL, MB_OK);
         return FAIL;
@@ -127,13 +130,13 @@ bool CPostWindDlg::ReadEvaluationLog(int channelIndex) {
     }
 
     // Read the data from the file
-    if (0 == flux.ReadLogFile("", m_evalLog[channelIndex], nChannels, fileVersion)) {
+    if (0 == flux.ReadLogFile("", (LPCSTR)m_evalLog[channelIndex], nChannels, fileVersion)) {
         MessageBox(TEXT("That file is empty"));
         return FAIL;
     }
 
     // Copy the data to the local variables 'm_originalSeries'
-    const Flux::CTraverse* traverse = flux.m_traverse[specieIndex];
+    const mobiledoas::CTraverse* traverse = flux.m_traverse[specieIndex];
     const long traverseLength = traverse->m_recordNum;
 
     // create a new data series
@@ -142,14 +145,14 @@ bool CPostWindDlg::ReadEvaluationLog(int channelIndex) {
         return FAIL; // <-- failed to allocate enough memory
     }
 
-    Time startTime = traverse->time[0];
+    mobiledoas::Time startTime = traverse->time[0];
     for (int spectrumIndex = 0; spectrumIndex < traverseLength; ++spectrumIndex) {
 
         // Get the column of this spectrum
         m_OriginalSeries[channelIndex]->column[spectrumIndex] = traverse->columnArray[spectrumIndex];
 
         // Get the start time of this spectrum
-        Time t = traverse->time[spectrumIndex];
+        mobiledoas::Time t = traverse->time[spectrumIndex];
 
         // Save the time difference
         m_OriginalSeries[channelIndex]->time[spectrumIndex] =
@@ -211,11 +214,11 @@ void CPostWindDlg::DrawColumn() {
     // get the range for the plot
     for (int k = 0; k < MAX_N_SERIES; ++k) {
         if (m_OriginalSeries[k] != nullptr) {
-            minT = min(minT, m_OriginalSeries[k]->time[0]);
-            maxT = max(maxT, m_OriginalSeries[k]->time[m_OriginalSeries[k]->length - 1]);
+            minT = std::min(minT, m_OriginalSeries[k]->time[0]);
+            maxT = std::max(maxT, m_OriginalSeries[k]->time[m_OriginalSeries[k]->length - 1]);
 
-            minC = min(minC, Min(m_OriginalSeries[k]->column, m_OriginalSeries[k]->length));
-            maxC = max(maxC, Max(m_OriginalSeries[k]->column, m_OriginalSeries[k]->length));
+            minC = std::min(minC, MinValue(m_OriginalSeries[k]->column, m_OriginalSeries[k]->length));
+            maxC = std::max(maxC, MaxValue(m_OriginalSeries[k]->column, m_OriginalSeries[k]->length));
 
             ++nSeries;
         }

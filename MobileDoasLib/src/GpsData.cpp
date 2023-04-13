@@ -1,9 +1,11 @@
 #include <MobileDoasLib/GpsData.h>
+#include <MobileDoasLib/Definitions.h>
 #include <cmath>
 
 //////////////////////////////////////////////////////////////////////
 // GpsData
 //////////////////////////////////////////////////////////////////////
+
 
 namespace mobiledoas
 {
@@ -531,4 +533,76 @@ namespace mobiledoas
         return (numberOfParsedSentences > 0);
     }
 
+    double GPSDistance(double lat1, double lon1, double lat2, double lon2) {
+        const double R_Earth = 6367000;
+        double distance, dlon, dlat, a, c;
+        lat1 = lat1 * DEGREETORAD;
+        lat2 = lat2 * DEGREETORAD;
+        lon1 = lon1 * DEGREETORAD;
+        lon2 = lon2 * DEGREETORAD;
+        dlon = lon2 - lon1;
+        dlat = lat2 - lat1;
+        a = pow((sin(dlat / 2)), 2) + cos(lat1) * cos(lat2) * pow((sin(dlon / 2)), 2);
+        c = 2 * std::asin(std::min(1.0, sqrt(a)));
+        distance = R_Earth * c;
+
+        return distance;
+    }
+
+    /** Calculate the bearing from point 1 to point 2.
+      Bearing is here defined as the angle between the direction to point 2 (at point 1)
+        and the direction to north (at point 1).
+    *@lat1 - the latitude of beginning point,   [degree]
+    *@lon1 - the longitude of beginning point,  [degree]
+    *@lat2 - the latitude of ending point,      [degree]
+    *@lon2 - the longitude of ending point,     [degree]
+    */
+    double GPSBearing(double lat1, double lon1, double lat2, double lon2) {
+        double angle, dLat, dLon;
+
+        lat1 = lat1 * DEGREETORAD;
+        lat2 = lat2 * DEGREETORAD;
+        lon1 = lon1 * DEGREETORAD;
+        lon2 = lon2 * DEGREETORAD;
+
+        dLat = lat1 - lat2;
+        dLon = lon1 - lon2;
+
+        if ((dLon == 0) && (dLat == 0))
+            angle = 0;
+        else
+            angle = atan2(-sin(dLon) * cos(lat2),
+                cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon));
+
+        /*  	angle = atan2(lon1*cos(lat1)-lon2*cos(lat2), lat1-lat2); */
+
+        if (angle < 0)
+            angle = TWO_PI + angle;
+
+        angle = RADTODEGREE * angle;
+        return angle;
+    }
+
+    /** This function calculates the latitude and longitude for a point
+            which is the distance 'dist' m and bearing 'az' degrees from
+            the point defied by 'lat1' and 'lon1' */
+    void CalculateDestination(double lat1, double lon1, double dist, double az, double& lat2, double& lon2) {
+        const double R_Earth = 6367000; // radius of the earth
+
+        double dR = dist / R_Earth;
+
+        // convert to radians
+        lat1 = lat1 * DEGREETORAD;
+        lon1 = lon1 * DEGREETORAD;
+        az = az * DEGREETORAD;
+
+        // calculate the second point
+        lat2 = asin(sin(lat1) * cos(dR) + cos(lat1) * sin(dR) * cos(az));
+
+        lon2 = lon1 + atan2(sin(az) * sin(dR) * cos(lat1), cos(dR) - sin(lat1) * sin(lat2));
+
+        // convert back to degrees
+        lat2 = lat2 * RADTODEGREE;
+        lon2 = lon2 * RADTODEGREE;
+    }
 }

@@ -10,3 +10,28 @@
 
 // the maximum length of any single spectrum
 #define MAX_SPECTRUM_LENGTH 3648
+
+// ----------------------------------------------------------------
+// ---------------- MATHEMATICAL CONSTANTS ------------------------
+// ----------------------------------------------------------------
+#define DEGREETORAD   0.01745329251994 
+#define RADTODEGREE   57.29577951308232
+#define HALF_PI       1.57079632679490
+#define M_PI          3.14159265358979
+#define TWO_PI        6.28318530717959
+
+
+// ---------------------------------------------------------------
+// ---------------- DEFINED CONSTANTS ----------------------------
+// ---------------------------------------------------------------
+// conversion from ppmm to mg/m^2 for SO2
+#define GASFACTOR_SO2 2.66
+
+// conversion from ppmm to mg/m^2 for O3
+#define GASFACTOR_O3 1.99
+
+// conversion from ppmm to mg/m^2 for NO2
+#define GASFACTOR_NO2 1.93
+
+// conversion from ppmm to mg/m^2 for HCHO
+#define GASFACTOR_HCHO 1.25

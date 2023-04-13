@@ -9,7 +9,7 @@
 #include <Mmsystem.h> // used for PlaySound
 #include "DMSpec.h"
 #include "Spectrometer.h"
-#include "Common/CDateTime.h"
+#include <MobileDoasLib/DateTime.h>
 #include "Common/SpectrumIO.h"
 #include <algorithm>
 #include "Dialogs/SelectionDialog.h"
@@ -17,6 +17,7 @@
 #include <SpectralEvaluation/Spectra/SpectrumInfo.h>
 #include "Evaluation/RealTimeCalibration.h"
 #include <MobileDoasLib/Measurement/SpectrumUtils.h>
+#include <MobileDoasLib/Flux/Flux1.h>
 #include <SpectralEvaluation/StringUtils.h>
 #include <sstream>
 
@@ -390,7 +391,7 @@ void CSpectrometer::WriteEvFile(CString filename, FitRegion* fitRegion) {
     }
 
     int hr, min, sec;
-    ExtractTime(m_spectrumGpsData[m_spectrumCounter], hr, min, sec);
+    mobiledoas::ExtractTime(m_spectrumGpsData[m_spectrumCounter], hr, min, sec);
 
     // 1. Write the time of the spectrum
     fprintf(f, "%02d:%02d:%02d\t", hr, min, sec);
@@ -490,17 +491,17 @@ double CSpectrometer::CountFlux(double windSpeed, double windAngle)
         {
             lat2 = m_spectrumGpsData[m_spectrumCounter - 2 - m_zeroPosNum].latitude;
             lon2 = m_spectrumGpsData[m_spectrumCounter - 2 - m_zeroPosNum].longitude;
-            distance = GPSDistance(lat1, lon1, lat2, lon2) / (m_zeroPosNum + 1);
+            distance = mobiledoas::GPSDistance(lat1, lon1, lat2, lon2) / (m_zeroPosNum + 1);
             column = 1E-6 * (m_fitRegion[0].vColumn[0].GetAt(columnSize - 1)) * m_gasFactor + accColumn;
         }
         else     // the gps coordinate is not (0,0)
         {
-            distance = GPSDistance(lat1, lon1, lat2, lon2);
+            distance = mobiledoas::GPSDistance(lat1, lon1, lat2, lon2);
             column = 1E-6 * (m_fitRegion[0].vColumn[0].GetAt(columnSize - 1)) * m_gasFactor;
         }
         accColumn = 0;
         m_zeroPosNum = 0;
-        windFactor = GetWindFactor(lat1, lon1, lat2, lon2, windAngle);
+        windFactor = mobiledoas::GetWindFactor(lat1, lon1, lat2, lon2, windAngle);
         flux = column * distance * windSpeed * windFactor;
 
         m_flux += flux;
@@ -525,9 +526,7 @@ void CSpectrometer::GetDark() {
     if (m_fixexptime >= 0) {
         // fixed exposure-time throughout the traverse
         for (int j = 0; j < m_NChannels; ++j) {
-            for (int i = 0; i < MAX_SPECTRUM_LENGTH; ++i) {
-                m_tmpDark[j][i] = m_dark[j][i];
-            }
+            memcpy(m_tmpDark[j], m_dark[j], MAX_SPECTRUM_LENGTH);
         }
     }
     else {
@@ -545,9 +544,7 @@ void CSpectrometer::GetSky() {
     m_NChannels = std::max(std::min(m_NChannels, MAX_N_CHANNELS), 1);
 
     for (int j = 0; j < m_NChannels; ++j) {
-        for (int i = 0; i < MAX_SPECTRUM_LENGTH; ++i) {
-            m_tmpSky[j][i] = m_sky[j][i];
-        }
+        memcpy(m_tmpSky[j], m_sky[j], MAX_SPECTRUM_LENGTH);
     }
 }
 
@@ -972,12 +969,12 @@ void CSpectrometer::GetCurrentDateAndTime(std::string& currentDate, long& curren
     }
     else
     {
-        currentDate = GetCurrentDateFromComputerClock('.');
+        currentDate = mobiledoas::GetCurrentDateFromComputerClock('.');
         currentTime = GetCurrentTimeFromComputerClock();
     }
 
     if (currentGpsInfo.date == 0) {
-        currentDate = GetCurrentDateFromComputerClock('.');
+        currentDate = mobiledoas::GetCurrentDateFromComputerClock('.');
     }
 }
 
@@ -991,12 +988,12 @@ void CSpectrometer::GetCurrentDateAndTime(novac::CDateTime& currentDateAndTime)
     }
     else
     {
-        GetCurrentDateFromComputerClock(currentDateAndTime);
+        mobiledoas::GetCurrentDateFromComputerClock(currentDateAndTime);
         GetCurrentTimeFromComputerClock(currentDateAndTime);
     }
 
     if (currentGpsInfo.date == 0) {
-        GetCurrentDateFromComputerClock(currentDateAndTime);
+        mobiledoas::GetCurrentDateFromComputerClock(currentDateAndTime);
     }
 }
 
@@ -1664,7 +1661,7 @@ void CSpectrometer::GetCurrentTimeFromComputerClock(novac::CDateTime& result)
     long currentTime = GetCurrentTimeFromComputerClock();
 
     int hours, minutes, seconds;
-    GetHrMinSec(currentTime, hours, minutes, seconds);
+    mobiledoas::GetHrMinSec(currentTime, hours, minutes, seconds);
 
     result.hour = hours;
     result.minute = minutes;

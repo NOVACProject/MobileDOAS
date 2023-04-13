@@ -194,6 +194,10 @@ GpsAsyncReader::GpsAsyncReader(CGPS&& gps)
 
 GpsAsyncReader::~GpsAsyncReader()
 {
+    if (m_gpsThread.joinable()) {
+        m_gpsThread.join();
+    }
+
     m_gps = nullptr; // we don't get to delete the m_gps, its up to the background thread to do so.
 }
 

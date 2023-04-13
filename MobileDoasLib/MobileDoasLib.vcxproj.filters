@@ -25,6 +25,18 @@
     <Filter Include="Source Files\Communication">
       <UniqueIdentifier>{573e90f6-9ded-4d89-80fb-042bacf16bbe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Flux">
+      <UniqueIdentifier>{33031cdf-92d1-44a6-96ff-52aafd050d4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Flux">
+      <UniqueIdentifier>{5cb9afa0-a2e6-404e-a3d4-1ee7b558daeb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\File">
+      <UniqueIdentifier>{8cd01303-cc7b-406c-9bfc-b944b3a3d5a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\File">
+      <UniqueIdentifier>{030f8e65-d16a-4176-a914-dff5de789253}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -48,6 +60,18 @@
     <ClInclude Include="include\MobileDoasLib\DateTime.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\MobileDoasLib\Flux\Traverse.h">
+      <Filter>Header Files\Flux</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MobileDoasLib\Flux\WindField.h">
+      <Filter>Header Files\Flux</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MobileDoasLib\File\KMLFileHandler.h">
+      <Filter>Header Files\File</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MobileDoasLib\Flux\Flux1.h">
+      <Filter>Header Files\Flux</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MobileDoasLib.cpp">
@@ -67,6 +91,18 @@
     </ClCompile>
     <ClCompile Include="src\DateTime.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Flux\Traverse.cpp">
+      <Filter>Source Files\Flux</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Flux\WindField.cpp">
+      <Filter>Source Files\Flux</Filter>
+    </ClCompile>
+    <ClCompile Include="src\File\KMLFileHandler.cpp">
+      <Filter>Source Files\File</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Flux\Flux1.cpp">
+      <Filter>Source Files\Flux</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

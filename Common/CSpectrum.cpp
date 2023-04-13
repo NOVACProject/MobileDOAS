@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "CSpectrum.h"
-#include "../Common/CDateTime.h"
+#include <MobileDoasLib/DateTime.h>
 #include <algorithm>
 #include <string>
 
@@ -270,10 +270,10 @@ void CSpectrum::Clear() {
 }
 
 void CSpectrum::SetStartTime(long time) {
-    GetHrMinSec(time, startTime[0], startTime[1], startTime[2]);
+    mobiledoas::GetHrMinSec(time, startTime[0], startTime[1], startTime[2]);
 }
 
 void CSpectrum::SetStopTime(long time) {
-    GetHrMinSec(time, stopTime[0], stopTime[1], stopTime[2]);
+    mobiledoas::GetHrMinSec(time, stopTime[0], stopTime[1], stopTime[2]);
 }
 

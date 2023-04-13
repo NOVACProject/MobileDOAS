@@ -1,11 +1,16 @@
 #pragma once
 
-#include "../Common.h"
 #include <MobileDoasLib/DateTime.h>
 #include "WindField.h"
 
-namespace Flux
+namespace mobiledoas
 {
+
+    typedef struct gpsPosition {
+        double latitude = 0.0;
+        double longitude = 0.0;
+        double altitude = 0.0;
+    }gpsPosition;
 
 #define MAX_TRAVERSELENGTH 16384
 
@@ -48,13 +53,13 @@ namespace Flux
         long      m_highIndex;
 
         /** The filename of the logfile */
-        CString   m_fileName;
+        std::string m_fileName;
 
         /** The path of the logfile */
-        CString   m_filePath;
+        std::string m_filePath;
 
         // ??the specie names in the most recently read log file - temporary variable??
-        CString   m_specieName;
+        std::string m_specieName;
 
         // -------------- TRAVERSE STATISTICS --------------------
 
@@ -79,16 +84,16 @@ namespace Flux
         double    altitude[MAX_TRAVERSELENGTH];
 
         /** measured columns */
-        double    columnArray[MAX_TRAVERSELENGTH];
+        std::vector<double> columnArray;
 
         /** Estimated column errors */
-        double    columnError[MAX_TRAVERSELENGTH];
+        std::vector<double> columnError;
 
         /** measured intensities */
         double    intensArray[MAX_TRAVERSELENGTH];
 
         /** the time the spectrum was collected */
-        Time      time[MAX_TRAVERSELENGTH];
+        mobiledoas::Time      time[MAX_TRAVERSELENGTH];
 
         /** A wind field, interpolated to the measurement positions of this traverse */
         double    m_windDirection[MAX_TRAVERSELENGTH];
@@ -115,12 +120,12 @@ namespace Flux
         long      m_fitRegion[2];
 
         /** The reference file used to evaluate the spectra */
-        CString   m_refFile;
+        std::string m_refFile;
 
 
         // -----------------------------  Output ----------------------------
         bool* m_fCreateAdditionalLog;
-        CString* m_additionalLogName;
+        std::string m_additionalLogName;
 
         // -------------------------------------------------------------
         // --------------------- PUBLIC METHODS ------------------------
@@ -185,7 +190,7 @@ namespace Flux
             This requires that all the data points are 'good'
             @return the offset value. This will be 0.0 if nothing
                 could be calculated */
-        double CalculateOffset(double* columnData, long nDataPoints) const;
+        double CalculateOffset(std::vector<double>& columnData, long nDataPoints) const;
 
     };
 }

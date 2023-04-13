@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "reevaluator.h"
 #include "../Version.h"
-#include "../Common/CDateTime.h"
+#include <MobileDoasLib/DateTime.h>
 
 using namespace ReEvaluation;
 using namespace Evaluation;
@@ -908,7 +908,7 @@ bool CReEvaluator::AppendResultToEvaluationLog(int specIndex, int channel, Evalu
         return false;
 
     int hr, mi, se;
-    GetHrMinSec(m_time[specIndex], hr, mi, se);
+    mobiledoas::GetHrMinSec(m_time[specIndex], hr, mi, se);
     fprintf(f, "%02d:%02d:%02d\t", hr, mi, se);
     fprintf(f, "%.6lf\t%.6lf\t%d\t%d\t%d\t%d\t",
         m_lat[specIndex], m_lon[specIndex], m_alt[specIndex], m_nspec[specIndex], m_exptime[specIndex], (int)m_int[channel][specIndex]);

@@ -1,7 +1,8 @@
 #pragma once
 #include <afxtempl.h>
 #include "../Common.h"
-#include "../Common/CDateTime.h"
+#include <MobileDoasLib/DateTime.h>
+#include <MobileDoasLib/Flux/Traverse.h>
 #include "FitWindow.h"
 
 /** The class <b>CTraverseResult</b> is used to store the evaluated
@@ -16,38 +17,38 @@ public:
     ~CTraverseResult(void);
 
     /** Returns the number of spectra in this traverse */
-    unsigned long	GetSpectrumNum();
+    unsigned long GetSpectrumNum();
 
     /** Returns the number of species that these spectra were
             evaluated for */
-    unsigned long	GetSpecieNum();
+    unsigned long GetSpecieNum();
 
     /** Sets the evaluated column for the given spectrum and specie */
-    void	SetColumn(int spectrumIndex, int specieIndex, double column);
+    void SetColumn(int spectrumIndex, int specieIndex, double column);
 
     /** Sets the evaluated column error for the given spectrum and specie */
-    void	SetColumnError(int spectrumIndex, int specieIndex, double columnError);
+    void SetColumnError(int spectrumIndex, int specieIndex, double columnError);
 
     /** Sets the gps-altitude for the given spectrum */
-    void	SetAltitude(int spectrumIndex, double altitude);
+    void SetAltitude(int spectrumIndex, double altitude);
 
     /** Sets the gps-latitude for the given spectrum */
-    void	SetLatitude(int spectrumIndex, double latitude);
+    void SetLatitude(int spectrumIndex, double latitude);
 
     /** Sets the gps-longitude for the given spectrum */
-    void	SetLongitude(int spectrumIndex, double longitude);
+    void SetLongitude(int spectrumIndex, double longitude);
 
     /** Sets the exposure-time for the given spectrum */
-    void	SetExptime(int spectrumIndex, long exptime);
+    void SetExptime(int spectrumIndex, long exptime);
 
     /** Sets the number of exposures for the given spectrum */
-    void	SetNumExposures(int spectrumIndex, int numExp);
+    void SetNumExposures(int spectrumIndex, int numExp);
 
     /** Sets the intensity for the given spectrum */
-    void	SetIntensity(int spectrumIndex, double intensity);
+    void SetIntensity(int spectrumIndex, double intensity);
 
     /** Sets the start-time for the given spectrum */
-    void	SetStartTime(int spectrumIndex, const Time& startTime);
+    void SetStartTime(int spectrumIndex, const mobiledoas::Time& startTime);
 
 protected:
 
@@ -74,10 +75,10 @@ protected:
 
     /** The datastructure that knows everything about a spectrum. */
     typedef struct Measurement {
-        EvaluationResult	result;		// <-- the evaluated result
-        SpectrumInfo		info;		// <-- additional info
-        gpsPosition			gps;		// <-- the latitude, longitude where the spectrum was collected
-        Time				gmtTime;	// <-- the UTC-time when the spectrum was collected
+        EvaluationResult        result;		// <-- the evaluated result
+        SpectrumInfo            info;		// <-- additional info
+        mobiledoas::gpsPosition gps;		// <-- the latitude, longitude where the spectrum was collected
+        mobiledoas::Time        gmtTime;	// <-- the UTC-time when the spectrum was collected
     }Measurement;
 
     /** The evaluated results. */
@@ -99,7 +100,7 @@ protected:
 
     /** Returns a pointer to a suitably allocated gpsPosition-object.
             if spectrumIndex is out of bounds, then NULL is returned. */
-    gpsPosition* GetGPS(int spectrumIndex);
+    mobiledoas::gpsPosition* GetGPS(int spectrumIndex);
 
     /** Returns a pointer to a suitably allocated EvaluationResult-object.
             if spectrumIndex is out of bounds, then NULL is returned. */
@@ -107,5 +108,5 @@ protected:
 
     /** Returns a pointer to a suitably allocated Time-object.
             if spectrumIndex is out of bounds, then NULL is returned. */
-    Time* GetTime(int spectrumIndex);
+    mobiledoas::Time* GetTime(int spectrumIndex);
 };

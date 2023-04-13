@@ -14,7 +14,7 @@
 #include <MobileDoasLib/DateTime.h>
 
 #include "PostFluxDlg.h"
-#include "Flux1.h"
+#include <MobileDoasLib/Flux/Flux1.h>
 #include "DualBeam/PostWindDlg.h"
 #include "DualBeam/PostPlumeHeightDlg.h"
 #include "CSpectrometerCalibrationDlg.h"

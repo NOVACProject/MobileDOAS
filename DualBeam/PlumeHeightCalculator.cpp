@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "PlumeHeightCalculator.h"
 #include <vector>
+#include <MobileDoasLib/GpsData.h>
 
 using namespace DualBeamMeasurement;
 
@@ -44,7 +45,7 @@ double CPlumeHeightCalculator::GetPlumeHeight_CentreOfMass(const CMeasurementSer
     // calculate the distances between each pair of measurement points
     std::vector<double> distances(length);
     for (k = 0; k < length - 1; ++k) {
-        distances[k] = GPSDistance(lat[k], lon[k], lat[k + 1], lon[k + 1]);
+        distances[k] = mobiledoas::GPSDistance(lat[k], lon[k], lat[k + 1], lon[k + 1]);
     }
 
     // Iterate until we find a suitable wind-direction
@@ -56,13 +57,13 @@ double CPlumeHeightCalculator::GetPlumeHeight_CentreOfMass(const CMeasurementSer
         oldWindDirection = windDirection;
 
         // the wind direction
-        windDirection = GPSBearing(lat[massIndexF], lon[massIndexF], sourceLat, sourceLon);
+        windDirection = mobiledoas::GPSBearing(lat[massIndexF], lon[massIndexF], sourceLat, sourceLon);
         plumeDirection = 180 + windDirection;
 
         // re-calculate the distances
         for (k = 0; k < length - 1; ++k) {
-            double bearing = GPSBearing(lat[k], lon[k], lat[k + 1], lon[k + 1]);
-            distances[k] = GPSDistance(lat[k], lon[k], lat[k + 1], lon[k + 1]);
+            double bearing = mobiledoas::GPSBearing(lat[k], lon[k], lat[k + 1], lon[k + 1]);
+            distances[k] = mobiledoas::GPSDistance(lat[k], lon[k], lat[k + 1], lon[k + 1]);
             distances[k] *= cos(HALF_PI + DEGREETORAD * (bearing - plumeDirection));
         }
 
@@ -77,10 +78,10 @@ double CPlumeHeightCalculator::GetPlumeHeight_CentreOfMass(const CMeasurementSer
     massIndexB = GetCentreOfMass(col2.data(), distances.data(), backwardLookingSerie->length);
 
     // 4a. The distances
-    double centreDistance = GPSDistance(lat[massIndexF], lon[massIndexF], lat[massIndexB], lon[massIndexB]);
+    double centreDistance = mobiledoas::GPSDistance(lat[massIndexF], lon[massIndexF], lat[massIndexB], lon[massIndexB]);
 
     // 4b. The direction
-    double centreDirection = GPSBearing(lat[massIndexF], lon[massIndexF], lat[massIndexB], lon[massIndexB]);
+    double centreDirection = mobiledoas::GPSBearing(lat[massIndexF], lon[massIndexF], lat[massIndexB], lon[massIndexB]);
 
     // 4c. The Geometrically corrected distance
     double centreDistance_corrected = fabs(centreDistance * cos(HALF_PI + DEGREETORAD * (centreDirection - plumeDirection)));
