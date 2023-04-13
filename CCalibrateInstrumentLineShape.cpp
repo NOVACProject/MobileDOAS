@@ -247,8 +247,8 @@ void CCalibrateInstrumentLineShape::OnLbnSelchangeFoundPeak()
 
         m_spectrumPlot.SetRangeX(lambdaMin, lambdaMax, 1, false);
         m_spectrumPlot.SetRangeY(
-            Min(m_controller->m_inputSpectrum, firstPixel, lastPixel - firstPixel),
-            Max(m_controller->m_inputSpectrum, firstPixel, lastPixel - firstPixel),
+            Min(begin(m_controller->m_inputSpectrum) + firstPixel, begin(m_controller->m_inputSpectrum) + lastPixel),
+            Max(begin(m_controller->m_inputSpectrum) + firstPixel, begin(m_controller->m_inputSpectrum) + lastPixel),
             true);
 
         m_saveButton.EnableWindow(TRUE);

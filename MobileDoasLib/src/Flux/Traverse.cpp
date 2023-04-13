@@ -146,7 +146,7 @@ namespace mobiledoas {
         }
 
         /** Get the maximum column in the selected part of the traverse */
-        m_maxColumn = Max(columnArray, m_lowIndex, m_highIndex - m_lowIndex) - m_Offset;
+        m_maxColumn = Max(begin(columnArray) + m_lowIndex, begin(columnArray) + m_highIndex) - m_Offset;
 
         /* We know that this point has GPS-connection,
             save the gps data for this point in case the next point does not have gps-data. */

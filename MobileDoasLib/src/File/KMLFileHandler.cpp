@@ -31,8 +31,8 @@ namespace mobiledoas {
         std::vector<int> levels(traverse.m_recordNum);
 
         // get the minimum and maximum column...
-        double minColumn = Min(traverse.columnArray, 0, traverse.m_recordNum);
-        double scaleFactor = scalingHeight / Max(traverse.columnArray, 0, traverse.m_recordNum);
+        double minColumn = Min(begin(traverse.columnArray), begin(traverse.columnArray) + traverse.m_recordNum);
+        double scaleFactor = scalingHeight / Max(begin(traverse.columnArray), begin(traverse.columnArray) + traverse.m_recordNum);
         long nLevels = 25;
 
         for (k = 0; k < traverse.m_recordNum; ++k) {
