@@ -12,6 +12,6 @@
 
 // Definitions
 #define MANUFACTURER_SUPPORT_AVANTES 1
-// #define MANUFACTURER_SUPPORT_OCEANOPTICS 1 // Commented out while testing the Avantes device
+#define MANUFACTURER_SUPPORT_OCEANOPTICS 1
 
 #endif //PCH_H

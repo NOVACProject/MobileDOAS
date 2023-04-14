@@ -21,6 +21,7 @@ OceanOpticsSpectrometerInterface::OceanOpticsSpectrometerInterface()
 
 OceanOpticsSpectrometerInterface::~OceanOpticsSpectrometerInterface()
 {
+    m_wrapper->closeAllSpectrometers();
     delete m_wrapper;
     m_wrapper = nullptr;
 }

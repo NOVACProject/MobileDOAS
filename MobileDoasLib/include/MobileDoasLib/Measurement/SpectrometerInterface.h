@@ -5,6 +5,11 @@
 
 namespace mobiledoas
 {
+    enum class SpectrometerConnectionType {
+        USB,
+        RS232
+    };
+
     /** SpectrometerInterface is an abstract base class for accessing the spectrometer hardware.
         Different implementations enable different models and makes of spectrometers */
     class SpectrometerInterface
@@ -12,6 +17,9 @@ namespace mobiledoas
     public:
 
         virtual ~SpectrometerInterface() {}
+
+        // ConnectionType returns the connection type which this SpectrometerInterface supports.
+        virtual SpectrometerConnectionType ConnectionType() = 0;
 
         // ScanDevices searches for spectrometers connected to this computer.
         // This must be called before any other of the methods in this class.

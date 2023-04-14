@@ -22,11 +22,19 @@ std::unique_ptr<mobiledoas::SpectrometerInterface> GetSingleSpectrometerInterfac
     return nullptr;
 }
 
-CSpectrometer* CreateSpectrometer(SPECTROMETER_MODE measurementMode, std::unique_ptr<Configuration::CMobileConfiguration> conf) {
+CSpectrometer* CreateSpectrometer(SPECTROMETER_MODE measurementMode, std::unique_ptr<Configuration::CMobileConfiguration> conf)
+{
 
-    if (measurementMode == MODE_DIRECTORY) {
+    if (measurementMode == MODE_DIRECTORY)
+    {
         // Directory mode doesn't require a SpectrometerInterface
         return new CMeasurement_Directory(nullptr, std::move(conf));
+    }
+
+    auto connectionType = mobiledoas::SpectrometerConnectionType::USB;
+    if (conf->m_spectrometerConnection == Configuration::CMobileConfiguration::CONNECTION_RS232)
+    {
+        connectionType = mobiledoas::SpectrometerConnectionType::RS232;
     }
 
     // TODO: use the conf->m_spectrometerConnection such that we can know if the connection is via USB or Serial.
@@ -39,20 +47,23 @@ CSpectrometer* CreateSpectrometer(SPECTROMETER_MODE measurementMode, std::unique
     //    m_spectrometer = std::move(spec);
     //}
 
-    auto allInterfaces = mobiledoas::ListSpectrometerInterfaces();
+    auto allInterfaces = mobiledoas::ListSpectrometerInterfaces(connectionType);
 
-    if (allInterfaces.size() == 0) {
+    if (allInterfaces.size() == 0)
+    {
         MessageBox(nullptr, "Failed to create any spectrometer interface instance.", "Error", MB_OK);
         return nullptr;
     }
 
     auto spectrometerInterface = GetSingleSpectrometerInterface(allInterfaces);
-    if (spectrometerInterface == nullptr) {
+    if (spectrometerInterface == nullptr)
+    {
         MessageBox(nullptr, "Failed to find any connected spectrometer of a supported model.", "Error", MB_OK);
         return nullptr;
     }
 
-    switch (measurementMode) {
+    switch (measurementMode)
+    {
     case MODE_TRAVERSE:
         return new CMeasurement_Traverse(std::move(spectrometerInterface), std::move(conf));
     case MODE_VIEW:

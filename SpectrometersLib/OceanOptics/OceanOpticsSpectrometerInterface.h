@@ -34,6 +34,10 @@ namespace oceanoptics
 
 #pragma region Implementing SpectrometerInterface
 
+        virtual mobiledoas::SpectrometerConnectionType ConnectionType() override {
+            return mobiledoas::SpectrometerConnectionType::USB;
+        }
+
         virtual std::vector<std::string> ScanForDevices() override;
 
         virtual void Close() override;
