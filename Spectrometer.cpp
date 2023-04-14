@@ -266,7 +266,7 @@ void CSpectrometer::ApplySettings() {
 
     // The GPS-settings
     m_GPSBaudRate = m_conf->m_gpsBaudrate;
-    sprintf(m_GPSPort, "%s", (LPCTSTR)m_conf->m_gpsPort);
+    sprintf(m_GPSPort, "%s", m_conf->m_gpsPort.c_str());
     m_useGps = (m_conf->m_useGPS != 0);
 
     // The exposure-time settings

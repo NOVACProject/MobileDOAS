@@ -1,8 +1,7 @@
 
 #include "stdafx.h"
 #include "mobileconfiguration.h"
-
-extern CFormView* pView;
+#include <SpectralEvaluation/StringUtils.h>
 
 using namespace Configuration;
 
@@ -23,7 +22,7 @@ CMobileConfiguration::~CMobileConfiguration(void)
 void CMobileConfiguration::Clear() {
     // Spectrometer 
     m_spectrometerConnection = CONNECTION_USB;
-    m_serialPort.Format("COM1");
+    m_serialPort = "COM1";
     m_baudrate = 57600;
     m_nChannels = 1;
     m_setPointTemperature = -10.0;
@@ -40,7 +39,7 @@ void CMobileConfiguration::Clear() {
 
     // GPS
     m_useGPS = 1;
-    m_gpsPort.Format("COM4");
+    m_gpsPort = "COM4";
     m_gpsBaudrate = 4800;
 
     // Evaluation
@@ -89,7 +88,7 @@ void CMobileConfiguration::ReadCfgXml(const CString& fileName) {
     }
     else {
         file.Close();    // parsing was ok
-    //		CheckSettings();
+        //		CheckSettings();
         return;
     }
 }
@@ -113,11 +112,11 @@ int CMobileConfiguration::Parse() {
             Parse_StringItem("/serialPort", m_serialPort);
 
             // If the serial-port begins with 'COM' then we're using the RS232-port
-            if (Equals(m_serialPort, "COM", 3)) {
+            if (EqualsIgnoringCase(m_serialPort, "COM", 3)) {
                 m_spectrometerConnection = CONNECTION_RS232;
             }
             // Directory mode enabled
-            if (Equals(m_serialPort, "Directory", 3)) {
+            if (EqualsIgnoringCase(m_serialPort, "Directory", 3)) {
                 m_spectrometerConnection = CONNECTION_DIRECTORY;
             }
             continue;
@@ -227,7 +226,7 @@ int CMobileConfiguration::ParseGPS() {
 
         // The serial-port
         if (Equals(szToken, "port")) {
-            Parse_StringItem(TEXT("/port"), m_gpsPort);
+            Parse_StringItem("/port", m_gpsPort);
             continue;
         }
 
