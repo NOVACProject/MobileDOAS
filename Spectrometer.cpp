@@ -35,12 +35,13 @@ static char THIS_FILE[] = __FILE__;
 //////////////////////////////////////////////////////////////////////
 
 
-CSpectrometer::CSpectrometer(std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface)
-    : m_useGps(true), m_connectViaUsb(true), m_scanNum(0), m_spectrumCounter(0) {
+CSpectrometer::CSpectrometer(std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface, std::unique_ptr<Configuration::CMobileConfiguration> configuration)
+    : m_useGps(true), m_scanNum(0), m_spectrumCounter(0) {
 
     sprintf(m_GPSPort, "COM5");
 
     m_spectrometer = std::move(spectrometerInterface);
+    m_conf = std::move(configuration);
 
     m_isRunning = true;
     m_spectrometerMode = MODE_TRAVERSE; // default mode
@@ -240,18 +241,6 @@ void CSpectrometer::ApplyEvaluationSettings()
 
 void CSpectrometer::ApplySettings() {
     CString msg;
-
-
-    m_connectViaUsb = (m_conf->m_spectrometerConnection == Configuration::CMobileConfiguration::CONNECTION_USB);
-
-    // TODO: Make it possible to also use some other spectrometer make.
-    //if (!m_connectViaUsb) {
-    //    // serial.isRunning = &m_isRunning;
-    //    auto spec = std::make_unique<mobiledoas::OceanOpticsSpectrometerSerialInterface>();
-    //    spec->SetBaudrate(m_conf->m_baudrate);
-    //    spec->SetPort(m_conf->m_serialPort);
-    //    m_spectrometer = std::move(spec);
-    //}
 
     m_NChannels = m_conf->m_nChannels;
     bool error = false;
@@ -526,7 +515,7 @@ void CSpectrometer::GetDark() {
     if (m_fixexptime >= 0) {
         // fixed exposure-time throughout the traverse
         for (int j = 0; j < m_NChannels; ++j) {
-            memcpy(m_tmpDark[j], m_dark[j], MAX_SPECTRUM_LENGTH);
+            memcpy(m_tmpDark[j], m_dark[j], MAX_SPECTRUM_LENGTH*sizeof(double));
         }
     }
     else {
@@ -544,7 +533,7 @@ void CSpectrometer::GetSky() {
     m_NChannels = std::max(std::min(m_NChannels, MAX_N_CHANNELS), 1);
 
     for (int j = 0; j < m_NChannels; ++j) {
-        memcpy(m_tmpSky[j], m_sky[j], MAX_SPECTRUM_LENGTH);
+        memcpy(m_tmpSky[j], m_sky[j], MAX_SPECTRUM_LENGTH * sizeof(double));
     }
 }
 
@@ -1023,14 +1012,8 @@ void CSpectrometer::WriteBeginEvFile(int fitRegion) {
     str2.Format("BASENAME=%s\nWINDSPEED=%f\nWINDDIRECTION=%f\n", (LPCSTR)m_measurementBaseName, m_windSpeed, m_windAngle);
     str3 = TEXT("***copy of related configuration file ***\n");
 
-    // if (!m_connectViaUsb) {
-    //    str4.Format("SPEC_BAUD=%d\nSERIALPORT=%s\nGPSBAUD=%d\nGPSPORT=%s\nTIMERESOLUTION=%d\n",
-    //        serial.GetBaudrate(), serial.GetPort(), m_GPSBaudRate, m_GPSPort, m_timeResolution);
-    // }
-    // else {
-    str4.Format("SERIALPORT=USB\nGPSBAUD=%d\nGPSPORT=%s\nTIMERESOLUTION=%d\n",
+    str4.Format("GPSBAUD=%d\nGPSPORT=%s\nTIMERESOLUTION=%d\n",
         m_GPSBaudRate, m_GPSPort, m_timeResolution);
-    // }
 
     str5.Format("FIXEXPTIME=%d\nFITFROM=%d\nFITTO=%d\nPOLYNOM=%d\n",
         m_fixexptime, m_fitRegion[fitRegion].window.fitLow, m_fitRegion[fitRegion].window.fitHigh, m_fitRegion[fitRegion].window.polyOrder);

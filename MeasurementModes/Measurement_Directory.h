@@ -6,7 +6,7 @@ class CMeasurement_Directory :
     public CSpectrometer
 {
 public:
-    CMeasurement_Directory(std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface);
+    CMeasurement_Directory(std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface, std::unique_ptr<Configuration::CMobileConfiguration> conf);
     virtual ~CMeasurement_Directory();
 
     /**

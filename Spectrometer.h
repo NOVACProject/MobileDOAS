@@ -80,7 +80,7 @@ protected:
     }FitRegion;
 
 public:
-    CSpectrometer(std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface);
+    CSpectrometer(std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface, std::unique_ptr<Configuration::CMobileConfiguration> configuration);
     virtual ~CSpectrometer();
 
     /* Running */
@@ -511,10 +511,6 @@ protected:
     /** Updates the mobile-log... This is used to store the
         users preferences between runs */
     void UpdateMobileLog();
-
-    /** This is 'true' if we should use the USB-port, if 'false'
-        then we should use the serial port */
-    bool m_connectViaUsb;
 
     /** The settings, read in from the cfg.txt - file */
     std::unique_ptr<Configuration::CMobileConfiguration> m_conf;

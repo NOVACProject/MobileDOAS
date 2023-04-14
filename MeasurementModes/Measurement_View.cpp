@@ -5,8 +5,8 @@
 extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
 extern CFormView* pView; // <-- The main window
 
-CMeasurement_View::CMeasurement_View(std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface)
-    : CSpectrometer(std::move(spectrometerInterface))
+CMeasurement_View::CMeasurement_View(std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface, std::unique_ptr<Configuration::CMobileConfiguration> conf)
+    : CSpectrometer(std::move(spectrometerInterface), std::move(conf))
 {
     m_spectrometerMode = MODE_VIEW;
 }
@@ -21,14 +21,6 @@ void CMeasurement_View::Run() {
 
     ShowMessageBox("START", "NOTICE");
 
-    // Read configuration file
-    CString cfgFile = g_exePath + TEXT("cfg.xml");
-    if (!IsExistingFile(cfgFile)) {
-        cfgFile = g_exePath + TEXT("cfg.txt");
-    }
-    m_conf.reset(new Configuration::CMobileConfiguration(cfgFile));
-
-    // Convert the settings from the CMobileConfiuration-format to the internal CSpectrometer-format
     ApplySettings();
 
     if (!TestSpectrometerConnection()) {

@@ -106,6 +106,10 @@ bool CGPS::ReadGPS()
                     break; // each sentence ends with newline
                 }
                 cnt++;
+
+                if (!this->fRun) {
+                    return true;
+                }
             }
             m_gotContact = true;
         }
@@ -151,6 +155,7 @@ void CGPS::CloseSerial()
     and delete it when we're done. */
 UINT CollectGPSData(CGPS* gps)
 {
+
     gps->fRun = true;
 
     while (gps->fRun)

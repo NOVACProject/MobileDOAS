@@ -581,16 +581,6 @@ UINT CollectSpectra(LPVOID pParam) {
     return 0;
 }
 
-/** This function is the thread function to start running spectrometer in
-            wind-measurement mode
-*/
-UINT CollectSpectra_Wind(LPVOID pParam) {
-    CSpectrometer* spec = (CSpectrometer*)pParam;
-    spec->Run();
-    s_spectrometerAcquisitionThreadIsRunning = false;
-    return 0;
-}
-
 LRESULT CDMSpecView::OnShowStatus(WPARAM wParam, LPARAM lParam)
 {
     if (s_spectrometerAcquisitionThreadIsRunning)
@@ -762,19 +752,18 @@ void CDMSpecView::OnConfigurationPlotChangeplotcolor_Slave() {
     UpdateLegend();
 }
 
+std::unique_ptr<Configuration::CMobileConfiguration> ReadConfiguration()
+{
+    CString cfgFile = g_exePath + TEXT("cfg.xml");
+    std::unique_ptr<Configuration::CMobileConfiguration> conf;
+    conf.reset(new Configuration::CMobileConfiguration(cfgFile));
+    return conf;
+}
+
 void CDMSpecView::OnControlStart()
 {
     if (!s_spectrometerAcquisitionThreadIsRunning)
     {
-
-        CString cfgFile = g_exePath + TEXT("cfg.xml");
-        std::unique_ptr<Configuration::CMobileConfiguration> conf;
-        conf.reset(new Configuration::CMobileConfiguration(cfgFile));
-        if (conf->m_spectrometerConnection == conf->CONNECTION_DIRECTORY) {
-            OnControlProcessSpectraFromDirectory();
-            return;
-        }
-
         /* Check that the base name does not contain any illegal characters */
         CString tmpStr;
         this->GetDlgItemText(IDC_BASEEDIT, tmpStr);
@@ -784,8 +773,14 @@ void CDMSpecView::OnControlStart()
             return;
         }
 
+        auto conf = ReadConfiguration();
+        if (conf->m_spectrometerConnection == conf->CONNECTION_DIRECTORY) {
+            OnControlProcessSpectraFromDirectory();
+            return;
+        }
+
         // Initialize a new CSpectromber object, this is the one which actually does everything...
-        m_Spectrometer = CreateSpectrometer(MODE_TRAVERSE);
+        m_Spectrometer = CreateSpectrometer(MODE_TRAVERSE, std::move(conf));
 
         // Copy the settings that the user typed in the dialog
         char text[100];
@@ -828,7 +823,9 @@ void CDMSpecView::OnControlViewSpectra() {
     {
         CDMSpecDoc* pDoc = GetDocument();
 
-        m_Spectrometer = CreateSpectrometer(MODE_VIEW);
+        auto conf = ReadConfiguration();
+
+        m_Spectrometer = CreateSpectrometer(MODE_VIEW, std::move(conf));
 
         memset(text, 0, (size_t)100);
 
@@ -881,9 +878,9 @@ void CDMSpecView::OnControlViewSpectra() {
 /** Starts the viewing of latest spectra in a directory specified by config file. */
 void CDMSpecView::OnControlProcessSpectraFromDirectory() {
 
-    CDMSpecDoc* pDoc = GetDocument();
+    auto conf = ReadConfiguration();
 
-    m_Spectrometer = CreateSpectrometer(MODE_DIRECTORY);
+    m_Spectrometer = CreateSpectrometer(MODE_DIRECTORY, std::move(conf));
 
     pSpecThread = AfxBeginThread(CollectSpectra, (LPVOID)(m_Spectrometer), THREAD_PRIORITY_LOWEST, 0, 0, NULL);
     s_spectrometerAcquisitionThreadIsRunning = true;
@@ -916,11 +913,10 @@ void CDMSpecView::OnControlStartWindMeasurement()
             return;
         }
 
-        // Initialize a new CSpectrometer object, this is the one which actually does everything...
-        m_Spectrometer = CreateSpectrometer(MODE_WIND);
+        auto conf = ReadConfiguration();
 
-        // Set the measurement mode to wind-speed measurement
-        m_Spectrometer->m_spectrometerMode = MODE_WIND;
+        // Initialize a new CSpectrometer object, this is the one which actually does everything...
+        m_Spectrometer = CreateSpectrometer(MODE_WIND, std::move(conf));
 
         // Copy the settings that the user typed in the dialog
         memset(text, 0, (size_t)100);
@@ -930,7 +926,7 @@ void CDMSpecView::OnControlStartWindMeasurement()
         }
 
         // Start the measurement thread
-        pSpecThread = AfxBeginThread(CollectSpectra_Wind, (LPVOID)(m_Spectrometer), THREAD_PRIORITY_NORMAL, 0, 0, NULL);
+        pSpecThread = AfxBeginThread(CollectSpectra, (LPVOID)(m_Spectrometer), THREAD_PRIORITY_NORMAL, 0, 0, NULL);
         s_spectrometerAcquisitionThreadIsRunning = true;
         m_spectrometerMode = MODE_WIND;
 

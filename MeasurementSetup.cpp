@@ -22,12 +22,22 @@ std::unique_ptr<mobiledoas::SpectrometerInterface> GetSingleSpectrometerInterfac
     return nullptr;
 }
 
-CSpectrometer* CreateSpectrometer(SPECTROMETER_MODE measurementMode) {
+CSpectrometer* CreateSpectrometer(SPECTROMETER_MODE measurementMode, std::unique_ptr<Configuration::CMobileConfiguration> conf) {
 
     if (measurementMode == MODE_DIRECTORY) {
         // Directory mode doesn't require a SpectrometerInterface
-        return new CMeasurement_Directory(nullptr);
+        return new CMeasurement_Directory(nullptr, std::move(conf));
     }
+
+    // TODO: use the conf->m_spectrometerConnection such that we can know if the connection is via USB or Serial.
+    // That determines which SpectrometerInterface to instantiate..
+    //if (!m_connectViaUsb) {
+    //    // serial.isRunning = &m_isRunning;
+    //    auto spec = std::make_unique<mobiledoas::OceanOpticsSpectrometerSerialInterface>();
+    //    spec->SetBaudrate(m_conf->m_baudrate);
+    //    spec->SetPort(m_conf->m_serialPort);
+    //    m_spectrometer = std::move(spec);
+    //}
 
     auto allInterfaces = mobiledoas::ListSpectrometerInterfaces();
 
@@ -44,11 +54,11 @@ CSpectrometer* CreateSpectrometer(SPECTROMETER_MODE measurementMode) {
 
     switch (measurementMode) {
     case MODE_TRAVERSE:
-        return new CMeasurement_Traverse(std::move(spectrometerInterface));
+        return new CMeasurement_Traverse(std::move(spectrometerInterface), std::move(conf));
     case MODE_VIEW:
-        return new CMeasurement_View(std::move(spectrometerInterface));
+        return new CMeasurement_View(std::move(spectrometerInterface), std::move(conf));
     case MODE_WIND:
-        return new CMeasurement_Wind(std::move(spectrometerInterface));
+        return new CMeasurement_Wind(std::move(spectrometerInterface), std::move(conf));
     }
 
     MessageBox(nullptr, "Error in program-logic: CreateSpectrometer was called with an unsupported measurement mode", "Error", MB_OK);
