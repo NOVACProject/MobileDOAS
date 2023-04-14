@@ -160,6 +160,7 @@
     <ClInclude Include="include\MobileDoasLib\Flux\Flux1.h" />
     <ClInclude Include="include\MobileDoasLib\Flux\Traverse.h" />
     <ClInclude Include="include\MobileDoasLib\Flux\WindField.h" />
+    <ClInclude Include="include\MobileDoasLib\GPS.h" />
     <ClInclude Include="include\MobileDoasLib\GpsData.h" />
     <ClInclude Include="include\MobileDoasLib\Measurement\SpectrometerInterface.h" />
     <ClInclude Include="include\MobileDoasLib\Measurement\SpectrumUtils.h" />
@@ -172,6 +173,7 @@
     <ClCompile Include="src\Flux\Flux1.cpp" />
     <ClCompile Include="src\Flux\Traverse.cpp" />
     <ClCompile Include="src\Flux\WindField.cpp" />
+    <ClCompile Include="src\GPS.cpp" />
     <ClCompile Include="src\GpsData.cpp" />
     <ClCompile Include="src\Measurement\SpectrometerInterface.cpp" />
     <ClCompile Include="src\Measurement\SpectrumUtils.cpp" />

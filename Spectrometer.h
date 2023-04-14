@@ -1,5 +1,5 @@
 #include "Evaluation/Evaluation.h"
-#include "GPS.h"
+#include <MobileDoasLib/GPS.h>
 #include "Configuration/MobileConfiguration.h"
 #include <MobileDoasLib/Measurement/SpectrometerInterface.h>
 #include <MobileDoasLib/Measurement/SpectrumUtils.h>
@@ -451,7 +451,7 @@ protected:
     void GetCurrentTimeFromComputerClock(novac::CDateTime& time);
 
     /** Pointer to the gps reading thread */
-    GpsAsyncReader* m_gps = nullptr;
+    mobiledoas::GpsAsyncReader* m_gps = nullptr;
 
     /** This is true if we should use the GPS receiver (default behavior).
         Set to false if the gps is missing or nor working. */

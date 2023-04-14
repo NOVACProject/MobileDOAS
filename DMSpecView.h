@@ -4,7 +4,7 @@
 
 #if !defined(AFX_DMSPECVIEW_H__8A3F075C_24B5_4BB0_897A_E1285CBD8628__INCLUDED_)
 #define AFX_DMSPECVIEW_H__8A3F075C_24B5_4BB0_897A_E1285CBD8628__INCLUDED_
-#include "GPS.h"
+#include <MobileDoasLib/GPS.h>
 #include "Spectrometer.h"
 #include "Graphs/GraphCtrl.h"
 #include "PostFluxDlg.h"
@@ -24,7 +24,6 @@
 #endif // _MSC_VER > 1000
 
 UINT CollectSpectra(LPVOID pParam);
-UINT CollectSpectra_Wind(LPVOID pParam);
 
 class CDMSpecView : public CFormView
 {

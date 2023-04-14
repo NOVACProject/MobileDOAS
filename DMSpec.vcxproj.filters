@@ -105,9 +105,6 @@
     <ClCompile Include="EvaluationLogFileHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GPS.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Controls\Label.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -491,9 +488,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EvaluationLogFileHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GPS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Controls\Label.h">

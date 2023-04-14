@@ -52,7 +52,7 @@ void CMeasurement_Traverse::Run() {
 
     /* Start the GPS collection thread */
     if (m_useGps) {
-        m_gps = new GpsAsyncReader(m_GPSPort, m_GPSBaudRate, std::string((LPCSTR)g_exePath));
+        m_gps = new mobiledoas::GpsAsyncReader(m_GPSPort, m_GPSBaudRate, std::string((LPCSTR)g_exePath));
     }
 
     // Check if we are to be running with adaptive or with fixed exposure-time

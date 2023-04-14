@@ -335,7 +335,6 @@
     <ClCompile Include="Evaluation\TraverseResult.cpp" />
     <ClCompile Include="ExportEvLogDlg.cpp" />
     <ClCompile Include="FluxPathListBox.cpp" />
-    <ClCompile Include="GPS.cpp" />
     <ClCompile Include="Graphs\ColumnGraph.cpp" />
     <ClCompile Include="Graphs\GraphCtrl.cpp" />
     <ClCompile Include="Graphs\SpectrumGraph.cpp" />
@@ -684,7 +683,6 @@
     <ClInclude Include="Fit\SumFunction.h" />
     <ClInclude Include="Fit\Vector.h" />
     <ClInclude Include="FluxPathListBox.h" />
-    <ClInclude Include="GPS.h" />
     <ClInclude Include="Graphs\ColumnGraph.h" />
     <ClInclude Include="Graphs\GraphCtrl.h" />
     <ClInclude Include="Graphs\SpectrumGraph.h" />

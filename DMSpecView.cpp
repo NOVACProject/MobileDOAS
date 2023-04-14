@@ -1329,19 +1329,19 @@ void CDMSpecView::OnMenuControlRunTheGPS()
             ShowStatusMsg(status);
 
             // test the serial-port
-            CSerialConnection serial;
+            mobiledoas::CSerialConnection serial;
             if (!serial.Init(port, baudrateToTest)) {
                 // could not connect to this serial-port
                 continue;
             }
             // it was possible to open the serial-port, test if there is a gps on this port
 
-            CGPS gps(std::move(serial));
+            mobiledoas::CGPS gps(std::move(serial));
             for (int i = 0; i < 10; ++i)
             {
                 if (SUCCESS == gps.ReadGPS())
                 {
-                    GpsAsyncReader gpsReader(std::move(gps));
+                    mobiledoas::GpsAsyncReader gpsReader(std::move(gps));
                     return;
                 }
                 Sleep(10);
@@ -1367,14 +1367,14 @@ void CDMSpecView::OnMenuControlTestTheGPS()
             ShowStatusMsg(status);
 
             // test the serial-port
-            CSerialConnection serial;
+            mobiledoas::CSerialConnection serial;
             if (!serial.Init(port, baudrateToTest)) {
                 // could not connect to this serial-port
                 continue;
             }
             // it was possible to open the serial-port, test if there is a gps on this port
 
-            CGPS gps(std::move(serial));
+            mobiledoas::CGPS gps(std::move(serial));
             for (int i = 0; i < 10; ++i) {
                 if (SUCCESS == gps.ReadGPS()) {
                     status.Format("Found GPS on serialPort: COM%d using baud rate %d", port, baudrateToTest);

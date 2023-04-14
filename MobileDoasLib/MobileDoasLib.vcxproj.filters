@@ -72,6 +72,9 @@
     <ClInclude Include="include\MobileDoasLib\Flux\Flux1.h">
       <Filter>Header Files\Flux</Filter>
     </ClInclude>
+    <ClInclude Include="include\MobileDoasLib\GPS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MobileDoasLib.cpp">
@@ -103,6 +106,9 @@
     </ClCompile>
     <ClCompile Include="src\Flux\Flux1.cpp">
       <Filter>Source Files\Flux</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GPS.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
