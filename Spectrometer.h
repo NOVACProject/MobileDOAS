@@ -3,6 +3,7 @@
 #include "Configuration/MobileConfiguration.h"
 #include <MobileDoasLib/Measurement/SpectrometerInterface.h>
 #include <MobileDoasLib/Measurement/SpectrumUtils.h>
+#include <MobileDoasLib/ReferenceFitResult.h>
 
 #include <memory>
 #include <limits>
@@ -36,21 +37,6 @@ namespace novac {
     class CDateTime;
 }
 class CSpectrum;
-
-struct BasicDoasResult {
-
-    double column = 0.0;
-
-    double columnError = 0.0;
-
-    double shift = 0.0;
-
-    double shiftError = 0.0;
-
-    double squeeze = 0.0;
-
-    double squeezeError = 0.0;
-};
 
 /** The class <b>CSpectrometer</b> is the base class used when communicating with the
     spectrometer. This holds all basic functions for USB or serial communication,
@@ -206,7 +192,7 @@ public:
 
     /** Retrieves the last evaluated column, columnError, shift, shiftError, squeeze and squeezeError
         for the main evaluated specie in this traverse */
-    void GetLastColumn(BasicDoasResult& evaluationResult);
+    void GetLastColumn(mobiledoas::ReferenceFitResult& evaluationResult);
 
     /** Retrieves the lower range for the fit region for
         fit window number 'region' */

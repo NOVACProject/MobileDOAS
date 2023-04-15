@@ -64,6 +64,15 @@ namespace mobiledoas
         E.g. the values hhmmss=121314 and separatorCharacter=':' will return the string "12:13:14" */
     std::string FormatTime(long hhmmss, char separatorCharacter = ':');
 
+    /** Formats the current date (from the computer clock) into a string using the YYYY.MM.DD format */
+    void GetDateText(char* txt);
+
+    /** Formats the current date and time (from the computer clock) into a string using the YYYY.MM.DD  HH.mm.SS format */
+    void GetDateTimeText(char* txt);
+
+    /** Formats the current date and time (from the computer clock) into a string using the YYYY.MM.DD_HHmmSS format */
+    std::string GetDateTimeTextPlainFormat();
+
 }
 
 #endif  // DATETIME_MOBILEDOAS_H

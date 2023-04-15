@@ -115,4 +115,41 @@ namespace mobiledoas {
         return std::string(msgBuffer);
     }
 
+
+    void GetDateText(char* txt)
+    {
+        struct tm* tim;
+        time_t t;
+
+        txt[0] = 0;
+        time(&t);
+        tim = localtime(&t);
+        sprintf(txt, "%04d.%02d.%02d", tim->tm_year + 1900, tim->tm_mon + 1, tim->tm_mday);
+    }
+
+    void GetDateTimeText(char* txt)
+    {
+        struct tm* tim;
+        time_t t;
+
+        txt[0] = 0;
+        time(&t);
+        tim = localtime(&t);
+        sprintf(txt, "%04d.%02d.%02d  %02d:%02d:%02d", tim->tm_year + 1900, tim->tm_mon + 1, tim->tm_mday, tim->tm_hour, tim->tm_min, tim->tm_sec);
+    }
+
+    std::string GetDateTimeTextPlainFormat()
+    {
+        struct tm* tim;
+        time_t t;
+
+        char txt[64];
+        txt[0] = 0;
+        time(&t);
+        tim = localtime(&t);
+        sprintf(txt, "%04d.%02d.%02d_%02d%02d%02d", tim->tm_year + 1900, tim->tm_mon + 1, tim->tm_mday, tim->tm_hour, tim->tm_min, tim->tm_sec);
+
+        return std::string(txt);
+    }
+
 }

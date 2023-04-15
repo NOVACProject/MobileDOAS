@@ -164,6 +164,7 @@
     <ClInclude Include="include\MobileDoasLib\GpsData.h" />
     <ClInclude Include="include\MobileDoasLib\Measurement\SpectrometerInterface.h" />
     <ClInclude Include="include\MobileDoasLib\Measurement\SpectrumUtils.h" />
+    <ClInclude Include="include\MobileDoasLib\ReferenceFitResult.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MobileDoasLib.cpp" />

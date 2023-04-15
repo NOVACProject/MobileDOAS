@@ -499,14 +499,14 @@ double CSpectrometer::CountFlux(double windSpeed, double windAngle)
     }
 }
 
-void CSpectrometer::GetLastColumn(BasicDoasResult& evaluationResult) {
+void CSpectrometer::GetLastColumn(mobiledoas::ReferenceFitResult& evaluationResult) {
 
-    evaluationResult.column = evaluateResult[0][0][0];
-    evaluationResult.columnError = evaluateResult[0][0][1];
-    evaluationResult.shift = evaluateResult[0][0][2];
-    evaluationResult.shiftError = evaluateResult[0][0][3];
-    evaluationResult.squeeze = evaluateResult[0][0][4];
-    evaluationResult.squeezeError = evaluateResult[0][0][5];
+    evaluationResult.m_column = evaluateResult[0][0][0];
+    evaluationResult.m_columnError = evaluateResult[0][0][1];
+    evaluationResult.m_shift = evaluateResult[0][0][2];
+    evaluationResult.m_shiftError = evaluateResult[0][0][3];
+    evaluationResult.m_squeeze = evaluateResult[0][0][4];
+    evaluationResult.m_squeezeError = evaluateResult[0][0][5];
 }
 
 void CSpectrometer::GetDark() {
@@ -515,7 +515,7 @@ void CSpectrometer::GetDark() {
     if (m_fixexptime >= 0) {
         // fixed exposure-time throughout the traverse
         for (int j = 0; j < m_NChannels; ++j) {
-            memcpy(m_tmpDark[j], m_dark[j], MAX_SPECTRUM_LENGTH*sizeof(double));
+            memcpy(m_tmpDark[j], m_dark[j], MAX_SPECTRUM_LENGTH * sizeof(double));
         }
     }
     else {
@@ -687,7 +687,7 @@ void CSpectrometer::CreateDirectories()
     tim = localtime(&t);
     sprintf(cDateTime, "%04d%02d%02d_%02d%02d", tim->tm_year + 1900, tim->tm_mon + 1, tim->tm_mday, tim->tm_hour, tim->tm_min);
 
-    Common::GetDateText(dateText);
+    mobiledoas::GetDateText(dateText);
 
     CString folderName(g_exePath + dateText);
 
@@ -696,7 +696,7 @@ void CSpectrometer::CreateDirectories()
         if (errorCode != ERROR_ALREADY_EXISTS) { /* We shouldn't quit just because the directory that we want to create already exists. */
             CString tmpStr, errorStr;
             if (FormatErrorCode(errorCode, errorStr)) {
-                tmpStr.Format("Could not create output directory. Reason: %s", errorStr);
+                tmpStr.Format("Could not create output directory. Reason: %s", (LPCSTR)errorStr);
             }
             else {
                 tmpStr.Format("Could not create output directory, not enough free disk space?. Error code returned %ld", errorCode);

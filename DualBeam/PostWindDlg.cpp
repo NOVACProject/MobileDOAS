@@ -416,9 +416,9 @@ void CPostWindDlg::SaveResult() {
     Common::GetDirectory(directory);
 
     // 2. Make a new name for the wind-speed log-file
-    CString fileName, timeNow;
-    Common::GetDateTimeTextPlainFormat(timeNow);
-    fileName.Format("%sWindCalculation_%s.txt", (LPCTSTR)directory, (LPCTSTR)timeNow);
+    CString fileName;
+    std::string timeNow = mobiledoas::GetDateTimeTextPlainFormat();
+    fileName.Format("%sWindCalculation_%s.txt", (LPCTSTR)directory, timeNow.c_str());
 
     // 3. Open the log-file for writing
     FILE* f = fopen(fileName, "w");

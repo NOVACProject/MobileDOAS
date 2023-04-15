@@ -14,6 +14,7 @@
 
 #include "FitWindow.h"
 #include "EvaluationResult.h"
+#include <MobileDoasLib/Definitions.h>
 
 namespace Evaluation
 {
@@ -52,9 +53,6 @@ public:
         If there are more than one referencefile, only the results from evaluating
         referencefile number 'referenceFile' will be returned. */
     double* GetResult(int referenceFile = 0);
-
-    /** Returns the result of the last evaluation */
-    CEvaluationResult& GetEvaluationResult();
 
     double GetDelta() const { return m_result.m_delta; }
     double GetChiSquare() const { return m_result.m_chiSquare; }

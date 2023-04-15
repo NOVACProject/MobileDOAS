@@ -76,14 +76,6 @@ public:
     Common();
     virtual ~Common();
     void WriteLogFile(CString filename, CString txt);
-    static void GetDateText(char* txt);
-    static void GetDateText(CString& str);
-    static void GetTimeText(char* txt);
-    static void GetTimeText(CString& str);
-    static void GetDateTimeText(char* txt);
-    static void GetDateTimeText(CString& str);
-    static void GetDateTimeTextPlainFormat(char* txt);
-    static void GetDateTimeTextPlainFormat(CString& str);
 
     // ---------------- PATH MANAGING FUNCTIONS -----------------
 

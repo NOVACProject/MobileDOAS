@@ -102,9 +102,6 @@
     <ClCompile Include="DMSpecView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="EvaluationLogFileHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Controls\Label.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -136,9 +133,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="StdAfx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Evaluation\TraverseResult.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Version.cpp">
@@ -246,13 +240,7 @@
     <ClCompile Include="Evaluation\Evaluation.cpp">
       <Filter>Source Files\Evaluation</Filter>
     </ClCompile>
-    <ClCompile Include="Evaluation\EvaluationResult.cpp">
-      <Filter>Source Files\Evaluation</Filter>
-    </ClCompile>
     <ClCompile Include="Evaluation\FitWindow.cpp">
-      <Filter>Source Files\Evaluation</Filter>
-    </ClCompile>
-    <ClCompile Include="Evaluation\ReferenceFitResult.cpp">
       <Filter>Source Files\Evaluation</Filter>
     </ClCompile>
     <ClCompile Include="DualBeam\DualBeamCalculator.cpp">
@@ -462,11 +450,11 @@
     <ClCompile Include="SpectralEvaluation\src\Evaluation\ReferenceFile.cpp">
       <Filter>Source Files\SpectralEvaluation\Evaluation</Filter>
     </ClCompile>
-    <ClCompile Include="SerialConnection.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MeasurementSetup.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Evaluation\EvaluationResult.cpp">
+      <Filter>Source Files\Evaluation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -485,9 +473,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DMSpecView.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EvaluationLogFileHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Controls\Label.h">
@@ -527,9 +512,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="StdAfx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Evaluation\TraverseResult.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Version.h">
@@ -739,13 +721,7 @@
     <ClInclude Include="Evaluation\Evaluation.h">
       <Filter>Header Files\Evaluation</Filter>
     </ClInclude>
-    <ClInclude Include="Evaluation\EvaluationResult.h">
-      <Filter>Header Files\Evaluation</Filter>
-    </ClInclude>
     <ClInclude Include="Evaluation\FitWindow.h">
-      <Filter>Header Files\Evaluation</Filter>
-    </ClInclude>
-    <ClInclude Include="Evaluation\ReferenceFitResult.h">
       <Filter>Header Files\Evaluation</Filter>
     </ClInclude>
     <ClInclude Include="DualBeam\DualBeamCalculator.h">
@@ -871,11 +847,11 @@
     <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\StringUtils.h">
       <Filter>Header Files\SpectralEvaluation</Filter>
     </ClInclude>
-    <ClInclude Include="SerialConnection.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="MeasurementSetup.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Evaluation\EvaluationResult.h">
+      <Filter>Header Files\Evaluation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

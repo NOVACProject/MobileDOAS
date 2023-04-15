@@ -326,13 +326,10 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="DualBeam\WindSpeedCalculator.cpp" />
-    <ClCompile Include="EvaluationLogFileHandler.cpp" />
     <ClCompile Include="Evaluation\Evaluation.cpp" />
     <ClCompile Include="Evaluation\EvaluationResult.cpp" />
     <ClCompile Include="Evaluation\FitWindow.cpp" />
     <ClCompile Include="Evaluation\RealTimeCalibration.cpp" />
-    <ClCompile Include="Evaluation\ReferenceFitResult.cpp" />
-    <ClCompile Include="Evaluation\TraverseResult.cpp" />
     <ClCompile Include="ExportEvLogDlg.cpp" />
     <ClCompile Include="FluxPathListBox.cpp" />
     <ClCompile Include="Graphs\ColumnGraph.cpp" />
@@ -369,7 +366,6 @@
     <ClCompile Include="ReEvaluation\ReEval_SkyDlg.cpp" />
     <ClCompile Include="RouteDlg.cpp" />
     <ClCompile Include="RouteGraph.cpp" />
-    <ClCompile Include="SerialConnection.cpp" />
     <ClCompile Include="ShowFitDlg.cpp" />
     <ClCompile Include="SourceSelectionDlg.cpp" />
     <ClCompile Include="SpectralEvaluation\src\Calibration\Correspondence.cpp">
@@ -637,13 +633,10 @@
     <ClInclude Include="DualBeam\PostPlumeHeightDlg.h" />
     <ClInclude Include="DualBeam\PostWindDlg.h" />
     <ClInclude Include="DualBeam\WindSpeedCalculator.h" />
-    <ClInclude Include="EvaluationLogFileHandler.h" />
     <ClInclude Include="Evaluation\Evaluation.h" />
     <ClInclude Include="Evaluation\EvaluationResult.h" />
     <ClInclude Include="Evaluation\FitWindow.h" />
     <ClInclude Include="Evaluation\RealTimeCalibration.h" />
-    <ClInclude Include="Evaluation\ReferenceFitResult.h" />
-    <ClInclude Include="Evaluation\TraverseResult.h" />
     <ClInclude Include="ExportEvLogDlg.h" />
     <ClInclude Include="Fit\ApertureFunction.h" />
     <ClInclude Include="Fit\BandedMatrix.h" />
@@ -719,7 +712,6 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="RouteDlg.h" />
     <ClInclude Include="RouteGraph.h" />
-    <ClInclude Include="SerialConnection.h" />
     <ClInclude Include="SourceSelectionDlg.h" />
     <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\DialogControllers\InstrumentCalibrationInput.h" />
     <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\DialogControllers\InstrumentLineshapeCalibrationController.h" />

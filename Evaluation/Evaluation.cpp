@@ -241,7 +241,7 @@ void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum
         }
 
         // allocate enough space to fit in all the result-values
-        m_result.m_ref.SetSize(m_window.nRef);
+        m_result.m_ref.resize(m_window.nRef);
 
         // finally display the fit results for each reference spectrum including their appropriate error
 
@@ -308,11 +308,6 @@ double* CEvaluation::GetResult(int referenceFile) {
     resultSet[5] = m_result.m_ref[referenceFile].m_squeezeError;
 
     return resultSet;
-}
-
-/** Returns the result of the last evaluation */
-CEvaluationResult& CEvaluation::GetEvaluationResult() {
-    return this->m_result;
 }
 
 /**	read data from reference files

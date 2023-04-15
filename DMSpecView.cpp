@@ -334,7 +334,7 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam) {
     const int intensityLimit = (100 - m_intensitySliderLow.GetPos());
 
     // Get the last value and the total number of values
-    BasicDoasResult lastEvaluationResult;
+    mobiledoas::ReferenceFitResult lastEvaluationResult;
     m_Spectrometer->GetLastColumn(lastEvaluationResult);
     const long scanNo = m_Spectrometer->GetNumberOfSpectraAcquired() - 2;
 
@@ -343,9 +343,9 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam) {
     const int fitRegionNum = m_Spectrometer->GetFitRegionNum();
 
     // --- Update the column, shift and squeeze ---
-    cCon.Format("%.2lf \u00B1 %.2lf", lastEvaluationResult.column, lastEvaluationResult.columnError);
-    cShift.Format("%.1f", lastEvaluationResult.shift);
-    cSqueeze.Format("%.1f", lastEvaluationResult.squeeze);
+    cCon.Format("%.2lf \u00B1 %.2lf", lastEvaluationResult.m_column, lastEvaluationResult.m_columnError);
+    cShift.Format("%.1f", lastEvaluationResult.m_shift);
+    cSqueeze.Format("%.1f", lastEvaluationResult.m_squeeze);
     cScanNo.Format("%d", scanNo);
     this->SetDlgItemText(IDC_CONCENTRATION, cCon);
     this->SetDlgItemText(IDC_SH, cShift);

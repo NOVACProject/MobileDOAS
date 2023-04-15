@@ -361,7 +361,7 @@ void CPostFluxDlg::OnCalculateFlux()
 
     ShowColumn();
 
-    m_common->GetDateTimeText(timetxt);
+    mobiledoas::GetDateTimeText(timetxt);
     m_flux->SetParams(m_WindSpeed, m_WindDirect, m_srcLat, m_srcLon,
         m_lowIndex, m_highIndex, m_flux->m_traverse[m_flux->m_curTraverse]->m_Offset);
 
