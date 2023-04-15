@@ -1,9 +1,7 @@
 #pragma once
 
 #include "afxwin.h"
-
 #include "Graphs/GraphCtrl.h"
-#include "Common.h"
 
 namespace Graph
 {
@@ -30,10 +28,10 @@ namespace Graph
 
         /** The lat and long where the left mouse button was pressed
                 down the last time. */
-        double	lbdLat, lbdLong;
+        double lbdLat, lbdLong;
 
         /** true if the user is right now trying to zoom into the graph */
-        bool		m_zooming;
+        bool m_zooming;
 
         /** The coordinates (lat & long) into which the user wants to zoom. */
         struct plotRange m_zoomRect;
@@ -73,6 +71,6 @@ namespace Graph
 
         /** Gets the coordinate values that the user wants to zoom into.
                 If the user does not want to zoom, the values in 'rect' will be zero. */
-        void	GetZoomRect(struct plotRange& range);
+        void GetZoomRect(struct plotRange& range);
     };
 }

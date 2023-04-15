@@ -39,7 +39,6 @@ void CMeasurement_View::Run() {
 
     m_sumInComputer = 1;
     m_sumInSpectrometer = 1;
-    m_totalSpecNum = 1;
     if (0 != m_fixexptime) {
         ShowMessageBox("Suitable exposure-time set", "");
     }

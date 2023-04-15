@@ -529,11 +529,11 @@ LRESULT CDMSpecView::OnShowIntTime(WPARAM wParam, LPARAM lParam) {
         return 0;
     }
 
-    expTime.Format("%d  ms", m_Spectrometer->RequestIntTime());
+    expTime.Format("%d  ms", m_Spectrometer->GetCurrentIntegrationTime());
     this->SetDlgItemText(IDC_INTTIME, expTime);
 
     if (m_spectrometerMode == MODE_DIRECTORY) {
-        nAverage.Format("%d", m_Spectrometer->m_totalSpecNum);
+        nAverage.Format("%d", m_Spectrometer->NumberOfSpectraToAverage());
     }
     else {
         m_Spectrometer->GetNSpecAverage(averageInSpectrometer, averageInComputer);
@@ -969,7 +969,6 @@ void CDMSpecView::OnControlStop()
 
 void CDMSpecView::DrawSpectrum()
 {
-    static double* spectrum1 = new double[MAX_SPECTRUM_LENGTH];
     static double* spectrum2 = new double[MAX_SPECTRUM_LENGTH];
     CString lambdaStr;
 
@@ -997,7 +996,7 @@ void CDMSpecView::DrawSpectrum()
     }
 
     // Copy the spectrum and transform it into saturation-ratio
-    memcpy(spectrum1, m_Spectrometer->GetSpectrum(0), sizeof(double) * spectrumLength);
+    std::vector<double> spectrum1 = m_Spectrometer->GetSpectrum(0);
     for (int k = 0; k < spectrumLength; ++k) {
         spectrum1[k] *= dynRange_inv;
     }
@@ -1009,21 +1008,21 @@ void CDMSpecView::DrawSpectrum()
 
         // Plot the spectrum
         m_ColumnPlot.SetPlotColor(m_Spectrum0Color);
-        m_ColumnPlot.XYPlot(m_spectrumChartXAxisValues.data(), spectrum1, spectrumLength, Graph::CGraphCtrl::PLOT_SECOND_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
+        m_ColumnPlot.XYPlot(m_spectrumChartXAxisValues.data(), spectrum1.data(), spectrumLength, Graph::CGraphCtrl::PLOT_SECOND_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
 
         // If a second channel is used, then do the same thing with the slave-spectrum
         if (m_Spectrometer->m_NChannels == 1) {
             return;
         }
         else {
-            memcpy(spectrum2, m_Spectrometer->GetSpectrum(1), sizeof(double) * spectrumLength);
+            std::vector<double> spectrum2 = m_Spectrometer->GetSpectrum(1);
             for (int k = 0; k < spectrumLength; ++k) {
                 spectrum2[k] *= dynRange_inv;
             }
 
             m_ColumnPlot.SetPlotColor(m_Spectrum1Color);
             m_ColumnPlot.SetLineWidth(2);
-            m_ColumnPlot.XYPlot(m_spectrumChartXAxisValues.data(), spectrum2, spectrumLength, Graph::CGraphCtrl::PLOT_SECOND_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
+            m_ColumnPlot.XYPlot(m_spectrumChartXAxisValues.data(), spectrum2.data(), spectrumLength, Graph::CGraphCtrl::PLOT_SECOND_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
         }
 
         return;
@@ -1032,20 +1031,20 @@ void CDMSpecView::DrawSpectrum()
         if (m_Spectrometer->m_spectrometerChannel == 0) {
             // Plot master spectrum
             m_ColumnPlot.SetPlotColor(m_Spectrum0Color);
-            m_ColumnPlot.XYPlot(NULL, spectrum1, spectrumLength, Graph::CGraphCtrl::PLOT_CONNECTED);
+            m_ColumnPlot.XYPlot(NULL, spectrum1.data(), spectrumLength, Graph::CGraphCtrl::PLOT_CONNECTED);
         }
         else {
             // Plot slave spectrum
             if (m_Spectrometer->m_NChannels < 2) {
                 return;
             }
-            memcpy(spectrum2, m_Spectrometer->GetSpectrum(1), sizeof(double) * spectrumLength);
+            std::vector<double> spectrum2 = m_Spectrometer->GetSpectrum(1);
             for (int k = 0; k < spectrumLength; ++k) {
                 spectrum2[k] *= dynRange_inv;
             }
             m_ColumnPlot.SetPlotColor(m_Spectrum1Color);
             m_ColumnPlot.SetLineWidth(2);
-            m_ColumnPlot.XYPlot(NULL, spectrum2, spectrumLength, Graph::CGraphCtrl::PLOT_CONNECTED);
+            m_ColumnPlot.XYPlot(NULL, spectrum2.data(), spectrumLength, Graph::CGraphCtrl::PLOT_CONNECTED);
         }
         return;
     }

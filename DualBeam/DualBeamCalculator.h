@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../Common.h"
 #include "DualBeamMeasSettings.h"
+#include <MobileDoasLib/Definitions.h>
 
 namespace DualBeamMeasurement {
 

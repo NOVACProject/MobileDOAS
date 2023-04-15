@@ -85,7 +85,6 @@ void CMeasurement_Wind::Run() {
         mobiledoas::SpectrumSummation spectrumSummation;
         m_sumInComputer = CountRound(m_timeResolution, spectrumSummation);
         m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
-        m_totalSpecNum = m_sumInComputer * m_sumInSpectrometer;
         pView->PostMessage(WM_SHOWINTTIME);
 
         /*  -- Collect the dark spectrum -- */
@@ -96,7 +95,6 @@ void CMeasurement_Wind::Run() {
     else {
         m_sumInComputer = 1;
         m_sumInSpectrometer = 1;
-        m_totalSpecNum = 1;
         if (0 != m_fixexptime)
         {
             ShowMessageBox("Suitable exposure-time set", "");
@@ -127,7 +125,6 @@ void CMeasurement_Wind::Run() {
             mobiledoas::SpectrumSummation spectrumSummation;
             m_sumInComputer = CountRound(m_timeResolution, spectrumSummation);
             m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
-            m_totalSpecNum = m_sumInComputer * m_sumInSpectrometer;
             pView->PostMessage(WM_SHOWINTTIME);
         }
 

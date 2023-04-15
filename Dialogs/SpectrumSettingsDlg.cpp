@@ -90,7 +90,7 @@ LRESULT CSpectrumSettingsDlg::UpdateFromSpectrometer(WPARAM wParam, LPARAM lPara
     }
 
     // Get the parameters from the spectrometer
-    this->m_average = m_Spectrometer->m_totalSpecNum;
+    this->m_average = m_Spectrometer->NumberOfSpectraToAverage();
     this->m_exptime = m_Spectrometer->m_integrationTime;
 
     // Update the window
@@ -118,7 +118,6 @@ void CSpectrumSettingsDlg::SaveToSpectrometer() {
 
     // set the parameters
     m_Spectrometer->m_integrationTime = m_exptime;
-    m_Spectrometer->m_totalSpecNum = m_average;
     if (EqualsIgnoringCase(m_Spectrometer->m_spectrometerModel, "USB2000+")) {
         m_Spectrometer->m_sumInSpectrometer = m_average;
         m_Spectrometer->m_sumInComputer = 1;
@@ -136,7 +135,6 @@ void CSpectrumSettingsDlg::SaveToSpectrometer() {
             m_Spectrometer->m_sumInComputer = 1;
         }
     }
-    m_Spectrometer->m_totalSpecNum = m_Spectrometer->m_sumInComputer * m_Spectrometer->m_sumInSpectrometer;
 }
 
 int GetLargestDivisorBelow16(int n) {
@@ -172,7 +170,8 @@ void CSpectrumSettingsDlg::SaveSpectrum() {
     m_Spectrometer->GetCurrentDateAndTime(startDate, startTime);
     CSpectrum spectrum;
     int channel = m_Spectrometer->m_spectrometerChannel;
-    m_Spectrometer->CreateSpectrum(spectrum, m_Spectrometer->GetSpectrum(channel), startDate, startTime, 0);
+    std::vector<double> spectrumData = m_Spectrometer->GetSpectrum(channel);
+    m_Spectrometer->CreateSpectrum(spectrum, spectrumData.data(), startDate, startTime, 0);
 
     // write the file
     CSpectrumIO::WriteStdFile(stdFileName, spectrum);
@@ -303,6 +302,6 @@ void CSpectrumSettingsDlg::OnUserChangeSpectrometer() {
         MessageBox("Please set N Channels to 2 in configuration to view slave channel output.");
     }
 
-    std::vector<int> channelsToUse {m_channel};
+    std::vector<int> channelsToUse{ m_channel };
     m_Spectrometer->ChangeSpectrometer(curSel, channelsToUse);
 }

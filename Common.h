@@ -34,11 +34,6 @@
 #define WM_EVAL         WM_USER + 6
 #define WM_GOTO_SLEEP   WM_USER + 7
 
-
-// function returns
-#define SUCCESS true
-#define FAIL false
-
 struct plotRange {
     double maxLat;
     double maxLon;

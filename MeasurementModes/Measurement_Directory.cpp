@@ -185,7 +185,8 @@ bool CMeasurement_Directory::ProcessSpectrum(CString latestSpectrum) {
 
         // extract spectrum integration time and total spec num
         m_integrationTime = spec.exposureTime;
-        m_totalSpecNum = spec.scans;
+        m_sumInComputer = spec.scans;
+        m_sumInSpectrometer = 1;
         pView->PostMessage(WM_SHOWINTTIME);
 
         // get spectrum date & time
@@ -244,7 +245,8 @@ bool CMeasurement_Directory::ReadSky() {
     else {
         memcpy((void*)m_sky[0], (void*)spec.I, sizeof(double) * MAX_SPECTRUM_LENGTH);
         m_integrationTime = spec.exposureTime;
-        m_totalSpecNum = spec.scans;
+        m_sumInComputer = spec.scans;
+        m_sumInSpectrometer = 1;
         m_detectorSize = spec.length;
         m_spectrometerName = spec.spectrometerSerial;
     }

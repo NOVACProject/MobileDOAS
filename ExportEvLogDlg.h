@@ -37,13 +37,13 @@ namespace Dialogs {
             // -------------------- DIALOG COMPONENTS -------------------------
 
             /** The Labels saying 'Column 1', 'Column 2', etc.. */
-            CStatic			m_labels[MAX_N_EXPORT_COLUMNS];
+            CStatic m_labels[MAX_N_EXPORT_COLUMNS];
 
         /** The combo-boxes */
-        CComboBox		m_combo[MAX_N_EXPORT_COLUMNS];
+        CComboBox m_combo[MAX_N_EXPORT_COLUMNS];
 
         /** The border 'frame' around the column-combo-boxes */
-        CStatic			m_columnFrame;
+        CStatic m_columnFrame;
 
         /** These are the models for the labels and the combo-boxes */
         CStatic m_labelModel;
@@ -52,10 +52,10 @@ namespace Dialogs {
         // -------------------- DIALOG DATA ------------------------
 
         /** The file to export data to */
-        CString			m_exportFileName;
+        CString m_exportFileName;
 
         /** The items to choose from */
-        int				m_nStrings;
+        int m_nStrings;
         CString* m_strings;
 
     public:

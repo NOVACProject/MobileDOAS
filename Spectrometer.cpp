@@ -56,7 +56,6 @@ CSpectrometer::CSpectrometer(std::unique_ptr<mobiledoas::SpectrometerInterface> 
     m_flux = 0; //initiate flux value in this variable
     m_maxColumn = 100;
     m_integrationTime = 100;
-    m_totalSpecNum = 1;
     m_adjustIntegrationTime = FALSE;
     m_gasFactor = GASFACTOR_SO2;
 
@@ -389,7 +388,7 @@ void CSpectrometer::WriteEvFile(CString filename, FitRegion* fitRegion) {
     fprintf(f, "%f\t%f\t%.1f\t", m_spectrumGpsData[m_spectrumCounter].latitude, m_spectrumGpsData[m_spectrumCounter].longitude, m_spectrumGpsData[m_spectrumCounter].altitude);
 
     // 3. The number of spectra averaged and the exposure-time
-    fprintf(f, "%ld\t%d\t", m_totalSpecNum, m_integrationTime);
+    fprintf(f, "%ld\t%d\t", NumberOfSpectraToAverage(), m_integrationTime);
 
     // 4. The intensity
     fprintf(f, "%ld\t", m_averageSpectrumIntensity[channel]);
@@ -1065,8 +1064,8 @@ int CSpectrometer::CountRound(long timeResolution, mobiledoas::SpectrumSummation
     return mobiledoas::CountRound(timeResolution, m_integrationTime, m_spectrometer->GetReadoutDelay(), maximumNumberToAddInDevice, result);
 }
 
-double* CSpectrometer::GetSpectrum(int channel) {
-    return m_curSpectrum[channel];
+std::vector<double> CSpectrometer::GetSpectrum(int channel) const {
+    return std::vector<double>(m_curSpectrum[channel], m_curSpectrum[channel] + m_detectorSize);
 }
 
 void CSpectrometer::GetConnectedSpectrometers(std::vector<std::string>& connectedSpectrometers) {
@@ -1674,7 +1673,7 @@ void CSpectrometer::CreateSpectrum(CSpectrum& spectrum, const double* spec, cons
     spectrum.date = startDate;
     spectrum.spectrometerModel = m_spectrometerModel.c_str();
     spectrum.spectrometerSerial = m_spectrometerName.c_str();
-    spectrum.scans = m_totalSpecNum;
+    spectrum.scans = NumberOfSpectraToAverage();
     spectrum.name = m_measurementBaseName;
     spectrum.fitHigh = m_conf->m_fitWindow->fitHigh;
     spectrum.fitLow = m_conf->m_fitWindow->fitLow;

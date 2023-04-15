@@ -2,6 +2,19 @@
 
 // Commonly used definitions througout the MobileDoas program
 
+
+// ----------------------------------------------------------------
+// ---------------- FUNCTION RETURN VALUES ------------------------
+// ----------------------------------------------------------------
+
+#define SUCCESS true
+
+#define FAIL false
+
+// ----------------------------------------------------------------
+// --------------------- MAXIMUM SIZES ----------------------------
+// ----------------------------------------------------------------
+
 // the maximum number of channels on the spectrometer that we can handle 
 #define MAX_N_CHANNELS 2
 

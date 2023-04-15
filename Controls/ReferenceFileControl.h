@@ -1,8 +1,6 @@
 #pragma once
 
 #include "../GridCtrl\GridCtrl.h"
-
-#include "../Common.h"
 #include "../Evaluation/FitWindow.h"
 #include "../Evaluation/Evaluation.h"
 

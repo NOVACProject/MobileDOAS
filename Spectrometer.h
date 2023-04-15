@@ -99,7 +99,7 @@ public:
 
     /** The number of spectra to average before writing to file / updating flux.
         This is equal to m_sumInSpectrometer * m_sumInComputer */
-    long m_totalSpecNum;
+    long NumberOfSpectraToAverage() const { return m_sumInComputer * m_sumInSpectrometer; }
 
     /** number of spectra to average in spectrometer */
     int m_sumInSpectrometer;
@@ -144,7 +144,7 @@ public:
     double m_fitResult[MAX_FIT_WINDOWS][MAX_SPECTRUM_LENGTH];
 
     /** Retrieves the last collected spectrum from the given channel */
-    double* GetSpectrum(int channel);
+    std::vector<double> GetSpectrum(int channel) const;
 
     /** @return the number of spectra that have been collected so far */
     long GetColumnNumber();
@@ -226,7 +226,7 @@ public:
     }
 
     /** @return the currently used integration time, in milli seconds */
-    long RequestIntTime() { return (long)m_integrationTime; }
+    long GetCurrentIntegrationTime() { return (long)m_integrationTime; }
 
     /** Returns the last calculated flux */
     double GetFlux() { return m_flux; }

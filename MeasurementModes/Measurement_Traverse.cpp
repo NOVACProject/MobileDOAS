@@ -81,7 +81,6 @@ void CMeasurement_Traverse::Run() {
     mobiledoas::SpectrumSummation spectrumSummation;
     m_sumInComputer = CountRound(m_timeResolution, spectrumSummation);
     m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
-    m_totalSpecNum = m_sumInComputer * m_sumInSpectrometer;
     pView->PostMessage(WM_SHOWINTTIME);
 
     /*  -- Collect the dark spectrum -- */
@@ -112,7 +111,6 @@ void CMeasurement_Traverse::Run() {
             m_adjustIntegrationTime = FALSE;
             m_sumInComputer = CountRound(m_timeResolution, spectrumSummation);
             m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
-            m_totalSpecNum = m_sumInComputer * m_sumInSpectrometer;
             pView->PostMessage(WM_SHOWINTTIME);
         }
 
@@ -309,7 +307,6 @@ void CMeasurement_Traverse::Run_Adaptive() {
     m_integrationTime = 3;
     m_sumInComputer = 100;
     m_sumInSpectrometer = 15;
-    m_totalSpecNum = m_sumInSpectrometer * m_sumInComputer;
     pView->PostMessage(WM_SHOWINTTIME);
 
     /*  -- Collect the dark spectrum -- */
@@ -387,7 +384,6 @@ void CMeasurement_Traverse::Run_Adaptive() {
             m_integrationTime = DARK_CURRENT_EXPTIME;
             m_sumInComputer = 1;
             m_sumInSpectrometer = 1;
-            m_totalSpecNum = m_sumInSpectrometer * m_sumInComputer;
             pView->PostMessage(WM_SHOWINTTIME);
 
         }
@@ -421,7 +417,6 @@ void CMeasurement_Traverse::Run_Adaptive() {
             mobiledoas::SpectrumSummation spectrumSummation;
             m_sumInComputer = CountRound(m_timeResolution, spectrumSummation);
             m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
-            m_totalSpecNum = m_sumInComputer * m_sumInSpectrometer;
             pView->PostMessage(WM_SHOWINTTIME);
         }
         else if (m_scanNum == SKY_SPECTRUM) {
@@ -478,7 +473,6 @@ void CMeasurement_Traverse::Run_Adaptive() {
             mobiledoas::SpectrumSummation spectrumSummation;
             m_sumInComputer = CountRound(m_timeResolution, spectrumSummation);
             m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
-            m_totalSpecNum = m_sumInComputer * m_sumInSpectrometer;
             pView->PostMessage(WM_SHOWINTTIME);
 
         }
@@ -512,7 +506,6 @@ void CMeasurement_Traverse::Run_Adaptive() {
             mobiledoas::SpectrumSummation spectrumSummation;
             m_sumInComputer = CountRound(m_timeResolution, spectrumSummation);
             m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
-            m_totalSpecNum = m_sumInComputer * m_sumInSpectrometer;
             pView->PostMessage(WM_SHOWINTTIME);
         }
 
