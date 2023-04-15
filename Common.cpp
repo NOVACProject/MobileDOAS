@@ -78,40 +78,6 @@ void Common::GetExePath()
     m_exePath = m_exePath.Left(position + 1);
 }
 
-/*  adapts parameters k and m so that y = k*x + m, in a
-    least square sense.
-    Algorithm found at: http://mathworld.wolfram.com/LeastSquaresFittingPolynomial.html */
-int Common::AdaptStraightLine(double* x, double* y, unsigned int l, double* k, double* m) {
-    double sx = 0, sy = 0, sx2 = 0, sxy = 0, det_inv;
-    double M_inv[2][2], XTy[2]; /*M=X^T * X, M_inv = M^-1, XTy = X^T * y */
-    unsigned int i;
-
-    if ((x == 0) || (y == 0) || (l == 0) || (k == 0) || (m == 0)) {
-        return 1;
-    }
-
-    for (i = 0; i < l; ++i) {
-        sx += x[i];
-        sy += y[i];
-        sx2 += x[i] * x[i];
-        sxy += x[i] * y[i];
-    }
-
-    det_inv = 1 / (sx2 * l - sx * sx);
-    M_inv[0][0] = sx2 * det_inv;
-    M_inv[0][1] = -sx * det_inv;
-    M_inv[1][0] = -sx * det_inv;
-    M_inv[1][1] = l * det_inv;
-
-    XTy[0] = sy;
-    XTy[1] = sxy;
-
-    *(m) = M_inv[0][0] * XTy[0] + M_inv[0][1] * XTy[1];
-    *(k) = M_inv[1][0] * XTy[0] + M_inv[1][1] * XTy[1];
-
-    return 0;
-}
-
 void Common::GuessSpecieName(const CString& fileName, CString& specie) {
     specie.Format("");
     CString spc[] = { "SO2", "NO2", "O3", "O4", "HCHO", "RING", "H2O", "CLO", "BRO", "CHOCHO", "Glyoxal", "Formaldehyde" };

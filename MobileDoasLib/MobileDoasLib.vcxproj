@@ -156,6 +156,10 @@
     <ClInclude Include="include\MobileDoasLib\Communication\SerialConnection.h" />
     <ClInclude Include="include\MobileDoasLib\DateTime.h" />
     <ClInclude Include="include\MobileDoasLib\Definitions.h" />
+    <ClInclude Include="include\MobileDoasLib\DualBeam\DualBeamCalculator.h" />
+    <ClInclude Include="include\MobileDoasLib\DualBeam\DualBeamMeasSettings.h" />
+    <ClInclude Include="include\MobileDoasLib\DualBeam\PlumeHeightCalculator.h" />
+    <ClInclude Include="include\MobileDoasLib\DualBeam\WindSpeedCalculator.h" />
     <ClInclude Include="include\MobileDoasLib\File\KMLFileHandler.h" />
     <ClInclude Include="include\MobileDoasLib\Flux\Flux1.h" />
     <ClInclude Include="include\MobileDoasLib\Flux\Traverse.h" />
@@ -170,6 +174,9 @@
     <ClCompile Include="MobileDoasLib.cpp" />
     <ClCompile Include="src\Communication\SerialConnection.cpp" />
     <ClCompile Include="src\DateTime.cpp" />
+    <ClCompile Include="src\DualBeam\DualBeamCalculator.cpp" />
+    <ClCompile Include="src\DualBeam\PlumeHeightCalculator.cpp" />
+    <ClCompile Include="src\DualBeam\WindSpeedCalculator.cpp" />
     <ClCompile Include="src\File\KMLFileHandler.cpp" />
     <ClCompile Include="src\Flux\Flux1.cpp" />
     <ClCompile Include="src\Flux\Traverse.cpp" />

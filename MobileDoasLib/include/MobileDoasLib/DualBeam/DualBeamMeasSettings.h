@@ -1,6 +1,6 @@
 #pragma once
 
-namespace DualBeamMeasurement {
+namespace mobiledoas {
 
     /** The <b>CDualBeamMeasSettings</b> contains the parameters
             necessary for calculating the correlation between data series

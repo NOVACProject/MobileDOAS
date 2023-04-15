@@ -9,7 +9,6 @@
 
 // CPostWindDlg dialog
 
-using namespace DualBeamMeasurement;
 
 IMPLEMENT_DYNAMIC(CPostWindDlg, CDialog)
 CPostWindDlg::CPostWindDlg(CWnd* pParent /*=NULL*/)
@@ -140,7 +139,7 @@ bool CPostWindDlg::ReadEvaluationLog(int channelIndex) {
     const long traverseLength = traverse->m_recordNum;
 
     // create a new data series
-    m_OriginalSeries[channelIndex] = new DualBeamMeasurement::CDualBeamCalculator::CMeasurementSeries(traverseLength);
+    m_OriginalSeries[channelIndex] = new mobiledoas::CDualBeamCalculator::CMeasurementSeries(traverseLength);
     if (m_OriginalSeries[channelIndex] == nullptr) {
         return FAIL; // <-- failed to allocate enough memory
     }
@@ -327,9 +326,9 @@ int	CPostWindDlg::LowPassFilter(int seriesNo) {
         return 0;
 
     if (m_PreparedSeries[seriesNo] == nullptr)
-        m_PreparedSeries[seriesNo] = new CWindSpeedCalculator::CMeasurementSeries();
+        m_PreparedSeries[seriesNo] = new mobiledoas::CWindSpeedCalculator::CMeasurementSeries();
 
-    if (SUCCESS != CWindSpeedCalculator::LowPassFilter(m_OriginalSeries[seriesNo], m_PreparedSeries[seriesNo], m_settings.lowPassFilterAverage))
+    if (SUCCESS != mobiledoas::CWindSpeedCalculator::LowPassFilter(m_OriginalSeries[seriesNo], m_PreparedSeries[seriesNo], m_settings.lowPassFilterAverage))
         return 0;
 
     return 1;
@@ -352,11 +351,11 @@ void CPostWindDlg::OnCalculateWindspeed()
                   // 1. Perform the correlation - calculations...
     if (SUCCESS != m_calc.CalculateDelay(delay, m_OriginalSeries[0], m_OriginalSeries[1], m_settings)) {
         switch (m_calc.m_lastError) {
-        case CWindSpeedCalculator::ERROR_TOO_SHORT_DATASERIES:
+        case mobiledoas::CWindSpeedCalculator::ERROR_TOO_SHORT_DATASERIES:
             MessageBox("The time series is too short to be used with these settings. Please check the settings and try again"); break;
-        case CWindSpeedCalculator::ERROR_LOWPASSFILTER:
+        case mobiledoas::CWindSpeedCalculator::ERROR_LOWPASSFILTER:
             MessageBox("Failed to low-pass filter the time-series. Please check settings and try again"); break;
-        case CWindSpeedCalculator::ERROR_DIFFERENT_SAMPLEINTERVALS:
+        case mobiledoas::CWindSpeedCalculator::ERROR_DIFFERENT_SAMPLEINTERVALS:
             MessageBox("Failed to correlate the time-series. They have different sample-intervals"); break;
         default:
             MessageBox("Faile to correlate the time-series. Unknown error"); break;
@@ -370,11 +369,11 @@ void CPostWindDlg::OnCalculateWindspeed()
     // 3. Perform the correlation - calculations with the second series as upwind
     if (SUCCESS != m_calc.CalculateDelay(delay, m_OriginalSeries[1], m_OriginalSeries[0], m_settings)) {
         switch (m_calc.m_lastError) {
-        case CWindSpeedCalculator::ERROR_TOO_SHORT_DATASERIES:
+        case mobiledoas::CWindSpeedCalculator::ERROR_TOO_SHORT_DATASERIES:
             MessageBox("The time series is too short to be used with these settings. Please check the settings and try again"); break;
-        case CWindSpeedCalculator::ERROR_LOWPASSFILTER:
+        case mobiledoas::CWindSpeedCalculator::ERROR_LOWPASSFILTER:
             MessageBox("Failed to low-pass filter the time-series. Please check settings and try again"); break;
-        case CWindSpeedCalculator::ERROR_DIFFERENT_SAMPLEINTERVALS:
+        case mobiledoas::CWindSpeedCalculator::ERROR_DIFFERENT_SAMPLEINTERVALS:
             MessageBox("Failed to correlate the time-series. They have different sample-intervals"); break;
         default:
             MessageBox("Faile to correlate the time-series. Unknown error"); break;

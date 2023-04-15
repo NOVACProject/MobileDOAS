@@ -1,9 +1,9 @@
 #pragma once
 
-#include "DualBeamMeasSettings.h"
+#include <MobileDoasLib/DualBeam/DualBeamMeasSettings.h>
 #include <MobileDoasLib/Definitions.h>
 
-namespace DualBeamMeasurement {
+namespace mobiledoas {
 
     /** The <b>CDualBeamCalculator</b> class contains the basic
             algorithms for calculating wind speeds from measured data series

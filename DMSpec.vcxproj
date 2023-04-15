@@ -315,9 +315,6 @@
     <ClCompile Include="DMSpec.cpp" />
     <ClCompile Include="DMSpecDoc.cpp" />
     <ClCompile Include="DMSpecView.cpp" />
-    <ClCompile Include="DualBeam\DualBeamCalculator.cpp" />
-    <ClCompile Include="DualBeam\DualBeamMeasSettings.cpp" />
-    <ClCompile Include="DualBeam\PlumeHeightCalculator.cpp" />
     <ClCompile Include="DualBeam\PostPlumeHeightDlg.cpp" />
     <ClCompile Include="DualBeam\PostWindDlg.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
@@ -325,7 +322,6 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="DualBeam\WindSpeedCalculator.cpp" />
     <ClCompile Include="Evaluation\Evaluation.cpp" />
     <ClCompile Include="Evaluation\EvaluationResult.cpp" />
     <ClCompile Include="Evaluation\FitWindow.cpp" />
@@ -627,12 +623,8 @@
     <ClInclude Include="DMSpec.h" />
     <ClInclude Include="DMSpecDoc.h" />
     <ClInclude Include="DMSpecView.h" />
-    <ClInclude Include="DualBeam\DualBeamCalculator.h" />
-    <ClInclude Include="DualBeam\DualBeamMeasSettings.h" />
-    <ClInclude Include="DualBeam\PlumeHeightCalculator.h" />
     <ClInclude Include="DualBeam\PostPlumeHeightDlg.h" />
     <ClInclude Include="DualBeam\PostWindDlg.h" />
-    <ClInclude Include="DualBeam\WindSpeedCalculator.h" />
     <ClInclude Include="Evaluation\Evaluation.h" />
     <ClInclude Include="Evaluation\EvaluationResult.h" />
     <ClInclude Include="Evaluation\FitWindow.h" />

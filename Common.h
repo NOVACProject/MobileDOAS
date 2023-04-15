@@ -116,10 +116,6 @@ public:
 
     // ---------------- MATHEMATICAL FUNCTIONS --------------------
 
-    /*  adapts parameters k and m so that y = k*x + m, in a least square sense.
-          Algorithm found at: http://mathworld.wolfram.com/LeastSquaresFittingPolynomial.html */
-    static int AdaptStraightLine(double* x, double* y, unsigned int l, double* k, double* m);
-
     /** Guesses the name of the specie in the reference-file whos filename
             is given in 'fileName'. */
     static void GuessSpecieName(const CString& fileName, CString& specie);

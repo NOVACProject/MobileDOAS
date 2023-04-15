@@ -243,22 +243,10 @@
     <ClCompile Include="Evaluation\FitWindow.cpp">
       <Filter>Source Files\Evaluation</Filter>
     </ClCompile>
-    <ClCompile Include="DualBeam\DualBeamCalculator.cpp">
-      <Filter>Source Files\DualBeam</Filter>
-    </ClCompile>
-    <ClCompile Include="DualBeam\DualBeamMeasSettings.cpp">
-      <Filter>Source Files\DualBeam</Filter>
-    </ClCompile>
-    <ClCompile Include="DualBeam\PlumeHeightCalculator.cpp">
-      <Filter>Source Files\DualBeam</Filter>
-    </ClCompile>
     <ClCompile Include="DualBeam\PostPlumeHeightDlg.cpp">
       <Filter>Source Files\DualBeam</Filter>
     </ClCompile>
     <ClCompile Include="DualBeam\PostWindDlg.cpp">
-      <Filter>Source Files\DualBeam</Filter>
-    </ClCompile>
-    <ClCompile Include="DualBeam\WindSpeedCalculator.cpp">
       <Filter>Source Files\DualBeam</Filter>
     </ClCompile>
     <ClCompile Include="Controls\FitWindowListBox.cpp">
@@ -724,22 +712,10 @@
     <ClInclude Include="Evaluation\FitWindow.h">
       <Filter>Header Files\Evaluation</Filter>
     </ClInclude>
-    <ClInclude Include="DualBeam\DualBeamCalculator.h">
-      <Filter>Header Files\DualBeam</Filter>
-    </ClInclude>
-    <ClInclude Include="DualBeam\DualBeamMeasSettings.h">
-      <Filter>Header Files\DualBeam</Filter>
-    </ClInclude>
-    <ClInclude Include="DualBeam\PlumeHeightCalculator.h">
-      <Filter>Header Files\DualBeam</Filter>
-    </ClInclude>
     <ClInclude Include="DualBeam\PostPlumeHeightDlg.h">
       <Filter>Header Files\DualBeam</Filter>
     </ClInclude>
     <ClInclude Include="DualBeam\PostWindDlg.h">
-      <Filter>Header Files\DualBeam</Filter>
-    </ClInclude>
-    <ClInclude Include="DualBeam\WindSpeedCalculator.h">
       <Filter>Header Files\DualBeam</Filter>
     </ClInclude>
     <ClInclude Include="Controls\FitWindowListBox.h">

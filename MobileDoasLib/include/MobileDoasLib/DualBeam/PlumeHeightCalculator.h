@@ -1,10 +1,8 @@
 #pragma once
 
-#include "../Common.h"
-#include "DualBeamCalculator.h"
+#include <MobileDoasLib/DualBeam/DualBeamCalculator.h>
 
-
-namespace DualBeamMeasurement {
+namespace mobiledoas {
 
     /** The <b>CPlumeHeightCalculator</b> class contains the basic
             algorithms for calculating plume heights from data series
@@ -24,6 +22,10 @@ namespace DualBeamMeasurement {
             const CMeasurementSeries* forwardLookingSerie,
             const CMeasurementSeries* backwardLookingSerie,
             double	sourceLat, double sourceLon, double angleSeparation, double* windDir = nullptr);
+
+        /*  adapts parameters k and m so that y = k*x + m, in a least square sense.
+              Algorithm found at: http://mathworld.wolfram.com/LeastSquaresFittingPolynomial.html */
+        static int AdaptStraightLine(double* x, double* y, unsigned int l, double* k, double* m);
 
     protected:
         /** Calculates the centre of mass distance.

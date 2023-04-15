@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../Common.h"
-#include "DualBeamCalculator.h"
+#include <MobileDoasLib/DualBeam/DualBeamCalculator.h>
+#include <MobileDoasLib/DualBeam/DualBeamMeasSettings.h>
 
-namespace DualBeamMeasurement {
+namespace mobiledoas {
 
     /** The <b>CWindSpeedCalculator</b> class contains the basic
             algorithms for calculating wind speeds from measured data series
@@ -42,7 +42,7 @@ namespace DualBeamMeasurement {
         /** The calculated values. These will be filled in after a call to 'CalculateDelay'
                 Before that they are null and cannot be used. The length of these arrays are 'm_length' */
         double* shift, * corr, * used, * delays;
-        int			m_length;
+        int m_length;
 
         /** The error code for the last error that has occured here */
         int		m_lastError;

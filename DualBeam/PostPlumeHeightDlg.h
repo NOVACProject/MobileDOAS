@@ -1,7 +1,7 @@
 #pragma once
 #include "afxwin.h"
 #include "../Graphs/GraphCtrl.h"
-#include "PlumeHeightCalculator.h"
+#include <MobileDoasLib/DualBeam/PlumeHeightCalculator.h>
 
 // CPostPlumeHeightDlg dialog
 
@@ -57,22 +57,22 @@ private:
 
     /** Used to separate when the user changes an interface item or when
             the program does */
-    bool		m_automatic;
+    bool m_automatic;
 
     /** The currently opened evaluation - logs, one per series*/
     CString	m_evalLog[MAX_N_SERIES];
 
     /** Original measurement series, as they are in the file */
-    DualBeamMeasurement::CDualBeamCalculator::CMeasurementSeries* m_OriginalSeries[MAX_N_SERIES];
+    mobiledoas::CDualBeamCalculator::CMeasurementSeries* m_OriginalSeries[MAX_N_SERIES];
 
     /** Treated measurement series, low pass filtered etc. */
-    DualBeamMeasurement::CDualBeamCalculator::CMeasurementSeries* m_PreparedSeries[MAX_N_SERIES];
+    mobiledoas::CDualBeamCalculator::CMeasurementSeries* m_PreparedSeries[MAX_N_SERIES];
 
     /** The settings for how the plumeheight calculations should be done */
-    DualBeamMeasurement::CDualBeamMeasSettings m_settings;
+    mobiledoas::CDualBeamMeasSettings m_settings;
 
     /** The plume height measurement-calculator. */
-    DualBeamMeasurement::CPlumeHeightCalculator m_calc;
+    mobiledoas::CPlumeHeightCalculator m_calc;
 
     /** The source that we measure on */
     double m_sourceLat, m_sourceLon;

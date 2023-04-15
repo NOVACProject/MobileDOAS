@@ -37,6 +37,12 @@
     <Filter Include="Source Files\File">
       <UniqueIdentifier>{030f8e65-d16a-4176-a914-dff5de789253}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\DualBeam">
+      <UniqueIdentifier>{fa3ae3a9-ee90-4aef-b728-bf81e7597dee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DualBeam">
+      <UniqueIdentifier>{09f116a5-d19e-46ed-9964-127550f1156a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -78,6 +84,18 @@
     <ClInclude Include="include\MobileDoasLib\ReferenceFitResult.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\MobileDoasLib\DualBeam\DualBeamCalculator.h">
+      <Filter>Header Files\DualBeam</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MobileDoasLib\DualBeam\DualBeamMeasSettings.h">
+      <Filter>Header Files\DualBeam</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MobileDoasLib\DualBeam\PlumeHeightCalculator.h">
+      <Filter>Header Files\DualBeam</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MobileDoasLib\DualBeam\WindSpeedCalculator.h">
+      <Filter>Header Files\DualBeam</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MobileDoasLib.cpp">
@@ -112,6 +130,15 @@
     </ClCompile>
     <ClCompile Include="src\GPS.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DualBeam\DualBeamCalculator.cpp">
+      <Filter>Source Files\DualBeam</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DualBeam\PlumeHeightCalculator.cpp">
+      <Filter>Source Files\DualBeam</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DualBeam\WindSpeedCalculator.cpp">
+      <Filter>Source Files\DualBeam</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

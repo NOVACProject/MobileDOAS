@@ -12,7 +12,7 @@
 
 // CPostPlumeHeightDlg dialog
 
-using namespace DualBeamMeasurement;
+using namespace mobiledoas;
 
 IMPLEMENT_DYNAMIC(CPostPlumeHeightDlg, CDialog)
 CPostPlumeHeightDlg::CPostPlumeHeightDlg(CWnd* pParent /*=NULL*/)
