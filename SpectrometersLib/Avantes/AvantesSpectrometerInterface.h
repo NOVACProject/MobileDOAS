@@ -27,6 +27,8 @@ namespace avantes
 
         virtual std::vector<std::string> ScanForDevices() override;
 
+        virtual std::vector<std::string> ListDevices() const override { return m_spectrometersAttached; }
+
         virtual void Close() override;
 
         virtual bool Start() override;
@@ -80,6 +82,10 @@ namespace avantes
 
         // The last error message set by this class.
         std::string m_lastErrorMessage;
+
+        /** The list of the serial-numbers of all spectrometers that are attached to this computer.
+            This list will be populated by calling ScanForDevices */
+        std::vector<std::string> m_spectrometersAttached;
 
         // Cleans up all resources used by this interface.
         void ReleaseDeviceLibraryResources();

@@ -29,8 +29,9 @@ namespace oceanoptics
         /** The channels to use on the attached spectrometer */
         std::vector<int> m_spectrometerChannels;
 
-        /** The number of spectrometers that are attached to this computer */
-        int m_numberOfSpectrometersAttached = 0;
+        /** The list of the serial-numbers of all spectrometers that are attached to this computer.
+            This list will be populated by calling ScanForDevices */
+        std::vector<std::string> m_spectrometersAttached;
 
 #pragma region Implementing SpectrometerInterface
 
@@ -39,6 +40,8 @@ namespace oceanoptics
         }
 
         virtual std::vector<std::string> ScanForDevices() override;
+
+        virtual std::vector<std::string> ListDevices() const override { return this->m_spectrometersAttached; }
 
         virtual void Close() override;
 

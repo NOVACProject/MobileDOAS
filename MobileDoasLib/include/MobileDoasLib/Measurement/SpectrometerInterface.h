@@ -26,6 +26,11 @@ namespace mobiledoas
         // @return the serial numbers of the devices found.
         virtual std::vector<std::string> ScanForDevices() = 0;
 
+        // ListDevices returns the list of spectrometers connected to this computer.
+        // This will return the same list as the last call to ScanForDevices found and returned.
+        // @return the serial numbers of the devices connected.
+        virtual std::vector<std::string> ListDevices() const = 0;
+
         // Close closes the connection to the spectrometer library and will return all resources to the system.
         // After this, all other methods below will return an error.
         virtual void Close() = 0;

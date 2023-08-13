@@ -53,6 +53,120 @@ void DeactivateCurrentDevice(AvantesSpectrometerInterfaceState* state)
 
 #pragma endregion
 
+#pragma region Utils
+
+const char* FormatAvsErrorCode(int avantesErrorCode) {
+    switch (avantesErrorCode)
+    {
+    case ERR_SUCCESS:
+        return "Success";
+    case ERR_INVALID_PARAMETER:
+        return "Invalid parameter";
+    case ERR_OPERATION_NOT_SUPPORTED:
+        return "Operation not supported";
+    case ERR_DEVICE_NOT_FOUND:
+        return "Device not found";
+    case ERR_INVALID_DEVICE_ID:
+        return "Invalid device-id";
+    case ERR_OPERATION_PENDING:
+        return "Operation pending, the previous operation has not yet completed";
+    case ERR_TIMEOUT:
+        return "Timeout";
+    case ERR_INVALID_PASSWORD:
+        return "Invalid password";
+    case ERR_INVALID_MEAS_DATA:
+        return "Invalid measurement data";
+    case ERR_INVALID_SIZE:
+        return "Invalid size";
+    case ERR_INVALID_PIXEL_RANGE:
+        return "Invalid pixel range";
+    case ERR_INVALID_INT_TIME:
+        return "Invalid integration time";
+    case ERR_INVALID_COMBINATION:
+        return "Invalid combination";
+    case ERR_INVALID_CONFIGURATION:
+        return "Invalid configuration";
+    case ERR_NO_MEAS_BUFFER_AVAIL:
+        return "No measurement buffer available";
+    case ERR_UNKNOWN:
+        return "Unknown error";
+    case ERR_COMMUNICATION:
+        return "Communication error";
+    case ERR_NO_SPECTRA_IN_RAM:
+        return "No more spectra available in RAM";
+    case ERR_INVALID_DLL_VERSION:
+        return "Library version information could not be retrieved";
+    case ERR_NO_MEMORY:
+        return "Memory allocation error in the library";
+    case ERR_DLL_INITIALISATION:
+        return "Function called before AVS_Init() is called";
+    case ERR_INVALID_STATE:
+        return "Function failed because AvaSpec is in wrong state";
+    case ERR_INVALID_REPLY:
+        return "Reply is not a recognized protocol message";
+    case ERR_ACCESS:
+        return "Error occurred while opening a bus device on the host";
+    case ERR_INTERNAL_READ:
+        return "A read error has occurred";
+    case ERR_INTERNAL_WRITE:
+        return "A write error has occurred";
+    case ERR_ETHCONN_REUSE:
+        return "Library could not be initialized due to an Ethernet connection reuse";
+    case ERR_INVALID_DEVICE_TYPE:
+        return "The device-type information stored in the isn’t recognized as one of the known device types";
+    case ERR_SECURE_CFG_NOT_READ:
+        return "The secure configuration has not yet been read, most likely due to device not correctly initialized";
+    case ERR_UNEXPECTED_MEAS_RESPONSE:
+        return "Unexpected response from spectrometer while getting measurement data";
+    case ERR_INVALID_PARAMETER_NR_PIXELS:
+        return "NrOfPixel in Device data incorrec";
+    case ERR_INVALID_PARAMETER_ADC_GAIN:
+        return "Gain Setting out of range";
+    case ERR_INVALID_PARAMETER_ADC_OFFSET:
+        return "Offset Setting out of range";
+    case ERR_INVALID_MEASPARAM_AVG_SAT2:
+        return "Use of Saturation Detection Level 2 is not compatible with the Averaging function";
+    case ERR_INVALID_MEASPARAM_AVG_RAM:
+        return "Use of Averaging is not compatible with the StoreToRam function";
+    case ERR_INVALID_MEASPARAM_SYNC_RAM:
+        return "Use of the Synchronize setting is not compatible with the StoreToRam function";
+    case ERR_INVALID_MEASPARAM_LEVEL_RAM:
+        return "Use of Level Triggering is not compatible with the StoreToRam function";
+    case ERR_INVALID_MEASPARAM_SAT2_RAM:
+        return "Use of Level Saturation Detection Level 2 Parameter is not compatible with the StoreToRam function";
+    case ERR_INVALID_MEASPARAM_FWVER_RAM:
+        return "The StoreToRam function is not supported in this library version";
+    case ERR_INVALID_MEASPARAM_DYNDARK:
+        return "Dynamic Dark Correction not supported";
+    case ERR_NOT_SUPPORTED_BY_SENSOR_TYPE:
+        return "Use of AVS_SetSensitivityMode() not supported by detector type";
+    case ERR_NOT_SUPPORTED_BY_FW_VER:
+        return "Use of AVS_SetSensitivityMode() not supported by firmware version";
+    case ERR_NOT_SUPPORTED_BY_FPGA_VER:
+        return "Use of AVS_SetSensitivityMode() not supported by FPGA version";
+    case ERR_SL_CALIBRATION_NOT_AVAILABLE:
+        return "Spectrometer stray light calibration not available";
+    case ERR_SL_STARTPIXEL_NOT_IN_RANGE:
+        return "Incorrect start pixel found in EEPROM";
+    case ERR_SL_ENDPIXEL_NOT_IN_RANGE:
+        return "Incorrect end pixel found in EEPROM";
+    case ERR_SL_STARTPIX_GT_ENDPIX:
+        return "Incorrect start or end pixel found in EEPROM";
+    case ERR_SL_MFACTOR_OUT_OF_RANGE:
+        return "Multiplication factor out of allowed range";
+    case ETH_CONN_STATUS_CONNECTED:
+        return "Eth connection established, with connection recovery enabled";
+    case ETH_CONN_STATUS_CONNECTED_NOMON:
+        return "Eth connection ready, without connection recovery ";
+    case ETH_CONN_STATUS_NOCONNECTION:
+        return "Unrecoverable connection failure or disconnect from user, AvaSpec library will stop trying to connect with the spectrometer";
+    default:
+        return "Unkown error code: ";
+    }
+}
+
+#pragma endregion
+
 AvantesSpectrometerInterface::AvantesSpectrometerInterface()
     :m_lastErrorMessage("")
 {
@@ -63,7 +177,7 @@ AvantesSpectrometerInterface::AvantesSpectrometerInterface()
     auto state = new AvantesSpectrometerInterfaceState();
 
     // Setup some default values
-    state->measurementConfig.m_IntegrationTime = 100;
+    state->measurementConfig.m_IntegrationTime = 100; // 100ms
     state->measurementConfig.m_NrAverages = 1;
     state->measurementConfig.m_CorDynDark.m_Enable = 0;
     state->measurementConfig.m_Smoothing.m_SmoothModel = 0; // disable smooth
@@ -115,6 +229,7 @@ std::vector<std::string> AvantesSpectrometerInterface::ScanForDevices()
     }
 
     m_lastErrorMessage = "";
+    m_spectrometersAttached = serialnumbers;
 
     return serialnumbers;
 }
@@ -162,7 +277,7 @@ bool AvantesSpectrometerInterface::Start()
     if (returnCode != ERR_SUCCESS)
     {
         std::stringstream message;
-        message << "Start failed, AVS_MeasureCallback returned " << returnCode << " which indicates an error.";
+        message << "Start failed, AVS_MeasureCallback returned error code " << returnCode << " ('" << FormatAvsErrorCode(returnCode) << "')";
         m_lastErrorMessage = message.str();
         return false;
     }
@@ -184,7 +299,7 @@ bool AvantesSpectrometerInterface::Stop()
     if (returnCode != ERR_SUCCESS)
     {
         std::stringstream message;
-        message << "Stop failed, AVS_StopMeasure returned " << returnCode << " which indicates an error.";
+        message << "Stop failed, AVS_StopMeasure returned error code " << returnCode << " ('" << FormatAvsErrorCode(returnCode) << "')";
         m_lastErrorMessage = message.str();
         return false;
     }
@@ -228,9 +343,9 @@ bool AvantesSpectrometerInterface::SetSpectrometer(int spectrometerIndex, const 
     if (returnCode != ERR_SUCCESS)
     {
         std::stringstream msg;
-        msg << "SetSpectrometer failed, AVS_GetParameter returned: " << returnCode;
+        msg << "SetSpectrometer failed, AVS_GetParameter returned error code " << returnCode << " ('" << FormatAvsErrorCode(returnCode) << "')";
         m_lastErrorMessage = msg.str();
-        return 0;
+        return false;
     }
 
     // Get the dynamic range of the device. This is by default set to 14-bits (16384) but can be expanded to 16-bits for some device types.
@@ -244,7 +359,7 @@ bool AvantesSpectrometerInterface::SetSpectrometer(int spectrometerIndex, const 
     }
     else {
         std::stringstream msg;
-        msg << "Error happened in SetSpectrometer, AVS_UseHighResAdc returned: " << returnCode;
+        msg << "Error happened in SetSpectrometer, AVS_UseHighResAdc returned error code " << returnCode << " ('" << FormatAvsErrorCode(returnCode) << "')";
         m_lastErrorMessage = msg.str();
 
         state->currentSpectrometerDynamicRange = 16383.75;
@@ -254,12 +369,12 @@ bool AvantesSpectrometerInterface::SetSpectrometer(int spectrometerIndex, const 
     state->measurementConfig.m_StartPixel = 0;
     state->measurementConfig.m_StopPixel = state->currentDeviceConfiguration.m_Detector.m_NrPixels - 1;
     state->measurementConfig.m_IntegrationDelay = 0;
-    state->measurementConfig.m_IntegrationTime = 1000;
+    state->measurementConfig.m_IntegrationTime = 1; // 1ms
     int ret = AVS_PrepareMeasure(state->currentSpectrometerHandle, &(state->measurementConfig));
     if (ret != ERR_SUCCESS)
     {
         std::stringstream msg;
-        msg << "PrepareMeasure returned error: " << ret << ", measurement parameters not set.";
+        msg << "Error happened in SetSpectrometer, AVS_PrepareMeasure returned error code " << returnCode << " ('" << FormatAvsErrorCode(returnCode) << "')";
         m_lastErrorMessage = msg.str();
         return false;
     }
@@ -316,7 +431,7 @@ int AvantesSpectrometerInterface::GetWavelengths(std::vector<std::vector<double>
     if (returnCode != ERR_SUCCESS)
     {
         std::stringstream msg;
-        msg << "GetWavelengths failed, AVS_GetNumPixels returned: " << returnCode;
+        msg << "GetWavelengths failed, AVS_GetNumPixels returned error code " << returnCode << " ('" << FormatAvsErrorCode(returnCode) << "')";
         m_lastErrorMessage = msg.str();
         return 0;
     }
@@ -329,7 +444,7 @@ int AvantesSpectrometerInterface::GetWavelengths(std::vector<std::vector<double>
     if (returnCode != ERR_SUCCESS)
     {
         std::stringstream msg;
-        msg << "GetWavelengths failed, AVS_GetLambda returned: " << returnCode;
+        msg << "GetWavelengths failed, AVS_GetLambda returned error code " << returnCode << " ('" << FormatAvsErrorCode(returnCode) << "')";
         m_lastErrorMessage = msg.str();
         return 0;
     }
@@ -360,21 +475,21 @@ void AvantesSpectrometerInterface::SetIntegrationTime(int usec)
         return;
     }
 
-    const float newIntegrationTime = static_cast<float>(usec / 1000.0);
-    if (std::abs(newIntegrationTime - state->measurementConfig.m_IntegrationTime) < 0.001) {
+    const float newIntegrationTimeInMs = static_cast<float>(usec / 1000.0);
+    if (std::abs(newIntegrationTimeInMs - state->measurementConfig.m_IntegrationTime) < 0.001) {
         // Nothing to change
         return;
     }
 
     Stop(); // Stop the currently running measurement, if any.
 
-    state->measurementConfig.m_IntegrationTime = newIntegrationTime;
+    state->measurementConfig.m_IntegrationTime = newIntegrationTimeInMs;
 
     const int ret = AVS_PrepareMeasure(state->currentSpectrometerHandle, &(state->measurementConfig));
     if (ret != ERR_SUCCESS)
     {
         std::stringstream msg;
-        msg << "SetIntegrationTime failed, AVS_PrepareMeasure returned error: " << ret << ", measurement parameters not set.";
+        msg << "SetIntegrationTime failed, AVS_PrepareMeasure returned error code " << ret << " ('" << FormatAvsErrorCode(ret) << "')";
         m_lastErrorMessage = msg.str();
         return;
     }
@@ -418,7 +533,7 @@ void AvantesSpectrometerInterface::SetScansToAverage(int numberOfScansToAverage)
     if (ret != ERR_SUCCESS)
     {
         std::stringstream msg;
-        msg << "SetScansToAverage failed, AVS_PrepareMeasure returned error: " << ret << ", measurement parameters not set.";
+        msg << "SetScansToAverage failed, AVS_PrepareMeasure returned error code " << ret << " ('" << FormatAvsErrorCode(ret) << "')";
         m_lastErrorMessage = msg.str();
         return;
     }
@@ -469,7 +584,7 @@ int AvantesSpectrometerInterface::GetNextSpectrum(std::vector<std::vector<double
     if (returnCode != ERR_SUCCESS)
     {
         std::stringstream message;
-        message << "GetNextSpectrum failed, AVS_GetScopeData returned " << returnCode << " which indicates an error.";
+        message << "GetNextSpectrum failed, AVS_GetScopeData returned error code " << returnCode << " ('" << FormatAvsErrorCode(returnCode) << "')";
         m_lastErrorMessage = message.str();
         return 0;
     }

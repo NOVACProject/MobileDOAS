@@ -32,6 +32,8 @@ namespace oceanoptics
 
         virtual std::vector<std::string> ScanForDevices() override;
 
+        virtual std::vector<std::string> ListDevices() const override;
+
         virtual void Close() override;
 
         virtual bool Start() override;
@@ -82,6 +84,10 @@ namespace oceanoptics
 
         /** The serial-communication object.*/
         mobiledoas::CSerialConnection serial;
+
+        /** The list of the serial-numbers of all spectrometers that are attached to this computer. 
+            This list will be populated by calling ScanForDevices */
+        std::vector<std::string> m_spectrometersAttached;
 
         // The last error message set by this class.
         std::string m_lastErrorMessage;

@@ -28,26 +28,27 @@ OceanOpticsSpectrometerInterface::~OceanOpticsSpectrometerInterface()
 
 std::vector<std::string> OceanOpticsSpectrometerInterface::ScanForDevices()
 {
-    std::vector<std::string> serialNumbers;
-
     const int numberOfSpectrometersFound = m_wrapper->openAllSpectrometers();
     if (numberOfSpectrometersFound < 0)
     {
         // This happens if an error occurs. We should here log the error...
         auto errorMessage = GetLastError();
-        return serialNumbers;
+        m_spectrometersAttached.clear();
+        return m_spectrometersAttached;
     }
 
-    m_numberOfSpectrometersAttached = numberOfSpectrometersFound;
-    serialNumbers.resize(m_numberOfSpectrometersAttached);
+    std::vector<std::string> serialNumbers;
+    serialNumbers.resize(numberOfSpectrometersFound);
 
-    for (int ii = 0; ii < m_numberOfSpectrometersAttached; ++ii)
+    for (int ii = 0; ii < numberOfSpectrometersFound; ++ii)
     {
         const char* serial = m_wrapper->getSerialNumber(ii).getASCII();
         serialNumbers[ii] = std::string{ serial };
     }
 
-    return serialNumbers;
+    m_spectrometersAttached = serialNumbers;
+
+    return m_spectrometersAttached;
 }
 
 void OceanOpticsSpectrometerInterface::Close()
@@ -75,10 +76,10 @@ bool OceanOpticsSpectrometerInterface::SetSpectrometer(int spectrometerIndex)
 
 bool OceanOpticsSpectrometerInterface::SetSpectrometer(int spectrometerIndex, const std::vector<int>& channelIndices)
 {
-    if (spectrometerIndex < 0 || spectrometerIndex >= m_numberOfSpectrometersAttached)
+    if (spectrometerIndex < 0 || spectrometerIndex >= static_cast<int>(m_spectrometersAttached.size()))
     {
         std::stringstream message;
-        message << "Invalid spectrometer index " << spectrometerIndex << ". Number of spectrometers attached is: " << m_numberOfSpectrometersAttached;
+        message << "Invalid spectrometer index " << spectrometerIndex << ". Number of spectrometers attached is: " << m_spectrometersAttached.size();
         m_lastErrorMessage = message.str();
         return false;
     }

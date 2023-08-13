@@ -102,10 +102,10 @@ public:
     long NumberOfSpectraToAverage() const { return m_sumInComputer * m_sumInSpectrometer; }
 
     /** number of spectra to average in spectrometer */
-    int m_sumInSpectrometer;
+    int m_sumInSpectrometer = 1;
 
     /** Number of spectra to average in computer */
-    int m_sumInComputer;
+    int m_sumInComputer = 1;
 
     /** The integration time that is used by the program. In milliseconds.
         Maximum value is 65 seconds (from the type). */
@@ -181,8 +181,9 @@ public:
     /* Create Spectrum data object. */
     void CreateSpectrum(CSpectrum& spectrum, const double* spec, const std::string& startDate, long startTime, long elapsedSecond);
 
-    /** This retrieves a list of all spectrometers that are connected to this computer */
-    void GetConnectedSpectrometers(std::vector<std::string>& connectedSpectrometers);
+    /** This retrieves a list of all spectrometers that are connected to this computer
+        Notice that this will not attempt to rebuild the list. */
+    std::vector<std::string> GetConnectedSpectrometers() const;
 
     /** This will change the spectrometer to use, to the one with the
         given spectrometerIndex (ranging from 0 to (the number of spectrometers - 1) ).

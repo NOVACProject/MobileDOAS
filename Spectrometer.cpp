@@ -1068,9 +1068,9 @@ std::vector<double> CSpectrometer::GetSpectrum(int channel) const {
     return std::vector<double>(m_curSpectrum[channel], m_curSpectrum[channel] + m_detectorSize);
 }
 
-void CSpectrometer::GetConnectedSpectrometers(std::vector<std::string>& connectedSpectrometers) {
+std::vector<std::string> CSpectrometer::GetConnectedSpectrometers() const {
 
-    connectedSpectrometers = m_spectrometer->ScanForDevices();
+    return m_spectrometer->ListDevices();
 }
 
 int CSpectrometer::TestSpectrometerConnection() {
@@ -1233,10 +1233,10 @@ int CSpectrometer::ChangeSpectrometer(int selectedspec, const std::vector<int>& 
     if (returnCode == 0) {
         std::string errorMessage = m_spectrometer->GetLastError();
         if (errorMessage.size() > 0) {
-            MessageBox(nullptr, (std::string("Failed to retrieve spectrum, error was: ") + errorMessage).c_str(), "Error getting spectrum", MB_OK);
+            ShowMessageBox((std::string("Failed to retrieve spectrum, error was: ") + errorMessage).c_str(), "Error getting spectrum");
         }
         else {
-            MessageBox(nullptr, "Failed to retrieve spectrum, unknown error", "Error getting spectrum", MB_OK);
+            ShowMessageBox( "Failed to retrieve spectrum, unknown error", "Error getting spectrum");
         }
         return -1;
     }

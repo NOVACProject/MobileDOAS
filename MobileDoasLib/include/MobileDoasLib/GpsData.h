@@ -67,7 +67,7 @@ namespace mobiledoas
     bool IsValidGpsData(const GpsData& data);
 
     /* Tries to parse the text read from the GPS.
-        The parsed information will be filled into the provided 'data.
+        The parsed information will be filled into the provided 'data, remaining fields will remain as is.
         @return true if the parsing suceeded, otherwise false. */
     bool Parse(const char* gpsString, GpsData& data);
 

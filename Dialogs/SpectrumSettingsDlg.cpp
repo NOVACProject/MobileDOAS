@@ -8,10 +8,17 @@
 #include "../DMSpec.h"
 #include "SpectrumSettingsDlg.h"
 #include "../Common/SpectrumIO.h"
+#include "../Spectrometer.h"
 #include <algorithm>
 #include <SpectralEvaluation/StringUtils.h>
 
-int GetLargestDivisorBelow16(int n);
+int GetLargestDivisorBelow16(int n) {
+    for (int k = 15; k > 0; --k) {
+        if (n % k == 0)
+            return k;
+    }
+    return 1;
+}
 
 // CSpectrumSettingsDlg dialog
 
@@ -21,10 +28,6 @@ IMPLEMENT_DYNAMIC(CSpectrumSettingsDlg, CDialog)
 CSpectrumSettingsDlg::CSpectrumSettingsDlg(CWnd* pParent /*=NULL*/)
     : CDialog(CSpectrumSettingsDlg::IDD, pParent)
 {
-    m_Spectrometer = nullptr;
-    m_exptime = 100;
-    m_average = 1;
-    m_channel = 0;
 }
 
 CSpectrumSettingsDlg::~CSpectrumSettingsDlg()
@@ -42,7 +45,7 @@ void CSpectrumSettingsDlg::DoDataExchange(CDataExchange* pDX)
     DDX_Control(pDX, IDC_EDIT_EXPOSURETIME, m_exptimeEdit);
     DDX_Control(pDX, IDC_EDIT_NAVERAGE, m_averageEdit);
 
-    DDX_Text(pDX, IDC_EDIT_EXPOSURETIME, m_exptime);
+    DDX_Text(pDX, IDC_EDIT_EXPOSURETIME, m_integrationTimeMs);
     DDX_Text(pDX, IDC_EDIT_NAVERAGE, m_average);
 
     DDX_Control(pDX, IDC_COMBO_SPECTROMETERS, m_comboSpecs);
@@ -52,12 +55,12 @@ void CSpectrumSettingsDlg::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CSpectrumSettingsDlg, CDialog)
-    ON_MESSAGE(WM_SHOWINTTIME, UpdateFromSpectrometer)
+    ON_MESSAGE(WM_SHOWINTTIME, UpdateDialogWithDataFromSpectrometer)
     ON_MESSAGE(WM_CHANGEDSPEC, OnChangeSpectrometer)
     ON_BN_CLICKED(IDC_BUTTON_SAVESPEC, SaveSpectrum)
 
-    ON_EN_CHANGE(IDC_EDIT_EXPOSURETIME, SaveToSpectrometer)
-    ON_EN_CHANGE(IDC_EDIT_NAVERAGE, SaveToSpectrometer)
+    ON_EN_CHANGE(IDC_EDIT_EXPOSURETIME, SaveDialogDataToSpectrometer)
+    ON_EN_CHANGE(IDC_EDIT_NAVERAGE, SaveDialogDataToSpectrometer)
 
     ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN_EXPTIME, OnChangeSpinExptime)
     ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN_NAVERAGE, OnChangeSpinAverage)
@@ -78,20 +81,20 @@ BOOL CSpectrumSettingsDlg::OnInitDialog()
     m_exptimeSpin.SetBuddy(&m_exptimeEdit);
     m_averageSpin.SetBuddy(&m_averageEdit);
 
-    UpdateFromSpectrometer(0, 0);
+    UpdateDialogWithDataFromSpectrometer(0, 0);
 
     return 0;
 }
 
-/** Updates the dialog with the data from the CSpectrometer */
-LRESULT CSpectrumSettingsDlg::UpdateFromSpectrometer(WPARAM wParam, LPARAM lParam) {
+LRESULT CSpectrumSettingsDlg::UpdateDialogWithDataFromSpectrometer(WPARAM wParam, LPARAM lParam) {
+
     if (this->m_Spectrometer == nullptr) {
         return 0;
     }
 
     // Get the parameters from the spectrometer
     this->m_average = m_Spectrometer->NumberOfSpectraToAverage();
-    this->m_exptime = m_Spectrometer->m_integrationTime;
+    this->m_integrationTimeMs = m_Spectrometer->m_integrationTime;
 
     // Update the window
     if (this->m_hWnd != nullptr)
@@ -100,9 +103,7 @@ LRESULT CSpectrumSettingsDlg::UpdateFromSpectrometer(WPARAM wParam, LPARAM lPara
     return 0;
 }
 
-
-/** Saves the settings in the dialog to the spectrometer */
-void CSpectrumSettingsDlg::SaveToSpectrometer() {
+void CSpectrumSettingsDlg::SaveDialogDataToSpectrometer() {
 
     if (this->m_Spectrometer == nullptr) {
         return;
@@ -112,12 +113,12 @@ void CSpectrumSettingsDlg::SaveToSpectrometer() {
     UpdateData(TRUE);
 
     // sanity check
-    if (m_exptime < 3 || m_exptime > 65536 || m_average < 1 || m_average > 50000) {
+    if (m_integrationTimeMs < 3 || m_integrationTimeMs > 65536 || m_average < 1 || m_average > 50000) {
         return;
     }
 
     // set the parameters
-    m_Spectrometer->m_integrationTime = m_exptime;
+    m_Spectrometer->m_integrationTime = m_integrationTimeMs;
     if (EqualsIgnoringCase(m_Spectrometer->m_spectrometerModel, "USB2000+")) {
         m_Spectrometer->m_sumInSpectrometer = m_average;
         m_Spectrometer->m_sumInComputer = 1;
@@ -127,7 +128,7 @@ void CSpectrumSettingsDlg::SaveToSpectrometer() {
             // Get the largest possible number to add together in the spectrometer
             int largestDivisor = GetLargestDivisorBelow16(m_average);
 
-            m_Spectrometer->m_sumInSpectrometer = std::max(largestDivisor, 1); //max(largestDivisor_lo, largestDivisor_hi));
+            m_Spectrometer->m_sumInSpectrometer = std::max(largestDivisor, 1);
             m_Spectrometer->m_sumInComputer = m_average / m_Spectrometer->m_sumInSpectrometer;
         }
         else {
@@ -137,32 +138,19 @@ void CSpectrumSettingsDlg::SaveToSpectrometer() {
     }
 }
 
-int GetLargestDivisorBelow16(int n) {
-    for (int k = 15; k > 0; --k) {
-        if (n % k == 0)
-            return k;
-    }
-    return 1;
-}
-
-
 /** Saves the last spectrum to file */
 void CSpectrumSettingsDlg::SaveSpectrum() {
-    CString stdFileName;
-
-    // this is the filter to use in the 'Save As' dialog
-    TCHAR filter[512];
-    int n = _stprintf(filter, "Spectrum files\0");
-    n += _stprintf(filter + n + 1, "*.std;\0");
-    filter[n + 2] = 0;
 
     // let the user browse for a place where to store the spectrum
-    if (!Common::BrowseForFile_SaveAs("*.std", stdFileName))
+    CString stdFileName;
+    if (!Common::BrowseForFile_SaveAs("Spectrum file\0*.std", stdFileName)) {
         return;
+    }
 
     // add the file-ending .std if the user hasn't done so
-    if (!Equals(stdFileName.Right(4), ".std"))
+    if (!Equals(stdFileName.Right(4), ".std")) {
         stdFileName.AppendFormat(".std");
+    }
 
     // create CSpectrum data object
     std::string startDate;
@@ -186,18 +174,18 @@ void CSpectrumSettingsDlg::OnChangeSpinExptime(NMHDR* pNMHDR, LRESULT* pResult)
     // Check which direction the user has pressed the spinbutton (which is upside down)
     //  and change the circle radius accordingly
     if (pNMUpDown->iDelta > 0)
-        --m_exptime;
+        --m_integrationTimeMs;
     if (pNMUpDown->iDelta < 0)
-        ++m_exptime;
+        ++m_integrationTimeMs;
 
     // Enforce the limits
-    m_exptime = std::max(3, m_exptime);
-    m_exptime = std::min(65536, m_exptime);
+    m_integrationTimeMs = std::max(3, m_integrationTimeMs);
+    m_integrationTimeMs = std::min(65536, m_integrationTimeMs);
 
     *pResult = 0;
 
     // Update the screen
-    str.Format("%d", m_exptime);
+    str.Format("%d", m_integrationTimeMs);
     m_exptimeEdit.SetWindowText(str);
 
 }
@@ -230,8 +218,7 @@ void CSpectrumSettingsDlg::OnChangeSpinAverage(NMHDR* pNMHDR, LRESULT* pResult)
     updates the combo-box */
 void CSpectrumSettingsDlg::UpdateListOfSpectrometers()
 {
-    std::vector<std::string> spectrometers;
-    m_Spectrometer->GetConnectedSpectrometers(spectrometers);
+    const auto spectrometers = m_Spectrometer->GetConnectedSpectrometers();
 
     if (spectrometers.size() == 0 || (m_Spectrometer->m_spectrometerIndex < 0 || m_Spectrometer->m_spectrometerIndex >= spectrometers.size()))
     {
@@ -265,8 +252,7 @@ void CSpectrumSettingsDlg::UpdateListOfSpectrometers()
 LRESULT CSpectrumSettingsDlg::OnChangeSpectrometer(WPARAM wParam, LPARAM lParam)
 {
 
-    std::vector<std::string> spectrometers;
-    m_Spectrometer->GetConnectedSpectrometers(spectrometers);
+    const auto spectrometers = m_Spectrometer->GetConnectedSpectrometers();
 
     // build the list 
     m_comboSpecs.ResetContent();
@@ -282,14 +268,15 @@ LRESULT CSpectrumSettingsDlg::OnChangeSpectrometer(WPARAM wParam, LPARAM lParam)
     }
 
     // Not least, set the channel to use
-    this->m_channel = m_Spectrometer->m_spectrometerChannel;
+    m_channel = m_Spectrometer->m_spectrometerChannel;
+    GetDlgItem(IDC_RADIO_CHANNEL0)->EnableWindow(m_Spectrometer->m_NChannels >= 2);
+    GetDlgItem(IDC_RADIO_CHANNEL1)->EnableWindow(m_Spectrometer->m_NChannels >= 2);
 
     UpdateData(FALSE);
 
     return 0;
 }
 
-/** Called when the user has changed the spectrometer to use */
 void CSpectrumSettingsDlg::OnUserChangeSpectrometer() {
     UpdateData(TRUE);
 

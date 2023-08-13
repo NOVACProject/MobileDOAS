@@ -34,11 +34,17 @@ std::vector<std::string> OceanOpticsSpectrometerSerialInterface::ScanForDevices(
     if (serial.InitCommunication() != 0) 
     {
         // Failed to initialize the communication, no spectrometers can be used.
-        return std::vector<std::string>{};
+        m_spectrometersAttached.clear();
+        return m_spectrometersAttached;
     }
 
-    std::vector<std::string> serialNumbers {"Unknown"};
-    return serialNumbers;
+    m_spectrometersAttached = std::vector<std::string>{"Unknown"};
+    return m_spectrometersAttached;
+}
+
+std::vector<std::string> OceanOpticsSpectrometerSerialInterface::ListDevices() const
+{
+    return this->m_spectrometersAttached;
 }
 
 void OceanOpticsSpectrometerSerialInterface::Close()
