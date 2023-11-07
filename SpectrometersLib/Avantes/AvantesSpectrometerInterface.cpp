@@ -348,16 +348,11 @@ bool AvantesSpectrometerInterface::SetSpectrometer(int spectrometerIndex, const 
         return false;
     }
 
-    // Get the dynamic range of the device. This is by default set to 14-bits (16384) but can be expanded to 16-bits for some device types.
-    // Attempt to set the range to 16 bits, if this fails then we know that the range is currently 14-bits.
-    returnCode = AVS_UseHighResAdc(state->currentSpectrometerHandle, true);
-    if (returnCode == ERR_SUCCESS) {
-        state->currentSpectrometerDynamicRange = 65535.0;
-    }
-    else if (returnCode == ERR_OPERATION_NOT_SUPPORTED) {
-        state->currentSpectrometerDynamicRange = 16383.75;
-    }
-    else {
+    // Set the dynamic range of the device to use the 'normal' range (14 bits ADC) and not the expanded 16 bits.
+    state->currentSpectrometerDynamicRange = 16383.75;
+    returnCode = AVS_UseHighResAdc(state->currentSpectrometerHandle, false);
+    if (returnCode != ERR_SUCCESS)
+    {
         std::stringstream msg;
         msg << "Error happened in SetSpectrometer, AVS_UseHighResAdc returned error code " << returnCode << " ('" << FormatAvsErrorCode(returnCode) << "')";
         m_lastErrorMessage = msg.str();

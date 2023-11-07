@@ -95,7 +95,7 @@ namespace oceanoptics
         /** This is the object through which we will access all of Omnidriver's capabilities
             This is used to control the OceanOptics Spectrometers through USB.
             There can be only one Wrapper object in the application!!!  */
-        Wrapper* m_wrapper;
+        Wrapper* m_wrapper = nullptr;
 
         // The last error message set by this class (note that the m_wrapper may also have an error message set).
         std::string m_lastErrorMessage;
