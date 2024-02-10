@@ -65,7 +65,7 @@ void CMeasurement_Traverse::Run()
         return Run_Adaptive();
     }
 
-    mobiledoas::MeasuredSpectrum scanResult(MAX_N_CHANNELS, MAX_SPECTRUM_LENGTH);
+    mobiledoas::MeasuredSpectrum scanResult;
     CSpectrum measuredSpectrum[MAX_N_CHANNELS];
 
     // The various spectra to collect, this defines the order in which they are collected
@@ -212,7 +212,9 @@ void CMeasurement_Traverse::Run()
                 m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(scanResult[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
 
                 // remove the dark spectrum
-                for (int iterator = 0; iterator < MAX_SPECTRUM_LENGTH; ++iterator)
+                _ASSERT(m_sky.NumberOfChannels() == m_dark.NumberOfChannels());
+                _ASSERT(m_sky.SpectrumLength() == m_dark.SpectrumLength());
+                for (int iterator = 0; iterator < m_sky.SpectrumLength(); ++iterator)
                 {
                     m_sky[i][iterator] -= m_dark[i][iterator];
                 }
@@ -247,10 +249,10 @@ void CMeasurement_Traverse::Run()
             if (m_specInfo->isDark)
             {
                 ShowMessageBox("It seems like the sky spectrum is dark, consider restarting the program", "Error");
-            }
+        }
 #endif
 
-        }
+    }
         else if (m_scanNum > SKY_SPECTRUM)
         {
             /* -------------- IF THE MEASURED SPECTRUM WAS A NORMAL SPECTRUM ------------- */
@@ -300,7 +302,7 @@ void CMeasurement_Traverse::Run()
 
         scanResult.SetToZero();
         m_scanNum++;
-    }
+}
 
     // we have to call this before exiting the application otherwise we'll have trouble next time we start...
     CloseSpectrometerConnection();
@@ -308,9 +310,10 @@ void CMeasurement_Traverse::Run()
     return;
 }
 
-void CMeasurement_Traverse::Run_Adaptive() {
+void CMeasurement_Traverse::Run_Adaptive()
+{
 
-    mobiledoas::MeasuredSpectrum scanResult(MAX_N_CHANNELS, MAX_SPECTRUM_LENGTH);
+    mobiledoas::MeasuredSpectrum scanResult;
     CSpectrum measuredSpectrum[MAX_N_CHANNELS];
 
     std::string startDate;
@@ -397,7 +400,7 @@ void CMeasurement_Traverse::Run_Adaptive() {
             if (!m_specInfo->isDark)
             {
                 ShowMessageBox("It seems like the offset spectrum is not completely dark, consider restarting the program", "Error");
-            }
+        }
 #endif
 
             m_statusMsg.Format("Measuring the dark_current spectrum");
@@ -409,14 +412,16 @@ void CMeasurement_Traverse::Run_Adaptive() {
             m_sumInSpectrometer = 1;
             pView->PostMessage(WM_SHOWINTTIME);
 
-        }
+    }
         else if (m_scanNum == DARKCURRENT_SPECTRUM)
         {
 
             /* -------------- IF THE MEASURED SPECTRUM WAS THE DARK-CURRENT SPECTRUM ------------- */
+            _ASSERT(m_NChannels == scanResult.NumberOfChannels());
+            _ASSERT(m_offset.SpectrumLength() == scanResult.SpectrumLength());
             for (int j = 0; j < m_NChannels; ++j)
             {
-                for (int i = 0; i < MAX_SPECTRUM_LENGTH; ++i)
+                for (int i = 0; i < scanResult.SpectrumLength(); ++i)
                 {
                     scanResult[j][i] = scanResult[j][i] - m_offset[j][i];
                 }
@@ -446,7 +451,7 @@ void CMeasurement_Traverse::Run_Adaptive() {
             m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
             pView->PostMessage(WM_SHOWINTTIME);
         }
-        else if (m_scanNum == SKY_SPECTRUM) 
+        else if (m_scanNum == SKY_SPECTRUM)
         {
             /* -------------- IF THE MEASURED SPECTRUM WAS THE SKY SPECTRUM ------------- */
             scanResult.CopyTo(m_sky);
@@ -459,7 +464,8 @@ void CMeasurement_Traverse::Run_Adaptive() {
 
                 // remove the dark spectrum
                 GetDark();
-                for (int iterator = 0; iterator < MAX_SPECTRUM_LENGTH; ++iterator)
+                _ASSERT(m_sky.SpectrumLength() == m_tmpDark.SpectrumLength());
+                for (int iterator = 0; iterator < m_sky.SpectrumLength(); ++iterator)
                 {
                     m_sky[i][iterator] -= m_tmpDark[i][iterator];
                 }
@@ -494,7 +500,7 @@ void CMeasurement_Traverse::Run_Adaptive() {
             if (m_specInfo->isDark)
             {
                 ShowMessageBox("It seems like the sky spectrum is dark, consider restarting the program", "Error");
-            }
+        }
 #endif
 
             // Set the exposure-time
@@ -504,7 +510,7 @@ void CMeasurement_Traverse::Run_Adaptive() {
             m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
             pView->PostMessage(WM_SHOWINTTIME);
 
-        }
+}
         else if (m_scanNum > SKY_SPECTRUM)
         {
             /* -------------- IF THE MEASURED SPECTRUM WAS A NORMAL SPECTRUM ------------- */

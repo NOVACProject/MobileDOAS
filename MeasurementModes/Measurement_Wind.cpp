@@ -19,7 +19,7 @@ CMeasurement_Wind::~CMeasurement_Wind(void)
 void CMeasurement_Wind::Run()
 {
     CString cfgFile;
-    mobiledoas::MeasuredSpectrum scanResult(MAX_N_CHANNELS, MAX_SPECTRUM_LENGTH);
+    mobiledoas::MeasuredSpectrum scanResult;
     CSpectrum measuredSpectrum[MAX_N_CHANNELS];
 
     std::string startDate;
@@ -219,7 +219,8 @@ void CMeasurement_Wind::Run()
                 m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(scanResult[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
 
                 // remove the dark spectrum
-                for (int iterator = 0; iterator < MAX_SPECTRUM_LENGTH; ++iterator)
+                _ASSERT(m_sky.SpectrumLength() == m_dark.SpectrumLength());
+                for (int iterator = 0; iterator < m_sky.SpectrumLength(); ++iterator)
                 {
                     m_sky[i][iterator] -= m_dark[i][iterator];
                 }

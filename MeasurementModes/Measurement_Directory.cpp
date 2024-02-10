@@ -98,8 +98,9 @@ void CMeasurement_Directory::Run()
     // other things to do in adaptive mode
     if (m_conf->m_expTimeMode == m_conf->EXPOSURETIME_ADAPTIVE)
     {
-        // subtrace offset from dark
-        for (int i = 0; i < MAX_SPECTRUM_LENGTH; ++i)
+        // subtract offset from dark
+        _ASSERT(m_darkCur.SpectrumLength() == m_offset.SpectrumLength());
+        for (int i = 0; i < m_darkCur.SpectrumLength(); ++i)
         {
             m_darkCur[0][i] = m_darkCur[0][i] - m_offset[0][i];
         }
@@ -107,7 +108,8 @@ void CMeasurement_Directory::Run()
 
         // remove the dark spectrum from sky
         GetDark();
-        for (int iterator = 0; iterator < MAX_SPECTRUM_LENGTH; ++iterator)
+        _ASSERT(m_sky.SpectrumLength() == m_tmpDark.SpectrumLength());
+        for (int iterator = 0; iterator < m_sky.SpectrumLength(); ++iterator)
         {
             m_sky[0][iterator] -= m_tmpDark[0][iterator];
         }

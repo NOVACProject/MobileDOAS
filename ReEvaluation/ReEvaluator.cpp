@@ -545,7 +545,7 @@ bool CReEvaluator::DoEvaluation() {
                 // update the fit on the screen
                 if (pView != nullptr) {
                     // the measured spectrum
-                    memcpy(m_spectrum, evaluator.m_filteredSpectrum, MAX_SPECTRUM_LENGTH * sizeof(double));
+                    memcpy(m_spectrum, evaluator.m_filteredSpectrum.data(), evaluator.m_filteredSpectrum.size() * sizeof(double));
                     if (m_settings.m_window.fitType == FIT_HP_SUB || m_settings.m_window.fitType == FIT_POLY) {
                         // remove the fitted sky spectrum
                         for (int tmpCounter = fitLow; tmpCounter < fitHigh; ++tmpCounter) {

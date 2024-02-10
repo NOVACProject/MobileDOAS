@@ -60,8 +60,8 @@ long AverageIntensity(const std::vector<double>& spectrum, long specCenter, long
     // take the average of the 10 pixel surrounding the spec center
     if (specCenter <= specCenterHalfWidth)
         specCenter = specCenterHalfWidth;
-    if (specCenter >= MAX_SPECTRUM_LENGTH - specCenterHalfWidth)
-        specCenter = MAX_SPECTRUM_LENGTH - 2 * specCenterHalfWidth;
+    if (specCenter >= (long)spectrum.size() - specCenterHalfWidth)
+        specCenter = (long)spectrum.size() - 2 * specCenterHalfWidth;
 
     for (int j = specCenter - specCenterHalfWidth; j < specCenter + specCenterHalfWidth; j++)
     {

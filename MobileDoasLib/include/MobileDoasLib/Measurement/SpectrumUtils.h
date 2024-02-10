@@ -14,8 +14,7 @@ namespace mobiledoas
 
     /** Returns the average intensity of the supplied spectrum in the given spectrum region.
     *   The region is centered at specCenter with a width of 2*specCenterHalfWidth pixels.
-    *   @param pSpectrum pointer to the first pixel in the measured spectrum.
-    *        This is assumed to be MAX_SPECTRUM_LENGTH number of pixels long. */
+    *   @param spectrum the measured spectrum. */
     long AverageIntensity(const std::vector<double>& spectrum, long specCenter, long specCenterHalfWidth);
 
     /** Retrieves the (electronic-)offset of the supplied spectrum */

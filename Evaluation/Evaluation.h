@@ -81,7 +81,7 @@ public:
     bool m_subtractDarkFromSky; // Whether we should subtract the dark spectrum from the sky or not
 
     // The high-pass filtered spectrum
-    double m_filteredSpectrum[MAX_SPECTRUM_LENGTH];
+    std::vector<double> m_filteredSpectrum;
 
 private:
     // -------------------------------------------------------------

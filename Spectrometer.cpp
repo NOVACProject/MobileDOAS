@@ -677,8 +677,7 @@ void CSpectrometer::DoEvaluation(mobiledoas::MeasuredSpectrum& sky, mobiledoas::
         }
 
         // copy the high pass filtered spectrum
-        m_spectrum.data[chn].resize(MAX_SPECTRUM_LENGTH);
-        m_spectrum.CopyFrom(chn, m_fitRegion[j].eval[chn]->m_filteredSpectrum, MAX_SPECTRUM_LENGTH);
+        m_spectrum.data[chn] = m_fitRegion[j].eval[chn]->m_filteredSpectrum;
 
         // copy the fitted reference
         for (int r = 0; r < m_fitRegion[j].window.nRef + 1; ++r)
@@ -1564,7 +1563,8 @@ void CSpectrometer::UpdateMobileLog()
 
 short CSpectrometer::AdjustIntegrationTime()
 {
-    mobiledoas::MeasuredSpectrum skySpec(MAX_N_CHANNELS, MAX_SPECTRUM_LENGTH);
+
+    mobiledoas::MeasuredSpectrum skySpec;
     m_sumInSpectrometer = 1;
     m_sumInComputer = 1;
     int darkInt = 0;
