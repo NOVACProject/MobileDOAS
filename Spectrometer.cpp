@@ -36,7 +36,8 @@ static char THIS_FILE[] = __FILE__;
 
 
 CSpectrometer::CSpectrometer(std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface, std::unique_ptr<Configuration::CMobileConfiguration> configuration)
-    : m_useGps(true), m_scanNum(0), m_spectrumCounter(0) {
+    : m_useGps(true), m_scanNum(0), m_spectrumCounter(0)
+{
 
     sprintf(m_GPSPort, "COM5");
 
@@ -60,7 +61,8 @@ CSpectrometer::CSpectrometer(std::unique_ptr<mobiledoas::SpectrometerInterface> 
     m_gasFactor = GASFACTOR_SO2;
 
     m_fitRegionNum = 1;
-    for (int k = 0; k < MAX_FIT_WINDOWS; ++k) {
+    for (int k = 0; k < MAX_FIT_WINDOWS; ++k)
+    {
         m_fitRegion[k].eval[0] = nullptr;
         m_fitRegion[k].eval[1] = nullptr;
     }
@@ -81,11 +83,12 @@ CSpectrometer::CSpectrometer(std::unique_ptr<mobiledoas::SpectrometerInterface> 
     m_gps = nullptr;
 
     // Make an initial guess of the spectrometer wavelengths
-    for (int k = 0; k < MAX_SPECTRUM_LENGTH; ++k) {
-        m_wavelength[0][k] = k;
-        m_wavelength[1][k] = k;
+    m_wavelength.Resize(2, MAX_SPECTRUM_LENGTH);
+    for (int k = 0; k < MAX_SPECTRUM_LENGTH; ++k)
+    {
+        m_wavelength.data[0][k] = k;
+        m_wavelength.data[1][k] = k;
     }
-
 }
 
 CSpectrometer::~CSpectrometer()
@@ -128,11 +131,9 @@ long CSpectrometer::GetTimeValue_UMT()
     return timeValue;
 }
 
-
-int CSpectrometer::Scan(int sumInComputer, int sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]) {
-
-    // clear the old spectrum
-    memset(pResult, 0, MAX_N_CHANNELS * MAX_SPECTRUM_LENGTH * sizeof(double));
+int CSpectrometer::Scan(int sumInComputer, int sumInSpectrometer, mobiledoas::MeasuredSpectrum& result)
+{
+    result.SetToZero();
 
     // set point temperature for CCD if supported.
     if (m_spectrometer->SupportsDetectorTemperatureControl())
@@ -167,12 +168,12 @@ int CSpectrometer::Scan(int sumInComputer, int sumInSpectrometer, double pResult
         }
 
         // copies the spectrum-values to the output array
+        result.Resize(spectrumData.size(), spectrumData[0].size());
         for (size_t chn = 0; chn < spectrumData.size(); ++chn)
         {
-            const size_t length = std::min(spectrumData[chn].size(), static_cast<size_t>(MAX_SPECTRUM_LENGTH));
-            for (size_t pixelIdx = 0; pixelIdx < length; ++pixelIdx)
+            for (size_t pixelIdx = 0; pixelIdx < spectrumData[chn].size(); ++pixelIdx)
             {
-                pResult[chn][pixelIdx] += spectrumData[chn][pixelIdx];
+                result.data[chn][pixelIdx] += spectrumData[chn][pixelIdx];
             }
         }
     }
@@ -180,11 +181,11 @@ int CSpectrometer::Scan(int sumInComputer, int sumInSpectrometer, double pResult
     // make the spectrum an average 
     if (sumInComputer > 0)
     {
-        for (int chn = 0; chn < m_NChannels; ++chn)
+        for (int chn = 0; chn < result.NumberOfChannels(); ++chn)
         {
-            for (int pixelIdx = 0; pixelIdx < m_detectorSize; ++pixelIdx)
+            for (int pixelIdx = 0; pixelIdx < result.SpectrumLength(); ++pixelIdx)
             {
-                pResult[chn][pixelIdx] /= sumInComputer;
+                result.data[chn][pixelIdx] /= sumInComputer;
             }
         }
     }
@@ -205,7 +206,8 @@ int CSpectrometer::Scan(int sumInComputer, int sumInSpectrometer, double pResult
 }
 
 //-----------------------------------------------------------------
-void CSpectrometer::SetUserParameters(double windspeed, double winddirection, char* baseName) {
+void CSpectrometer::SetUserParameters(double windspeed, double winddirection, char* baseName)
+{
 
     m_windSpeed = windspeed;
     m_windAngle = winddirection;
@@ -238,28 +240,34 @@ void CSpectrometer::ApplyEvaluationSettings()
     this->m_fitRegionNum = m_conf->m_nFitWindows;
 }
 
-void CSpectrometer::ApplySettings() {
+void CSpectrometer::ApplySettings()
+{
     CString msg;
 
     m_NChannels = m_conf->m_nChannels;
     bool error = false;
-    if (m_NChannels > MAX_N_CHANNELS) {
+    if (m_NChannels > MAX_N_CHANNELS)
+    {
         msg.Format("Cannot handle more than %d channels. Changed number of channels to %d", MAX_N_CHANNELS, MAX_N_CHANNELS);
         m_NChannels = MAX_N_CHANNELS;   error = true;
     }
-    if (m_NChannels < 0) {
+    if (m_NChannels < 0)
+    {
         msg.Format("A negative amount of channels defined in the configuration file. This does not make sense, will change number of channels to 1");
         m_NChannels = 1;  error = true;
     }
-    if (m_NChannels == 0) {
+    if (m_NChannels == 0)
+    {
         msg.Format("Zero channels defined in the configuration file. This does not make sense, will change number of channels to 1");
         m_NChannels = 1; error = true;
     }
-    if (m_spectrometerMode == MODE_WIND && m_NChannels < 2) {
+    if (m_spectrometerMode == MODE_WIND && m_NChannels < 2)
+    {
         msg.Format("%d channels defined in the configuration file, this does not agree with wind-measurements. Will change number of channels to 2", m_NChannels);
         m_NChannels = 2; error = true;
     }
-    if (error) {
+    if (error)
+    {
         ShowMessageBox(msg, "Error in settings");
     }
 
@@ -269,13 +277,16 @@ void CSpectrometer::ApplySettings() {
     m_useGps = (m_conf->m_useGPS != 0);
 
     // The exposure-time settings
-    if (m_conf->m_expTimeMode == Configuration::CMobileConfiguration::EXPOSURETIME_FIXED) {
+    if (m_conf->m_expTimeMode == Configuration::CMobileConfiguration::EXPOSURETIME_FIXED)
+    {
         m_fixexptime = m_conf->m_fixExpTime;
     }
-    else if (m_conf->m_expTimeMode == Configuration::CMobileConfiguration::EXPOSURETIME_ADAPTIVE) {
+    else if (m_conf->m_expTimeMode == Configuration::CMobileConfiguration::EXPOSURETIME_ADAPTIVE)
+    {
         m_fixexptime = -1;
     }
-    else {
+    else
+    {
         m_fixexptime = 0;
     }
     this->m_percent = m_conf->m_percent / 100.0;
@@ -290,7 +301,8 @@ void CSpectrometer::ApplySettings() {
 }
 
 /* makes a test of the settings, returns 0 if all is ok, else 1 */
-int CSpectrometer::CheckSettings() {
+int CSpectrometer::CheckSettings()
+{
     CString msgStr, fileName;
     double tmpDouble1, tmpDouble2, tmpDouble3;
     char buf[512];
@@ -305,26 +317,31 @@ int CSpectrometer::CheckSettings() {
 
     //2. Check so that the reference-files exists, can be read and
     //  have the correct format.
-    for (int k = 0; k < m_fitRegion[0].window.nRef; ++k) {
+    for (int k = 0; k < m_fitRegion[0].window.nRef; ++k)
+    {
         int nRows = 0;
         FILE* f = fopen(m_fitRegion[0].window.ref[k].m_path.c_str(), "r");
-        if (nullptr == f) {
+        if (nullptr == f)
+        {
             fileName.Format("%s%s", (LPCSTR)g_exePath, m_fitRegion[0].window.ref[k].m_path.c_str());
             f = fopen(fileName, "r");
-            if (nullptr == f) {
+            if (nullptr == f)
+            {
                 msgStr.Format("Cannot open reference file : %s for reading.", m_fitRegion[0].window.ref[k].m_path.c_str());
                 ShowMessageBox(msgStr, "Error");
                 return 1;
             }
         }
 
-        while (fgets(buf, 511, f)) {
+        while (fgets(buf, 511, f))
+        {
             nColumns = sscanf(buf, "%lf\t%lf\t%lf", &tmpDouble1, &tmpDouble2, &tmpDouble3);
             if (nColumns == 0 || nColumns == EOF)
                 break;
 
             ++nRows;
-            if (nColumns == 3) {
+            if (nColumns == 3)
+            {
                 msgStr.Format("There are %d columns in the reference file. This programs wants reference files with one or two columns", nColumns);
                 ShowMessageBox(msgStr, "Error");
                 fclose(f);
@@ -334,7 +351,8 @@ int CSpectrometer::CheckSettings() {
 
         fclose(f);
 
-        if (nRows > MAX_SPECTRUM_LENGTH) {
+        if (nRows > MAX_SPECTRUM_LENGTH)
+        {
             msgStr.Format("Length of the reference file is: %d values. Cannot handle references with more than %d data-points.", nRows, MAX_SPECTRUM_LENGTH);
             ShowMessageBox(msgStr, "Error");
             return 1;
@@ -344,13 +362,16 @@ int CSpectrometer::CheckSettings() {
     // 3. If there is a reference file with the name SO2, the it should
     //  be the first reference file (since the main window will only
     //  show the result of evaluating the first reference-file)
-    if (!EqualsIgnoringCase(m_fitRegion[0].window.ref[0].m_specieName, "SO2")) {
+    if (!EqualsIgnoringCase(m_fitRegion[0].window.ref[0].m_specieName, "SO2"))
+    {
         int k;
-        for (k = 1; k < m_fitRegion[0].window.nRef; ++k) {
+        for (k = 1; k < m_fitRegion[0].window.nRef; ++k)
+        {
             if (EqualsIgnoringCase(m_fitRegion[0].window.ref[k].m_specieName, "SO2"))
                 break;
         }
-        if (k != m_fitRegion[0].window.nRef) {
+        if (k != m_fitRegion[0].window.nRef)
+        {
             novac::CReferenceFile tmpRef = m_fitRegion[0].window.ref[0];
             m_fitRegion[0].window.ref[0] = m_fitRegion[0].window.ref[k];
             m_fitRegion[0].window.ref[k] = tmpRef;
@@ -366,14 +387,16 @@ int CSpectrometer::CheckSettings() {
 **
 */
 
-void CSpectrometer::WriteEvFile(CString filename, FitRegion* fitRegion) {
+void CSpectrometer::WriteEvFile(CString filename, FitRegion* fitRegion)
+{
     double* result = NULL;
     int channel = fitRegion->window.channel;
 
     FILE* f;
     CString wholePath = m_subFolder + "\\" + m_measurementBaseName + "_" + m_measurementStartTimeStr + filename;
     f = fopen(wholePath, "a+");
-    if (f < (FILE*)1) {
+    if (f < (FILE*)1)
+    {
         ShowMessageBox("Could not open evaluation log file. No data was written!", "Error");
         return;
     }
@@ -394,7 +417,8 @@ void CSpectrometer::WriteEvFile(CString filename, FitRegion* fitRegion) {
     fprintf(f, "%ld\t", m_averageSpectrumIntensity[channel]);
 
     // 5. The evaluated column values
-    for (int k = 0; k < fitRegion->window.nRef; ++k) {
+    for (int k = 0; k < fitRegion->window.nRef; ++k)
+    {
         result = fitRegion->eval[channel]->GetResult(k);
         fprintf(f, "%lf\t%lf\t", result[0], result[1]);
     }
@@ -420,9 +444,11 @@ long CSpectrometer::GetInttime(long pSky, long pDark, int intT)
 
         if (xRate == 0.0)
             intTime = MAX_EXPOSURETIME;
-        else {
+        else
+        {
             intTime = (long)(xRate * intT);
-            if (intTime > MAX_EXPOSURETIME) {
+            if (intTime > MAX_EXPOSURETIME)
+            {
                 intTime = MAX_EXPOSURETIME;
             }
             if (intTime < MIN_EXPOSURETIME)
@@ -498,7 +524,8 @@ double CSpectrometer::CountFlux(double windSpeed, double windAngle)
     }
 }
 
-void CSpectrometer::GetLastColumn(mobiledoas::ReferenceFitResult& evaluationResult) {
+void CSpectrometer::GetLastColumn(mobiledoas::ReferenceFitResult& evaluationResult)
+{
 
     evaluationResult.m_column = evaluateResult[0][0][0];
     evaluationResult.m_columnError = evaluateResult[0][0][1];
@@ -508,32 +535,33 @@ void CSpectrometer::GetLastColumn(mobiledoas::ReferenceFitResult& evaluationResu
     evaluationResult.m_squeezeError = evaluateResult[0][0][5];
 }
 
-void CSpectrometer::GetDark() {
+void CSpectrometer::GetDark()
+{
     m_NChannels = std::max(std::min(m_NChannels, MAX_N_CHANNELS), 1);
 
-    if (m_fixexptime >= 0) {
-        // fixed exposure-time throughout the traverse
-        for (int j = 0; j < m_NChannels; ++j) {
-            memcpy(m_tmpDark[j], m_dark[j], MAX_SPECTRUM_LENGTH * sizeof(double));
-        }
+    if (m_fixexptime >= 0)
+    {
+        m_dark.CopyTo(m_tmpDark);
     }
-    else {
+    else
+    {
         // Adaptive exposure-time
-        for (int j = 0; j < m_NChannels; ++j) {
-            for (int i = 0; i < MAX_SPECTRUM_LENGTH; ++i) {
-                m_tmpDark[j][i] = m_offset[j][i] + m_darkCur[j][i] * (m_integrationTime / DARK_CURRENT_EXPTIME);
+        m_offset.CopyTo(m_tmpDark);
+        for (int j = 0; j < m_NChannels; ++j)
+        {
+            for (int i = 0; i < m_offset.SpectrumLength(); ++i)
+            {
+                m_tmpDark.data[j][i] += m_darkCur.data[j][i] * (m_integrationTime / DARK_CURRENT_EXPTIME);
             }
         }
     }
 }
 
-void CSpectrometer::GetSky() {
-
+void CSpectrometer::GetSky()
+{
     m_NChannels = std::max(std::min(m_NChannels, MAX_N_CHANNELS), 1);
 
-    for (int j = 0; j < m_NChannels; ++j) {
-        memcpy(m_tmpSky[j], m_sky[j], MAX_SPECTRUM_LENGTH * sizeof(double));
-    }
+    m_sky.CopyTo(m_tmpSky);
 }
 
 int CSpectrometer::Stop()
@@ -559,21 +587,28 @@ int CSpectrometer::Start()
 }
 
 /* Return value = 0 if all is ok, else 1 */
-int CSpectrometer::ReadReferenceFiles() {
+int CSpectrometer::ReadReferenceFiles()
+{
 
-    for (int fitRegionIdx = 0; fitRegionIdx < m_fitRegionNum; ++fitRegionIdx) {
+    for (int fitRegionIdx = 0; fitRegionIdx < m_fitRegionNum; ++fitRegionIdx)
+    {
         CString refFileList[10];
-        for (int referenceIdx = 0; referenceIdx < m_fitRegion[fitRegionIdx].window.nRef; ++referenceIdx) {
-            if (IsExistingFile(m_fitRegion[fitRegionIdx].window.ref[referenceIdx].m_path.c_str())) {
+        for (int referenceIdx = 0; referenceIdx < m_fitRegion[fitRegionIdx].window.nRef; ++referenceIdx)
+        {
+            if (IsExistingFile(m_fitRegion[fitRegionIdx].window.ref[referenceIdx].m_path.c_str()))
+            {
                 refFileList[referenceIdx].Format("%s", m_fitRegion[fitRegionIdx].window.ref[referenceIdx].m_path.c_str());
             }
-            else {
+            else
+            {
                 CString tmpFileName;
                 tmpFileName.Format("%s\\%s", (LPCSTR)g_exePath, m_fitRegion[fitRegionIdx].window.ref[referenceIdx].m_path.c_str());
-                if (IsExistingFile(tmpFileName)) {
+                if (IsExistingFile(tmpFileName))
+                {
                     refFileList[referenceIdx].Format("%s", (LPCSTR)tmpFileName);
                 }
-                else {
+                else
+                {
                     CString errorMessage;
                     errorMessage.Format("Can not read reference file\n %s\n Please check the file location and restart collection", m_fitRegion[fitRegionIdx].window.ref[referenceIdx].m_path.c_str());
                     ShowMessageBox(errorMessage, "Error");
@@ -587,7 +622,8 @@ int CSpectrometer::ReadReferenceFiles() {
         {
             m_fitRegion[fitRegionIdx].eval[0] = new Evaluation::CEvaluation(); // should in fact not happen as this should have been done in ApplyEvaluationSettings()
         }
-        if (!(m_fitRegion[fitRegionIdx].eval[0]->ReadRefList(refFileList, m_fitRegion[fitRegionIdx].window.nRef, m_detectorSize))) {
+        if (!(m_fitRegion[fitRegionIdx].eval[0]->ReadRefList(refFileList, m_fitRegion[fitRegionIdx].window.nRef, m_detectorSize)))
+        {
             ShowMessageBox("Can not read reference file\n Please check the file location and restart collection", "Error");
             return 1;
         }
@@ -597,7 +633,8 @@ int CSpectrometer::ReadReferenceFiles() {
         {
             m_fitRegion[fitRegionIdx].eval[1] = new Evaluation::CEvaluation(); // should in fact not happen as this should have been done in ApplyEvaluationSettings()
         }
-        if (!(m_fitRegion[fitRegionIdx].eval[1]->ReadRefList(refFileList, m_fitRegion[fitRegionIdx].window.nRef, m_detectorSize))) {
+        if (!(m_fitRegion[fitRegionIdx].eval[1]->ReadRefList(refFileList, m_fitRegion[fitRegionIdx].window.nRef, m_detectorSize)))
+        {
             ShowMessageBox("Can not read reference file\n Please check the file location and restart collection", "Error");
             return 1;
         }
@@ -606,20 +643,20 @@ int CSpectrometer::ReadReferenceFiles() {
     return 0;
 }
 
-
-
-void CSpectrometer::DoEvaluation(double pSky[][MAX_SPECTRUM_LENGTH], double pDark[][MAX_SPECTRUM_LENGTH], double pSpectrum[][MAX_SPECTRUM_LENGTH]) {
+void CSpectrometer::DoEvaluation(mobiledoas::MeasuredSpectrum& sky, mobiledoas::MeasuredSpectrum& dark, mobiledoas::MeasuredSpectrum& spectrum)
+{
     CString fileName;
     double curColumn[8];
     double curColumnError[8];
 
-    memset(m_fitResult, 0, MAX_FIT_WINDOWS * MAX_SPECTRUM_LENGTH * sizeof(double));
+    m_fitResult.SetToZero();
 
-    for (int j = 0; j < m_fitRegionNum; ++j) {
+    for (int j = 0; j < m_fitRegionNum; ++j)
+    {
         int chn = m_fitRegion[j].window.channel;
 
         // Evaluate
-        m_fitRegion[j].eval[chn]->Evaluate(pDark[chn], pSky[chn], pSpectrum[chn]);
+        m_fitRegion[j].eval[chn]->Evaluate(dark[chn].data(), sky[chn].data(), spectrum[chn].data());
 
         // Store the results
         double* tmpResult = m_fitRegion[j].eval[chn]->GetResult();
@@ -634,16 +671,20 @@ void CSpectrometer::DoEvaluation(double pSky[][MAX_SPECTRUM_LENGTH], double pDar
         curColumnError[chn] = evaluateResult[j][chn][1];
 
         // Save the results in the lists
-        for (int i = 0; i < 6; ++i) {
+        for (int i = 0; i < 6; ++i)
+        {
             m_fitRegion[j].vColumn[i].Append(evaluateResult[j][chn][i]);
         }
 
         // copy the high pass filtered spectrum
-        memcpy(m_spectrum[chn], m_fitRegion[j].eval[chn]->m_filteredSpectrum, MAX_SPECTRUM_LENGTH * sizeof(double));
+        m_spectrum.data[chn].resize(MAX_SPECTRUM_LENGTH);
+        m_spectrum.CopyFrom(chn, m_fitRegion[j].eval[chn]->m_filteredSpectrum, MAX_SPECTRUM_LENGTH);
 
         // copy the fitted reference
-        for (int r = 0; r < m_fitRegion[j].window.nRef + 1; ++r) {
-            for (int i = m_fitRegion[j].window.fitLow; i < m_fitRegion[j].window.fitHigh; ++i) {
+        for (int r = 0; r < m_fitRegion[j].window.nRef + 1; ++r)
+        {
+            for (int i = m_fitRegion[j].window.fitLow; i < m_fitRegion[j].window.fitHigh; ++i)
+            {
                 m_fitResult[j][i] += m_fitRegion[j].eval[chn]->m_fitResult[r].GetAt(i);
             }
         }
@@ -652,13 +693,15 @@ void CSpectrometer::DoEvaluation(double pSky[][MAX_SPECTRUM_LENGTH], double pDar
         WriteEvFile(fileName, &m_fitRegion[j]);
 
     }
-    if (m_useAudio) {
+    if (m_useAudio)
+    {
         Sing(curColumn[0] / m_maxColumn);
     }
     pView->PostMessage(WM_DRAWCOLUMN);
 
     ++m_spectrumCounter;
-    if (m_spectrumCounter == 65535) {
+    if (m_spectrumCounter == 65535)
+    {
         memset((void*)m_spectrumGpsData, 0, sizeof(struct mobiledoas::GpsData) * 65536);
         m_spectrumCounter = 0;
         m_zeroPosNum = 0;
@@ -678,7 +721,8 @@ void CSpectrometer::CreateDirectories()
     time_t t;
 
     int strLength = m_measurementBaseName.GetLength();
-    if (strLength == 0) {
+    if (strLength == 0)
+    {
         m_measurementBaseName = TEXT("base1");
     }
 
@@ -690,14 +734,18 @@ void CSpectrometer::CreateDirectories()
 
     CString folderName(g_exePath + dateText);
 
-    if (0 == CreateDirectory(folderName, NULL)) {
+    if (0 == CreateDirectory(folderName, NULL))
+    {
         DWORD errorCode = GetLastError();
-        if (errorCode != ERROR_ALREADY_EXISTS) { /* We shouldn't quit just because the directory that we want to create already exists. */
+        if (errorCode != ERROR_ALREADY_EXISTS)
+        { /* We shouldn't quit just because the directory that we want to create already exists. */
             CString tmpStr, errorStr;
-            if (FormatErrorCode(errorCode, errorStr)) {
+            if (FormatErrorCode(errorCode, errorStr))
+            {
                 tmpStr.Format("Could not create output directory. Reason: %s", (LPCSTR)errorStr);
             }
-            else {
+            else
+            {
                 tmpStr.Format("Could not create output directory, not enough free disk space?. Error code returned %ld", errorCode);
             }
             ShowMessageBox(tmpStr, "ERROR");
@@ -709,13 +757,16 @@ void CSpectrometer::CreateDirectories()
     m_subFolder = folderName + TEXT("\\") + m_measurementBaseName + TEXT("_") + TEXT(cDateTime);
 
     if (GetFileAttributes(m_subFolder) == INVALID_FILE_ATTRIBUTES
-        && 0 == CreateDirectory(m_subFolder, NULL)) {
+        && 0 == CreateDirectory(m_subFolder, NULL))
+    {
         DWORD errorCode = GetLastError();
         CString tmpStr, errorStr;
-        if (FormatErrorCode(errorCode, errorStr)) {
+        if (FormatErrorCode(errorCode, errorStr))
+        {
             tmpStr.Format("Could not create output directory. Reason: %s", errorStr);
         }
-        else {
+        else
+        {
             tmpStr.Format("Could not create output directory, not enough free disk space?. Error code returned %ld", errorCode);
         }
         ShowMessageBox(tmpStr, "ERROR");
@@ -732,11 +783,14 @@ void CSpectrometer::SetFileName()
 
     int i, j;
 
-    if (m_fixexptime >= 0) {
+    if (m_fixexptime >= 0)
+    {
         // Normal mode, fixed exposure time
-        for (j = 0; j < m_NChannels; ++j) {
+        for (j = 0; j < m_NChannels; ++j)
+        {
             i = lastidx;
-            do {
+            do
+            {
                 if (m_scanNum == 1)
                     m_stdfileName[j].Format("\\dark_%d.STD", j);
                 else if (m_scanNum == 2)
@@ -749,11 +803,14 @@ void CSpectrometer::SetFileName()
             } while (IsExistingFile(m_stdfileName[j]));
         }
     }
-    else {
+    else
+    {
         // Automatic adjustment of the exposure-time
-        for (j = 0; j < m_NChannels; ++j) {
+        for (j = 0; j < m_NChannels; ++j)
+        {
             i = lastidx;
-            do {
+            do
+            {
                 if (m_scanNum == 1)
                     m_stdfileName[j].Format("\\offset_%d.STD", j);
                 else if (m_scanNum == 2)
@@ -780,7 +837,8 @@ long CSpectrometer::GetColumns(std::vector<double>& list, long maxNumberOfValues
 
     if (numberOfValuesAvailable > 0)
     {
-        for (int i = 0; i < numberOfValuesToRead; ++i) {
+        for (int i = 0; i < numberOfValuesToRead; ++i)
+        {
             list[i] = m_fitRegion[fitRegion].vColumn[0].GetAt(numberOfValuesAvailable - numberOfValuesToRead + i);
         }
     }
@@ -796,7 +854,8 @@ long CSpectrometer::GetColumnErrors(std::vector<double>& list, long maxNumberOfV
 
     if (numberOfValuesAvailable > 0)
     {
-        for (int i = 0; i < numberOfValuesToRead; ++i) {
+        for (int i = 0; i < numberOfValuesToRead; ++i)
+        {
             list[i] = m_fitRegion[fitRegion].vColumn[1].GetAt(numberOfValuesAvailable - numberOfValuesToRead + i);
         }
     }
@@ -805,16 +864,19 @@ long CSpectrometer::GetColumnErrors(std::vector<double>& list, long maxNumberOfV
 }
 
 /* Get the gps-positions */
-long CSpectrometer::GetLatLongAlt(double* la, double* lo, double* al, long sum) {
+long CSpectrometer::GetLatLongAlt(double* la, double* lo, double* al, long sum)
+{
     int i = 0;
 
     /* Check that we dont return more values than what we've got */
     long columnSize = m_fitRegion[0].vColumn[0].GetSize();
-    if (columnSize > 0) {
+    if (columnSize > 0)
+    {
         if (sum > columnSize)
             sum = columnSize;
 
-        for (i = 0; i < sum; i++) {
+        for (i = 0; i < sum; i++)
+        {
             if (la != 0)
                 la[i] = m_spectrumGpsData[i].latitude;
             if (lo != 0)
@@ -836,9 +898,11 @@ int CSpectrometer::GetGpsPos(mobiledoas::GpsData& data) const
     return c;
 }
 
-bool CSpectrometer::GpsGotContact() const {
+bool CSpectrometer::GpsGotContact() const
+{
 
-    if (m_gps == nullptr) {
+    if (m_gps == nullptr)
+    {
         return false;
     }
 
@@ -864,7 +928,8 @@ long CSpectrometer::GetColumnNumber()
     return columnSize;
 }
 
-void CSpectrometer::GetNSpecAverage(int& averageInSpectrometer, int& averageInComputer) {
+void CSpectrometer::GetNSpecAverage(int& averageInSpectrometer, int& averageInComputer)
+{
     averageInSpectrometer = this->m_sumInSpectrometer;
     averageInComputer = this->m_sumInComputer;
 }
@@ -905,7 +970,8 @@ void CSpectrometer::Sing(double factor)
         // See https://msdn.microsoft.com/en-us/library/Dd743872(v=VS.85).aspx
         MMRESULT res = waveOutSetPitch(0, multiplier);
     }
-    else {
+    else
+    {
         MMRESULT res = waveOutSetVolume(0, multiplier); // nope, change volume instead
     }
     fileToPlay.Format("%s\\Media\\ringout.wav", windowsDir);
@@ -961,7 +1027,8 @@ void CSpectrometer::GetCurrentDateAndTime(std::string& currentDate, long& curren
         currentTime = GetCurrentTimeFromComputerClock();
     }
 
-    if (currentGpsInfo.date == 0) {
+    if (currentGpsInfo.date == 0)
+    {
         currentDate = mobiledoas::GetCurrentDateFromComputerClock('.');
     }
 }
@@ -980,16 +1047,19 @@ void CSpectrometer::GetCurrentDateAndTime(novac::CDateTime& currentDateAndTime)
         GetCurrentTimeFromComputerClock(currentDateAndTime);
     }
 
-    if (currentGpsInfo.date == 0) {
+    if (currentGpsInfo.date == 0)
+    {
         mobiledoas::GetCurrentDateFromComputerClock(currentDateAndTime);
     }
 }
 
-void CSpectrometer::WriteLogFile(CString filename, CString txt) {
+void CSpectrometer::WriteLogFile(CString filename, CString txt)
+{
     FILE* f;
     f = fopen(filename, "a+");
 
-    if (f < (FILE*)1) {
+    if (f < (FILE*)1)
+    {
         CString tmpStr;
         tmpStr.Format("Could not write log file: %s. Not enough free space?", filename);
         ShowMessageBox(tmpStr, "Big Error");
@@ -1001,7 +1071,8 @@ void CSpectrometer::WriteLogFile(CString filename, CString txt) {
     fclose(f);
 }
 
-void CSpectrometer::WriteBeginEvFile(int fitRegion) {
+void CSpectrometer::WriteBeginEvFile(int fitRegion)
+{
 
     // Write a copy of the old cfg-file into the evaluation-log
     CString evPath = m_subFolder + "\\" + m_measurementBaseName + "_" + m_measurementStartTimeStr + TEXT("evaluationLog_" + m_fitRegion[fitRegion].window.name + ".txt");
@@ -1020,7 +1091,8 @@ void CSpectrometer::WriteBeginEvFile(int fitRegion) {
         m_fitRegion[fitRegion].window.ref[0].m_shiftOption == novac::SHIFT_TYPE::SHIFT_FIX, m_fitRegion[fitRegion].window.ref[0].m_squeezeOption == novac::SHIFT_TYPE::SHIFT_FIX);
     str6.Format("SPECCENTER=%d\nPERCENT=%f\nMAXCOLUMN=%f\nGASFACTOR=%f\n",
         m_conf->m_specCenter, m_percent, m_maxColumn, m_gasFactor);
-    for (int k = 0; k < m_fitRegion[fitRegion].window.nRef; ++k) {
+    for (int k = 0; k < m_fitRegion[fitRegion].window.nRef; ++k)
+    {
         str6.AppendFormat("REFFILE=%s\n", m_fitRegion[fitRegion].window.ref[k].m_path.c_str());
     }
     WriteLogFile(evPath, str1 + str2 + str3 + str4 + str5 + str6);
@@ -1034,15 +1106,18 @@ void CSpectrometer::WriteBeginEvFile(int fitRegion) {
     WriteLogFile(evPath, str1);
 
     // The header-line
-    if (m_fitRegion[fitRegion].window.channel == 0) {
+    if (m_fitRegion[fitRegion].window.channel == 0)
+    {
         channelName.Format("Master");
     }
-    else {
+    else
+    {
         channelName.Format("Slave");
     }
 
     str7.Format("\n#Time\tLat\tLong\tAlt\tNSpec\tExpTime\tIntens(%s)\t", channelName);
-    for (int referenceIdx = 0; referenceIdx < m_fitRegion[fitRegion].window.nRef; ++referenceIdx) {
+    for (int referenceIdx = 0; referenceIdx < m_fitRegion[fitRegion].window.nRef; ++referenceIdx)
+    {
         str7.AppendFormat("%s_Column_%s\t%s_ColumnError_%s\t",
             channelName,
             m_fitRegion[fitRegion].window.ref[referenceIdx].m_specieName.c_str(),
@@ -1054,26 +1129,34 @@ void CSpectrometer::WriteBeginEvFile(int fitRegion) {
     WriteLogFile(evPath, str7);
 }
 
-int CSpectrometer::CountRound(long timeResolution, mobiledoas::SpectrumSummation& result) const {
+int CSpectrometer::CountRound(long timeResolution, mobiledoas::SpectrumSummation& result) const
+{
 
     int maximumNumberToAddInDevice = 15;
-    if (m_spectrometerModel == "USB2000+" || m_spectrometerModel == "AVANTES") {
+    if (m_spectrometerModel == "USB2000+" || m_spectrometerModel == "AVANTES")
+    {
         maximumNumberToAddInDevice = 1000;
     }
 
     return mobiledoas::CountRound(timeResolution, m_integrationTime, m_spectrometer->GetReadoutDelay(), maximumNumberToAddInDevice, result);
 }
 
-std::vector<double> CSpectrometer::GetSpectrum(int channel) const {
-    return std::vector<double>(m_curSpectrum[channel], m_curSpectrum[channel] + m_detectorSize);
+std::vector<double> CSpectrometer::GetSpectrum(int channel) const
+{
+    if ((unsigned int)channel > m_curSpectrum.NumberOfChannels())
+    {
+        return std::vector<double>(MAX_SPECTRUM_LENGTH, 0.0);
+    }
+    return m_curSpectrum.data[channel];
 }
 
-std::vector<std::string> CSpectrometer::GetConnectedSpectrometers() const {
-
+std::vector<std::string> CSpectrometer::GetConnectedSpectrometers() const
+{
     return m_spectrometer->ListDevices();
 }
 
-int CSpectrometer::TestSpectrometerConnection() {
+int CSpectrometer::TestSpectrometerConnection()
+{
     m_spectrometerIndex = 0; // assume that we will use spectrometer #1
 
     m_statusMsg.Format("Searching for attached spectrometers"); pView->PostMessage(WM_STATUSMSG);
@@ -1203,19 +1286,23 @@ int CSpectrometer::ChangeSpectrometer(int selectedspec, const std::vector<int>& 
 
     const int nofChannelsAvailable = m_spectrometer->GetNumberOfChannels();
 
-    if (m_NChannels > nofChannelsAvailable) {
+    if (m_NChannels > nofChannelsAvailable)
+    {
         CString msg;
         msg.Format("Cfg.txt specifies %d channels to be used but spectrometer can only handle %d. Changing configuration to handle only %d channel(s)", m_NChannels, nofChannelsAvailable, nofChannelsAvailable);
         ShowMessageBox(msg, "Error");
         m_NChannels = nofChannelsAvailable;
     }
 
-    if (m_spectrometerDynRange < 0) {
+    if (m_spectrometerDynRange < 0)
+    {
         if (EqualsIgnoringCase(m_spectrometerModel, "USB4000") || EqualsIgnoringCase(m_spectrometerModel, "HR4000") ||
-            EqualsIgnoringCase(m_spectrometerModel, "USB2000+") || EqualsIgnoringCase(m_spectrometerModel, "QE65000")) {
+            EqualsIgnoringCase(m_spectrometerModel, "USB2000+") || EqualsIgnoringCase(m_spectrometerModel, "QE65000"))
+        {
             m_spectrometerDynRange = 65536;
         }
-        else {
+        else
+        {
             m_spectrometerDynRange = 4096;
         }
     }
@@ -1230,13 +1317,16 @@ int CSpectrometer::ChangeSpectrometer(int selectedspec, const std::vector<int>& 
 
     std::vector<std::vector<double>> spectrumData;
     int returnCode = m_spectrometer->GetNextSpectrum(spectrumData);
-    if (returnCode == 0) {
+    if (returnCode == 0)
+    {
         std::string errorMessage = m_spectrometer->GetLastError();
-        if (errorMessage.size() > 0) {
+        if (errorMessage.size() > 0)
+        {
             ShowMessageBox((std::string("Failed to retrieve spectrum, error was: ") + errorMessage).c_str(), "Error getting spectrum");
         }
-        else {
-            ShowMessageBox( "Failed to retrieve spectrum, unknown error", "Error getting spectrum");
+        else
+        {
+            ShowMessageBox("Failed to retrieve spectrum, unknown error", "Error getting spectrum");
         }
         return -1;
     }
@@ -1249,7 +1339,8 @@ int CSpectrometer::ChangeSpectrometer(int selectedspec, const std::vector<int>& 
     std::vector<std::vector<double>> wavelengthData;
     m_spectrometer->GetWavelengths(wavelengthData);
     ASSERT(wavelengthData.size() == m_NChannels);
-    memcpy(m_wavelength[m_spectrometerChannel], wavelengthData[0].data(), m_detectorSize * sizeof(double));
+
+    m_wavelength.data = wavelengthData;
 
     m_statusMsg.Format("Detector size is %d", m_detectorSize); pView->PostMessage(WM_STATUSMSG);
 
@@ -1262,13 +1353,14 @@ void CSpectrometer::CloseSpectrometerConnection()
     m_spectrometer->Close();
 }
 
-void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH])
+void CSpectrometer::GetSpectrumInfo(const mobiledoas::MeasuredSpectrum& spectrum)
 {
     /* The nag flag makes sure that we dont remind the user to take a new dark
         spectrum too many times in a row. */
     static bool nagFlag = false;
 
-    if (m_fixexptime < 0) {
+    if (m_fixexptime < 0)
+    {
         nagFlag = true;
     }
 
@@ -1289,26 +1381,29 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
   */
 
   /* The offset is judged as the average intensity in pixels 6 - 18 */
-    for (int n = 0; n < m_NChannels; ++n) {
-        m_specInfo[n].offset = mobiledoas::GetOffset(spectrum[n]);
+    for (int n = 0; n < m_NChannels; ++n)
+    {
+        m_specInfo[n].offset = mobiledoas::GetOffset(spectrum.data[n]);
 
         // Check if this spectrum is dark
-        const bool isDark = mobiledoas::CheckIfDark(spectrum[n], m_detectorSize);
+        const bool isDark = mobiledoas::CheckIfDark(spectrum.data[n]);
 
-        if (isDark) {
+        if (isDark)
+        {
             m_specInfo[n].isDark = true;
             m_lastDarkOffset[n] = m_specInfo[n].offset;
             nagFlag = false;
 
             // use the new spectrum as dark spectrum
-            memcpy((void*)m_dark, (void*)spectrum, sizeof(double) * 4096);
-
+            spectrum.CopyTo(m_dark);
         }
-        else {
+        else
+        {
             m_specInfo[n].isDark = false;
 
             /* If the offset level has changed alot since the last dark, encourage the user to take a new dark spectrum */
-            if (m_lastDarkOffset[n] > 10) {/* Make sure this test is not run on the first spectrum collected */
+            if (m_lastDarkOffset[n] > 10)
+            {/* Make sure this test is not run on the first spectrum collected */
                 if (!nagFlag)
                 {
                     // TODO: Investigate what is a reasonable threshold here for the different supported spectrometer models.
@@ -1358,48 +1453,59 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
     CString fileName = m_subFolder + "\\" + m_measurementBaseName + "_" + m_measurementStartTimeStr + "AdditionalLog.txt";
     FILE* f = nullptr;
 
-    if (!IsExistingFile(fileName)) {
+    if (!IsExistingFile(fileName))
+    {
         f = fopen(fileName, "w");
-        if (f == nullptr) {
+        if (f == nullptr)
+        {
             return;
         }
         fprintf(f, "#--Additional log file to the Mobile DOAS program---\n");
         fprintf(f, "#This file has only use as test file for further development of the Mobile DOAS program\n\n");
         fprintf(f, "#SpectrumNumber\t");
-        if (!std::isnan(boardTemperature)) {
+        if (!std::isnan(boardTemperature))
+        {
             fprintf(f, "BoardTemperature\t");
         }
-        if (!std::isnan(detectorTemperature)) {
+        if (!std::isnan(detectorTemperature))
+        {
             fprintf(f, "DetectorTemperature\t");
         }
-        if (m_NChannels == 1) {
+        if (m_NChannels == 1)
+        {
             fprintf(f, "Offset\tSpecCenterIntensity\tisDark\n");
         }
-        else {
+        else
+        {
             fprintf(f, "#SpectrumNumber\tOffset(Master)\tSpecCenterIntensity(Master)\tisDark(Master)\tOffset(Slave)\tSpecCenterIntensity\tisDark(Slave)\t\n");
         }
         fclose(f);
     }
 
     f = fopen(fileName, "a+");
-    if (f == nullptr) {
+    if (f == nullptr)
+    {
         this->m_statusMsg.Format("ERROR! Could not open the Additional Log file - Information has been lost!");
         pView->PostMessage(WM_STATUSMSG);
     }
-    else {
+    else
+    {
         // Spectrum number
         fprintf(f, "%ld\t", m_spectrumCounter);
         // The board temperature 
-        if (!std::isnan(boardTemperature)) {
+        if (!std::isnan(boardTemperature))
+        {
             fprintf(f, "%.3lf\t", boardTemperature);
         }
         // The detector temperature 
-        if (!std::isnan(detectorTemperature)) {
+        if (!std::isnan(detectorTemperature))
+        {
             fprintf(f, "%.3lf\t", detectorTemperature);
         }
         // The master-channel
         fprintf(f, "%lf\t%ld\t%d", m_specInfo[0].offset, m_averageSpectrumIntensity[0], m_specInfo[0].isDark);
-        if (m_NChannels > 1) {
+        if (m_NChannels > 1)
+        {
             fprintf(f, "\t%lf\t%ld\t%d", m_specInfo[1].offset, m_averageSpectrumIntensity[1], m_specInfo[1].isDark);
         }
         fprintf(f, "\n");
@@ -1409,20 +1515,24 @@ void CSpectrometer::GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM
 }
 
 
-void CSpectrometer::UpdateMobileLog() {
+void CSpectrometer::UpdateMobileLog()
+{
     char txt[256];
 
     /* Open the mobile log file */
     FILE* f = fopen(g_exePath + "MobileLog.txt", "r");
 
-    if (0 == f) {
+    if (0 == f)
+    {
         /* File might not exist */
         f = fopen(g_exePath + "MobileLog.txt", "w");
-        if (0 == f) {
+        if (0 == f)
+        {
             /* File cannot be opened */
             return;
         }
-        else {
+        else
+        {
             fprintf(f, "BASENAME=%s\n", (LPCSTR)m_measurementBaseName);
             fprintf(f, "WINDSPEED=%.2lf\n", m_windSpeed);
             fprintf(f, "WINDDIRECTION=%.2lf\n", m_windAngle);
@@ -1430,11 +1540,14 @@ void CSpectrometer::UpdateMobileLog() {
             return;
         }
     }
-    else {
+    else
+    {
         CString tmpStr;
         /* read in all the funny strings we dont understand */
-        while (fgets(txt, sizeof(txt) - 1, f)) {
-            if ((0 == strstr(txt, "BASENAME=")) && (0 == strstr(txt, "WINDSPEED=")) && (0 == strstr(txt, "WINDDIRECTION="))) {
+        while (fgets(txt, sizeof(txt) - 1, f))
+        {
+            if ((0 == strstr(txt, "BASENAME=")) && (0 == strstr(txt, "WINDSPEED=")) && (0 == strstr(txt, "WINDDIRECTION=")))
+            {
                 tmpStr.AppendFormat("%s", txt);
             }
         }
@@ -1449,8 +1562,9 @@ void CSpectrometer::UpdateMobileLog() {
     }
 }
 
-short CSpectrometer::AdjustIntegrationTime() {
-    double skySpec[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
+short CSpectrometer::AdjustIntegrationTime()
+{
+    mobiledoas::MeasuredSpectrum skySpec(MAX_N_CHANNELS, MAX_SPECTRUM_LENGTH);
     m_sumInSpectrometer = 1;
     m_sumInComputer = 1;
     int darkInt = 0;
@@ -1461,51 +1575,58 @@ short CSpectrometer::AdjustIntegrationTime() {
     int lowLimit = MIN_EXPOSURETIME; // minimum exposure time
 
     // if the exposure time is set by the user, don't even bother to calculate it
-    if (m_fixexptime > 0) {
+    if (m_fixexptime > 0)
+    {
         m_integrationTime = (short)m_fixexptime;
         return m_integrationTime;
     }
 
     // First make a try at setting the integration time by collecting one 
     // spectrum at 10 ms exposure-time and one at 50 ms exposure-time
-    if (-1 != AdjustIntegrationTime_Calculate(10, 50)) {
+    if (-1 != AdjustIntegrationTime_Calculate(10, 50))
+    {
         return m_integrationTime;
     }
 
     // The clever setting failed... revert to simple trial and error...
     m_integrationTime = 100;
-    while (1) {
+    while (1)
+    {
         m_statusMsg.Format("Measuring the intensity");
         pView->PostMessage(WM_STATUSMSG);
 
         // measure the intensity
-        if (Scan(1, m_sumInSpectrometer, skySpec)) {
+        if (Scan(1, m_sumInSpectrometer, skySpec))
+        {
             return -1;
         }
 
         // Get the intensity of the sky and the dark spectra
-        skyInt = mobiledoas::AverageIntensity(skySpec[0], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
-        darkInt = (long)mobiledoas::GetOffset(skySpec[0]);
+        skyInt = mobiledoas::AverageIntensity(skySpec.data[0], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
+        darkInt = (long)mobiledoas::GetOffset(skySpec.data[0]);
 
         // Draw the measured sky spectrum on the screen.
-        for (int i = 0; i < m_NChannels; ++i) {
-            memcpy((void*)m_curSpectrum[i], skySpec[i], sizeof(double) * MAX_SPECTRUM_LENGTH);
-        }
-        if (m_fixexptime >= 0) {
+        skySpec.CopyTo(m_curSpectrum);
+
+        if (m_fixexptime >= 0)
+        {
             pView->PostMessage(WM_DRAWSPECTRUM);
         }
         pView->PostMessage(WM_SHOWINTTIME);
 
         // Check if we have reached our goal
-        if (fabs(skyInt - m_spectrometerDynRange * m_percent) < 200) {
+        if (fabs(skyInt - m_spectrometerDynRange * m_percent) < 200)
+        {
             return m_integrationTime;
         }
 
         // Adjust the exposure time so that we come closer to the desired value
-        if (skyInt - m_spectrometerDynRange * m_percent > 0) {
+        if (skyInt - m_spectrometerDynRange * m_percent > 0)
+        {
             highLimit = m_integrationTime;
         }
-        else {
+        else
+        {
             lowLimit = m_integrationTime;
         }
 
@@ -1514,12 +1635,14 @@ short CSpectrometer::AdjustIntegrationTime() {
         m_integrationTime = (short)GetInttime(skyInt, darkInt, m_integrationTime);
 
         // if we don't change the exposure time, just quit.
-        if (fabs(oldIntTime - m_integrationTime) < 0.1 * m_integrationTime) {
+        if (fabs(oldIntTime - m_integrationTime) < 0.1 * m_integrationTime)
+        {
             return m_integrationTime;
         }
 
         // check if we can reach the desired level at all
-        if ((m_integrationTime == MAX_EXPOSURETIME) || (m_integrationTime == MIN_EXPOSURETIME)) {
+        if ((m_integrationTime == MAX_EXPOSURETIME) || (m_integrationTime == MIN_EXPOSURETIME))
+        {
             return m_integrationTime;
         }
     }
@@ -1550,62 +1673,75 @@ short CSpectrometer::AdjustIntegrationTimeToLastIntensity(long maximumIntensity)
     return m_integrationTime;
 }
 
-short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxExpTime) {
-    double skySpec[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
+short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxExpTime)
+{
+    mobiledoas::MeasuredSpectrum skySpec;
     m_sumInSpectrometer = 1;
     m_sumInComputer = 1;
 
+    // TODO: This setup does not seem to work to well together with the Avantes spectrometers.
+    // Possibly because the (minExpTime, maxExpTime) is too narrow ?
+
     // Sanity check
-    if (maxExpTime < minExpTime || (maxExpTime - minExpTime) < 2) {
+    if (maxExpTime < minExpTime || (maxExpTime - minExpTime) < 2)
+    {
         return -1;
     }
 
     m_integrationTime = (short)minExpTime;
 
     // measure the intensity
-    if (Scan(1, m_sumInSpectrometer, skySpec)) {
+    if (Scan(1, m_sumInSpectrometer, skySpec))
+    {
         return -1;
     }
-    int int_short = mobiledoas::AverageIntensity(skySpec[0], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
+    int int_short = mobiledoas::AverageIntensity(skySpec.data[0], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
 
     m_integrationTime = (short)maxExpTime;
     // measure the intensity
-    if (Scan(1, m_sumInSpectrometer, skySpec)) {
+    if (Scan(1, m_sumInSpectrometer, skySpec))
+    {
         return -1;
     }
-    int int_long = mobiledoas::AverageIntensity(skySpec[0], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
+    int int_long = mobiledoas::AverageIntensity(skySpec.data[0], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
 
     // This will only work if the spectrum is not saturated at the maximum exposure-time
-    if (int_long > 0.9 * m_spectrometerDynRange) {
+    if (int_long > 0.9 * m_spectrometerDynRange)
+    {
         return AdjustIntegrationTime_Calculate(minExpTime, (maxExpTime - minExpTime) / 2);
     }
 
     // Calculate the exposure-time
     m_integrationTime = (short)((m_spectrometerDynRange - int_short) * (maxExpTime - minExpTime) * m_percent / (int_long - int_short));
 
-    if (m_integrationTime > m_timeResolution) {
+    if (m_integrationTime > m_timeResolution)
+    {
         m_integrationTime = m_timeResolution;
     }
-    if (m_integrationTime < MIN_EXPOSURETIME) {
+    if (m_integrationTime < MIN_EXPOSURETIME)
+    {
         m_integrationTime = MIN_EXPOSURETIME;
     }
 
     // Try out the calculated intensity to see if it works...
-    if (Scan(1, m_sumInSpectrometer, skySpec)) {
+    if (Scan(1, m_sumInSpectrometer, skySpec))
+    {
         return -1;
     }
-    int finalInt = mobiledoas::AverageIntensity(skySpec[0], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
+    int finalInt = mobiledoas::AverageIntensity(skySpec.data[0], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
 
     int desiredInt = (int)(m_spectrometerDynRange * m_percent);
-    if ((finalInt - desiredInt) / desiredInt > 0.2) {
+    if ((finalInt - desiredInt) / desiredInt > 0.2)
+    {
         return -1;
     }
-    else {
+    else
+    {
         // Draw the measured sky spectrum on the screen.
-        for (int i = 0; i < m_NChannels; ++i) {
-            memcpy((void*)m_curSpectrum[i], skySpec[i], sizeof(double) * MAX_SPECTRUM_LENGTH);
-        }
-        if (m_fixexptime >= 0) {
+        skySpec.CopyTo(m_curSpectrum);
+
+        if (m_fixexptime >= 0)
+        {
             pView->PostMessage(WM_DRAWSPECTRUM);
         }
         pView->PostMessage(WM_SHOWINTTIME);
@@ -1652,8 +1788,13 @@ void CSpectrometer::GetCurrentTimeFromComputerClock(novac::CDateTime& result)
 
 unsigned int CSpectrometer::GetProcessedSpectrum(double* dst, unsigned int maxNofElements, int chn) const
 {
-    const unsigned int length = std::min(maxNofElements, (unsigned int)MAX_SPECTRUM_LENGTH);
-    memcpy(dst, this->m_spectrum[chn], MAX_SPECTRUM_LENGTH * sizeof(double));
+    if (chn < 0 || chn >= m_spectrum.NumberOfChannels())
+    {
+        return 0U; // invalid input parameter
+    }
+
+    const unsigned int length = std::min(maxNofElements, (unsigned int)m_spectrum.SpectrumLength());
+    memcpy(dst, this->m_spectrum.data[chn].data(), MAX_SPECTRUM_LENGTH * sizeof(double));
     return length;
 }
 
@@ -1666,8 +1807,9 @@ void CSpectrometer::ShowMessageBox(CString message, CString label) const
     }
 }
 
-void CSpectrometer::CreateSpectrum(CSpectrum& spectrum, const double* spec, const std::string& startDate, long startTime, long elapsedSecond) {
-    memcpy((void*)spectrum.I, (void*)spec, sizeof(double) * MAX_SPECTRUM_LENGTH);
+void CSpectrometer::CreateSpectrum(CSpectrum& spectrum, const std::vector<double>& spec, const std::string& startDate, long startTime, long elapsedSecond)
+{
+    memcpy((void*)spectrum.I, (void*)spec.data(), sizeof(double) * std::min((size_t)MAX_SPECTRUM_LENGTH, spec.size()));
     spectrum.length = m_detectorSize;
     spectrum.exposureTime = m_integrationTime;
     spectrum.date = startDate;
@@ -1680,7 +1822,8 @@ void CSpectrometer::CreateSpectrum(CSpectrum& spectrum, const double* spec, cons
     spectrum.boardTemperature = boardTemperature;
     spectrum.detectorTemperature = detectorTemperature;
     spectrum.gpsStatus = "NA";
-    if (m_useGps) {
+    if (m_useGps)
+    {
         spectrum.SetStartTime(m_spectrumGpsData[m_spectrumCounter].time);
         spectrum.SetStopTime(m_spectrumGpsData[m_spectrumCounter].time + elapsedSecond);
         spectrum.lat = m_spectrumGpsData[m_spectrumCounter].latitude;
@@ -1690,7 +1833,8 @@ void CSpectrometer::CreateSpectrum(CSpectrum& spectrum, const double* spec, cons
         spectrum.speed = m_spectrumGpsData[m_spectrumCounter].speed;
         spectrum.course = m_spectrumGpsData[m_spectrumCounter].course;
     }
-    else {
+    else
+    {
         spectrum.SetStartTime(startTime);
         spectrum.SetStopTime(startTime + elapsedSecond);
     }

@@ -183,6 +183,7 @@
     <ClCompile Include="src\Flux\WindField.cpp" />
     <ClCompile Include="src\GPS.cpp" />
     <ClCompile Include="src\GpsData.cpp" />
+    <ClCompile Include="src\Measurement\MeasuredSpectrum.cpp" />
     <ClCompile Include="src\Measurement\SpectrometerInterface.cpp" />
     <ClCompile Include="src\Measurement\SpectrumUtils.cpp" />
   </ItemGroup>

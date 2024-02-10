@@ -26,5 +26,8 @@
     <ClCompile Include="UnitTests_GpsData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="UnitTests_MeasuredSpectrum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

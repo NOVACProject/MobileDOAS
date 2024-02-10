@@ -140,6 +140,9 @@
     <ClCompile Include="src\DualBeam\WindSpeedCalculator.cpp">
       <Filter>Source Files\DualBeam</Filter>
     </ClCompile>
+    <ClCompile Include="src\Measurement\MeasuredSpectrum.cpp">
+      <Filter>Source Files\Measurement</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.md" />

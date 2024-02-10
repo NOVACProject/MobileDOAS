@@ -15,9 +15,10 @@ CMeasurement_View::~CMeasurement_View(void)
 {
 }
 
-void CMeasurement_View::Run() {
-    double scanResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
-    double tmpSpec[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
+void CMeasurement_View::Run()
+{
+    mobiledoas::MeasuredSpectrum scanResult;
+    mobiledoas::MeasuredSpectrum tmpSpec;
 
     ShowMessageBox("START", "NOTICE");
 
@@ -58,15 +59,13 @@ void CMeasurement_View::Run() {
         GetSpectrumInfo(scanResult);
 
         // Copy the spectrum to the local variables
-        for (int i = 0; i < m_NChannels; ++i) {
-            memcpy((void*)tmpSpec[i], (void*)scanResult[i], sizeof(double) * MAX_SPECTRUM_LENGTH);
-            memcpy((void*)m_curSpectrum[i], (void*)scanResult[i], sizeof(double) * MAX_SPECTRUM_LENGTH);// for plot
-        }
+        scanResult.CopyTo(tmpSpec);
+        scanResult.CopyTo(m_curSpectrum);
 
         /* -------------- IF THE MEASURED SPECTRUM WAS A NORMAL SPECTRUM ------------- */
 
         for (int i = 0; i < m_NChannels; ++i) {
-            m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(tmpSpec[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
+            m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(tmpSpec.data[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
         }
 
         if (m_specInfo->isDark)
@@ -84,7 +83,7 @@ void CMeasurement_View::Run() {
         CountFlux(m_windSpeed, m_windAngle);
     }
 
-    memset((void*)scanResult, 0, sizeof(double) * 4096);
+    scanResult.SetToZero();
     m_scanNum++;
 
     // we have to call this before exiting the application otherwise we'll have trouble next time we start...

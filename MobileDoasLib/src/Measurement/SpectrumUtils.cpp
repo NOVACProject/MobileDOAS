@@ -2,17 +2,24 @@
 #include <vector>
 #include <numeric>
 
+namespace mobiledoas
+{
 
-bool mobiledoas::CheckIfDark(double spectrum[MAX_SPECTRUM_LENGTH], int detectorSize) {
+bool CheckIfDark(const std::vector<double>& spectrum)
+{
+    int detectorSize = static_cast<int>(spectrum.size());
+
     // consider pixels 50 to 70. Remove the highest 3 in case they are 'hot'. Then calculate the average:
     std::vector<double> vec;
     double m_darkIntensity;
     double m_spectrumIntensity;
 
-    for (int i = 50; i < 70; i++) {
+    for (int i = 50; i < 70; i++)
+    {
         vec.push_back(spectrum[i]);
     }
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i++)
+    {
         vec.erase(max_element(vec.begin(), vec.end()));
     }
     m_darkIntensity = std::accumulate(vec.begin(), vec.end(), 0.0) / vec.size();
@@ -21,10 +28,12 @@ bool mobiledoas::CheckIfDark(double spectrum[MAX_SPECTRUM_LENGTH], int detectorS
     vec.clear();
     int start = int(floor(detectorSize / 2) - 10);
     int end = int(floor(detectorSize / 2) + 10);
-    for (int i = start; i < end; i++) {
+    for (int i = start; i < end; i++)
+    {
         vec.push_back(spectrum[i]);
     }
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i++)
+    {
         vec.erase(max_element(vec.begin(), vec.end()));
     }
     m_spectrumIntensity = std::accumulate(vec.begin(), vec.end(), 0.0) / vec.size();
@@ -32,16 +41,19 @@ bool mobiledoas::CheckIfDark(double spectrum[MAX_SPECTRUM_LENGTH], int detectorS
     // the spectrum is considered dark if the center intensity is less than twice as high as the dark intensity.
     // this should be applicable to any spectrometer, as long as pixels 50 to 70 are dark (which is true for NOVAC spectrometers).
     double ratio = m_spectrumIntensity / m_darkIntensity;
-    if (ratio > 2.0) {
+    if (ratio > 2.0)
+    {
         return false;
     }
-    else {
+    else
+    {
         return true;
     }
 }
 
 // TODO: This needs tests and validation of the input parameters
-long mobiledoas::AverageIntensity(double* pSpectrum, long specCenter, long specCenterHalfWidth) {
+long AverageIntensity(const std::vector<double>& spectrum, long specCenter, long specCenterHalfWidth)
+{
 
     double sum = 0.0;
     long num;
@@ -51,8 +63,9 @@ long mobiledoas::AverageIntensity(double* pSpectrum, long specCenter, long specC
     if (specCenter >= MAX_SPECTRUM_LENGTH - specCenterHalfWidth)
         specCenter = MAX_SPECTRUM_LENGTH - 2 * specCenterHalfWidth;
 
-    for (int j = specCenter - specCenterHalfWidth; j < specCenter + specCenterHalfWidth; j++) {
-        sum += pSpectrum[j];
+    for (int j = specCenter - specCenterHalfWidth; j < specCenter + specCenterHalfWidth; j++)
+    {
+        sum += spectrum[j];
     }
 
     num = 2 * specCenterHalfWidth;
@@ -62,10 +75,24 @@ long mobiledoas::AverageIntensity(double* pSpectrum, long specCenter, long specC
 }
 
 // TODO: This needs tests and validation of the input parameters
-double mobiledoas::GetOffset(double spectrum[MAX_SPECTRUM_LENGTH]) {
+double GetOffset(double spectrum[MAX_SPECTRUM_LENGTH])
+{
 
     double offset = 0.0;
-    for (int i = 6; i < 18; ++i) {
+    for (int i = 6; i < 18; ++i)
+    {
+        offset += spectrum[i];
+    }
+    offset /= 12;
+
+    return offset;
+}
+
+double GetOffset(const std::vector<double>& spectrum)
+{
+    double offset = 0.0;
+    for (int i = 6; i < 18; ++i)
+    {
         offset += spectrum[i];
     }
     offset /= 12;
@@ -74,7 +101,7 @@ double mobiledoas::GetOffset(double spectrum[MAX_SPECTRUM_LENGTH]) {
 }
 
 // TODO: This needs tests and validation of the input parameters
-int mobiledoas::CountRound(long timeResolution, long integrationTimeMs, long readoutDelay, long maximumAveragesInSpectrometer, mobiledoas::SpectrumSummation& result)
+int CountRound(long timeResolution, long integrationTimeMs, long readoutDelay, long maximumAveragesInSpectrometer, SpectrumSummation& result)
 {
 
     const long gpsDelay = 10;
@@ -97,7 +124,8 @@ int mobiledoas::CountRound(long timeResolution, long integrationTimeMs, long rea
 
         // Test the different possibilities for splitting the co-adds beteween the computer and the spectrometer
         //  and return the variant which gives the maximum number of readouts.
-        for (sumOne = 1; sumOne <= 15; sumOne++) {
+        for (sumOne = 1; sumOne <= 15; sumOne++)
+        {
             nRound = (timeResolution - gpsDelay) / (sumOne * integrationTimeMs + readoutDelay);
             rounds[sumOne - 1] = nRound;
             long totalTime = (sumOne * integrationTimeMs + readoutDelay) * nRound + gpsDelay;
@@ -107,9 +135,12 @@ int mobiledoas::CountRound(long timeResolution, long integrationTimeMs, long rea
         double maxSpecPerTime = nSpec[0] / (double)results[0];
         int index = 0;
 
-        for (int i = 1; i < 15; ++i) {
-            if (rounds[i - 1] > 0) {
-                if (results[i] <= 1.1 * timeResolution && nSpec[i] / (double)results[i] >= maxSpecPerTime) {
+        for (int i = 1; i < 15; ++i)
+        {
+            if (rounds[i - 1] > 0)
+            {
+                if (results[i] <= 1.1 * timeResolution && nSpec[i] / (double)results[i] >= maxSpecPerTime)
+                {
                     maxSpecPerTime = nSpec[i] / (double)results[i];
                     index = i;
                 }
@@ -118,7 +149,8 @@ int mobiledoas::CountRound(long timeResolution, long integrationTimeMs, long rea
 
         sumOne = index + 1;
         nRound = (timeResolution - gpsDelay) / (sumOne * integrationTimeMs + readoutDelay);
-        if (nRound <= 0) {
+        if (nRound <= 0)
+        {
             sumOne = 1;
             nRound = 1;
         }
@@ -128,4 +160,6 @@ int mobiledoas::CountRound(long timeResolution, long integrationTimeMs, long rea
     result.SumInSpectrometer = sumOne;
 
     return nRound;
+}
+
 }

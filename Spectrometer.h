@@ -4,6 +4,7 @@
 #include <MobileDoasLib/Measurement/SpectrometerInterface.h>
 #include <MobileDoasLib/Measurement/SpectrumUtils.h>
 #include <MobileDoasLib/ReferenceFitResult.h>
+#include <MobileDoasLib/Measurement/MeasuredSpectrum.h>
 
 #include <memory>
 #include <limits>
@@ -33,8 +34,9 @@
 const enum SPECTROMETER_MODE { MODE_TRAVERSE, MODE_WIND, MODE_VIEW, MODE_DIRECTORY };
 
 // Forward declarations
-namespace novac {
-    class CDateTime;
+namespace novac
+{
+class CDateTime;
 }
 class CSpectrum;
 
@@ -47,7 +49,6 @@ class CSpectrum;
     and CMeasurement_View).
 */
 
-
 // TODO: Try to clean up the storing of the results here. The evaluated columns from the master channel are stored in m_fitRegion[idx].vColumn[0],
 // the corresponding errors in m_fitRegion[idx].vColumn[1] and the intensities of these spectra in m_intensityOfMeasuredSpectrum...
 class CSpectrometer
@@ -58,7 +59,8 @@ protected:
             on specific pixel-range in a measured spectrum. The FitRegion-object
             contains all information needed to perform the fit and is able to store
             the result of the fit. */
-    typedef struct FitRegion {
+    typedef struct FitRegion
+    {
         Evaluation::CFitWindow  window;
         Evaluation::CEvaluation* eval[MAX_N_CHANNELS];
         CVector vColumn[6]; /* The evaluation results from the master channel [col, colError, shift, shiftError, squeeze, squeezeError] */
@@ -141,7 +143,7 @@ public:
     /** The scaled (and possibly shifted) references that were fitted
         to the measured spectrum. This is used for plotting mostly.
         TODO: This should not be publicly available. */
-    double m_fitResult[MAX_FIT_WINDOWS][MAX_SPECTRUM_LENGTH];
+    mobiledoas::MeasuredSpectrum m_fitResult;
 
     /** Retrieves the last collected spectrum from the given channel */
     std::vector<double> GetSpectrum(int channel) const;
@@ -179,7 +181,7 @@ public:
     void GetNSpecAverage(int& averageInSpectrometer, int& averageInComputer);
 
     /* Create Spectrum data object. */
-    void CreateSpectrum(CSpectrum& spectrum, const double* spec, const std::string& startDate, long startTime, long elapsedSecond);
+    void CreateSpectrum(CSpectrum& spectrum, const std::vector<double>& spec, const std::string& startDate, long startTime, long elapsedSecond);
 
     /** This retrieves a list of all spectrometers that are connected to this computer
         Notice that this will not attempt to rebuild the list. */
@@ -197,13 +199,15 @@ public:
 
     /** Retrieves the lower range for the fit region for
         fit window number 'region' */
-    inline int GetFitLow(int region = 0) const {
+    inline int GetFitLow(int region = 0) const
+    {
         return m_fitRegion[region].window.fitLow;
     }
 
     /** Retrieves the upper range for the fit region for
         fit window number 'region' */
-    inline int GetFitHigh(int region = 0) const {
+    inline int GetFitHigh(int region = 0) const
+    {
         return m_fitRegion[region].window.fitHigh;
     }
 
@@ -213,16 +217,19 @@ public:
 
     /** Retrieves the number of fit regions that we are evaluating
         each spectrum in */
-    inline int GetFitRegionNum() const {
+    inline int GetFitRegionNum() const
+    {
         return m_fitRegionNum;
     }
 
-    long GetNumberOfSpectraAcquired() const {
+    long GetNumberOfSpectraAcquired() const
+    {
         return m_scanNum;
     }
 
     /** Retrieves the name of the fit region with the given index. */
-    inline const CString& GetFitWindowName(int windowNum) const {
+    inline const CString& GetFitWindowName(int windowNum) const
+    {
         return m_fitRegion[windowNum].window.name;
     }
 
@@ -257,7 +264,7 @@ protected:
         @return 0 on success
         @return 1 if the collection failed or the collection should stop
          */
-    int Scan(int sumInComputer, int sumInSpectrometer, double pResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]);
+    int Scan(int sumInComputer, int sumInSpectrometer, mobiledoas::MeasuredSpectrum& result);
 
     /** the desired time resolution of the measurement
         (i.e. how often a spectrum should) be stored to file. In milliseconds */
@@ -316,7 +323,7 @@ protected:
     BOOL  m_adjustIntegrationTime;
 
     /** fills up the 'specInfo' structure with information from the supplied spectrum */
-    void GetSpectrumInfo(double spectrum[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH]);
+    void GetSpectrumInfo(const mobiledoas::MeasuredSpectrum& spectrum);
 
     /* -------  The spectra ----------- */
 
@@ -347,7 +354,7 @@ protected:
         @param pDark - the dark spectrum(-a) to use (for the measured spectrum,
             the sky should already be dark-corrected
         @param pSpectrum - the spectrum to evaluate.  */
-    void DoEvaluation(double pSky[][MAX_SPECTRUM_LENGTH], double pDark[][MAX_SPECTRUM_LENGTH], double pSpectrum[][MAX_SPECTRUM_LENGTH]);
+    void DoEvaluation(mobiledoas::MeasuredSpectrum& sky, mobiledoas::MeasuredSpectrum& dark, mobiledoas::MeasuredSpectrum& spectrum);
 
     /** Copies the current sky-spectrum to 'tmpSky' */
     void GetSky();
@@ -505,32 +512,32 @@ protected:
     /* -------  The spectra ----------- */
 
     /** The last dark-spectrum measured */
-    double m_dark[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
+    mobiledoas::MeasuredSpectrum m_dark;
 
     /** The last dark-current measured (only used for adaptive integration times) */
-    double m_darkCur[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
+    mobiledoas::MeasuredSpectrum m_darkCur;
 
     /** The last offset-spectrum measured (only used for adaptive integration times) */
-    double m_offset[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
+    mobiledoas::MeasuredSpectrum m_offset;
 
     /** The measured sky-spectrum that we're using to evaluate the spectra */
-    double m_sky[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
+    mobiledoas::MeasuredSpectrum m_sky;
 
     /** This is a temporary copy of the dark-spectrum */
-    double m_tmpDark[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
+    mobiledoas::MeasuredSpectrum m_tmpDark;
 
     /** This is a temporary copy of the sky-spectrum */
-    double m_tmpSky[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
+    mobiledoas::MeasuredSpectrum m_tmpSky;
 
     /** a copy of the last measured spectrum, used for plotting on the screen */
-    double m_curSpectrum[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH] = { {0} };
+    mobiledoas::MeasuredSpectrum m_curSpectrum;
 
     /** The wavelengths for each pixel in the measured spectrum */
-    double m_wavelength[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
+    mobiledoas::MeasuredSpectrum m_wavelength;
 
     /** The highpass filtered measured spectrum.
     This is used for plotting mostly */
-    double m_spectrum[MAX_FIT_WINDOWS][MAX_SPECTRUM_LENGTH];
+    mobiledoas::MeasuredSpectrum m_spectrum;
 
 
     // ---------------------------------------------------------------------------------------
@@ -549,7 +556,8 @@ protected:
         of collected spectra. So far this only contains the
         (electronic)offset of the spectrum and whether a given spectrum
         is dark or not. */
-    typedef struct SpectrumInfo {
+    typedef struct SpectrumInfo
+    {
         /** The electronic offset of the spectrum, measured in channel 2 - 24 */
         double offset = 0.0;
 

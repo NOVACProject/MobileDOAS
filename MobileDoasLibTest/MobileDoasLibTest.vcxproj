@@ -24,6 +24,7 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="UnitTests_GpsData.cpp" />
+    <ClCompile Include="UnitTests_MeasuredSpectrum.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MobileDoasLib\MobileDoasLib.vcxproj">

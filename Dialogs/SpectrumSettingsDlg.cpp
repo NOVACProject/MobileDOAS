@@ -139,16 +139,19 @@ void CSpectrumSettingsDlg::SaveDialogDataToSpectrometer() {
 }
 
 /** Saves the last spectrum to file */
-void CSpectrumSettingsDlg::SaveSpectrum() {
+void CSpectrumSettingsDlg::SaveSpectrum()
+{
 
     // let the user browse for a place where to store the spectrum
     CString stdFileName;
-    if (!Common::BrowseForFile_SaveAs("Spectrum file\0*.std", stdFileName)) {
+    if (!Common::BrowseForFile_SaveAs("Spectrum file\0*.std", stdFileName))
+    {
         return;
     }
 
     // add the file-ending .std if the user hasn't done so
-    if (!Equals(stdFileName.Right(4), ".std")) {
+    if (!Equals(stdFileName.Right(4), ".std"))
+    {
         stdFileName.AppendFormat(".std");
     }
 
@@ -159,7 +162,7 @@ void CSpectrumSettingsDlg::SaveSpectrum() {
     CSpectrum spectrum;
     int channel = m_Spectrometer->m_spectrometerChannel;
     std::vector<double> spectrumData = m_Spectrometer->GetSpectrum(channel);
-    m_Spectrometer->CreateSpectrum(spectrum, spectrumData.data(), startDate, startTime, 0);
+    m_Spectrometer->CreateSpectrum(spectrum, spectrumData, startDate, startTime, 0);
 
     // write the file
     CSpectrumIO::WriteStdFile(stdFileName, spectrum);

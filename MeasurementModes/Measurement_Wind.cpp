@@ -16,9 +16,10 @@ CMeasurement_Wind::~CMeasurement_Wind(void)
 {
 }
 
-void CMeasurement_Wind::Run() {
+void CMeasurement_Wind::Run()
+{
     CString cfgFile;
-    double scanResult[MAX_N_CHANNELS][MAX_SPECTRUM_LENGTH];
+    mobiledoas::MeasuredSpectrum scanResult(MAX_N_CHANNELS, MAX_SPECTRUM_LENGTH);
     CSpectrum measuredSpectrum[MAX_N_CHANNELS];
 
     std::string startDate;
@@ -37,7 +38,8 @@ void CMeasurement_Wind::Run() {
     ApplySettings();
 
     /* Check the settings in the configuration file */
-    if (CheckSettings()) {
+    if (CheckSettings())
+    {
         ShowMessageBox("Error in configuration settings.", "Error");
         return;
     }
@@ -46,12 +48,14 @@ void CMeasurement_Wind::Run() {
     UpdateMobileLog();
 
     /* Set the delays and initialize the USB-Connection */
-    if (!TestSpectrometerConnection()) {
+    if (!TestSpectrometerConnection())
+    {
         m_isRunning = false;
         return;
     }
 
-    if (m_spectrometerMode != MODE_VIEW) {
+    if (m_spectrometerMode != MODE_VIEW)
+    {
         CreateDirectories();
 
         /* Start the GPS collection thread */
@@ -61,7 +65,8 @@ void CMeasurement_Wind::Run() {
         }
     }
 
-    if (m_spectrometerMode == MODE_VIEW) {
+    if (m_spectrometerMode == MODE_VIEW)
+    {
 
         this->m_scanNum = 2; // start directly on the measured spectra, skip dark and sky
     }
@@ -71,15 +76,18 @@ void CMeasurement_Wind::Run() {
     int SKY_SPECTRUM = 2;
 
     // Set the integration time
-    if (0 == m_fixexptime) {
+    if (0 == m_fixexptime)
+    {
         ShowMessageBox("Please point the spectrometer to sky", "Notice");
         AdjustIntegrationTime();
     }
-    else {
+    else
+    {
         m_integrationTime = (short)m_fixexptime;
     }
 
-    if (m_spectrometerMode != MODE_VIEW) {
+    if (m_spectrometerMode != MODE_VIEW)
+    {
         /* Calculate the number of spectra to integrate in spectrometer and in computer */
         m_scanNum++;
         mobiledoas::SpectrumSummation spectrumSummation;
@@ -92,7 +100,8 @@ void CMeasurement_Wind::Run() {
         m_statusMsg.Format("Measuring the dark spectrum");
         pView->PostMessage(WM_STATUSMSG);
     }
-    else {
+    else
+    {
         m_sumInComputer = 1;
         m_sumInSpectrometer = 1;
         if (0 != m_fixexptime)
@@ -104,7 +113,8 @@ void CMeasurement_Wind::Run() {
 
 
     /** --------------------- THE MEASUREMENT LOOP -------------------------- */
-    while (m_isRunning) {
+    while (m_isRunning)
+    {
 
 #ifdef _DEBUG
         cStart = clock();
@@ -118,7 +128,8 @@ void CMeasurement_Wind::Run() {
 
         /** ---------------- if the user wants to change the exposure time,
                                     calculate a new exposure time. --------------------- */
-        if (m_adjustIntegrationTime && m_fixexptime >= 0) {
+        if (m_adjustIntegrationTime && m_fixexptime >= 0)
+        {
             m_integrationTime = AdjustIntegrationTime();
             pView->PostMessage(WM_SHOWDIALOG, CHANGED_EXPOSURETIME);
             m_adjustIntegrationTime = FALSE;
@@ -137,7 +148,8 @@ void CMeasurement_Wind::Run() {
         cStart = clock();
 
         // Get the next spectrum
-        if (Scan(m_sumInComputer, m_sumInSpectrometer, scanResult)) {
+        if (Scan(m_sumInComputer, m_sumInSpectrometer, scanResult))
+        {
             CloseSpectrometerConnection();
             return;
         }
@@ -151,12 +163,11 @@ void CMeasurement_Wind::Run() {
 #endif
 
         // Copy the spectrum to the local variables
-        for (int i = 0; i < m_NChannels; ++i) {
-            memcpy((void*)m_curSpectrum[i], (void*)scanResult[i], sizeof(double) * MAX_SPECTRUM_LENGTH);// for plot
-        }
+        scanResult.CopyTo(m_curSpectrum); // for plot
 
         /* ----------------- Save the spectrum(-a) -------------------- */
-        for (int i = 0; i < m_NChannels; ++i) {
+        for (int i = 0; i < m_NChannels; ++i)
+        {
             CreateSpectrum(measuredSpectrum[i], scanResult[i], startDate, startTime, elapsedSecond);
             CSpectrumIO::WriteStdFile(m_stdfileName[i], measuredSpectrum[i]);
         }
@@ -167,12 +178,14 @@ void CMeasurement_Wind::Run() {
         cStart = clock();
 #endif
 
-        if (m_scanNum == DARK_SPECTRUM) {
+        if (m_scanNum == DARK_SPECTRUM)
+        {
             /* -------------- IF THE MEASURED SPECTRUM WAS THE DARK SPECTRUM ------------- */
-            memcpy((void*)m_dark, (void*)scanResult, sizeof(double) * MAX_N_CHANNELS * MAX_SPECTRUM_LENGTH);
+            scanResult.CopyTo(m_dark);
 
             pView->PostMessage(WM_DRAWSPECTRUM);//draw dark spectrum
-            for (int i = 0; i < m_NChannels; ++i) {
+            for (int i = 0; i < m_NChannels; ++i)
+            {
                 m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(scanResult[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
             }
             m_statusMsg.Format("Average value around center channel(dark) %d: %d", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
@@ -193,23 +206,27 @@ void CMeasurement_Wind::Run() {
             pView->PostMessage(WM_STATUSMSG);
 
         }
-        else if (m_scanNum == SKY_SPECTRUM) {
+        else if (m_scanNum == SKY_SPECTRUM)
+        {
             /* -------------- IF THE MEASURED SPECTRUM WAS THE SKY SPECTRUM ------------- */
 
-            memcpy((void*)m_sky, (void*)scanResult, sizeof(double) * MAX_N_CHANNELS * MAX_SPECTRUM_LENGTH);
+            scanResult.CopyTo(m_sky);
 
             pView->PostMessage(WM_DRAWSPECTRUM);//draw sky spectrum
 
-            for (int i = 0; i < m_NChannels; ++i) {
+            for (int i = 0; i < m_NChannels; ++i)
+            {
                 m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(scanResult[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
 
                 // remove the dark spectrum
-                for (int iterator = 0; iterator < MAX_SPECTRUM_LENGTH; ++iterator) {
+                for (int iterator = 0; iterator < MAX_SPECTRUM_LENGTH; ++iterator)
+                {
                     m_sky[i][iterator] -= m_dark[i][iterator];
                 }
 
                 // Tell the evaluator(s) that the dark-spectrum does not need to be subtracted from the sky-spectrum
-                for (int fitRgn = 0; fitRgn < m_fitRegionNum; ++fitRgn) {
+                for (int fitRgn = 0; fitRgn < m_fitRegionNum; ++fitRgn)
+                {
                     m_fitRegion[fitRgn].eval[i]->m_subtractDarkFromSky = false;
                 }
             }
@@ -223,12 +240,13 @@ void CMeasurement_Wind::Run() {
             // If we should do an automatic calibration, then do so now
             if (m_conf->m_calibration.m_enable)
             {
-                RunInstrumentCalibration(m_sky[0], nullptr, m_detectorSize);
+                RunInstrumentCalibration(m_sky[0].data(), nullptr, m_detectorSize);
             }
 
             m_statusMsg.Format("Reading References");
             pView->PostMessage(WM_STATUSMSG);
-            if (ReadReferenceFiles()) {
+            if (ReadReferenceFiles())
+            {
 
                 // we have to call this before exiting the application otherwise we'll have trouble next time we start...
                 CloseSpectrometerConnection();
@@ -247,10 +265,12 @@ void CMeasurement_Wind::Run() {
 #endif
 
         }
-        else if (m_scanNum > SKY_SPECTRUM) {
+        else if (m_scanNum > SKY_SPECTRUM)
+        {
             /* -------------- IF THE MEASURED SPECTRUM WAS A NORMAL SPECTRUM ------------- */
 
-            for (int i = 0; i < m_NChannels; ++i) {
+            for (int i = 0; i < m_NChannels; ++i)
+            {
                 m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(scanResult[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
             }
 
@@ -258,21 +278,27 @@ void CMeasurement_Wind::Run() {
             GetSpectrumInfo(scanResult);
 
             if (m_specInfo->isDark)
+            {
                 m_statusMsg.Format("Average value around center channel %d: %d (Dark)", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
+            }
             else
+            {
                 m_statusMsg.Format("Average value around center channel %d: %d", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
+            }
 
             pView->PostMessage(WM_STATUSMSG);
             m_intensityOfMeasuredSpectrum.push_back(m_averageSpectrumIntensity[0]);
 
-            if (m_spectrometerMode != MODE_VIEW) {
+            if (m_spectrometerMode != MODE_VIEW)
+            {
                 /* Evaluate */
                 GetDark();
                 GetSky();
                 DoEvaluation(m_tmpSky, m_tmpDark, scanResult);
 
             }
-            else {
+            else
+            {
                 pView->PostMessage(WM_DRAWSPECTRUM);
             }
         }
@@ -292,7 +318,7 @@ void CMeasurement_Wind::Run() {
         timerFile = 0;
 #endif
 
-        memset((void*)scanResult, 0, sizeof(double) * 4096);
+        scanResult.SetToZero();
         m_scanNum++;
     }
 
