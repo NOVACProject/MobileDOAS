@@ -123,7 +123,7 @@ public:
     /** The model of the spectrometer */
     std::string m_spectrometerModel;
 
-    /** The dynamic range of the spectrometer */
+    /* The dynamic range of the spectrometer, i.e.the maximum(absolute) intensity of one spectrum. */
     long m_spectrometerDynRange;
 
     /** The number of pixels on the spectrometer's detector.
@@ -301,19 +301,13 @@ protected:
         @return the set integration time (in milli seconds) */
     short AdjustIntegrationTime();
 
-    /** Makes adjustments to the integration time (m_integrationTime) so that the
-        intensity of the spectra are at the desired percent of max.
-        @return the set integration time (in milli seconds) */
-    short AdjustIntegrationTimeToLastIntensity(long maximumIntensity);
-
     /** Calculates the integration time,
       given the intensity of the dark and the sky spectra
       and the exposure time they were collected with*/
     long GetInttime(long pSky, long pDark, int intT = 100);
 
-    /** The desired intensity of the measured spectra,
-        in fractions of the maximum value */
-    double m_percent;
+    /** The desired saturation ratio of the measured spectra, in the range 0.0 to 1.0 */
+    double m_desiredSaturationRatio;
 
     /** if m_fixexptime > 0 the integration time will be set to
           m_fixexptime, else it will be judged automatically. */
@@ -520,7 +514,8 @@ protected:
     /** The last offset-spectrum measured (only used for adaptive integration times) */
     mobiledoas::MeasuredSpectrum m_offset;
 
-    /** The measured sky-spectrum that we're using to evaluate the spectra */
+    /* The measured sky-spectrum that we're using to evaluate the spectra.
+        Notice that this is already dark-corrected.*/
     mobiledoas::MeasuredSpectrum m_sky;
 
     /** This is a temporary copy of the dark-spectrum */
@@ -622,6 +617,16 @@ protected:
         Depending on the settings, this may update the references used for evaluation and may hence make it possible to re-read the references.
         @return true if the references were updated. */
     bool RunInstrumentCalibration(const double* measuredSpectrum, const double* darkSpectrum, size_t spectrumLength);
+
+    /* UpdateSpectrumAverageIntensity calculates the average intensity of the last measured spectrum and
+        updates m_averageSpectrumIntensity with this value and informs the user about the results.
+        If 'checkIfDark' is set to true, the user will be informed if 'm_specInfo->isDark' is true (i.e. the spectrum is judged to be dark). */
+    void UpdateSpectrumAverageIntensity(mobiledoas::MeasuredSpectrum& scanResult);
+
+    /* UpdateUserAboutSpectrumAverageIntensity informs the user about the value of m_averageSpectrumIntensity and
+        should hence only be called _after_ UpdateSpectrumAverageIntensity has been called.
+        If 'checkIfDark' is set to true, the user will be informed if 'm_specInfo->isDark' is true (i.e.the spectrum is judged to be dark). */
+    void UpdateUserAboutSpectrumAverageIntensity(const std::string& spectrumName, bool checkIfDark = false);
 
 private:
 

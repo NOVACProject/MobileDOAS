@@ -29,5 +29,8 @@
     <ClCompile Include="UnitTests_MeasuredSpectrum.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="UnitTests_SpectrumUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

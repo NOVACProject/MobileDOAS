@@ -289,7 +289,7 @@ void CSpectrometer::ApplySettings()
     {
         m_fixexptime = 0;
     }
-    this->m_percent = m_conf->m_percent / 100.0;
+    this->m_desiredSaturationRatio = std::max(0.0, std::min(1.0, m_conf->m_percent / 100.0));
     this->m_timeResolution = m_conf->m_timeResolution;
 
     // The settings for the evaluation
@@ -440,7 +440,7 @@ long CSpectrometer::GetInttime(long pSky, long pDark, int intT)
 
     if (m_fixexptime <= 0)
     {
-        xRate = (m_spectrometerDynRange * m_percent - (double)pDark) / (double)pSky;
+        xRate = (m_spectrometerDynRange * m_desiredSaturationRatio - (double)pDark) / (double)pSky;
 
         if (xRate == 0.0)
             intTime = MAX_EXPOSURETIME;
@@ -1089,7 +1089,7 @@ void CSpectrometer::WriteBeginEvFile(int fitRegion)
     str5.AppendFormat("FIXSHIFT=%d\nFIXSQUEEZE=%d\n",
         m_fitRegion[fitRegion].window.ref[0].m_shiftOption == novac::SHIFT_TYPE::SHIFT_FIX, m_fitRegion[fitRegion].window.ref[0].m_squeezeOption == novac::SHIFT_TYPE::SHIFT_FIX);
     str6.Format("SPECCENTER=%d\nPERCENT=%f\nMAXCOLUMN=%f\nGASFACTOR=%f\n",
-        m_conf->m_specCenter, m_percent, m_maxColumn, m_gasFactor);
+        m_conf->m_specCenter, m_desiredSaturationRatio, m_maxColumn, m_gasFactor);
     for (int k = 0; k < m_fitRegion[fitRegion].window.nRef; ++k)
     {
         str6.AppendFormat("REFFILE=%s\n", m_fitRegion[fitRegion].window.ref[k].m_path.c_str());
@@ -1615,13 +1615,13 @@ short CSpectrometer::AdjustIntegrationTime()
         pView->PostMessage(WM_SHOWINTTIME);
 
         // Check if we have reached our goal
-        if (fabs(skyInt - m_spectrometerDynRange * m_percent) < 200)
+        if (fabs(skyInt - m_spectrometerDynRange * m_desiredSaturationRatio) < 200)
         {
             return m_integrationTime;
         }
 
         // Adjust the exposure time so that we come closer to the desired value
-        if (skyInt - m_spectrometerDynRange * m_percent > 0)
+        if (skyInt - m_spectrometerDynRange * m_desiredSaturationRatio > 0)
         {
             highLimit = m_integrationTime;
         }
@@ -1650,29 +1650,6 @@ short CSpectrometer::AdjustIntegrationTime()
     return m_integrationTime;
 }
 
-short CSpectrometer::AdjustIntegrationTimeToLastIntensity(long maximumIntensity)
-{
-    const double ratioTolerance = 0.3;
-    const double minTolerableRatio = std::max(0.0, (double)m_conf->m_saturationLow / 100.0);
-    const double maxTolerableRatio = std::min(1.0, (double)m_conf->m_saturationHigh / 100.0);
-
-    const double curSaturationRatio = maximumIntensity / (double)m_spectrometerDynRange;
-    if (curSaturationRatio >= minTolerableRatio && curSaturationRatio <= maxTolerableRatio)
-    {
-        // nothing needs to be done...
-        return m_integrationTime;
-    }
-
-    // Adjust the integration time
-    long desiredIntegrationTime = (curSaturationRatio < minTolerableRatio) ?
-        (long)round(m_integrationTime * (1.0 + ratioTolerance)) :
-        (long)round(m_integrationTime / (1.0 + ratioTolerance));
-
-    m_integrationTime = std::max((long)MIN_EXPOSURETIME, std::min(m_timeResolution, desiredIntegrationTime));
-
-    return m_integrationTime;
-}
-
 short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxExpTime)
 {
     mobiledoas::MeasuredSpectrum skySpec;
@@ -1695,7 +1672,7 @@ short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxEx
     {
         return -1;
     }
-    int int_short = mobiledoas::AverageIntensity(skySpec.data[0], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
+    const int intensityAtShortIntegrationTime = mobiledoas::AverageIntensity(skySpec.data[0], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
 
     m_integrationTime = (short)maxExpTime;
     // measure the intensity
@@ -1703,25 +1680,22 @@ short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxEx
     {
         return -1;
     }
-    int int_long = mobiledoas::AverageIntensity(skySpec.data[0], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
+    const int intensityAtLongIntegrationTime = mobiledoas::AverageIntensity(skySpec.data[0], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
 
     // This will only work if the spectrum is not saturated at the maximum exposure-time
-    if (int_long > 0.9 * m_spectrometerDynRange)
+    if (intensityAtLongIntegrationTime > 0.9 * m_spectrometerDynRange)
     {
         return AdjustIntegrationTime_Calculate(minExpTime, (maxExpTime - minExpTime) / 2);
     }
 
     // Calculate the exposure-time
-    m_integrationTime = (short)((m_spectrometerDynRange - int_short) * (maxExpTime - minExpTime) * m_percent / (int_long - int_short));
+    m_integrationTime = mobiledoas::EstimateNewIntegrationTime(
+        mobiledoas::SpectrumIntensityMeasurement(intensityAtShortIntegrationTime, m_spectrometerDynRange, minExpTime),
+        mobiledoas::SpectrumIntensityMeasurement(intensityAtLongIntegrationTime, m_spectrometerDynRange, maxExpTime),
+        m_desiredSaturationRatio,
+        MIN_EXPOSURETIME,
+        m_timeResolution);
 
-    if (m_integrationTime > m_timeResolution)
-    {
-        m_integrationTime = m_timeResolution;
-    }
-    if (m_integrationTime < MIN_EXPOSURETIME)
-    {
-        m_integrationTime = MIN_EXPOSURETIME;
-    }
 
     // Try out the calculated intensity to see if it works...
     if (Scan(1, m_sumInSpectrometer, skySpec))
@@ -1730,7 +1704,8 @@ short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxEx
     }
     int finalInt = mobiledoas::AverageIntensity(skySpec.data[0], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
 
-    int desiredInt = (int)(m_spectrometerDynRange * m_percent);
+    // TODO: There is a range of allowed intensities, use that instead!
+    int desiredInt = (int)(m_spectrometerDynRange * m_desiredSaturationRatio);
     if ((finalInt - desiredInt) / desiredInt > 0.2)
     {
         return -1;
@@ -1903,3 +1878,28 @@ bool CSpectrometer::RunInstrumentCalibration(const double* measuredSpectrum, con
     return referencesUpdated;
 }
 
+void CSpectrometer::UpdateSpectrumAverageIntensity(mobiledoas::MeasuredSpectrum& scanResult)
+{
+    for (int i = 0; i < m_NChannels; ++i)
+    {
+        m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(scanResult[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
+    }
+}
+
+void CSpectrometer::UpdateUserAboutSpectrumAverageIntensity(const std::string& spectrumName, bool checkIfDark)
+{
+    std::string fullSpectrumName = spectrumName.length() > 0 ? "(" + spectrumName + ")" : "";
+    if (checkIfDark && m_specInfo->isDark)
+    {
+        fullSpectrumName = fullSpectrumName + "(Dark)";
+    }
+
+    m_statusMsg.Format(
+        "Average value around center channel%s %d: %d (%.0lf%%)",
+        fullSpectrumName.c_str(),
+        m_conf->m_specCenter,
+        m_averageSpectrumIntensity[0],
+        100.0 * m_averageSpectrumIntensity[0] / m_spectrometerDynRange);
+
+    pView->PostMessage(WM_STATUSMSG);
+}

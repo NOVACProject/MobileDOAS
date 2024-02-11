@@ -111,7 +111,6 @@ void CMeasurement_Wind::Run()
         pView->PostMessage(WM_SHOWINTTIME);
     }
 
-
     /** --------------------- THE MEASUREMENT LOOP -------------------------- */
     while (m_isRunning)
     {
@@ -122,7 +121,6 @@ void CMeasurement_Wind::Run()
 
         SetFileName();
 
-        /* ------------ Get the date, time and position --------------- */
         GetCurrentDateAndTime(startDate, startTime);
 
 
@@ -184,15 +182,13 @@ void CMeasurement_Wind::Run()
             scanResult.CopyTo(m_dark);
 
             pView->PostMessage(WM_DRAWSPECTRUM);//draw dark spectrum
-            for (int i = 0; i < m_NChannels; ++i)
-            {
-                m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(scanResult[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
-            }
-            m_statusMsg.Format("Average value around center channel(dark) %d: %d", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
-            pView->PostMessage(WM_STATUSMSG);
 
-            /* Get the information about the spectrum */
+            UpdateSpectrumAverageIntensity(scanResult);
+
+            UpdateUserAboutSpectrumAverageIntensity("dark");
+
             GetSpectrumInfo(scanResult);
+
 #ifndef _DEBUG
             if (!m_specInfo->isDark)
             {
@@ -216,8 +212,6 @@ void CMeasurement_Wind::Run()
 
             for (int i = 0; i < m_NChannels; ++i)
             {
-                m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(scanResult[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
-
                 // remove the dark spectrum
                 _ASSERT(m_sky.SpectrumLength() == m_dark.SpectrumLength());
                 for (int iterator = 0; iterator < m_sky.SpectrumLength(); ++iterator)
@@ -232,10 +226,10 @@ void CMeasurement_Wind::Run()
                 }
             }
 
-            m_statusMsg.Format("Average value around center channel(sky) %d: %d", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
-            pView->PostMessage(WM_STATUSMSG);
+            UpdateSpectrumAverageIntensity(scanResult);
 
-            /* Get the information about the spectrum */
+            UpdateUserAboutSpectrumAverageIntensity("sky");
+
             GetSpectrumInfo(scanResult);
 
             // If we should do an automatic calibration, then do so now
@@ -248,7 +242,6 @@ void CMeasurement_Wind::Run()
             pView->PostMessage(WM_STATUSMSG);
             if (ReadReferenceFiles())
             {
-
                 // we have to call this before exiting the application otherwise we'll have trouble next time we start...
                 CloseSpectrometerConnection();
                 return;
@@ -270,22 +263,11 @@ void CMeasurement_Wind::Run()
         {
             /* -------------- IF THE MEASURED SPECTRUM WAS A NORMAL SPECTRUM ------------- */
 
-            for (int i = 0; i < m_NChannels; ++i)
-            {
-                m_averageSpectrumIntensity[i] = mobiledoas::AverageIntensity(scanResult[i], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
-            }
+            UpdateSpectrumAverageIntensity(scanResult);
 
-            /* Get the information about the spectrum */
             GetSpectrumInfo(scanResult);
 
-            if (m_specInfo->isDark)
-            {
-                m_statusMsg.Format("Average value around center channel %d: %d (Dark)", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
-            }
-            else
-            {
-                m_statusMsg.Format("Average value around center channel %d: %d", m_conf->m_specCenter, m_averageSpectrumIntensity[0]);
-            }
+            UpdateUserAboutSpectrumAverageIntensity("", true);
 
             pView->PostMessage(WM_STATUSMSG);
             m_intensityOfMeasuredSpectrum.push_back(m_averageSpectrumIntensity[0]);
@@ -305,7 +287,9 @@ void CMeasurement_Wind::Run()
         }
 
         if (m_spectrumCounter > 1)
+        {
             CountFlux(m_windSpeed, m_windAngle);
+        }
 
 #ifdef _DEBUG
         cFinish = clock();
