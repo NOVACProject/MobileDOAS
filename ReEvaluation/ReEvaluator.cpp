@@ -594,11 +594,14 @@ bool CReEvaluator::DoEvaluation()
                 evaluator.Evaluate(darkSpectrum.I, sky, curSpectrum.I);
 
                 // sum the residuals togheter to find enable us to discover if some reference has been forgotten
-                for (int tmpCounter = 0; tmpCounter < (fitHigh - fitLow); ++tmpCounter)
+                if (evaluator.m_residual.GetSize() > 0)
                 {
-                    m_residual[tmpCounter] = evaluator.m_residual.GetAt(tmpCounter);
-                    m_avgResidual[tmpCounter] += evaluator.m_residual.GetAt(tmpCounter);
-                    ++m_nAveragedInResidual;
+                    for (int tmpCounter = 0; tmpCounter < (fitHigh - fitLow); ++tmpCounter)
+                    {
+                        m_residual[tmpCounter] = evaluator.m_residual.GetAt(tmpCounter);
+                        m_avgResidual[tmpCounter] += evaluator.m_residual.GetAt(tmpCounter);
+                        ++m_nAveragedInResidual;
+                    }
                 }
 
                 // Get the result of the evaluation and write them to file

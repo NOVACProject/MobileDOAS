@@ -84,7 +84,8 @@ BOOL CReEval_FitWindowsDlg::OnInitDialog()
     // EXCEPTION: OCX Property Pages should return FALSE
 }
 
-void CReEval_FitWindowsDlg::InitReferenceFileControl() {
+void CReEval_FitWindowsDlg::InitReferenceFileControl()
+{
 
     // Get the dimensions of the reference frame
     CRect rect;
@@ -121,7 +122,8 @@ void CReEval_FitWindowsDlg::InitReferenceFileControl() {
     m_referenceGrid.SetEditable(TRUE);
 }
 
-void CReEval_FitWindowsDlg::PopulateReferenceFileControl() {
+void CReEval_FitWindowsDlg::PopulateReferenceFileControl()
+{
     int curWindow = m_windowList.GetCurSel();
 
     if (curWindow == -1)
@@ -134,7 +136,8 @@ void CReEval_FitWindowsDlg::PopulateReferenceFileControl() {
     m_referenceGrid.SetRowCount(window.nRef + 2);
 
     int i;
-    for (i = 0; i < window.nRef; ++i) {
+    for (i = 0; i < window.nRef; ++i)
+    {
 
         novac::CReferenceFile& ref = window.ref[i];
 
@@ -174,7 +177,8 @@ void CReEval_FitWindowsDlg::PopulateReferenceFileControl() {
 }
 
 /** Called when the user wants to remove a reference file */
-void CReEval_FitWindowsDlg::OnRemoveReference() {
+void CReEval_FitWindowsDlg::OnRemoveReference()
+{
 
     // save the data in the dialog
     UpdateData(TRUE);
@@ -194,11 +198,13 @@ void CReEval_FitWindowsDlg::OnRemoveReference() {
     int minRow = cellRange.GetMinRow() - 1;
     int nRows = cellRange.GetRowSpan();
 
-    if (nRows <= 0) {
+    if (nRows <= 0)
+    {
         return;
     }
     // move every reference file in the list down one step
-    for (int i = minRow; i < window.nRef; i++) {
+    for (int i = minRow; i < window.nRef; i++)
+    {
         window.ref[i] = window.ref[i + nRows];
     }
 
@@ -210,7 +216,8 @@ void CReEval_FitWindowsDlg::OnRemoveReference() {
 }
 
 /** Called when the user wants to insert a new reference file */
-void CReEval_FitWindowsDlg::OnInsertReference() {
+void CReEval_FitWindowsDlg::OnInsertReference()
+{
 
     // save the data in the dialog
     UpdateData(TRUE);
@@ -222,7 +229,8 @@ void CReEval_FitWindowsDlg::OnInsertReference() {
     Evaluation::CFitWindow& window = m_reeval->m_settings.m_window;
 
     // Check so that there is space for more references in this fit window
-    if (window.nRef == MAX_N_REFERENCES) {
+    if (window.nRef == MAX_N_REFERENCES)
+    {
         CString errorMessage;
         errorMessage.Format("Cannot insert more references. The maximum number of references in a fit window is %d", MAX_N_REFERENCES);
         MessageBox(errorMessage, "Cannot insert");
@@ -232,7 +240,8 @@ void CReEval_FitWindowsDlg::OnInsertReference() {
     // Let the user browse for the reference files
     Common common;
     std::vector<CString> filenames = common.BrowseForFiles();
-    for (int i = 0; i < filenames.size(); i++) {
+    for (int i = 0; i < filenames.size(); i++)
+    {
         const CString fileName = filenames[i];
 
         // The user has selected a new reference file, insert it into the list
@@ -243,27 +252,33 @@ void CReEval_FitWindowsDlg::OnInsertReference() {
         // 2. make a guess of the specie name
         CString specie;
         Common::GuessSpecieName(fileName, specie);
-        if (strlen(specie) != 0) {
+        if (strlen(specie) != 0)
+        {
             window.ref[window.nRef].m_specieName = std::string((LPCSTR)specie);
 
-            if (Equals(specie, "NO2")) {
+            if (Equals(specie, "NO2"))
+            {
                 window.ref[window.nRef].m_gasFactor = GASFACTOR_NO2;
             }
-            else if (Equals(specie, "O3")) {
+            else if (Equals(specie, "O3"))
+            {
                 window.ref[window.nRef].m_gasFactor = GASFACTOR_O3;
             }
-            else if (Equals(specie, "HCHO")) {
+            else if (Equals(specie, "HCHO"))
+            {
                 window.ref[window.nRef].m_gasFactor = GASFACTOR_HCHO;
             }
         }
 
         // 3. Set the shift and squeeze options for this reference
-        if (window.nRef == 0) {
+        if (window.nRef == 0)
+        {
             // If it is the first one, select 'optimal' 
             window.ref[window.nRef].m_shiftOption = novac::SHIFT_TYPE::SHIFT_FIX;
             window.ref[window.nRef].m_squeezeOption = novac::SHIFT_TYPE::SHIFT_FIX;
         }
-        else {
+        else
+        {
             window.ref[window.nRef].m_shiftOption = novac::SHIFT_TYPE::SHIFT_LINK;
             window.ref[window.nRef].m_shiftValue = 0;
             window.ref[window.nRef].m_squeezeOption = novac::SHIFT_TYPE::SHIFT_LINK;
@@ -274,7 +289,8 @@ void CReEval_FitWindowsDlg::OnInsertReference() {
         window.nRef += 1;
 
         // If this is the first reference inserted, also make a guess for the window name; if there isn't already a window name
-        if (window.nRef == 1 && strlen(specie) != 0 && window.name == "NEW") {
+        if (window.nRef == 1 && strlen(specie) != 0 && window.name == "NEW")
+        {
             window.name.Format("%s", specie);
             PopulateWindowList();
         }
@@ -286,7 +302,8 @@ void CReEval_FitWindowsDlg::OnInsertReference() {
 
 /** Called when the user wants to see the
             properties of one reference */
-void CReEval_FitWindowsDlg::OnShowProperties() {
+void CReEval_FitWindowsDlg::OnShowProperties()
+{
 
     // save the data in the dialog
     UpdateData(TRUE);
@@ -306,7 +323,8 @@ void CReEval_FitWindowsDlg::OnShowProperties() {
     int minRow = cellRange.GetMinRow() - 1;
     int nRows = cellRange.GetRowSpan();
 
-    if (nRows <= 0 || nRows > 1) { /* nothing selected or several lines selected */
+    if (nRows <= 0 || nRows > 1)
+    { /* nothing selected or several lines selected */
         MessageBox("Please select a reference file.", "Properties");
         return;
     }
@@ -322,7 +340,8 @@ void CReEval_FitWindowsDlg::OnShowProperties() {
 
 /** Called when the user wants to see the
     size of the references */
-void CReEval_FitWindowsDlg::OnShowReferenceGraph() {
+void CReEval_FitWindowsDlg::OnShowReferenceGraph()
+{
     // save the data in the dialog
     UpdateData(TRUE);
 
@@ -342,7 +361,8 @@ void CReEval_FitWindowsDlg::OnShowReferenceGraph() {
     dlg.DoModal();
 }
 
-void CReEval_FitWindowsDlg::PopulateWindowList() {
+void CReEval_FitWindowsDlg::PopulateWindowList()
+{
     this->m_windowList.ResetContent(); // clear the list
 
     //for(int i = 0; i < m_reeval->m_windowNum; ++i){
@@ -353,6 +373,7 @@ void CReEval_FitWindowsDlg::PopulateWindowList() {
     m_windowList.SetCurSel(0);
 }
 
-void CReEval_FitWindowsDlg::SaveData() {
+void CReEval_FitWindowsDlg::SaveData()
+{
     UpdateData(TRUE);
 }

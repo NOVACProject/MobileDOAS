@@ -327,10 +327,10 @@ void CReEval_DoEvaluationDlg::UpdateScreen()
         SetDlgItemText(IDC_REEVAL_FITRESULT_REFERENCE5, str);
     }
 
-    int nReferencesToShow = (m_reeval->m_settings.m_window.fitType != Evaluation::FIT_HP_DIV) ? m_reeval->m_settings.m_window.nRef : m_reeval->m_settings.m_window.nRef - 1;
+    int nReferencesToShow = (m_reeval->m_settings.m_window.fitType == Evaluation::FIT_HP_DIV) ? m_reeval->m_settings.m_window.nRef : m_reeval->m_settings.m_window.nRef - 1;
     for (int i = 0; i < nReferencesToShow; ++i)
     {
-        str.Format("%4s: %2.2e ± %2.2e", m_reeval->m_settings.m_window.ref[i].m_specieName,
+        str.Format("%4s: %2.2e ± %2.2e", m_reeval->m_settings.m_window.ref[i].m_specieName.c_str(),
             m_reeval->m_evResult[i][0], m_reeval->m_evResult[i][1]);
         switch (i)
         {

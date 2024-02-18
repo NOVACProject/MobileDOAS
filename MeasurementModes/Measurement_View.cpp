@@ -20,7 +20,6 @@ CMeasurement_View::~CMeasurement_View(void)
 void CMeasurement_View::Run()
 {
     mobiledoas::MeasuredSpectrum scanResult;
-    mobiledoas::MeasuredSpectrum tmpSpec;
 
     ShowMessageBox("START", "NOTICE");
 
@@ -33,7 +32,7 @@ void CMeasurement_View::Run()
     }
 
     // Set the integration time
-    if (0 == m_fixexptime)
+    if (m_fixexptime <= 0)
     {
         ShowMessageBox("Please point the spectrometer to sky", "Notice");
         AdjustIntegrationTime();
@@ -67,10 +66,7 @@ void CMeasurement_View::Run()
         GetSpectrumInfo(scanResult);
 
         // Copy the spectrum to the local variables
-        scanResult.CopyTo(tmpSpec);
         scanResult.CopyTo(m_curSpectrum);
-
-        /* -------------- IF THE MEASURED SPECTRUM WAS A NORMAL SPECTRUM ------------- */
 
         UpdateSpectrumAverageIntensity(scanResult);
 
