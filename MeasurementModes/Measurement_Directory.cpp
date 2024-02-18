@@ -4,10 +4,12 @@
 #include <MobileDoasLib/Measurement/SpectrumUtils.h>
 
 extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
-extern CFormView* pView; // <-- The main window
 
-CMeasurement_Directory::CMeasurement_Directory(std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface, std::unique_ptr<Configuration::CMobileConfiguration> conf)
-    : CSpectrometer(std::move(spectrometerInterface), std::move(conf))
+CMeasurement_Directory::CMeasurement_Directory(
+    CView& mainForm,
+    std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface,
+    std::unique_ptr<Configuration::CMobileConfiguration> conf)
+    : CSpectrometer(mainForm, std::move(spectrometerInterface), std::move(conf))
 {
     m_spectrometerMode = MODE_DIRECTORY;
 }
@@ -83,8 +85,8 @@ void CMeasurement_Directory::Run()
     }
 
     // Read reference files
-    m_statusMsg.Format("Reading References");
-    pView->PostMessage(WM_STATUSMSG);
+    this->UpdateStatusBarMessage("Reading References");
+
     if (ReadReferenceFiles())
     {
         ShowMessageBox("Error reading reference files.", "Error");
@@ -126,8 +128,7 @@ void CMeasurement_Directory::Run()
         hFind = FindFirstFile(filter, &ffd);
         while (m_isRunning && INVALID_HANDLE_VALUE == hFind)
         {
-            m_statusMsg.Format("Waiting for spectra file...");
-            pView->PostMessage(WM_STATUSMSG);
+            this->UpdateStatusBarMessage("Waiting for spectrum file...");
             Sleep(1000);
             hFind = FindFirstFile(filter, &ffd);
         }
@@ -190,8 +191,7 @@ bool CMeasurement_Directory::ProcessSpectrum(CString latestSpectrum)
 
     if (CSpectrumIO::readSTDFile(specfile, &spec) == 1)
     {
-        m_statusMsg.Format("Error reading %s", specfile);
-        pView->PostMessage(WM_STATUSMSG);
+        this->UpdateStatusBarMessage("Error reading %s", specfile);
         return FAIL;
     }
     else
@@ -214,7 +214,7 @@ bool CMeasurement_Directory::ProcessSpectrum(CString latestSpectrum)
         m_integrationTime = spec.exposureTime;
         m_sumInComputer = spec.scans;
         m_sumInSpectrometer = 1;
-        pView->PostMessage(WM_SHOWINTTIME);
+        this->OnUpdatedIntegrationTime();
 
         // get spectrum date & time
         m_spectrumGpsData[m_spectrumCounter].date
@@ -227,7 +227,7 @@ bool CMeasurement_Directory::ProcessSpectrum(CString latestSpectrum)
         m_spectrumGpsData[m_spectrumCounter].latitude = spec.lat;
         m_spectrumGpsData[m_spectrumCounter].longitude = spec.lon;
         m_spectrumGpsData[m_spectrumCounter].altitude = spec.altitude;
-        pView->PostMessage(WM_READGPS);
+        this->UpdateGpsLocation();
 
         // calculate average intensity
         m_averageSpectrumIntensity[channel] = mobiledoas::AverageIntensity(m_curSpectrum[channel], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
@@ -240,8 +240,7 @@ bool CMeasurement_Directory::ProcessSpectrum(CString latestSpectrum)
         GetDark();
         GetSky();
         DoEvaluation(m_tmpSky, m_tmpDark, m_curSpectrum);
-        m_statusMsg.Format("Showing spectra file %s", specfile);
-        pView->PostMessage(WM_STATUSMSG);
+        this->UpdateStatusBarMessage("Showing spectra file %s", specfile);
         return SUCCESS;
     }
 }

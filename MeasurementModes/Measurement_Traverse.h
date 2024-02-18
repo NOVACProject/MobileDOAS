@@ -9,7 +9,11 @@
 class CMeasurement_Traverse : public CSpectrometer
 {
 public:
-    CMeasurement_Traverse(std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface, std::unique_ptr<Configuration::CMobileConfiguration> conf);
+    CMeasurement_Traverse(
+        CView& mainForm,
+        std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface,
+        std::unique_ptr<Configuration::CMobileConfiguration> conf);
+
     virtual ~CMeasurement_Traverse();
 
     /** This is used to make a standard traverse, with each spectrum having the

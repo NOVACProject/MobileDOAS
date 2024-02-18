@@ -68,7 +68,11 @@ protected:
     }FitRegion;
 
 public:
-    CSpectrometer(std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface, std::unique_ptr<Configuration::CMobileConfiguration> configuration);
+    CSpectrometer(
+        CView& mainForm,
+        std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface,
+        std::unique_ptr<Configuration::CMobileConfiguration> configuration);
+
     virtual ~CSpectrometer();
 
     /* Running */
@@ -524,7 +528,7 @@ protected:
     /** This is a temporary copy of the sky-spectrum */
     mobiledoas::MeasuredSpectrum m_tmpSky;
 
-    /** a copy of the last measured spectrum, used for plotting on the screen */
+    /* A copy of the last measured spectrum, used for plotting on the screen */
     mobiledoas::MeasuredSpectrum m_curSpectrum;
 
     /** The wavelengths for each pixel in the measured spectrum */
@@ -628,6 +632,30 @@ protected:
         If 'checkIfDark' is set to true, the user will be informed if 'm_specInfo->isDark' is true (i.e.the spectrum is judged to be dark). */
     void UpdateUserAboutSpectrumAverageIntensity(const std::string& spectrumName, bool checkIfDark = false);
 
+    /* Notifies the UI about an update in the integration time paramter (m_integrationTime) */
+    void OnUpdatedIntegrationTime() const;
+
+    /* Notifies the UI about a new message we want to show to the user in the status bar of the UI. */
+    void UpdateStatusBarMessage(const std::string& newMessage);
+
+    /* Notifies the UI about a new message we want to show to the user in the status bar of the UI. */
+    void UpdateStatusBarMessage(const char* format, ...);
+
+    /* Notifies the UI about an updated GPS location. */
+    void UpdateGpsLocation() const;
+
+    /* Notifies the UI that there is a new spectrum available which can be drawn. */
+    void UpdateDisplayedSpectrum() const;
+
+    /* Notifies the UI about a newly measured column value which can be displayed in the UI. */
+    void OnNewColumnMeasurement() const;
+
+    /* Notifies the UI that the currently used spectrometer has changed. */
+    void OnChangedSpectrometer() const;
+
+    /* Notifies the UI that it needs to display a certain dialog, for the measurement flow to function properly. */
+    void DisplayDialog(int dialogToDisplay) const;
+
 private:
 
     // -------------------- PRIVATE DATA --------------------
@@ -655,6 +683,9 @@ private:
     /** This is the object through which we are accessing the spectrometer hardware.
         Notice that there should only be one such instance in the application. */
     std::unique_ptr<mobiledoas::SpectrometerInterface> m_spectrometer;
+
+    /* The main form of the application, used to send messages to. */
+    CWnd& m_mainForm;
 
     // -------------------- PRIVATE METHODS --------------------
 

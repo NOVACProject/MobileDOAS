@@ -4,10 +4,12 @@
 #include <MobileDoasLib/Measurement/SpectrumUtils.h>
 
 extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
-extern CFormView* pView; // <-- The main window
 
-CMeasurement_Wind::CMeasurement_Wind(std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface, std::unique_ptr<Configuration::CMobileConfiguration> conf)
-    : CSpectrometer(std::move(spectrometerInterface), std::move(conf))
+CMeasurement_Wind::CMeasurement_Wind(
+    CView& mainForm,
+    std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface,
+    std::unique_ptr<Configuration::CMobileConfiguration> conf)
+    : CSpectrometer(mainForm, std::move(spectrometerInterface), std::move(conf))
 {
     m_spectrometerMode = MODE_WIND;
 }
@@ -93,12 +95,11 @@ void CMeasurement_Wind::Run()
         mobiledoas::SpectrumSummation spectrumSummation;
         m_sumInComputer = CountRound(m_timeResolution, spectrumSummation);
         m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
-        pView->PostMessage(WM_SHOWINTTIME);
+        this->OnUpdatedIntegrationTime();
 
         /*  -- Collect the dark spectrum -- */
         ShowMessageBox("Cover the spectrometer", "Notice");
-        m_statusMsg.Format("Measuring the dark spectrum");
-        pView->PostMessage(WM_STATUSMSG);
+        this->UpdateStatusBarMessage("Measuring the dark spectrum");
     }
     else
     {
@@ -108,7 +109,7 @@ void CMeasurement_Wind::Run()
         {
             ShowMessageBox("Suitable exposure-time set", "");
         }
-        pView->PostMessage(WM_SHOWINTTIME);
+        this->OnUpdatedIntegrationTime();
     }
 
     /** --------------------- THE MEASUREMENT LOOP -------------------------- */
@@ -129,12 +130,12 @@ void CMeasurement_Wind::Run()
         if (m_adjustIntegrationTime && m_fixexptime >= 0)
         {
             m_integrationTime = AdjustIntegrationTime();
-            pView->PostMessage(WM_SHOWDIALOG, CHANGED_EXPOSURETIME);
+            DisplayDialog(CHANGED_EXPOSURETIME);
             m_adjustIntegrationTime = FALSE;
             mobiledoas::SpectrumSummation spectrumSummation;
             m_sumInComputer = CountRound(m_timeResolution, spectrumSummation);
             m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
-            pView->PostMessage(WM_SHOWINTTIME);
+            this->OnUpdatedIntegrationTime();
         }
 
         /* ----------------  Get the spectrum --------------------  */
@@ -181,7 +182,7 @@ void CMeasurement_Wind::Run()
             /* -------------- IF THE MEASURED SPECTRUM WAS THE DARK SPECTRUM ------------- */
             scanResult.CopyTo(m_dark);
 
-            pView->PostMessage(WM_DRAWSPECTRUM);//draw dark spectrum
+            UpdateDisplayedSpectrum();
 
             UpdateSpectrumAverageIntensity(scanResult);
 
@@ -198,8 +199,7 @@ void CMeasurement_Wind::Run()
 
             ShowMessageBox("Point the spectrometer to sky", "Notice");
 
-            m_statusMsg.Format("Measuring the sky spectrum");
-            pView->PostMessage(WM_STATUSMSG);
+            this->UpdateStatusBarMessage("Measuring the sky spectrum");
 
         }
         else if (m_scanNum == SKY_SPECTRUM)
@@ -208,7 +208,7 @@ void CMeasurement_Wind::Run()
 
             scanResult.CopyTo(m_sky);
 
-            pView->PostMessage(WM_DRAWSPECTRUM);//draw sky spectrum
+            UpdateDisplayedSpectrum();
 
             for (int i = 0; i < m_NChannels; ++i)
             {
@@ -238,8 +238,6 @@ void CMeasurement_Wind::Run()
                 RunInstrumentCalibration(m_sky[0].data(), nullptr, m_detectorSize);
             }
 
-            m_statusMsg.Format("Reading References");
-            pView->PostMessage(WM_STATUSMSG);
             if (ReadReferenceFiles())
             {
                 // we have to call this before exiting the application otherwise we'll have trouble next time we start...
@@ -269,7 +267,6 @@ void CMeasurement_Wind::Run()
 
             UpdateUserAboutSpectrumAverageIntensity("", true);
 
-            pView->PostMessage(WM_STATUSMSG);
             m_intensityOfMeasuredSpectrum.push_back(m_averageSpectrumIntensity[0]);
 
             if (m_spectrometerMode != MODE_VIEW)
@@ -282,7 +279,7 @@ void CMeasurement_Wind::Run()
             }
             else
             {
-                pView->PostMessage(WM_DRAWSPECTRUM);
+                UpdateDisplayedSpectrum();
             }
         }
 

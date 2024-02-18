@@ -12,255 +12,281 @@ UINT RunScript(LPVOID pParam);
 CReEvaluationDlg::CReEvaluationDlg(void)
 {
 
-	// Create the tabs
-	// Initiate the reevaluator object that we need to
-	//	do the actual reevaluation
-	m_reeval = new CReEvaluator();
+    // Create the tabs
+    // Initiate the reevaluator object that we need to
+    //	do the actual reevaluation
+    m_reeval = new CReEvaluator();
 
-	// -------------- Adding the tabs ------------------
+    // -------------- Adding the tabs ------------------
 
-	// the evaluation log page
-	m_page1.Construct(IDD_REEVAL_EVALUATIONLOG);
-	m_page1.m_reeval = m_reeval;
+    // the evaluation log page
+    m_page1.Construct(IDD_REEVAL_EVALUATIONLOG);
+    m_page1.m_reeval = m_reeval;
 
-	// the dark spectrum page
-	m_page2.Construct(IDD_REEVAL_DARK);
-	m_page2.m_reeval = m_reeval;
+    // the dark spectrum page
+    m_page2.Construct(IDD_REEVAL_DARK);
+    m_page2.m_reeval = m_reeval;
 
-	// the sky spectrum page
-	m_page3.Construct(IDD_REEVAL_SKY);
-	m_page3.m_reeval = m_reeval;
+    // the sky spectrum page
+    m_page3.Construct(IDD_REEVAL_SKY);
+    m_page3.m_reeval = m_reeval;
 
-	// the fit windows page
-	m_page4.Construct(IDD_REEVAL_FITWINDOW);
-	m_page4.m_reeval = m_reeval;
+    // the fit windows page
+    m_page4.Construct(IDD_REEVAL_FITWINDOW);
+    m_page4.m_reeval = m_reeval;
 
-	// the do evaluation page
-	m_page5.Construct(IDD_REEVAL_EVALUATE);
-	m_page5.m_reeval = m_reeval;
+    // the do evaluation page
+    m_page5.Construct(IDD_REEVAL_EVALUATE);
+    m_page5.m_reeval = m_reeval;
 
-	// add the pages to the window
-	AddPage(&m_page1);
-	AddPage(&m_page2);
-	AddPage(&m_page3);
-	AddPage(&m_page4);
-	AddPage(&m_page5);
+    // add the pages to the window
+    AddPage(&m_page1);
+    AddPage(&m_page2);
+    AddPage(&m_page3);
+    AddPage(&m_page4);
+    AddPage(&m_page5);
 }
 
 CReEvaluationDlg::~CReEvaluationDlg(void)
 {
 }
 BEGIN_MESSAGE_MAP(CReEvaluationDlg, CPropertySheet)
-	ON_BN_CLICKED(ID_FILE_BROWSEFOREVALUATIONLOG,	OnMenuBrowseForEvalLog)
-	ON_BN_CLICKED(ID_FILE_CLOSE239,					OnMenuClose)
-	ON_BN_CLICKED(ID_FILE_LOADSETTINGSFROMFILE,		OnMenuLoadSettingsFromFile)
-	ON_BN_CLICKED(ID_FILE_SAVESETTINGSTOFILE,		OnMenuSaveSettingsToFile)
-	ON_BN_CLICKED(ID_SCRIPT_CREATESCRIPT,			OnMenuCreateScript)
-	ON_BN_CLICKED(ID_SCRIPT_RUNSCRIPT,				OnMenuRunScript)
-	ON_WM_CLOSE()
+    ON_BN_CLICKED(ID_FILE_BROWSEFOREVALUATIONLOG, OnMenuBrowseForEvalLog)
+    ON_BN_CLICKED(ID_FILE_CLOSE239, OnMenuClose)
+    ON_BN_CLICKED(ID_FILE_LOADSETTINGSFROMFILE, OnMenuLoadSettingsFromFile)
+    ON_BN_CLICKED(ID_FILE_SAVESETTINGSTOFILE, OnMenuSaveSettingsToFile)
+    ON_BN_CLICKED(ID_SCRIPT_CREATESCRIPT, OnMenuCreateScript)
+    ON_BN_CLICKED(ID_SCRIPT_RUNSCRIPT, OnMenuRunScript)
+    ON_WM_CLOSE()
 END_MESSAGE_MAP()
 
 BOOL ReEvaluation::CReEvaluationDlg::OnInitDialog()
 {
-	BOOL bResult = CPropertySheet::OnInitDialog();
+    BOOL bResult = CPropertySheet::OnInitDialog();
 
-	CRect rectAppl, rectCancel, rectWindow;
-	CMenu *pMenu = new CMenu();
+    CRect rectAppl, rectCancel, rectWindow;
+    CMenu* pMenu = new CMenu();
 
-	// Add the menu
-	pMenu->LoadMenu(IDR_REEVAL_DLG_MENU);
-	this->SetMenu(pMenu);
+    // Add the menu
+    pMenu->LoadMenu(IDR_REEVAL_DLG_MENU);
+    this->SetMenu(pMenu);
 
-	// Make the window a little bit bigger, this is needed since
-	//	adding the menu will destry the layout...
-	GetWindowRect(rectWindow);
-	rectWindow.bottom = rectWindow.bottom + 20;
-	MoveWindow(rectWindow);
+    // Make the window a little bit bigger, this is needed since
+    //	adding the menu will destry the layout...
+    GetWindowRect(rectWindow);
+    rectWindow.bottom = rectWindow.bottom + 20;
+    MoveWindow(rectWindow);
 
 
-	// ------------ Get the buttons ---------------
-	CWnd *pApply = this->GetDlgItem(ID_APPLY_NOW);
-	CWnd *pCancel = this->GetDlgItem(IDCANCEL);
-	CWnd *pOk = this->GetDlgItem(IDOK);
+    // ------------ Get the buttons ---------------
+    CWnd* pApply = this->GetDlgItem(ID_APPLY_NOW);
+    CWnd* pCancel = this->GetDlgItem(IDCANCEL);
+    CWnd* pOk = this->GetDlgItem(IDOK);
 
-	// Get the position of the 'Apply'-button, and then remove it
-	if(pApply){
-		pApply->GetWindowRect(rectAppl);
-		ScreenToClient(rectAppl);
-		pApply->DestroyWindow();
-	}
+    // Get the position of the 'Apply'-button, and then remove it
+    if (pApply)
+    {
+        pApply->GetWindowRect(rectAppl);
+        ScreenToClient(rectAppl);
+        pApply->DestroyWindow();
+    }
 
-	// Get the position of the 'Cancel'-button and then remove it
-	if(pCancel){
-		pCancel->GetWindowRect(rectCancel);
-		ScreenToClient(rectCancel);
-		pCancel->DestroyWindow();
-	}
+    // Get the position of the 'Cancel'-button and then remove it
+    if (pCancel)
+    {
+        pCancel->GetWindowRect(rectCancel);
+        ScreenToClient(rectCancel);
+        pCancel->DestroyWindow();
+    }
 
-	// Change the 'OK'-button to a 'Save'-button and move it to where
-	//	the 'apply'-button was
-	if(pOk){
-		pOk->SetWindowText("Close");
-		pOk->MoveWindow(rectAppl);
-	}
-	
-	return bResult;
+    // Change the 'OK'-button to a 'Save'-button and move it to where
+    //	the 'apply'-button was
+    if (pOk)
+    {
+        pOk->SetWindowText("Close");
+        pOk->MoveWindow(rectAppl);
+    }
+
+    return bResult;
 }
 
 void ReEvaluation::CReEvaluationDlg::OnClose()
 {
-	// reeval->pView should be NULL if there is no page to recieve the messages generated by 'reeval'
-	m_reeval->pView = nullptr;
+    // reeval->m_mainView should be NULL if there is no page to recieve the messages generated by 'reeval'
+    m_reeval->m_mainView = nullptr;
 
-	// if the reevaluation is still running, quit it...
-	if(m_reeval->fRun){
-		DWORD dwExitCode;
-		HANDLE hThread = nullptr;
-		CString messageToUser;
+    // if the reevaluation is still running, quit it...
+    if (m_reeval->fRun)
+    {
+        DWORD dwExitCode;
+        HANDLE hThread = nullptr;
+        CString messageToUser;
 
-		// find which thread is running
-		if(m_page5.pReEvalThread != nullptr){
-			hThread = m_page5.pReEvalThread->m_hThread;
-			messageToUser.Format("ReEvaluation has been stopped");
-		}else{
-			if(m_page2.pReEvalThread != nullptr){
-				hThread = m_page2.pReEvalThread->m_hThread;
-				messageToUser.Format("Offset Checking has been stopped");
-			}
-		}
+        // find which thread is running
+        if (m_page5.pReEvalThread != nullptr)
+        {
+            hThread = m_page5.pReEvalThread->m_hThread;
+            messageToUser.Format("ReEvaluation has been stopped");
+        }
+        else
+        {
+            if (m_page2.pReEvalThread != nullptr)
+            {
+                hThread = m_page2.pReEvalThread->m_hThread;
+                messageToUser.Format("Offset Checking has been stopped");
+            }
+        }
 
-		if(hThread != nullptr && GetExitCodeThread(hThread, &dwExitCode) && dwExitCode ==STILL_ACTIVE){
-			AfxGetApp()->BeginWaitCursor();
-			m_reeval->Stop();
-			
-			WaitForSingleObject(hThread,INFINITE);
-			AfxGetApp()->EndWaitCursor();
-			MessageBox(messageToUser, "Info", MB_OK);
-		}else{
+        if (hThread != nullptr && GetExitCodeThread(hThread, &dwExitCode) && dwExitCode == STILL_ACTIVE)
+        {
+            AfxGetApp()->BeginWaitCursor();
+            m_reeval->Stop();
 
-		}
-	}
-	
-	CPropertySheet::OnClose();
+            WaitForSingleObject(hThread, INFINITE);
+            AfxGetApp()->EndWaitCursor();
+            MessageBox(messageToUser, "Info", MB_OK);
+        }
+        else
+        {
+
+        }
+    }
+
+    CPropertySheet::OnClose();
 }
 
 INT_PTR ReEvaluation::CReEvaluationDlg::DoModal()
-{	
-	return CPropertySheet::DoModal();
+{
+    return CPropertySheet::DoModal();
 }
 
-void ReEvaluation::CReEvaluationDlg::OnMenuBrowseForEvalLog(){
-	this->m_page1.OnBnClickedButtonBrowseEvlog();
+void ReEvaluation::CReEvaluationDlg::OnMenuBrowseForEvalLog()
+{
+    this->m_page1.OnBnClickedButtonBrowseEvlog();
 }
 
-void ReEvaluation::CReEvaluationDlg::OnMenuClose(){
-	this->OnClose();
-	this->EndDialog(0);	
+void ReEvaluation::CReEvaluationDlg::OnMenuClose()
+{
+    this->OnClose();
+    this->EndDialog(0);
 }
-void ReEvaluation::CReEvaluationDlg::OnMenuSaveSettingsToFile(){
-	CString fileName;
-	TCHAR filter[512];
-	int n = _stprintf(filter, "ReEvaluation settings\0");
-	n += _stprintf(filter + n + 1, "*.rxml;\0");
-	filter[n + 2] = 0;
+void ReEvaluation::CReEvaluationDlg::OnMenuSaveSettingsToFile()
+{
+    CString fileName;
+    TCHAR filter[512];
+    int n = _stprintf(filter, "ReEvaluation settings\0");
+    n += _stprintf(filter + n + 1, "*.rxml;\0");
+    filter[n + 2] = 0;
 
-	if(Common::BrowseForFile_SaveAs(filter, fileName)){
-		// Add the file-ending .rxml if it's not already there
-		if(!Equals(fileName.Right(5), ".rxml")){
-			fileName.AppendFormat(".rxml");
-		}
-		FileHandler::CReEvalSettingsFileHandler::WriteFile(m_reeval->m_settings, fileName);
-	}
-}
-
-void ReEvaluation::CReEvaluationDlg::OnMenuLoadSettingsFromFile(){
-	CString fileName;
-	FileHandler::CReEvalSettingsFileHandler reader;
-	CString evLog;
-	evLog.Format("");
-	TCHAR filter[512];
-	int n = _stprintf(filter, "ReEvaluation settings\0");
-	n += _stprintf(filter + n + 1, "*.rxml;\0");
-	filter[n + 2] = 0;
-	
-	// Browse for the file
-	if(Common::BrowseForFile(filter, fileName)){
-	
-		// the user has selected a file. Now read it
-		if(0 == reader.ParseFile(m_reeval->m_settings, fileName)){
-			// Update the interface
-			m_page1.UpdateData(FALSE);
-			if (m_page2.m_hWnd != NULL) {
-				m_page2.UpdateData(FALSE);
-			}
-			if(m_page3.m_hWnd != nullptr) {
-				m_page3.UpdateData(FALSE);
-				m_page3.UpdateControls();
-			}
-			if(m_page4.m_hWnd != nullptr){
-				m_page4.UpdateData(FALSE);
-				m_page4.PopulateReferenceFileControl();
-			}
-		}
-	}
-	
+    if (Common::BrowseForFile_SaveAs(filter, fileName))
+    {
+        // Add the file-ending .rxml if it's not already there
+        if (!Equals(fileName.Right(5), ".rxml"))
+        {
+            fileName.AppendFormat(".rxml");
+        }
+        FileHandler::CReEvalSettingsFileHandler::WriteFile(m_reeval->m_settings, fileName);
+    }
 }
 
-void ReEvaluation::CReEvaluationDlg::OnMenuCreateScript(){
-	CReEval_ScriptDlg dlg;
-	dlg.DoModal();
+void ReEvaluation::CReEvaluationDlg::OnMenuLoadSettingsFromFile()
+{
+    CString fileName;
+    FileHandler::CReEvalSettingsFileHandler reader;
+    CString evLog;
+    evLog.Format("");
+    TCHAR filter[512];
+    int n = _stprintf(filter, "ReEvaluation settings\0");
+    n += _stprintf(filter + n + 1, "*.rxml;\0");
+    filter[n + 2] = 0;
+
+    // Browse for the file
+    if (Common::BrowseForFile(filter, fileName))
+    {
+
+        // the user has selected a file. Now read it
+        if (0 == reader.ParseFile(m_reeval->m_settings, fileName))
+        {
+            // Update the interface
+            m_page1.UpdateData(FALSE);
+            if (m_page2.m_hWnd != NULL)
+            {
+                m_page2.UpdateData(FALSE);
+            }
+            if (m_page3.m_hWnd != nullptr)
+            {
+                m_page3.UpdateData(FALSE);
+                m_page3.UpdateControls();
+            }
+            if (m_page4.m_hWnd != nullptr)
+            {
+                m_page4.UpdateData(FALSE);
+                m_page4.PopulateReferenceFileControl();
+            }
+        }
+    }
+
 }
 
-ReEvaluation::CReEvaluation_Script *g_script;
-CReEval_DoEvaluationDlg *g_wnd;
-CWinThread *pReEvalThread;
-
-void ReEvaluation::CReEvaluationDlg::OnMenuRunScript(){
-	CString fileName;
-	FileHandler::CReEvalScriptFileHandler reader;
-	ReEvaluation::CReEvaluation_Script *script = new ReEvaluation::CReEvaluation_Script();
-
-	fileName.Format("");
-	TCHAR filter[512];
-	int n = _stprintf(filter, "ReEvaluation script\0");
-	n += _stprintf(filter + n + 1, "*.rs;\0");
-	filter[n + 2] = 0;
-
-	// 1. Let the user open the script to run
-	if(!Common::BrowseForFile(filter, fileName))
-		return;
-
-	// 2. Read the script file
-	if(reader.ReadFromFile(fileName, *script)){
-		MessageBox("Could not parse script file. Exiting script");
-		return;
-	}
-
-	// 4. Show the DoEvaluation - page
-	SetActivePage(&m_page5);
-	m_page5.m_cancelButton.EnableWindow(TRUE);
-	m_page5.m_btnDoEvaluation.EnableWindow(FALSE);
-	
-	
-	// 5. Start the script
-	g_script		= script;
-	g_wnd			= &m_page5;
-	pReEvalThread	= AfxBeginThread(RunScript,0,THREAD_PRIORITY_BELOW_NORMAL,0,0,NULL);
+void ReEvaluation::CReEvaluationDlg::OnMenuCreateScript()
+{
+    CReEval_ScriptDlg dlg;
+    dlg.DoModal();
 }
 
-UINT RunScript(LPVOID pParam){
-	ReEvaluation::CReEvaluation_Script *script = g_script;
-	CReEval_DoEvaluationDlg *pView = g_wnd;
-	
-	// make a small pause between the starting of each thread, this to make sure
-	//	that the previously started one has some time to read in it's files
-	Sleep(500);
+ReEvaluation::CReEvaluation_Script* g_script;
+CReEval_DoEvaluationDlg* g_wnd;
+CWinThread* pReEvalThread;
 
-	// run the analysis
-	script->Run(pView);
+void ReEvaluation::CReEvaluationDlg::OnMenuRunScript()
+{
+    CString fileName;
+    FileHandler::CReEvalScriptFileHandler reader;
+    ReEvaluation::CReEvaluation_Script* script = new ReEvaluation::CReEvaluation_Script();
 
-	// clean up
-	delete script;
-	
-	return 0;
+    fileName.Format("");
+    TCHAR filter[512];
+    int n = _stprintf(filter, "ReEvaluation script\0");
+    n += _stprintf(filter + n + 1, "*.rs;\0");
+    filter[n + 2] = 0;
+
+    // 1. Let the user open the script to run
+    if (!Common::BrowseForFile(filter, fileName))
+        return;
+
+    // 2. Read the script file
+    if (reader.ReadFromFile(fileName, *script))
+    {
+        MessageBox("Could not parse script file. Exiting script");
+        return;
+    }
+
+    // 4. Show the DoEvaluation - page
+    SetActivePage(&m_page5);
+    m_page5.m_cancelButton.EnableWindow(TRUE);
+    m_page5.m_btnDoEvaluation.EnableWindow(FALSE);
+
+
+    // 5. Start the script
+    g_script = script;
+    g_wnd = &m_page5;
+    pReEvalThread = AfxBeginThread(RunScript, 0, THREAD_PRIORITY_BELOW_NORMAL, 0, 0, NULL);
+}
+
+UINT RunScript(LPVOID pParam)
+{
+    ReEvaluation::CReEvaluation_Script* script = g_script;
+    CReEval_DoEvaluationDlg* pView = g_wnd;
+
+    // make a small pause between the starting of each thread, this to make sure
+    //	that the previously started one has some time to read in it's files
+    Sleep(500);
+
+    // run the analysis
+    script->Run(pView);
+
+    // clean up
+    delete script;
+
+    return 0;
 }

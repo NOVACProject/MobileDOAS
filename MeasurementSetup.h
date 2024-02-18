@@ -6,4 +6,4 @@
 
 // CreateSpectrometer creates and returns one spectrometer for the current measurement mode.
 // Returns nullptr if no spectrometer could be created.
-CSpectrometer* CreateSpectrometer(SPECTROMETER_MODE measurementMode, std::unique_ptr<Configuration::CMobileConfiguration> conf);
+CSpectrometer* CreateSpectrometer(SPECTROMETER_MODE measurementMode, CView& mainForm, std::unique_ptr<Configuration::CMobileConfiguration> conf);

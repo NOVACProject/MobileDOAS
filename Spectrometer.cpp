@@ -22,7 +22,6 @@
 #include <sstream>
 
 extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
-extern CFormView* pView; // <-- The main window
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -35,10 +34,12 @@ static char THIS_FILE[] = __FILE__;
 //////////////////////////////////////////////////////////////////////
 
 
-CSpectrometer::CSpectrometer(std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface, std::unique_ptr<Configuration::CMobileConfiguration> configuration)
-    : m_useGps(true), m_scanNum(0), m_spectrumCounter(0)
+CSpectrometer::CSpectrometer(
+    CView& mainForm,
+    std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface,
+    std::unique_ptr<Configuration::CMobileConfiguration> configuration)
+    : m_mainForm(mainForm), m_useGps(true), m_scanNum(0), m_spectrumCounter(0)
 {
-
     sprintf(m_GPSPort, "COM5");
 
     m_spectrometer = std::move(spectrometerInterface);
@@ -589,6 +590,7 @@ int CSpectrometer::Start()
 /* Return value = 0 if all is ok, else 1 */
 int CSpectrometer::ReadReferenceFiles()
 {
+    this->UpdateStatusBarMessage("Reading References");
 
     for (int fitRegionIdx = 0; fitRegionIdx < m_fitRegionNum; ++fitRegionIdx)
     {
@@ -696,7 +698,7 @@ void CSpectrometer::DoEvaluation(mobiledoas::MeasuredSpectrum& sky, mobiledoas::
     {
         Sing(curColumn[0] / m_maxColumn);
     }
-    pView->PostMessage(WM_DRAWCOLUMN);
+    OnNewColumnMeasurement();
 
     ++m_spectrumCounter;
     if (m_spectrumCounter == 65535)
@@ -1006,7 +1008,7 @@ bool CSpectrometer::UpdateGpsData(mobiledoas::GpsData& gpsInfo)
         gpsDataIsValid = false;
     }
 
-    pView->PostMessage(WM_READGPS);
+    this->UpdateGpsLocation();
 
     return gpsDataIsValid;
 }
@@ -1158,7 +1160,7 @@ int CSpectrometer::TestSpectrometerConnection()
 {
     m_spectrometerIndex = 0; // assume that we will use spectrometer #1
 
-    m_statusMsg.Format("Searching for attached spectrometers"); pView->PostMessage(WM_STATUSMSG);
+    this->UpdateStatusBarMessage("Searching for attached spectrometers");
 
     // List the serials of all spectrometers attached to the computer
     const auto connectedSpectrometers = m_spectrometer->ScanForDevices();
@@ -1176,7 +1178,7 @@ int CSpectrometer::TestSpectrometerConnection()
         Dialogs::CSelectionDialog dlg;
         CString selectedSerial;
 
-        m_statusMsg.Format("Several spectrometers found."); pView->PostMessage(WM_STATUSMSG);
+        this->UpdateStatusBarMessage("Several spectrometers found.");
 
         dlg.m_windowText.Format("Select which spectrometer to use");
         for (int k = 0; k < m_numberOfSpectrometersAttached; ++k)
@@ -1200,7 +1202,7 @@ int CSpectrometer::TestSpectrometerConnection()
         m_spectrometerName = connectedSpectrometers[0];
     }
 
-    m_statusMsg.Format("Will use spectrometer %s.", m_spectrometerName.c_str()); pView->PostMessage(WM_STATUSMSG);
+    this->UpdateStatusBarMessage("Will use spectrometer %s.", m_spectrometerName.c_str());
 
     // Setup the channels to use
     std::vector<int> channelIndices;
@@ -1234,7 +1236,7 @@ bool CSpectrometer::IsSpectrometerDisconnected()
 
 void CSpectrometer::ReconnectWithSpectrometer()
 {
-    m_statusMsg.Format("Connection with spectrometer lost! Reconnecting."); pView->PostMessage(WM_STATUSMSG);
+    this->UpdateStatusBarMessage("Connection with spectrometer lost! Reconnecting.");
 
     m_spectrometer->Close();
 
@@ -1249,7 +1251,7 @@ void CSpectrometer::ReconnectWithSpectrometer()
 
         spectrometersFound = m_spectrometer->ScanForDevices();
 
-        m_statusMsg.Format("Connection with spectrometer lost! Reconnecting, attempt #%d", attemptNumber++); pView->PostMessage(WM_STATUSMSG);
+        this->UpdateStatusBarMessage("Connection with spectrometer lost! Reconnecting, attempt #%d", attemptNumber++);
     }
 }
 
@@ -1276,8 +1278,7 @@ int CSpectrometer::ChangeSpectrometer(int selectedspec, const std::vector<int>& 
         return 0;
     }
 
-    // Tell the user that we have changed the spectrometer
-    pView->PostMessage(WM_CHANGEDSPEC);
+    OnChangedSpectrometer();
 
     // Get the spectrometer model
     m_spectrometerModel = m_spectrometer->GetModel();
@@ -1306,10 +1307,10 @@ int CSpectrometer::ChangeSpectrometer(int selectedspec, const std::vector<int>& 
         }
     }
 
-    m_statusMsg.Format("Will use spectrometer #%d (%s).", m_spectrometerIndex, m_spectrometerModel.c_str()); pView->PostMessage(WM_STATUSMSG);
+    this->UpdateStatusBarMessage("Will use spectrometer #%d (%s).", m_spectrometerIndex, m_spectrometerModel.c_str());
 
     // Get a spectrum
-    m_statusMsg.Format("Attempting to retrieve a spectrum from %s", m_spectrometerName.c_str()); pView->PostMessage(WM_STATUSMSG);
+    this->UpdateStatusBarMessage("Attempting to retrieve a spectrum from %s", m_spectrometerName.c_str());
 
     m_spectrometer->SetIntegrationTime(3000); // use 3 ms exp-time
     m_spectrometer->SetScansToAverage(1);  // only retrieve one single spectrum
@@ -1341,7 +1342,7 @@ int CSpectrometer::ChangeSpectrometer(int selectedspec, const std::vector<int>& 
 
     m_wavelength.data = wavelengthData;
 
-    m_statusMsg.Format("Detector size is %d", m_detectorSize); pView->PostMessage(WM_STATUSMSG);
+    this->UpdateStatusBarMessage("Detector size is %d", m_detectorSize);
 
     return m_spectrometerIndex;
 }
@@ -1410,7 +1411,7 @@ void CSpectrometer::GetSpectrumInfo(const mobiledoas::MeasuredSpectrum& spectrum
                     const double threshold = (20 / 4095.0) * m_spectrometerDynRange;
                     if (threshold > 0.0 && fabs(m_lastDarkOffset[n] - m_specInfo[n].offset) > threshold)
                     {
-                        pView->PostMessage(WM_SHOWDIALOG, DARK_DIALOG);
+                        DisplayDialog(DARK_DIALOG);
                         nagFlag = true;
                     }
                 }
@@ -1484,8 +1485,7 @@ void CSpectrometer::GetSpectrumInfo(const mobiledoas::MeasuredSpectrum& spectrum
     f = fopen(fileName, "a+");
     if (f == nullptr)
     {
-        this->m_statusMsg.Format("ERROR! Could not open the Additional Log file - Information has been lost!");
-        pView->PostMessage(WM_STATUSMSG);
+        this->UpdateStatusBarMessage("ERROR! Could not open the Additional Log file - Information has been lost!");
     }
     else
     {
@@ -1592,8 +1592,7 @@ short CSpectrometer::AdjustIntegrationTime()
     m_integrationTime = 100;
     while (1)
     {
-        m_statusMsg.Format("Measuring the intensity");
-        pView->PostMessage(WM_STATUSMSG);
+        this->UpdateStatusBarMessage("Measuring the intensity");
 
         // measure the intensity
         if (Scan(1, m_sumInSpectrometer, skySpec))
@@ -1610,9 +1609,9 @@ short CSpectrometer::AdjustIntegrationTime()
 
         if (m_fixexptime >= 0)
         {
-            pView->PostMessage(WM_DRAWSPECTRUM);
+            UpdateDisplayedSpectrum();
         }
-        pView->PostMessage(WM_SHOWINTTIME);
+        OnUpdatedIntegrationTime();
 
         // Check if we have reached our goal
         if (fabs(skyInt - m_spectrometerDynRange * m_desiredSaturationRatio) < 200)
@@ -1717,9 +1716,9 @@ short CSpectrometer::AdjustIntegrationTime_Calculate(long minExpTime, long maxEx
 
         if (m_fixexptime >= 0)
         {
-            pView->PostMessage(WM_DRAWSPECTRUM);
+            UpdateDisplayedSpectrum();
         }
-        pView->PostMessage(WM_SHOWINTTIME);
+        OnUpdatedIntegrationTime();
 
         return m_integrationTime;
     }
@@ -1778,7 +1777,7 @@ void CSpectrometer::ShowMessageBox(CString message, CString label) const
     if (m_isRunning)
     {
         // the point here is that we only allow the messagebox to be shown when the user interface is ready for receiving message boxes (i.e. when the program is running!)
-        MessageBox(pView->m_hWnd, message, label, MB_OK);
+        MessageBox(this->m_mainForm.m_hWnd, message, label, MB_OK);
     }
 }
 
@@ -1839,8 +1838,7 @@ void CSpectrometer::WriteEvaluationLogFileHeaders()
 
 bool CSpectrometer::RunInstrumentCalibration(const double* measuredSpectrum, const double* darkSpectrum, size_t spectrumLength)
 {
-    m_statusMsg.Format("Performing instrument calibration");
-    pView->PostMessage(WM_STATUSMSG);
+    this->UpdateStatusBarMessage("Performing instrument calibration");
 
     bool referencesUpdated = false;
 
@@ -1894,12 +1892,60 @@ void CSpectrometer::UpdateUserAboutSpectrumAverageIntensity(const std::string& s
         fullSpectrumName = fullSpectrumName + "(Dark)";
     }
 
-    m_statusMsg.Format(
+    this->UpdateStatusBarMessage(
         "Average value around center channel%s %d: %d (%.0lf%%)",
         fullSpectrumName.c_str(),
         m_conf->m_specCenter,
         m_averageSpectrumIntensity[0],
         100.0 * m_averageSpectrumIntensity[0] / m_spectrometerDynRange);
+}
 
-    pView->PostMessage(WM_STATUSMSG);
+void CSpectrometer::OnUpdatedIntegrationTime() const
+{
+    this->m_mainForm.PostMessage(WM_SHOWINTTIME);
+}
+
+void CSpectrometer::UpdateStatusBarMessage(const std::string& newMessage)
+{
+    this->m_statusMsg.Format("%s", newMessage.c_str());
+    this->m_mainForm.PostMessage(WM_STATUSMSG);
+}
+
+void CSpectrometer::UpdateStatusBarMessage(const char* format, ...)
+{
+    std::vector<char> localBuffer(65535);
+
+    va_list args;
+    va_start(args, format);
+    vsprintf(localBuffer.data(), format, args);
+    va_end(args);
+
+    this->m_statusMsg.Format("%s", localBuffer.data());
+
+    this->m_mainForm.PostMessage(WM_STATUSMSG);
+}
+
+void CSpectrometer::UpdateGpsLocation() const
+{
+    this->m_mainForm.PostMessage(WM_READGPS);
+}
+
+void CSpectrometer::UpdateDisplayedSpectrum() const
+{
+    this->m_mainForm.PostMessage(WM_DRAWSPECTRUM);
+}
+
+void CSpectrometer::OnNewColumnMeasurement() const
+{
+    this->m_mainForm.PostMessage(WM_DRAWCOLUMN);
+}
+
+void CSpectrometer::OnChangedSpectrometer() const
+{
+    this->m_mainForm.PostMessage(WM_CHANGEDSPEC);
+}
+
+void CSpectrometer::DisplayDialog(int dialogToDisplay) const
+{
+    this->m_mainForm.PostMessage(WM_SHOWDIALOG, dialogToDisplay);
 }

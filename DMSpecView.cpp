@@ -828,7 +828,7 @@ void CDMSpecView::OnControlStart()
         }
 
         // Initialize a new CSpectromber object, this is the one which actually does everything...
-        m_Spectrometer = CreateSpectrometer(MODE_TRAVERSE, std::move(conf));
+        m_Spectrometer = CreateSpectrometer(MODE_TRAVERSE, *this, std::move(conf));
 
         // Copy the settings that the user typed in the dialog
         char text[100];
@@ -877,7 +877,7 @@ void CDMSpecView::OnControlViewSpectra()
 
         auto conf = ReadConfiguration();
 
-        m_Spectrometer = CreateSpectrometer(MODE_VIEW, std::move(conf));
+        m_Spectrometer = CreateSpectrometer(MODE_VIEW, *this, std::move(conf));
 
         memset(text, 0, (size_t)100);
 
@@ -898,6 +898,7 @@ void CDMSpecView::OnControlViewSpectra()
         {
             m_specScaleDlg.Create(IDD_SPECTRUM_SCALE_DLG, this);
         }
+        m_specScaleDlg.SetMainForm(this);
         m_specScaleDlg.ShowWindow(SW_SHOW);
         m_specScaleDlg.GetWindowRect(rect);
         int width = rect.Width();
@@ -937,7 +938,7 @@ void CDMSpecView::OnControlProcessSpectraFromDirectory()
 
     auto conf = ReadConfiguration();
 
-    m_Spectrometer = CreateSpectrometer(MODE_DIRECTORY, std::move(conf));
+    m_Spectrometer = CreateSpectrometer(MODE_DIRECTORY, *this, std::move(conf));
 
     pSpecThread = AfxBeginThread(CollectSpectra, (LPVOID)(m_Spectrometer), THREAD_PRIORITY_LOWEST, 0, 0, NULL);
     s_spectrometerAcquisitionThreadIsRunning = true;
@@ -974,7 +975,7 @@ void CDMSpecView::OnControlStartWindMeasurement()
         auto conf = ReadConfiguration();
 
         // Initialize a new CSpectrometer object, this is the one which actually does everything...
-        m_Spectrometer = CreateSpectrometer(MODE_WIND, std::move(conf));
+        m_Spectrometer = CreateSpectrometer(MODE_WIND, *this, std::move(conf));
 
         // Copy the settings that the user typed in the dialog
         memset(text, 0, (size_t)100);

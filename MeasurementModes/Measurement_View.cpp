@@ -3,10 +3,12 @@
 #include <MobileDoasLib/Measurement/SpectrumUtils.h>
 
 extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
-extern CFormView* pView; // <-- The main window
 
-CMeasurement_View::CMeasurement_View(std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface, std::unique_ptr<Configuration::CMobileConfiguration> conf)
-    : CSpectrometer(std::move(spectrometerInterface), std::move(conf))
+CMeasurement_View::CMeasurement_View(
+    CView& mainForm,
+    std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface,
+    std::unique_ptr<Configuration::CMobileConfiguration> conf)
+    : CSpectrometer(mainForm, std::move(spectrometerInterface), std::move(conf))
 {
     m_spectrometerMode = MODE_VIEW;
 }
@@ -47,7 +49,7 @@ void CMeasurement_View::Run()
     {
         ShowMessageBox("Suitable exposure-time set", "");
     }
-    pView->PostMessage(WM_SHOWINTTIME);
+    this->OnUpdatedIntegrationTime();
 
     /** --------------------- THE MEASUREMENT LOOP -------------------------- */
     while (m_isRunning)
@@ -74,10 +76,9 @@ void CMeasurement_View::Run()
 
         UpdateUserAboutSpectrumAverageIntensity("", true);
 
-        pView->PostMessage(WM_STATUSMSG);
         m_intensityOfMeasuredSpectrum.push_back(m_averageSpectrumIntensity[0]);
 
-        pView->PostMessage(WM_DRAWSPECTRUM);
+        UpdateDisplayedSpectrum();
     }
 
     if (m_spectrumCounter > 1)
