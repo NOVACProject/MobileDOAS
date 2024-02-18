@@ -27,6 +27,15 @@ bool CheckIfDark(const std::vector<double>& spectrum);
 long AverageIntensity(const std::vector<double>& spectrum, long specCenter, long specCenterHalfWidth);
 
 /// <summary>
+/// Calculates the pixel range over which an intensity measurement should be made with the given settings for spectrum center and half width.
+/// The first point is inclusive and the last exclusive, meaning the true region is [result.first, result.second[
+/// </summary>
+/// <param name="specCenter">The index around which the intensity should be measured.</param>
+/// <param name="specCenterHalfWidth">The half index with of the intensity measurement region.</param>
+/// <param name="spectrumSize">The full length of the measred spectra.</param>
+std::pair<long, long> GetIntensityMeasurementRegion(long specCenter, long specCenterHalfWidth, long spectrumSizes);
+
+/// <summary>
 /// Retrieves the (electronic-)offset of the supplied spectrum */
 /// </summary>
 double GetOffset(const std::vector<double>& spectrum);

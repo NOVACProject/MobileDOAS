@@ -243,6 +243,9 @@ public:
     /** Returns the last calculated flux */
     double GetFlux() { return m_flux; }
 
+    /* GetIntensityRegion returns the pixel range over which the spectrum intensity is measured. */
+    std::vector<double> GetIntensityRegion() const;
+
     /** Retrieve the position for the (at most) 'sum' spectra.
         @param la (out) - will on return be filled with the latitudes
         @param lo (out) - will on return be filled with the longitudes
@@ -280,10 +283,6 @@ protected:
 
     /** The number of spectrometers that are attached to this computer */
     int m_numberOfSpectrometersAttached;
-
-    /** The board temperature, as reported by the spectrometer, in degrees Celsius.
-    Set to NaN if this could not be read. */
-    double boardTemperature = std::numeric_limits<double>::quiet_NaN();
 
     // -------------------------------------------------------------------------------------
     // ---------------------- Managing the intensity of the spectra ------------------------
@@ -596,9 +595,6 @@ protected:
         Must be >= 0 and <= MAX_FIT_WINDOWS */
     long m_fitRegionNum;
 
-    /** The base-name of the measurement. As set by the user */
-    CString m_measurementBaseName;
-
     // ---------------------------------------------------------------------------------------
     // -------------------- Collecting common behavior between subclasses --------------------
     // ---------------------------------------------------------------------------------------
@@ -686,6 +682,13 @@ private:
 
     /* The main form of the application, used to send messages to. */
     CWnd& m_mainForm;
+
+    /** The base-name of the measurement. As set by the user */
+    CString m_measurementBaseName;
+
+    /** The board temperature, as reported by the spectrometer, in degrees Celsius.
+        Set to NaN if this could not be read. */
+    double m_boardTemperature = std::numeric_limits<double>::quiet_NaN();
 
     // -------------------- PRIVATE METHODS --------------------
 

@@ -49,7 +49,7 @@ void CMeasurement_View::Run()
     {
         ShowMessageBox("Suitable exposure-time set", "");
     }
-    this->OnUpdatedIntegrationTime();
+    OnUpdatedIntegrationTime();
 
     /** --------------------- THE MEASUREMENT LOOP -------------------------- */
     while (m_isRunning)

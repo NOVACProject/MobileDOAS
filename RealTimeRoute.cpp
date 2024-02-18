@@ -100,7 +100,8 @@ void CRealTimeRoute::OnSize(UINT nType, int cx, int cy)
     if (nType != SIZE_RESTORED)
         return;
 
-    if (IsWindow(m_plotArea.m_hWnd)) {
+    if (IsWindow(m_plotArea.m_hWnd))
+    {
         int legendSpace = 70;
         m_plotArea.MoveWindow(0, 0, cx - m_legendWidth, cy, FALSE);
         m_gpsPlot.MoveWindow(0, 0, cx - m_legendWidth, cy, FALSE);
@@ -110,7 +111,8 @@ void CRealTimeRoute::OnSize(UINT nType, int cx, int cy)
     DrawRouteGraph();
 }
 
-BOOL CRealTimeRoute::Create(UINT nID, CWnd* pParentWnd) {
+BOOL CRealTimeRoute::Create(UINT nID, CWnd* pParentWnd)
+{
     // TODO: Add your specialized code here and/or call the base class
 
     fVisible = false;
@@ -119,7 +121,8 @@ BOOL CRealTimeRoute::Create(UINT nID, CWnd* pParentWnd) {
     return CDialog::Create(nID, pParentWnd);
 }
 
-void CRealTimeRoute::ReadData() {
+void CRealTimeRoute::ReadData()
+{
     if (nullptr == m_spectrometer)
         return;
 
@@ -131,10 +134,13 @@ void CRealTimeRoute::ReadData() {
     memset(&m_range, 0, sizeof(struct plotRange));
 
     /* delete bad points (points without gps or dark points) */
-    for (int i = 0; i < sum; ++i) {
+    for (int i = 0; i < sum; ++i)
+    {
 
-        if ((m_lat[i] == 0 && m_lon[i] == 0)) {
-            for (int j = i; j < sum; ++j) {
+        if ((m_lat[i] == 0 && m_lon[i] == 0))
+        {
+            for (int j = i; j < sum; ++j)
+            {
                 m_lat[j] = m_lat[j + 1];
                 m_lon[j] = m_lon[j + 1];
                 m_col[j] = m_col[j + 1];
@@ -155,15 +161,18 @@ void CRealTimeRoute::ReadData() {
     m_range.minLon = m_lon[0];
     double maximumColumn = m_col[0];
     double minimumColumn = m_col[0];
-    for (int i = 0; i < sum; i++) {
+    for (int i = 0; i < sum; i++)
+    {
         m_range.maxLat = std::max(m_range.maxLat, m_lat[i]);
         m_range.maxLon = std::max(m_range.maxLon, m_lon[i]);
         m_range.minLat = std::min(m_range.minLat, m_lat[i]);
         m_range.minLon = std::min(m_range.minLon, m_lon[i]);
-        if (m_col[i] > maximumColumn) {
+        if (m_col[i] > maximumColumn)
+        {
             maximumColumn = m_col[i];
         }
-        if (m_col[i] < minimumColumn) {
+        if (m_col[i] < minimumColumn)
+        {
             minimumColumn = m_col[i];
         }
     }

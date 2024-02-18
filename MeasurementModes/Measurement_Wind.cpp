@@ -95,11 +95,11 @@ void CMeasurement_Wind::Run()
         mobiledoas::SpectrumSummation spectrumSummation;
         m_sumInComputer = CountRound(m_timeResolution, spectrumSummation);
         m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
-        this->OnUpdatedIntegrationTime();
+        OnUpdatedIntegrationTime();
 
         /*  -- Collect the dark spectrum -- */
         ShowMessageBox("Cover the spectrometer", "Notice");
-        this->UpdateStatusBarMessage("Measuring the dark spectrum");
+        UpdateStatusBarMessage("Measuring the dark spectrum");
     }
     else
     {
@@ -109,7 +109,7 @@ void CMeasurement_Wind::Run()
         {
             ShowMessageBox("Suitable exposure-time set", "");
         }
-        this->OnUpdatedIntegrationTime();
+        OnUpdatedIntegrationTime();
     }
 
     /** --------------------- THE MEASUREMENT LOOP -------------------------- */
@@ -135,7 +135,7 @@ void CMeasurement_Wind::Run()
             mobiledoas::SpectrumSummation spectrumSummation;
             m_sumInComputer = CountRound(m_timeResolution, spectrumSummation);
             m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
-            this->OnUpdatedIntegrationTime();
+            OnUpdatedIntegrationTime();
         }
 
         /* ----------------  Get the spectrum --------------------  */
@@ -199,7 +199,7 @@ void CMeasurement_Wind::Run()
 
             ShowMessageBox("Point the spectrometer to sky", "Notice");
 
-            this->UpdateStatusBarMessage("Measuring the sky spectrum");
+            UpdateStatusBarMessage("Measuring the sky spectrum");
 
         }
         else if (m_scanNum == SKY_SPECTRUM)

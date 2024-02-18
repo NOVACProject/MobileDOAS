@@ -1015,8 +1015,6 @@ bool CReEvaluator::WriteEvaluationLogHeader(int channel)
 
 bool CReEvaluator::AppendResultToEvaluationLog(int specIndex, int channel, Evaluation::CEvaluation& evaluator)
 {
-    double* evResult = 0;
-
     GetResult(evaluator);
 
     FILE* f = fopen(m_outputLog, "a+");
@@ -1032,15 +1030,21 @@ bool CReEvaluator::AppendResultToEvaluationLog(int specIndex, int channel, Evalu
     int nRef = 0;
     for (int i = 0; i < m_settings.m_window.nRef; ++i)
     {
-
-        evResult = evaluator.GetResult(nRef);
+        const auto evResult = evaluator.GetResult(nRef);
         ++nRef;
-        for (int j = 0; j < 6; ++j)
-        {
-            fprintf(f, "%0.6G\t", evResult[j]);
-        }
+        fprintf(f, "%0.6G\t", evResult.column);
+        fprintf(f, "%0.6G\t", evResult.columnError);
+        fprintf(f, "%0.6G\t", evResult.shift);
+        fprintf(f, "%0.6G\t", evResult.shiftError);
+        fprintf(f, "%0.6G\t", evResult.squeeze);
+        fprintf(f, "%0.6G\t", evResult.squeezeError);
 
-        memcpy(m_evResult[i], evResult, 6 * sizeof(double));
+        m_evResult[i][0] = evResult.column;
+        m_evResult[i][1] = evResult.columnError;
+        m_evResult[i][2] = evResult.shift;
+        m_evResult[i][3] = evResult.shiftError;
+        m_evResult[i][4] = evResult.squeeze;
+        m_evResult[i][5] = evResult.squeezeError;
     }
 
     // finally write the quality of the fit
@@ -1296,13 +1300,13 @@ bool CReEvaluator::FindOptimalShiftAndSqueeze(Evaluation::CEvaluation& evaluator
     }
 
     // The result
-    double* evResult = evaluator.GetResult();
+    Evaluation::EvaluationResult evResult = evaluator.GetResult();
 
     // extract the result
-    optimumShift = evResult[2];
-    optimumShiftError = evResult[3];
-    optimumSqueeze = evResult[4];
-    optimumSqueezeError = evResult[5];
+    optimumShift = evResult.shift;
+    optimumShiftError = evResult.shiftError;
+    optimumSqueeze = evResult.squeeze;
+    optimumSqueezeError = evResult.squeezeError;
 
     // send a message about the progress
     if (m_mainView != nullptr)
@@ -1328,9 +1332,9 @@ bool CReEvaluator::FindOptimalShiftAndSqueeze(Evaluation::CEvaluation& evaluator
     {
         evResult = evaluator.GetResult(m_settings.m_window.nRef - 1);
         m_settings.m_window.ref[m_settings.m_window.nRef - 1].m_shiftOption = novac::SHIFT_TYPE::SHIFT_FREE;
-        m_settings.m_window.ref[m_settings.m_window.nRef - 1].m_shiftValue = evResult[2];
+        m_settings.m_window.ref[m_settings.m_window.nRef - 1].m_shiftValue = evResult.shift;
         m_settings.m_window.ref[m_settings.m_window.nRef - 1].m_squeezeOption = novac::SHIFT_TYPE::SHIFT_FIX;
-        m_settings.m_window.ref[m_settings.m_window.nRef - 1].m_squeezeValue = evResult[4];
+        m_settings.m_window.ref[m_settings.m_window.nRef - 1].m_squeezeValue = evResult.squeeze;
     }
 
     return true;

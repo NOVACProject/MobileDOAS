@@ -18,6 +18,17 @@
 
 namespace Evaluation
 {
+
+struct EvaluationResult
+{
+    double column = 0.0;
+    double columnError = 0.0;
+    double shift = 0.0;
+    double shiftError = 0.0;
+    double squeeze = 0.0;
+    double squeezeError = 0.0;
+};
+
 class CEvaluation : public CBasicMath
 {
 public:
@@ -48,11 +59,10 @@ public:
     /** Evaluate the following spectra, the parameters for the fit are defined in 'm_fitWindow' */
     void Evaluate(const double* darkArray, const double* skyArray, const double* specMem, long numSteps = 400);
 
-    /** Returns the result from the last evaluation as an array of six elements containing
-        (column, columnError, shift, shiftError, squeeze, squeezeError).
+    /** Returns the result from the last evaluation.
         If there are more than one referencefile, only the results from evaluating
         referencefile number 'referenceFile' will be returned. */
-    double* GetResult(int referenceFile = 0);
+    EvaluationResult GetResult(int referenceFile = 0) const;
 
     double GetDelta() const { return m_result.m_delta; }
     double GetChiSquare() const { return m_result.m_chiSquare; }

@@ -305,21 +305,21 @@ void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum
     return;
 }
 
-/** This function is to get the evaluation result.
-* @ refFileNum - the index of the result set vResult[6]
-* Return - the pointer to the evaluation result array.
-*/
-double* CEvaluation::GetResult(int referenceFile)
+EvaluationResult CEvaluation::GetResult(int referenceFile) const
 {
+    EvaluationResult result;
 
-    resultSet[0] = m_result.m_ref[referenceFile].m_column;
-    resultSet[1] = m_result.m_ref[referenceFile].m_columnError;
-    resultSet[2] = m_result.m_ref[referenceFile].m_shift;
-    resultSet[3] = m_result.m_ref[referenceFile].m_shiftError;
-    resultSet[4] = m_result.m_ref[referenceFile].m_squeeze;
-    resultSet[5] = m_result.m_ref[referenceFile].m_squeezeError;
+    if (static_cast<size_t>(referenceFile) < m_result.m_ref.size())
+    {
+        result.column = m_result.m_ref[referenceFile].m_column;
+        result.columnError = m_result.m_ref[referenceFile].m_columnError;
+        result.shift = m_result.m_ref[referenceFile].m_shift;
+        result.shiftError = m_result.m_ref[referenceFile].m_shiftError;
+        result.squeeze = m_result.m_ref[referenceFile].m_squeeze;
+        result.squeezeError = m_result.m_ref[referenceFile].m_squeezeError;
+    }
 
-    return resultSet;
+    return result;
 }
 
 /**	read data from reference files

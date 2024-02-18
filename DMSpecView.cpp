@@ -484,7 +484,6 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam)
     // Draw the spectrum
     DrawSpectrum();
 
-
     if (m_realTimeRouteGraph.fVisible)
     {
         m_realTimeRouteGraph.m_intensityLimit = dynRange * (100 - m_intensitySliderLow.GetPos());
@@ -501,11 +500,11 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam)
 LRESULT CDMSpecView::OnDrawSpectrum(WPARAM wParam, LPARAM lParam)
 {
     // to not overload the computer, make sure that we don't draw too often...
-    static double refreshRate = 0.05;
+    static double secondsBetweenDraw = 0.05;
     static clock_t cLastCall = 0;
     clock_t now = clock();
-    double elapsedTime = (double)(now - cLastCall) / (double)CLOCKS_PER_SEC;
-    if (elapsedTime < refreshRate)
+    double secondsSinceLastDraw = (double)(now - cLastCall) / (double)CLOCKS_PER_SEC;
+    if (secondsSinceLastDraw < secondsBetweenDraw)
     {
         return 0;
     }
@@ -1068,17 +1067,34 @@ void CDMSpecView::DrawSpectrum()
         || m_spectrometerMode == MODE_WIND
         || m_spectrometerMode == MODE_DIRECTORY)
     {
-
         // Plot the spectrum
         m_ColumnPlot.SetPlotColor(m_Spectrum0Color);
         m_ColumnPlot.XYPlot(m_spectrumChartXAxisValues.data(), spectrum1.data(), spectrumLength, Graph::CGraphCtrl::PLOT_SECOND_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
 
-        // If a second channel is used, then do the same thing with the slave-spectrum
-        if (m_Spectrometer->m_NChannels == 1)
+#ifdef _DEBUG
+
+        // Plot the spectrum intensity region
         {
-            return;
+            auto pixelX = m_Spectrometer->GetIntensityRegion();
+            std::vector<double> partialSpectrum;
+            std::vector<double> scaledXAxisValue;
+            partialSpectrum.reserve(pixelX.size());
+            for each (double x in pixelX)
+            {
+                int pixel = std::max(0, std::min(spectrumLength, static_cast<int>(std::round(x))));
+                partialSpectrum.push_back(spectrum1[pixel]);
+                scaledXAxisValue.push_back(m_spectrumChartXAxisValues[pixel]);
+            }
+
+            m_ColumnPlot.SetPlotColor(m_Spectrum1Color);
+            m_ColumnPlot.XYPlot(scaledXAxisValue.data(), partialSpectrum.data(), partialSpectrum.size(), Graph::CGraphCtrl::PLOT_SECOND_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
         }
-        else
+
+#endif // _DEBUG
+
+
+        // If a second channel is used, then do the same thing with the slave-spectrum
+        if (m_Spectrometer->m_NChannels > 1)
         {
             // Copy the spectrum of the second channel into saturation-ratio (in percent)
             std::vector<double> spectrum2 = m_Spectrometer->GetSpectrum(1);
@@ -1125,10 +1141,10 @@ void CDMSpecView::DrawSpectrum()
 void CDMSpecView::OnConfigurationOperation()
 {
     CString cfgFile; // <-- the path and filename of the configurationfile to read-in
-    cfgFile.Format("%s\\cfg.xml", g_exePath);
+    cfgFile.Format("%s\\cfg.xml", (LPCSTR)g_exePath);
     if (!IsExistingFile(cfgFile))
     {
-        cfgFile.Format("%s\\cfg.txt", g_exePath);
+        cfgFile.Format("%s\\cfg.txt", (LPCSTR)g_exePath);
     }
 
     // Initiate the configuration-object

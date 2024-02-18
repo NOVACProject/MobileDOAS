@@ -90,13 +90,13 @@ void CMeasurement_Traverse::Run()
     mobiledoas::SpectrumSummation spectrumSummation;
     m_sumInComputer = CountRound(m_timeResolution, spectrumSummation);
     m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
-    this->OnUpdatedIntegrationTime();
+    OnUpdatedIntegrationTime();
 
     /*  -- Collect the dark spectrum -- */
     if (!m_conf->m_noDark)
     {
         ShowMessageBox("Cover the spectrometer", "Notice");
-        this->UpdateStatusBarMessage("Measuring the dark spectrum");
+        UpdateStatusBarMessage("Measuring the dark spectrum");
     }
 
     /** --------------------- THE MEASUREMENT LOOP -------------------------- */
@@ -122,7 +122,7 @@ void CMeasurement_Traverse::Run()
             m_adjustIntegrationTime = FALSE;
             m_sumInComputer = CountRound(m_timeResolution, spectrumSummation);
             m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
-            this->OnUpdatedIntegrationTime();
+            OnUpdatedIntegrationTime();
         }
 
         /* ----------------  Get the spectrum --------------------  */
@@ -193,7 +193,7 @@ void CMeasurement_Traverse::Run()
 
             ShowMessageBox("Point the spectrometer to sky", "Notice");
 
-            this->UpdateStatusBarMessage("Measuring the sky spectrum");
+            UpdateStatusBarMessage("Measuring the sky spectrum");
         }
         else if (m_scanNum == SKY_SPECTRUM)
         {
@@ -311,7 +311,7 @@ void CMeasurement_Traverse::Run_Adaptive()
     m_integrationTime = 3;
     m_sumInComputer = 100;
     m_sumInSpectrometer = 15;
-    this->OnUpdatedIntegrationTime();
+    OnUpdatedIntegrationTime();
 
     /*  -- Collect the dark spectrum -- */
 
@@ -378,13 +378,13 @@ void CMeasurement_Traverse::Run_Adaptive()
                 ShowMessageBox("It seems like the offset spectrum is not completely dark, consider restarting the program", "Error");
             }
 #endif
-            this->UpdateStatusBarMessage("Measuring the dark_current spectrum");
+            UpdateStatusBarMessage("Measuring the dark_current spectrum");
 
             // Set the exposure-time and the number of spectra to co-add...
             m_integrationTime = DARK_CURRENT_EXPTIME;
             m_sumInComputer = 1;
             m_sumInSpectrometer = 1;
-            this->OnUpdatedIntegrationTime();
+            OnUpdatedIntegrationTime();
 
         }
         else if (m_scanNum == DARKCURRENT_SPECTRUM)
@@ -412,14 +412,14 @@ void CMeasurement_Traverse::Run_Adaptive()
 
             ShowMessageBox("Point the spectrometer to sky", "Notice");
 
-            this->UpdateStatusBarMessage("Measuring the sky spectrum");
+            UpdateStatusBarMessage("Measuring the sky spectrum");
 
             // Set the exposure-time
             m_integrationTime = AdjustIntegrationTime();
             mobiledoas::SpectrumSummation spectrumSummation;
             m_sumInComputer = CountRound(m_timeResolution, spectrumSummation);
             m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
-            this->OnUpdatedIntegrationTime();
+            OnUpdatedIntegrationTime();
         }
         else if (m_scanNum == SKY_SPECTRUM)
         {
@@ -474,7 +474,7 @@ void CMeasurement_Traverse::Run_Adaptive()
             mobiledoas::SpectrumSummation spectrumSummation;
             m_sumInComputer = CountRound(m_timeResolution, spectrumSummation);
             m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
-            this->OnUpdatedIntegrationTime();
+            OnUpdatedIntegrationTime();
 
             }
         else if (m_scanNum > SKY_SPECTRUM)
@@ -504,7 +504,7 @@ void CMeasurement_Traverse::Run_Adaptive()
             mobiledoas::SpectrumSummation spectrumSummation;
             m_sumInComputer = CountRound(m_timeResolution, spectrumSummation);
             m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
-            this->OnUpdatedIntegrationTime();
+            OnUpdatedIntegrationTime();
         }
 
         if (m_spectrumCounter > 1)

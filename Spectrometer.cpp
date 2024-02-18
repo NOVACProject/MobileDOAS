@@ -169,7 +169,7 @@ int CSpectrometer::Scan(int sumInComputer, int sumInSpectrometer, mobiledoas::Me
         }
 
         // copies the spectrum-values to the output array
-        result.Resize(spectrumData.size(), spectrumData[0].size());
+        result.Resize((int)spectrumData.size(), (int)spectrumData[0].size());
         for (size_t chn = 0; chn < spectrumData.size(); ++chn)
         {
             for (size_t pixelIdx = 0; pixelIdx < spectrumData[chn].size(); ++pixelIdx)
@@ -390,7 +390,6 @@ int CSpectrometer::CheckSettings()
 
 void CSpectrometer::WriteEvFile(CString filename, FitRegion* fitRegion)
 {
-    double* result = NULL;
     int channel = fitRegion->window.channel;
 
     FILE* f;
@@ -420,8 +419,8 @@ void CSpectrometer::WriteEvFile(CString filename, FitRegion* fitRegion)
     // 5. The evaluated column values
     for (int k = 0; k < fitRegion->window.nRef; ++k)
     {
-        result = fitRegion->eval[channel]->GetResult(k);
-        fprintf(f, "%lf\t%lf\t", result[0], result[1]);
+        Evaluation::EvaluationResult result = fitRegion->eval[channel]->GetResult(k);
+        fprintf(f, "%lf\t%lf\t", result.column, result.columnError);
     }
 
     // 6. The std-file
@@ -590,7 +589,7 @@ int CSpectrometer::Start()
 /* Return value = 0 if all is ok, else 1 */
 int CSpectrometer::ReadReferenceFiles()
 {
-    this->UpdateStatusBarMessage("Reading References");
+    UpdateStatusBarMessage("Reading References");
 
     for (int fitRegionIdx = 0; fitRegionIdx < m_fitRegionNum; ++fitRegionIdx)
     {
@@ -661,13 +660,13 @@ void CSpectrometer::DoEvaluation(mobiledoas::MeasuredSpectrum& sky, mobiledoas::
         m_fitRegion[j].eval[chn]->Evaluate(dark[chn].data(), sky[chn].data(), spectrum[chn].data());
 
         // Store the results
-        double* tmpResult = m_fitRegion[j].eval[chn]->GetResult();
-        evaluateResult[j][chn][0] = tmpResult[0];
-        evaluateResult[j][chn][1] = tmpResult[1];
-        evaluateResult[j][chn][2] = tmpResult[2];
-        evaluateResult[j][chn][3] = tmpResult[3];
-        evaluateResult[j][chn][4] = tmpResult[4];
-        evaluateResult[j][chn][5] = tmpResult[5];
+        const auto evaluationResult = m_fitRegion[j].eval[chn]->GetResult();
+        evaluateResult[j][chn][0] = evaluationResult.column;
+        evaluateResult[j][chn][1] = evaluationResult.columnError;
+        evaluateResult[j][chn][2] = evaluationResult.shift;
+        evaluateResult[j][chn][3] = evaluationResult.shiftError;
+        evaluateResult[j][chn][4] = evaluationResult.squeeze;
+        evaluateResult[j][chn][5] = evaluationResult.squeezeError;
 
         curColumn[chn] = evaluateResult[j][chn][0];
         curColumnError[chn] = evaluateResult[j][chn][1];
@@ -690,7 +689,7 @@ void CSpectrometer::DoEvaluation(mobiledoas::MeasuredSpectrum& sky, mobiledoas::
             }
         }
 
-        fileName.Format("evaluationLog_%s.txt", m_fitRegion[j].window.name);
+        fileName.Format("evaluationLog_%s.txt", (LPCSTR)m_fitRegion[j].window.name);
         WriteEvFile(fileName, &m_fitRegion[j]);
 
     }
@@ -864,7 +863,6 @@ long CSpectrometer::GetColumnErrors(std::vector<double>& list, long maxNumberOfV
     return numberOfValuesToRead;
 }
 
-/* Get the gps-positions */
 long CSpectrometer::GetLatLongAlt(double* la, double* lo, double* al, long sum)
 {
     int i = 0;
@@ -888,6 +886,18 @@ long CSpectrometer::GetLatLongAlt(double* la, double* lo, double* al, long sum)
     }
 
     return i;
+}
+
+std::vector<double> CSpectrometer::GetIntensityRegion() const
+{
+    const auto region = mobiledoas::GetIntensityMeasurementRegion(m_conf->m_specCenter, m_conf->m_specCenterHalfWidth, this->m_detectorSize);
+
+    std::vector<double> result;
+    for (long ii = region.first; ii < region.second; ++ii)
+    {
+        result.push_back(static_cast<double>(ii));
+    }
+    return result;
 }
 
 int CSpectrometer::GetGpsPos(mobiledoas::GpsData& data) const
@@ -1062,7 +1072,7 @@ void CSpectrometer::WriteLogFile(CString filename, CString txt)
     if (f < (FILE*)1)
     {
         CString tmpStr;
-        tmpStr.Format("Could not write log file: %s. Not enough free space?", filename);
+        tmpStr.Format("Could not write log file: %s. Not enough free space?", (LPCSTR)filename);
         ShowMessageBox(tmpStr, "Big Error");
         return;
     }
@@ -1116,7 +1126,7 @@ void CSpectrometer::WriteBeginEvFile(int fitRegion)
         channelName.Format("Slave");
     }
 
-    str7.Format("\n#Time\tLat\tLong\tAlt\tNSpec\tExpTime\tIntens(%s)\t", channelName);
+    str7.Format("\n#Time\tLat\tLong\tAlt\tNSpec\tExpTime\tIntens(%s)\t", (LPCSTR)channelName);
     for (int referenceIdx = 0; referenceIdx < m_fitRegion[fitRegion].window.nRef; ++referenceIdx)
     {
         str7.AppendFormat("%s_Column_%s\t%s_ColumnError_%s\t",
@@ -1125,7 +1135,7 @@ void CSpectrometer::WriteBeginEvFile(int fitRegion)
             channelName,
             m_fitRegion[fitRegion].window.ref[referenceIdx].m_specieName.c_str());
     }
-    str7.AppendFormat("STD-File(%s)\n", channelName);
+    str7.AppendFormat("STD-File(%s)\n", (LPCSTR)channelName);
 
     WriteLogFile(evPath, str7);
 }
@@ -1160,12 +1170,12 @@ int CSpectrometer::TestSpectrometerConnection()
 {
     m_spectrometerIndex = 0; // assume that we will use spectrometer #1
 
-    this->UpdateStatusBarMessage("Searching for attached spectrometers");
+    UpdateStatusBarMessage("Searching for attached spectrometers");
 
     // List the serials of all spectrometers attached to the computer
     const auto connectedSpectrometers = m_spectrometer->ScanForDevices();
 
-    m_numberOfSpectrometersAttached = connectedSpectrometers.size();
+    m_numberOfSpectrometersAttached = static_cast<int>(connectedSpectrometers.size());
 
     // Check the number of spectrometers attached
     if (m_numberOfSpectrometersAttached == 0)
@@ -1178,7 +1188,7 @@ int CSpectrometer::TestSpectrometerConnection()
         Dialogs::CSelectionDialog dlg;
         CString selectedSerial;
 
-        this->UpdateStatusBarMessage("Several spectrometers found.");
+        UpdateStatusBarMessage("Several spectrometers found.");
 
         dlg.m_windowText.Format("Select which spectrometer to use");
         for (int k = 0; k < m_numberOfSpectrometersAttached; ++k)
@@ -1202,7 +1212,7 @@ int CSpectrometer::TestSpectrometerConnection()
         m_spectrometerName = connectedSpectrometers[0];
     }
 
-    this->UpdateStatusBarMessage("Will use spectrometer %s.", m_spectrometerName.c_str());
+    UpdateStatusBarMessage("Will use spectrometer %s.", m_spectrometerName.c_str());
 
     // Setup the channels to use
     std::vector<int> channelIndices;
@@ -1236,7 +1246,7 @@ bool CSpectrometer::IsSpectrometerDisconnected()
 
 void CSpectrometer::ReconnectWithSpectrometer()
 {
-    this->UpdateStatusBarMessage("Connection with spectrometer lost! Reconnecting.");
+    UpdateStatusBarMessage("Connection with spectrometer lost! Reconnecting.");
 
     m_spectrometer->Close();
 
@@ -1251,7 +1261,7 @@ void CSpectrometer::ReconnectWithSpectrometer()
 
         spectrometersFound = m_spectrometer->ScanForDevices();
 
-        this->UpdateStatusBarMessage("Connection with spectrometer lost! Reconnecting, attempt #%d", attemptNumber++);
+        UpdateStatusBarMessage("Connection with spectrometer lost! Reconnecting, attempt #%d", attemptNumber++);
     }
 }
 
@@ -1307,10 +1317,10 @@ int CSpectrometer::ChangeSpectrometer(int selectedspec, const std::vector<int>& 
         }
     }
 
-    this->UpdateStatusBarMessage("Will use spectrometer #%d (%s).", m_spectrometerIndex, m_spectrometerModel.c_str());
+    UpdateStatusBarMessage("Will use spectrometer #%d (%s).", m_spectrometerIndex, m_spectrometerModel.c_str());
 
     // Get a spectrum
-    this->UpdateStatusBarMessage("Attempting to retrieve a spectrum from %s", m_spectrometerName.c_str());
+    UpdateStatusBarMessage("Attempting to retrieve a spectrum from %s", m_spectrometerName.c_str());
 
     m_spectrometer->SetIntegrationTime(3000); // use 3 ms exp-time
     m_spectrometer->SetScansToAverage(1);  // only retrieve one single spectrum
@@ -1333,7 +1343,7 @@ int CSpectrometer::ChangeSpectrometer(int selectedspec, const std::vector<int>& 
 
     ASSERT(spectrumData.size() == m_NChannels);
     ASSERT(spectrumData[0].size() > 0);
-    m_detectorSize = spectrumData[0].size();
+    m_detectorSize = static_cast<int>(spectrumData[0].size());
 
     // Get the wavelength calibration from the spectrometer
     std::vector<std::vector<double>> wavelengthData;
@@ -1342,7 +1352,7 @@ int CSpectrometer::ChangeSpectrometer(int selectedspec, const std::vector<int>& 
 
     m_wavelength.data = wavelengthData;
 
-    this->UpdateStatusBarMessage("Detector size is %d", m_detectorSize);
+    UpdateStatusBarMessage("Detector size is %d", m_detectorSize);
 
     return m_spectrometerIndex;
 }
@@ -1422,11 +1432,11 @@ void CSpectrometer::GetSpectrumInfo(const mobiledoas::MeasuredSpectrum& spectrum
     /** If possible, get the board temperature of the spectrometer */
     if (m_spectrometer->SupportsBoardTemperature())
     {
-        boardTemperature = m_spectrometer->GetBoardTemperature();
+        m_boardTemperature = m_spectrometer->GetBoardTemperature();
     }
     else
     {
-        boardTemperature = std::numeric_limits<double>::quiet_NaN();
+        m_boardTemperature = std::numeric_limits<double>::quiet_NaN();
     }
 
     /** If possible, get the detector temperature of the spectrometer */
@@ -1463,7 +1473,7 @@ void CSpectrometer::GetSpectrumInfo(const mobiledoas::MeasuredSpectrum& spectrum
         fprintf(f, "#--Additional log file to the Mobile DOAS program---\n");
         fprintf(f, "#This file has only use as test file for further development of the Mobile DOAS program\n\n");
         fprintf(f, "#SpectrumNumber\t");
-        if (!std::isnan(boardTemperature))
+        if (!std::isnan(m_boardTemperature))
         {
             fprintf(f, "BoardTemperature\t");
         }
@@ -1485,16 +1495,16 @@ void CSpectrometer::GetSpectrumInfo(const mobiledoas::MeasuredSpectrum& spectrum
     f = fopen(fileName, "a+");
     if (f == nullptr)
     {
-        this->UpdateStatusBarMessage("ERROR! Could not open the Additional Log file - Information has been lost!");
+        UpdateStatusBarMessage("ERROR! Could not open the Additional Log file - Information has been lost!");
     }
     else
     {
         // Spectrum number
         fprintf(f, "%ld\t", m_spectrumCounter);
         // The board temperature 
-        if (!std::isnan(boardTemperature))
+        if (!std::isnan(m_boardTemperature))
         {
-            fprintf(f, "%.3lf\t", boardTemperature);
+            fprintf(f, "%.3lf\t", m_boardTemperature);
         }
         // The detector temperature 
         if (!std::isnan(detectorTemperature))
@@ -1592,7 +1602,7 @@ short CSpectrometer::AdjustIntegrationTime()
     m_integrationTime = 100;
     while (1)
     {
-        this->UpdateStatusBarMessage("Measuring the intensity");
+        UpdateStatusBarMessage("Measuring the intensity");
 
         // measure the intensity
         if (Scan(1, m_sumInSpectrometer, skySpec))
@@ -1793,7 +1803,7 @@ void CSpectrometer::CreateSpectrum(CSpectrum& spectrum, const std::vector<double
     spectrum.name = m_measurementBaseName;
     spectrum.fitHigh = m_conf->m_fitWindow->fitHigh;
     spectrum.fitLow = m_conf->m_fitWindow->fitLow;
-    spectrum.boardTemperature = boardTemperature;
+    spectrum.boardTemperature = m_boardTemperature;
     spectrum.detectorTemperature = detectorTemperature;
     spectrum.gpsStatus = "NA";
     if (m_useGps)
@@ -1838,7 +1848,7 @@ void CSpectrometer::WriteEvaluationLogFileHeaders()
 
 bool CSpectrometer::RunInstrumentCalibration(const double* measuredSpectrum, const double* darkSpectrum, size_t spectrumLength)
 {
-    this->UpdateStatusBarMessage("Performing instrument calibration");
+    UpdateStatusBarMessage("Performing instrument calibration");
 
     bool referencesUpdated = false;
 
@@ -1892,7 +1902,7 @@ void CSpectrometer::UpdateUserAboutSpectrumAverageIntensity(const std::string& s
         fullSpectrumName = fullSpectrumName + "(Dark)";
     }
 
-    this->UpdateStatusBarMessage(
+    UpdateStatusBarMessage(
         "Average value around center channel%s %d: %d (%.0lf%%)",
         fullSpectrumName.c_str(),
         m_conf->m_specCenter,

@@ -3,7 +3,8 @@
 
 using namespace Graph;
 
-CRouteGraph::CRouteGraph() {
+CRouteGraph::CRouteGraph()
+{
     parentWnd = 0;
     m_zooming = false;
     m_zoomRect.minLon = 0.0;
@@ -12,7 +13,8 @@ CRouteGraph::CRouteGraph() {
     m_zoomRect.maxLat = 0.0;
 }
 
-CRouteGraph::~CRouteGraph() {
+CRouteGraph::~CRouteGraph()
+{
 }
 
 BEGIN_MESSAGE_MAP(CRouteGraph, CGraphCtrl)
@@ -39,7 +41,8 @@ void CRouteGraph::OnMouseMove(UINT nFlags, CPoint point)
     parentWnd->PostMessage(WM_SHOW_LATLONG);
 
     // If the user is dragging with the left mouse button pressed
-    if (nFlags & MK_LBUTTON) {
+    if (nFlags & MK_LBUTTON)
+    {
         if (!m_zooming)
             m_zooming = true;
 
@@ -64,7 +67,8 @@ void CRouteGraph::OnLButtonUp(UINT nFlags, CPoint point)
     alpha = (point.y - m_rectPlot.top) / (double)(m_rectPlot.bottom - m_rectPlot.top);
     curLat = alpha * m_axisOptions.first.bottom + (1 - alpha) * m_axisOptions.first.top;
 
-    if (m_zooming) {
+    if (m_zooming)
+    {
         // Remove any previously drawn squares...
         m_dcPlot.BitBlt(0, 0, m_nClientWidth, m_nClientHeight, &m_dcRoute, 0, 0, SRCCOPY);
         Invalidate(); // <-- Redraw everything
@@ -77,7 +81,8 @@ void CRouteGraph::OnLButtonUp(UINT nFlags, CPoint point)
 
         parentWnd->PostMessage(WM_ZOOM_IN_GPSPLOT);
     }
-    else {
+    else
+    {
         parentWnd->PostMessage(WM_LBU_IN_GPSPLOT);
     }
 
@@ -147,13 +152,15 @@ BOOL CRouteGraph::Create(DWORD dwStyle, const RECT& rect,
 } // Create
 
 
-void CRouteGraph::OnPaint() {
+void CRouteGraph::OnPaint()
+{
     CGraphCtrl::OnPaint();
 }
 
 /** Draws a shaded rectangle between with the two given points
         as corners */
-void CRouteGraph::DrawShadedRect(double lat1, double lon1, double lat2, double lon2) {
+void CRouteGraph::DrawShadedRect(double lat1, double lon1, double lat2, double lon2)
+{
     double x[5], y[5];
     double maxX, minX, maxY, minY;
     double xFactor, yFactor, offsLeft, offsBottom;
@@ -200,7 +207,8 @@ void CRouteGraph::DrawShadedRect(double lat1, double lon1, double lat2, double l
     prevX = (int)(left + (x[0] - offsLeft) * xFactor);
     prevY = (int)(bottom - (y[0] - offsBottom) * yFactor);
 
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 5; ++i)
+    {
         // Calculate the next point...
         curX = (int)(left + xFactor * (x[i] - offsLeft));
         curY = (int)(bottom - (y[i] - offsBottom) * yFactor);
@@ -227,12 +235,15 @@ void CRouteGraph::DrawShadedRect(double lat1, double lon1, double lat2, double l
 
 /** Gets the coordinate values that the user wants to zoom into.
         If the user does not want to zoom, the values in 'rect' will be zero. */
-void CRouteGraph::GetZoomRect(struct plotRange& range) {
-    if (m_zoomRect.minLat == m_zoomRect.maxLat && m_zoomRect.minLat == 0) {
+void CRouteGraph::GetZoomRect(struct plotRange& range)
+{
+    if (m_zoomRect.minLat == m_zoomRect.maxLat && m_zoomRect.minLat == 0)
+    {
         range.maxLat = range.maxLon = range.minLat = range.minLon = 0.0;
         return;
     }
-    else {
+    else
+    {
         range.maxLat = m_zoomRect.maxLat;
         range.maxLon = m_zoomRect.maxLon;
         range.minLat = m_zoomRect.minLat;

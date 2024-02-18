@@ -84,8 +84,7 @@ void CMeasurement_Directory::Run()
         RunInstrumentCalibration(m_sky[0].data(), m_dark[0].data(), m_detectorSize);
     }
 
-    // Read reference files
-    this->UpdateStatusBarMessage("Reading References");
+    UpdateStatusBarMessage("Reading References");
 
     if (ReadReferenceFiles())
     {
@@ -128,7 +127,7 @@ void CMeasurement_Directory::Run()
         hFind = FindFirstFile(filter, &ffd);
         while (m_isRunning && INVALID_HANDLE_VALUE == hFind)
         {
-            this->UpdateStatusBarMessage("Waiting for spectrum file...");
+            UpdateStatusBarMessage("Waiting for spectrum file...");
             Sleep(1000);
             hFind = FindFirstFile(filter, &ffd);
         }
@@ -191,7 +190,7 @@ bool CMeasurement_Directory::ProcessSpectrum(CString latestSpectrum)
 
     if (CSpectrumIO::readSTDFile(specfile, &spec) == 1)
     {
-        this->UpdateStatusBarMessage("Error reading %s", specfile);
+        UpdateStatusBarMessage("Error reading %s", specfile);
         return FAIL;
     }
     else
@@ -214,7 +213,7 @@ bool CMeasurement_Directory::ProcessSpectrum(CString latestSpectrum)
         m_integrationTime = spec.exposureTime;
         m_sumInComputer = spec.scans;
         m_sumInSpectrometer = 1;
-        this->OnUpdatedIntegrationTime();
+        OnUpdatedIntegrationTime();
 
         // get spectrum date & time
         m_spectrumGpsData[m_spectrumCounter].date
@@ -240,7 +239,7 @@ bool CMeasurement_Directory::ProcessSpectrum(CString latestSpectrum)
         GetDark();
         GetSky();
         DoEvaluation(m_tmpSky, m_tmpDark, m_curSpectrum);
-        this->UpdateStatusBarMessage("Showing spectra file %s", specfile);
+        UpdateStatusBarMessage("Showing spectra file %s", specfile);
         return SUCCESS;
     }
 }

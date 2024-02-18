@@ -74,6 +74,22 @@ long AverageIntensity(const std::vector<double>& spectrum, long specCenter, long
     return (long)sum;
 }
 
+// TODO: Input data validationn and test
+std::pair<long, long> GetIntensityMeasurementRegion(long specCenter, long specCenterHalfWidth, long spectrumSizes)
+{
+    if (specCenter <= specCenterHalfWidth)
+    {
+        specCenter = specCenterHalfWidth;
+    }
+
+    if (specCenter >= spectrumSizes - specCenterHalfWidth)
+    {
+        specCenter = spectrumSizes - 2 * specCenterHalfWidth;
+    }
+
+    return std::make_pair(specCenter - specCenterHalfWidth, specCenter + specCenterHalfWidth);
+}
+
 // TODO: This needs tests and validation of the input parameters
 double GetOffset(double spectrum[MAX_SPECTRUM_LENGTH])
 {
