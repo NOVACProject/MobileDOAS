@@ -31,14 +31,14 @@ void OceanOpticsSpectrometerSerialInterface::SetPort(const std::string& port)
 
 std::vector<std::string> OceanOpticsSpectrometerSerialInterface::ScanForDevices()
 {
-    if (serial.InitCommunication() != 0) 
+    if (serial.InitCommunication() != 0)
     {
         // Failed to initialize the communication, no spectrometers can be used.
         m_spectrometersAttached.clear();
         return m_spectrometersAttached;
     }
 
-    m_spectrometersAttached = std::vector<std::string>{"Unknown"};
+    m_spectrometersAttached = std::vector<std::string>{ "Unknown" };
     return m_spectrometersAttached;
 }
 
@@ -150,7 +150,8 @@ int OceanOpticsSpectrometerSerialInterface::GetNextSpectrum(std::vector<std::vec
 
     const long maxlen = 65536;
     double* smem1 = (double*)malloc(sizeof(double) * (2 + maxlen)); // initialize one buffer
-    if (smem1 == 0) {
+    if (smem1 == 0)
+    {
         m_lastErrorMessage = "Not enough memory";
         return 0;
     }
@@ -209,14 +210,15 @@ int OceanOpticsSpectrometerSerialInterface::GetNextSpectrum(std::vector<std::vec
         }
 
         smem1[0] = i;
-        for (j = 0; j < smem1[0]; j++) {
+        for (j = 0; j < smem1[0]; j++)
+        {
             smem1[3 + j * 2] += sbuf[j];
         }
     }
 
 
     data.resize(1); // Only one channel here. TODO: Splitting dual spectrometer data??
-    const int spectrumLength = int(std::floor( smem1[0]));
+    const int spectrumLength = int(std::floor(smem1[0]));
     data[0].resize(spectrumLength);
     for (int n = 0; n < spectrumLength; n++)
     {

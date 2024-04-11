@@ -55,7 +55,8 @@ void DeactivateCurrentDevice(AvantesSpectrometerInterfaceState* state)
 
 #pragma region Utils
 
-const char* FormatAvsErrorCode(int avantesErrorCode) {
+const char* FormatAvsErrorCode(int avantesErrorCode)
+{
     switch (avantesErrorCode)
     {
     case ERR_SUCCESS:
@@ -253,8 +254,10 @@ void AvantesSpectrometerInterface::Close()
     ReleaseDeviceLibraryResources();
 }
 
-void onMeasuredSpectrum(AvsHandle* /*handle*/, int* status) {
-    if (status == nullptr) {
+void onMeasuredSpectrum(AvsHandle* /*handle*/, int* status)
+{
+    if (status == nullptr)
+    {
         std::cout << "null status" << std::endl;
         return;
     }
@@ -471,7 +474,8 @@ void AvantesSpectrometerInterface::SetIntegrationTime(int usec)
     }
 
     const float newIntegrationTimeInMs = static_cast<float>(usec / 1000.0);
-    if (std::abs(newIntegrationTimeInMs - state->measurementConfig.m_IntegrationTime) < 0.001) {
+    if (std::abs(newIntegrationTimeInMs - state->measurementConfig.m_IntegrationTime) < 0.001)
+    {
         // Nothing to change
         return;
     }
@@ -501,7 +505,8 @@ int AvantesSpectrometerInterface::GetIntegrationTime()
 
 void AvantesSpectrometerInterface::SetScansToAverage(int numberOfScansToAverage)
 {
-    if (numberOfScansToAverage <= 0) {
+    if (numberOfScansToAverage <= 0)
+    {
         std::stringstream msg;
         msg << "SetScansToAverage failed from bad input value: " << numberOfScansToAverage;
         m_lastErrorMessage = msg.str();
@@ -515,7 +520,8 @@ void AvantesSpectrometerInterface::SetScansToAverage(int numberOfScansToAverage)
         return;
     }
 
-    if (uint32(numberOfScansToAverage) == state->measurementConfig.m_NrAverages) {
+    if (uint32(numberOfScansToAverage) == state->measurementConfig.m_NrAverages)
+    {
         // Nothing to change
         return;
     }
