@@ -489,7 +489,7 @@ LRESULT CDMSpecView::OnDrawColumn(WPARAM wParam, LPARAM lParam)
         m_realTimeRouteGraph.m_intensityLimit = dynRange * (100 - m_intensitySliderLow.GetPos());
         m_realTimeRouteGraph.DrawRouteGraph();
     }
-    if (m_showFitDlg.fVisible)
+    if (m_showFitDlg.m_isVisible)
     {
         m_showFitDlg.DrawFit();
     }
@@ -850,7 +850,7 @@ void CDMSpecView::OnControlStart()
             m_realTimeRouteGraph.DrawRouteGraph();
         }
 
-        if (m_showFitDlg.fVisible)
+        if (m_showFitDlg.m_isVisible)
         {
             m_showFitDlg.m_spectrometer = m_Spectrometer;
             m_showFitDlg.DrawFit();
@@ -912,7 +912,7 @@ void CDMSpecView::OnControlViewSpectra()
             m_realTimeRouteGraph.DrawRouteGraph();
         }
 
-        if (m_showFitDlg.fVisible)
+        if (m_showFitDlg.m_isVisible)
         {
             m_showFitDlg.m_spectrometer = m_Spectrometer;
             m_showFitDlg.DrawFit();
@@ -996,7 +996,7 @@ void CDMSpecView::OnControlStartWindMeasurement()
             m_realTimeRouteGraph.DrawRouteGraph();
         }
 
-        if (m_showFitDlg.fVisible)
+        if (m_showFitDlg.m_isVisible)
         {
             m_showFitDlg.m_spectrometer = m_Spectrometer;
             m_showFitDlg.DrawFit();
@@ -1339,7 +1339,7 @@ void CDMSpecView::OnUpdateViewColumnError(CCmdUI* pCmdUI)
 
 void CDMSpecView::OnUpdateViewSpectrumFit(CCmdUI* pCmdUI)
 {
-    if (m_showFitDlg.fVisible)
+    if (m_showFitDlg.m_isVisible)
     {
         pCmdUI->SetCheck(BST_CHECKED);
     }
@@ -1351,7 +1351,7 @@ void CDMSpecView::OnUpdateViewSpectrumFit(CCmdUI* pCmdUI)
 
 void CDMSpecView::OnViewSpectrumFit()
 {
-    if (m_showFitDlg.fVisible)
+    if (m_showFitDlg.m_isVisible)
     {
         m_showFitDlg.DestroyWindow();
     }
@@ -1370,7 +1370,7 @@ void CDMSpecView::OnViewSpectrumFit()
         }
         m_showFitDlg.ShowWindow(SW_SHOW);
     }
-    m_showFitDlg.fVisible = !m_showFitDlg.fVisible;
+    m_showFitDlg.m_isVisible = !m_showFitDlg.m_isVisible;
 }
 
 void CDMSpecView::OnControlAddComment()

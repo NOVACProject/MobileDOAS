@@ -646,51 +646,51 @@ int CSpectrometer::ReadReferenceFiles()
 
 void CSpectrometer::DoEvaluation(mobiledoas::MeasuredSpectrum& sky, mobiledoas::MeasuredSpectrum& dark, mobiledoas::MeasuredSpectrum& spectrum)
 {
-    CString fileName;
     double curColumn[8];
     double curColumnError[8];
 
     m_fitResult.SetToZero();
 
-    for (int j = 0; j < m_fitRegionNum; ++j)
+    for (int fitRegionIdx = 0; fitRegionIdx < m_fitRegionNum; ++fitRegionIdx)
     {
-        int chn = m_fitRegion[j].window.channel;
+        const int chn = m_fitRegion[fitRegionIdx].window.channel;
 
         // Evaluate
-        m_fitRegion[j].eval[chn]->Evaluate(dark[chn].data(), sky[chn].data(), spectrum[chn].data());
+        m_fitRegion[fitRegionIdx].eval[chn]->Evaluate(dark[chn].data(), sky[chn].data(), spectrum[chn].data());
 
         // Store the results
-        const auto evaluationResult = m_fitRegion[j].eval[chn]->GetResult();
-        evaluateResult[j][chn][0] = evaluationResult.column;
-        evaluateResult[j][chn][1] = evaluationResult.columnError;
-        evaluateResult[j][chn][2] = evaluationResult.shift;
-        evaluateResult[j][chn][3] = evaluationResult.shiftError;
-        evaluateResult[j][chn][4] = evaluationResult.squeeze;
-        evaluateResult[j][chn][5] = evaluationResult.squeezeError;
+        const auto evaluationResult = m_fitRegion[fitRegionIdx].eval[chn]->GetResult();
+        evaluateResult[fitRegionIdx][chn][0] = evaluationResult.column;
+        evaluateResult[fitRegionIdx][chn][1] = evaluationResult.columnError;
+        evaluateResult[fitRegionIdx][chn][2] = evaluationResult.shift;
+        evaluateResult[fitRegionIdx][chn][3] = evaluationResult.shiftError;
+        evaluateResult[fitRegionIdx][chn][4] = evaluationResult.squeeze;
+        evaluateResult[fitRegionIdx][chn][5] = evaluationResult.squeezeError;
 
-        curColumn[chn] = evaluateResult[j][chn][0];
-        curColumnError[chn] = evaluateResult[j][chn][1];
+        curColumn[chn] = evaluateResult[fitRegionIdx][chn][0];
+        curColumnError[chn] = evaluateResult[fitRegionIdx][chn][1];
 
         // Save the results in the lists
         for (int i = 0; i < 6; ++i)
         {
-            m_fitRegion[j].vColumn[i].Append(evaluateResult[j][chn][i]);
+            m_fitRegion[fitRegionIdx].vColumn[i].Append(evaluateResult[fitRegionIdx][chn][i]);
         }
 
         // copy the high pass filtered spectrum
-        m_spectrum.data[chn] = m_fitRegion[j].eval[chn]->m_filteredSpectrum;
+        m_spectrum.data[chn] = m_fitRegion[fitRegionIdx].eval[chn]->m_filteredSpectrum;
 
         // copy the fitted reference
-        for (int r = 0; r < m_fitRegion[j].window.nRef + 1; ++r)
+        for (int referenceIdx = 0; referenceIdx < m_fitRegion[fitRegionIdx].window.nRef + 1; ++referenceIdx)
         {
-            for (int i = m_fitRegion[j].window.fitLow; i < m_fitRegion[j].window.fitHigh; ++i)
+            for (int pixel = m_fitRegion[fitRegionIdx].window.fitLow; pixel < m_fitRegion[fitRegionIdx].window.fitHigh; ++pixel)
             {
-                m_fitResult[j][i] += m_fitRegion[j].eval[chn]->m_fitResult[r].GetAt(i);
+                m_fitResult[fitRegionIdx][pixel] += m_fitRegion[fitRegionIdx].eval[chn]->m_fitResult[referenceIdx].GetAt(pixel);
             }
         }
 
-        fileName.Format("evaluationLog_%s.txt", (LPCSTR)m_fitRegion[j].window.name);
-        WriteEvFile(fileName, &m_fitRegion[j]);
+        CString fileName;
+        fileName.Format("evaluationLog_%s.txt", (LPCSTR)m_fitRegion[fitRegionIdx].window.name);
+        WriteEvFile(fileName, &m_fitRegion[fitRegionIdx]);
 
     }
     if (m_useAudio)

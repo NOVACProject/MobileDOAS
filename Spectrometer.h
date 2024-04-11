@@ -145,7 +145,9 @@ public:
     int m_spectrometerIndex;
 
     /** The scaled (and possibly shifted) references that were fitted
-        to the measured spectrum. This is used for plotting mostly.
+        to the measured spectrum. This is used for plotting only.
+        This measured spectrum contains one vector of data for each fit region used, each region being MAX_SPECTRUM_LENGTH in size.
+        Each spectrum is only updated in the fit region used (i.e. in m_fitRegion[fitRegionIdx].window.fitLow to m_fitRegion[fitRegionIdx].window.fitHigh).
         TODO: This should not be publicly available. */
     mobiledoas::MeasuredSpectrum m_fitResult;
 
