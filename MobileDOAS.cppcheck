@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="1">
-    <builddir>MobileDOAS-cppcheck-build-dir</builddir>
-    <importproject>DMSpec.sln</importproject>
-    <analyze-all-vs-configs>true</analyze-all-vs-configs>
-    <tools>
-        <tool>clang-tidy</tool>
-    </tools>
-</project>

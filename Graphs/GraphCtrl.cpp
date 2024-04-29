@@ -582,8 +582,8 @@ void CGraphCtrl::XYPlot(double* xPosition, double* yPosition, double* color, dou
             minC = 0.0;
         }
         else {
-            maxC = Max(color, pointSum);
-            minC = Min(color, pointSum);
+            maxC = MaxValue(color, pointSum);
+            minC = MinValue(color, pointSum);
         }
         halfC = (maxC + minC) / 2;
         halfC_inv = 1.0 / (halfC - minC);

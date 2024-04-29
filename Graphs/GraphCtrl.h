@@ -537,11 +537,11 @@ protected:
             minX = 0;
         }
         else {
-            maxX = Max(xValues, pointSum);
-            minX = Min(xValues, pointSum);
+            maxX = MaxValue(xValues, pointSum);
+            minX = MinValue(xValues, pointSum);
         }
-        minY = Min(yValues, pointSum);
-        maxY = Max(yValues, pointSum);
+        minY = MinValue(yValues, pointSum);
+        maxY = MaxValue(yValues, pointSum);
     }
 
     /** Finishes the plotting */

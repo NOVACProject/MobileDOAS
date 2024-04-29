@@ -14,9 +14,21 @@
 
 #include "FitWindow.h"
 #include "EvaluationResult.h"
+#include <MobileDoasLib/Definitions.h>
 
 namespace Evaluation
 {
+
+struct EvaluationResult
+{
+    double column = 0.0;
+    double columnError = 0.0;
+    double shift = 0.0;
+    double shiftError = 0.0;
+    double squeeze = 0.0;
+    double squeezeError = 0.0;
+};
+
 class CEvaluation : public CBasicMath
 {
 public:
@@ -47,14 +59,10 @@ public:
     /** Evaluate the following spectra, the parameters for the fit are defined in 'm_fitWindow' */
     void Evaluate(const double* darkArray, const double* skyArray, const double* specMem, long numSteps = 400);
 
-    /** Returns the result from the last evaluation as an array of six elements containing
-        (column, columnError, shift, shiftError, squeeze, squeezeError).
+    /** Returns the result from the last evaluation.
         If there are more than one referencefile, only the results from evaluating
         referencefile number 'referenceFile' will be returned. */
-    double* GetResult(int referenceFile = 0);
-
-    /** Returns the result of the last evaluation */
-    CEvaluationResult& GetEvaluationResult();
+    EvaluationResult GetResult(int referenceFile = 0) const;
 
     double GetDelta() const { return m_result.m_delta; }
     double GetChiSquare() const { return m_result.m_chiSquare; }
@@ -83,7 +91,7 @@ public:
     bool m_subtractDarkFromSky; // Whether we should subtract the dark spectrum from the sky or not
 
     // The high-pass filtered spectrum
-    double m_filteredSpectrum[MAX_SPECTRUM_LENGTH];
+    std::vector<double> m_filteredSpectrum;
 
 private:
     // -------------------------------------------------------------

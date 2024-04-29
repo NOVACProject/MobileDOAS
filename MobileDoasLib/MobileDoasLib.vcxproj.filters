@@ -1,0 +1,150 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Measurement">
+      <UniqueIdentifier>{4103b0fc-8de5-446c-be37-aa0bd600cadb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Measurement">
+      <UniqueIdentifier>{9201bcf8-771c-4acd-a8b4-5d952fdf7740}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Communication">
+      <UniqueIdentifier>{8166965e-a5a2-4aba-90aa-3fbfccf3ea50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Communication">
+      <UniqueIdentifier>{573e90f6-9ded-4d89-80fb-042bacf16bbe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Flux">
+      <UniqueIdentifier>{33031cdf-92d1-44a6-96ff-52aafd050d4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Flux">
+      <UniqueIdentifier>{5cb9afa0-a2e6-404e-a3d4-1ee7b558daeb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\File">
+      <UniqueIdentifier>{8cd01303-cc7b-406c-9bfc-b944b3a3d5a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\File">
+      <UniqueIdentifier>{030f8e65-d16a-4176-a914-dff5de789253}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\DualBeam">
+      <UniqueIdentifier>{fa3ae3a9-ee90-4aef-b728-bf81e7597dee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DualBeam">
+      <UniqueIdentifier>{09f116a5-d19e-46ed-9964-127550f1156a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MobileDoasLib\GpsData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MobileDoasLib\Measurement\SpectrometerInterface.h">
+      <Filter>Header Files\Measurement</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MobileDoasLib\Measurement\SpectrumUtils.h">
+      <Filter>Header Files\Measurement</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MobileDoasLib\Definitions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MobileDoasLib\Communication\SerialConnection.h">
+      <Filter>Header Files\Communication</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MobileDoasLib\DateTime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MobileDoasLib\Flux\Traverse.h">
+      <Filter>Header Files\Flux</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MobileDoasLib\Flux\WindField.h">
+      <Filter>Header Files\Flux</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MobileDoasLib\File\KMLFileHandler.h">
+      <Filter>Header Files\File</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MobileDoasLib\Flux\Flux1.h">
+      <Filter>Header Files\Flux</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MobileDoasLib\GPS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MobileDoasLib\ReferenceFitResult.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MobileDoasLib\DualBeam\DualBeamCalculator.h">
+      <Filter>Header Files\DualBeam</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MobileDoasLib\DualBeam\DualBeamMeasSettings.h">
+      <Filter>Header Files\DualBeam</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MobileDoasLib\DualBeam\PlumeHeightCalculator.h">
+      <Filter>Header Files\DualBeam</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MobileDoasLib\DualBeam\WindSpeedCalculator.h">
+      <Filter>Header Files\DualBeam</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MobileDoasLib.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GpsData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Measurement\SpectrometerInterface.cpp">
+      <Filter>Source Files\Measurement</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Measurement\SpectrumUtils.cpp">
+      <Filter>Source Files\Measurement</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Communication\SerialConnection.cpp">
+      <Filter>Source Files\Communication</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DateTime.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Flux\Traverse.cpp">
+      <Filter>Source Files\Flux</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Flux\WindField.cpp">
+      <Filter>Source Files\Flux</Filter>
+    </ClCompile>
+    <ClCompile Include="src\File\KMLFileHandler.cpp">
+      <Filter>Source Files\File</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Flux\Flux1.cpp">
+      <Filter>Source Files\Flux</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GPS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DualBeam\DualBeamCalculator.cpp">
+      <Filter>Source Files\DualBeam</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DualBeam\PlumeHeightCalculator.cpp">
+      <Filter>Source Files\DualBeam</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DualBeam\WindSpeedCalculator.cpp">
+      <Filter>Source Files\DualBeam</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Measurement\MeasuredSpectrum.cpp">
+      <Filter>Source Files\Measurement</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ReadMe.md" />
+  </ItemGroup>
+</Project>

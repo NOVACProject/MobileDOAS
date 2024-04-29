@@ -2,6 +2,7 @@
 #include "ConfigurationFile.h"
 #include "MobileConfiguration.h"
 #include <stdexcept>
+#include <SpectralEvaluation/StringUtils.h>
 
 extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
 
@@ -13,16 +14,20 @@ void ConfigurationFile::Write(CMobileConfiguration& configuration)
     CString fileName;
 
     // Get the filename (and path) of the configuration-file
-    if (strlen(configuration.m_cfgFile) == 0) {
+    if (configuration.m_cfgFile.size() == 0)
+    {
         fileName.Format("%s\\cfg.xml", (LPCTSTR)g_exePath);
     }
-    else {
-        int p = configuration.m_cfgFile.Find(".txt");
-        if (p > 0) {
-            fileName.Format("%s.xml", (LPCTSTR)configuration.m_cfgFile.Left(p));
+    else
+    {
+        const int p = Find(configuration.m_cfgFile, ".txt");
+        if (p > 0)
+        {
+            fileName.Format("%s.xml", Left(configuration.m_cfgFile, p).c_str());
         }
-        else {
-            fileName.Format(configuration.m_cfgFile);
+        else
+        {
+            fileName.Format(configuration.m_cfgFile.c_str());
         }
     }
 
@@ -42,7 +47,7 @@ void ConfigurationFile::Write(CMobileConfiguration& configuration)
 
     // ------------ Spectrometer Settings ------------------
     if (configuration.m_spectrometerConnection == CMobileConfiguration::CONNECTION_RS232) {
-        fprintf(f, "\t<serialPort>%s</serialPort>\n", (LPCTSTR)(configuration.m_serialPort));
+        fprintf(f, "\t<serialPort>%s</serialPort>\n", configuration.m_serialPort.c_str());
         fprintf(f, "\t<serialBaudrate>%d</serialBaudrate>\n", configuration.m_baudrate);
     }
     else if (configuration.m_spectrometerConnection == CMobileConfiguration::CONNECTION_USB) {
@@ -83,7 +88,7 @@ void ConfigurationFile::Write(CMobileConfiguration& configuration)
         fprintf(f, "\t\t<use>0</use>\n");
 
     fprintf(f, "\t\t<baudrate>%ld</baudrate>\n", configuration.m_gpsBaudrate);
-    fprintf(f, "\t\t<port>%s</port>\n", (LPCTSTR)configuration.m_gpsPort);
+    fprintf(f, "\t\t<port>%s</port>\n", configuration.m_gpsPort.c_str());
     fprintf(f, "\t</GPS>\n");
 
     // ------------------- Offset-settings --------------------

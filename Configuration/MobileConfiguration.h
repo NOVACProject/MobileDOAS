@@ -43,24 +43,24 @@ namespace Configuration {
 
         // -------- spectrometer -------------
         /** How to connect to the spectrometer */
-        int         m_spectrometerConnection;
+        int m_spectrometerConnection;
 
         /** The port-to use, if using serial-connection */
-        CString     m_serialPort;
+        std::string m_serialPort;
 
         /** The baudrate to use, if using serial-connection */
-        int         m_baudrate;
+        int m_baudrate;
 
         /** The number of channels on the spectrometer to use */
-        int         m_nChannels;
+        int m_nChannels;
 
         /** The set point for the CCD temperature in Celsius */
-        double      m_setPointTemperature;
+        double m_setPointTemperature;
 
         // ------------ Exposure time -------------------
 
         /** The channel number around which the intensity of the spectrum will be calculated. */
-        long        m_specCenter;
+        long m_specCenter;
 
         /** The number of pixels to the left and to the right of m_specCenter which
             will be used to calculate the intensity of the spectrum.
@@ -68,37 +68,37 @@ namespace Configuration {
         const long m_specCenterHalfWidth = 10;
 
         /** The desired saturation level at that channel (in percent 0-100%) */
-        long  m_percent;
+        long m_percent;
 
         /** Whether to use automatic determination of the exposure-time or to use a fixed exp.time */
-        int   m_expTimeMode;
+        int m_expTimeMode;
 
         /** The exposure-time to use if we're to use a fixed exposure-time */
-        int   m_fixExpTime;
+        int m_fixExpTime;
 
         /** The time-resolution, i.e. the desired interval between two consecutive spectra. in ms */
-        long  m_timeResolution;
+        long m_timeResolution;
 
         /** The saturation range */
-        int  m_saturationLow;
-        int  m_saturationHigh;
+        int m_saturationLow;
+        int m_saturationHigh;
 
         // ---------------- GPS-reciever -----------------
         /** Equal to 1 if we want to use a gps-reciever */
-        int   m_useGPS;
+        int m_useGPS;
 
         /** The serial-port of the GPS-reciever */
-        CString  m_gpsPort;
+        std::string m_gpsPort;
 
         /** The baudrate of the GPS-reciever */
-        long  m_gpsBaudrate;
+        long m_gpsBaudrate;
 
         // ---------------- Evaluation -------------
         /** The Fit-windows */
         Evaluation::CFitWindow m_fitWindow[MAX_FIT_WINDOWS];
 
         /** How many fit-windows have been defined */
-        int   m_nFitWindows;
+        int m_nFitWindows;
 
         // ------------------ Audio -------------------
 
@@ -106,11 +106,11 @@ namespace Configuration {
         int m_useAudio = 1;
 
         /** The expected maximum column value, used for the sound */
-        double  m_maxColumn;
+        double m_maxColumn;
 
         /** Auxilliary information - the name of the configuration file that this
                 information comes from. */
-        CString  m_cfgFile;
+        std::string m_cfgFile;
 
         // ------------------ MISC -------------------
         /** Offset from... */
@@ -179,7 +179,7 @@ namespace Configuration {
 
         // ------------------ Directory acquisition -------------------
         /** the directory to watch for acquired data (STD files) */
-        CString  m_directory;
+        CString m_directory;
 
         /** dynamic range of the spectrometer */
         long m_spectrometerDynamicRange;

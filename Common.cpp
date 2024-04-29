@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 #include <string>
+#include <MobileDoasLib/GpsData.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -68,78 +69,6 @@ void Common::WriteLogFile(CString filename, CString txt)
     fclose(f);
 }
 
-void Common::GetTimeText(char* txt)
-{
-    struct tm* tim;
-    time_t t;
-
-    txt[0] = 0;
-    time(&t);
-    tim = localtime(&t);
-    sprintf(txt, "%02d:%02d:%02d", tim->tm_hour, tim->tm_min, tim->tm_sec);
-}
-
-void Common::GetTimeText(CString& str)
-{
-    char txt[512];
-    GetTimeText(txt);
-    str.Format(txt);
-}
-
-
-void Common::GetDateText(char* txt)
-{
-    struct tm* tim;
-    time_t t;
-
-    txt[0] = 0;
-    time(&t);
-    tim = localtime(&t);
-    sprintf(txt, "%04d.%02d.%02d", tim->tm_year + 1900, tim->tm_mon + 1, tim->tm_mday);
-}
-
-void Common::GetDateText(CString& str) {
-    char txt[512];
-    GetDateText(txt);
-    str.Format(txt);
-}
-
-void Common::GetDateTimeText(char* txt)
-{
-    struct tm* tim;
-    time_t t;
-
-    txt[0] = 0;
-    time(&t);
-    tim = localtime(&t);
-    sprintf(txt, "%04d.%02d.%02d  %02d:%02d:%02d", tim->tm_year + 1900, tim->tm_mon + 1, tim->tm_mday, tim->tm_hour, tim->tm_min, tim->tm_sec);
-}
-
-void Common::GetDateTimeText(CString& str)
-{
-    char txt[512];
-    GetDateTimeText(txt);
-    str.Format(txt);
-}
-
-void Common::GetDateTimeTextPlainFormat(char* txt)
-{
-    struct tm* tim;
-    time_t t;
-
-    txt[0] = 0;
-    time(&t);
-    tim = localtime(&t);
-    sprintf(txt, "%04d.%02d.%02d_%02d%02d%02d", tim->tm_year + 1900, tim->tm_mon + 1, tim->tm_mday, tim->tm_hour, tim->tm_min, tim->tm_sec);
-}
-
-void Common::GetDateTimeTextPlainFormat(CString& str)
-{
-    char txt[512];
-    GetDateTimeTextPlainFormat(txt);
-    str.Format(txt);
-}
-
 void Common::GetExePath()
 {
     TCHAR exeFullPath[MAX_PATH];
@@ -147,40 +76,6 @@ void Common::GetExePath()
     m_exePath = (CString)exeFullPath;
     int position = m_exePath.ReverseFind('\\');
     m_exePath = m_exePath.Left(position + 1);
-}
-
-/*  adapts parameters k and m so that y = k*x + m, in a
-    least square sense.
-    Algorithm found at: http://mathworld.wolfram.com/LeastSquaresFittingPolynomial.html */
-int Common::AdaptStraightLine(double* x, double* y, unsigned int l, double* k, double* m) {
-    double sx = 0, sy = 0, sx2 = 0, sxy = 0, det_inv;
-    double M_inv[2][2], XTy[2]; /*M=X^T * X, M_inv = M^-1, XTy = X^T * y */
-    unsigned int i;
-
-    if ((x == 0) || (y == 0) || (l == 0) || (k == 0) || (m == 0)) {
-        return 1;
-    }
-
-    for (i = 0; i < l; ++i) {
-        sx += x[i];
-        sy += y[i];
-        sx2 += x[i] * x[i];
-        sxy += x[i] * y[i];
-    }
-
-    det_inv = 1 / (sx2 * l - sx * sx);
-    M_inv[0][0] = sx2 * det_inv;
-    M_inv[0][1] = -sx * det_inv;
-    M_inv[1][0] = -sx * det_inv;
-    M_inv[1][1] = l * det_inv;
-
-    XTy[0] = sy;
-    XTy[1] = sxy;
-
-    *(m) = M_inv[0][0] * XTy[0] + M_inv[0][1] * XTy[1];
-    *(k) = M_inv[1][0] * XTy[0] + M_inv[1][1] * XTy[1];
-
-    return 0;
 }
 
 void Common::GuessSpecieName(const CString& fileName, CString& specie) {
@@ -254,99 +149,7 @@ bool FormatErrorCode(DWORD error, CString& string) {
     return false;
 }
 
-/* Calculates the distance in meters between the point (lat1, lon1) and the point
-  (lat2, lon2).
-    @lat1 - latitude of position 1  [degrees]
-    @lon1 - longitude of position 1 [degrees]
-    @lat2 - latitude of position 2  [degrees]
-    @lon2 - longitude of position 2 [degrees]
-*/
-double GPSDistance(double lat1, double lon1, double lat2, double lon2) {
-    const double R_Earth = 6367000;
-    double distance, dlon, dlat, a, c;
-    lat1 = lat1 * DEGREETORAD;
-    lat2 = lat2 * DEGREETORAD;
-    lon1 = lon1 * DEGREETORAD;
-    lon2 = lon2 * DEGREETORAD;
-    dlon = lon2 - lon1;
-    dlat = lat2 - lat1;
-    a = pow((sin(dlat / 2)), 2) + cos(lat1) * cos(lat2) * pow((sin(dlon / 2)), 2);
-    c = 2 * asin(min(1, sqrt(a)));
-    distance = R_Earth * c;
 
-    return distance;
-
-}
-
-/** Calculate the bearing from point 1 to point 2.
-  Bearing is here defined as the angle between the direction to point 2 (at point 1)
-    and the direction to north (at point 1).
-*@lat1 - the latitude of beginning point,   [degree]
-*@lon1 - the longitude of beginning point,  [degree]
-*@lat2 - the latitude of ending point,      [degree]
-*@lon2 - the longitude of ending point,     [degree]
-*/
-double GPSBearing(double lat1, double lon1, double lat2, double lon2) {
-    double angle, dLat, dLon;
-
-    lat1 = lat1 * DEGREETORAD;
-    lat2 = lat2 * DEGREETORAD;
-    lon1 = lon1 * DEGREETORAD;
-    lon2 = lon2 * DEGREETORAD;
-
-    dLat = lat1 - lat2;
-    dLon = lon1 - lon2;
-
-    if ((dLon == 0) && (dLat == 0))
-        angle = 0;
-    else
-        angle = atan2(-sin(dLon) * cos(lat2),
-            cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon));
-
-    /*  	angle = atan2(lon1*cos(lat1)-lon2*cos(lat2), lat1-lat2); */
-
-    if (angle < 0)
-        angle = TWO_PI + angle;
-
-    angle = RADTODEGREE * angle;
-    return angle;
-}
-
-/** This function calculates the latitude and longitude for a point
-        which is the distance 'dist' m and bearing 'az' degrees from
-        the point defied by 'lat1' and 'lon1' */
-void CalculateDestination(double lat1, double lon1, double dist, double az, double& lat2, double& lon2) {
-    const double R_Earth = 6367000; // radius of the earth
-
-    double dR = dist / R_Earth;
-
-    // convert to radians
-    lat1 = lat1 * DEGREETORAD;
-    lon1 = lon1 * DEGREETORAD;
-    az = az * DEGREETORAD;
-
-    // calculate the second point
-    lat2 = asin(sin(lat1) * cos(dR) + cos(lat1) * sin(dR) * cos(az));
-
-    lon2 = lon1 + atan2(sin(az) * sin(dR) * cos(lat1), cos(dR) - sin(lat1) * sin(lat2));
-
-    // convert back to degrees
-    lat2 = lat2 * RADTODEGREE;
-    lon2 = lon2 * RADTODEGREE;
-}
-
-
-double GetWindFactor(double lat1, double lon1, double lat2, double lon2, double windAngle) {
-    double windFactor, travelAngle, difAngle;
-
-    travelAngle = DEGREETORAD * GPSBearing(lat1, lon1, lat2, lon2);
-
-    /* plumeAngle = pi + windAngle */
-    difAngle = travelAngle + 1.5 * M_PI - windAngle * DEGREETORAD;	// this is the difference between travel direction and plume direction
-    windFactor = cos(difAngle);
-
-    return windFactor;
-}
 
 bool Common::BrowseForDirectory(CString& folder)
 {
@@ -611,41 +414,4 @@ void Common::GetFileName(CString& fileName)
 void Common::GetDirectory(CString& fileName) {
     int position = fileName.ReverseFind('\\');
     fileName = fileName.Left(position + 1);
-}
-
-unsigned short Common::Swp(unsigned short in)
-{
-    unsigned char* p1, * p2;
-    unsigned short ut;
-
-    p1 = (unsigned char*)&ut;
-    p2 = (unsigned char*)&in;
-    p1[0] = p2[1];
-    p1[1] = p2[0];
-    return(ut);
-}
-
-/** Takes a given year and month and returns the number of days in that month. */
-int	Common::DaysInMonth(int year, int month) {
-    static int nDays[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-
-    // detect non-existing months.
-    if (month < 1 || month > 12)
-        return 0;
-
-    // If the month is not february, then it's easy!!!
-    if (month != 2)
-        return nDays[month - 1];
-
-    // If february, then check for leap-years
-    if (year % 4 != 0)
-        return 28; // not a leap-year
-
-    if (year % 400 == 0) // every year dividable by 400 is a leap-year
-        return 29;
-
-    if (year % 100 == 0) // years diviable by 4 and by 100 are not leap-years
-        return 28;
-    else
-        return 29;		// years dividable by 4 and not by 100 are leap-years
 }

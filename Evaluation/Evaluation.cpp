@@ -67,7 +67,8 @@ CEvaluation::~CEvaluation()
 ** @skyArray - sky reference
 ** @specMem - measured spectrum
 */
-void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum, const double* measSpectrum, long numSteps) {
+void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum, const double* measSpectrum, long numSteps)
+{
 
     CString szOut, szTmp;
     int iNumSpec = m_window.nRef;
@@ -90,7 +91,8 @@ void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum
 
     // calculate the 'wavelength' column
     vXData.SetSize(sumChn);
-    for (int i = 0; i < sumChn; ++i) {
+    for (int i = 0; i < sumChn; ++i)
+    {
         vXData.SetAt(i, (TFitData)(1.0f + (double)i));
     }
 
@@ -100,10 +102,11 @@ void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum
     PrepareSpectra(darkArray, skyArray, measArray, m_window); // why not pass in CSpectrum instead of array?
 
     // Copy the highpass-filtered spectrum to the designated storage
-    memcpy(m_filteredSpectrum, measArray, sumChn * sizeof(double));
+    m_filteredSpectrum = std::vector<double>(measArray, measArray + sumChn);
 
     // low pass filter
-    if (m_lowPassFiltering) {
+    if (m_lowPassFiltering)
+    {
         LowPassBinomial(measArray, sumChn, 5);
     }
 
@@ -150,18 +153,21 @@ void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum
         // set the spectral data of the reference spectrum to the object. This also causes an internal
         // transformation of the spectral data into a B-Spline that will be used to interpolate the 
         // reference spectrum during shift and squeeze operations
-        if (!ref[i].SetData(vXData.SubVector(0, vnYData[i].GetSize()), vnYData[i])) {
+        if (!ref[i].SetData(vXData.SubVector(0, vnYData[i].GetSize()), vnYData[i]))
+        {
             Error0("Error initializing spline object!");
         }
 
         // Set the column (if wanted)
-        switch (m_window.ref[i].m_columnOption) {
+        switch (m_window.ref[i].m_columnOption)
+        {
         case novac::SHIFT_TYPE::SHIFT_FIX:   ref[i].FixParameter(CReferenceSpectrumFunction::CONCENTRATION, m_window.ref[i].m_columnValue * ref[i].GetAmplitudeScale()); break;
         case novac::SHIFT_TYPE::SHIFT_LINK:  ref[(int)m_window.ref[i].m_columnValue].LinkParameter(CReferenceSpectrumFunction::CONCENTRATION, ref[i], CReferenceSpectrumFunction::CONCENTRATION); break;
         }
 
         // Set the shift
-        switch (m_window.ref[i].m_shiftOption) {
+        switch (m_window.ref[i].m_shiftOption)
+        {
         case novac::SHIFT_TYPE::SHIFT_FIX:   ref[i].FixParameter(CReferenceSpectrumFunction::SHIFT, m_window.ref[i].m_shiftValue); break;
         case novac::SHIFT_TYPE::SHIFT_LINK:  ref[(int)m_window.ref[i].m_shiftValue].LinkParameter(CReferenceSpectrumFunction::SHIFT, ref[i], CReferenceSpectrumFunction::SHIFT); break;
         default:          ref[i].SetDefaultParameter(CReferenceSpectrumFunction::SHIFT, (TFitData)0.0);
@@ -169,7 +175,8 @@ void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum
         }
 
         // Set the squeeze
-        switch (m_window.ref[i].m_squeezeOption) {
+        switch (m_window.ref[i].m_squeezeOption)
+        {
         case novac::SHIFT_TYPE::SHIFT_FIX:   ref[i].FixParameter(CReferenceSpectrumFunction::SQUEEZE, m_window.ref[i].m_squeezeValue); break;
         case novac::SHIFT_TYPE::SHIFT_LINK:  ref[(int)m_window.ref[i].m_squeezeValue].LinkParameter(CReferenceSpectrumFunction::SQUEEZE, ref[i], CReferenceSpectrumFunction::SQUEEZE); break;
         default:          ref[i].SetDefaultParameter(CReferenceSpectrumFunction::SQUEEZE, (TFitData)1.0);
@@ -210,12 +217,14 @@ void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum
     // between 100 and 1000
     cFirstFit.GetNonlinearMinimizer().SetMaxFitSteps(numSteps);
 
-    try {
+    try
+    {
         // prepare everything for fitting
         cFirstFit.PrepareMinimize();
 
         // actually do the fitting
-        if (!cFirstFit.Minimize()) {
+        if (!cFirstFit.Minimize())
+        {
             MessageBox(NULL, TEXT("fit fail."), TEXT("error"), MB_OK);
         }
 
@@ -236,17 +245,19 @@ void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum
         m_result.m_chiSquare = (double)cFirstFit.GetChiSquare();
 
         // Get the polynomial
-        for (int tmpInt = 0; tmpInt < m_window.polyOrder; ++tmpInt) {
+        for (int tmpInt = 0; tmpInt < m_window.polyOrder; ++tmpInt)
+        {
             m_result.m_polynomial[tmpInt] = (double)cPoly.GetCoefficient(tmpInt);
         }
 
         // allocate enough space to fit in all the result-values
-        m_result.m_ref.SetSize(m_window.nRef);
+        m_result.m_ref.resize(m_window.nRef);
 
         // finally display the fit results for each reference spectrum including their appropriate error
 
         int i;
-        for (i = 0; i < iNumSpec; i++) {
+        for (i = 0; i < iNumSpec; i++)
+        {
             // Get the name of the evaluated specie
             m_result.m_ref[i].m_specieName = m_window.ref[i].m_specieName.c_str();
 
@@ -294,25 +305,21 @@ void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum
     return;
 }
 
-/** This function is to get the evaluation result.
-* @ refFileNum - the index of the result set vResult[6]
-* Return - the pointer to the evaluation result array.
-*/
-double* CEvaluation::GetResult(int referenceFile) {
+EvaluationResult CEvaluation::GetResult(int referenceFile) const
+{
+    EvaluationResult result;
 
-    resultSet[0] = m_result.m_ref[referenceFile].m_column;
-    resultSet[1] = m_result.m_ref[referenceFile].m_columnError;
-    resultSet[2] = m_result.m_ref[referenceFile].m_shift;
-    resultSet[3] = m_result.m_ref[referenceFile].m_shiftError;
-    resultSet[4] = m_result.m_ref[referenceFile].m_squeeze;
-    resultSet[5] = m_result.m_ref[referenceFile].m_squeezeError;
+    if (static_cast<size_t>(referenceFile) < m_result.m_ref.size())
+    {
+        result.column = m_result.m_ref[referenceFile].m_column;
+        result.columnError = m_result.m_ref[referenceFile].m_columnError;
+        result.shift = m_result.m_ref[referenceFile].m_shift;
+        result.shiftError = m_result.m_ref[referenceFile].m_shiftError;
+        result.squeeze = m_result.m_ref[referenceFile].m_squeeze;
+        result.squeezeError = m_result.m_ref[referenceFile].m_squeezeError;
+    }
 
-    return resultSet;
-}
-
-/** Returns the result of the last evaluation */
-CEvaluationResult& CEvaluation::GetEvaluationResult() {
-    return this->m_result;
+    return result;
 }
 
 /**	read data from reference files
@@ -320,7 +327,8 @@ CEvaluationResult& CEvaluation::GetEvaluationResult() {
 ** @iNumFile - the number of the files
 ** iNumFile<=20, because of vnYData[20]
 */
-BOOL CEvaluation::ReadRefList(CString* refFileList, int iNumFile, int sumChn) {
+BOOL CEvaluation::ReadRefList(CString* refFileList, int iNumFile, int sumChn)
+{
     m_window.nRef = iNumFile;
     CFileException exceFile;
     CStdioFile fileRef[100];
@@ -346,23 +354,27 @@ BOOL CEvaluation::ReadRefList(CString* refFileList, int iNumFile, int sumChn) {
             while (szToken = strtok(szToken, "\n"))
             {
                 nColumns = sscanf(szToken, "%lf\t%lf", &tmpDouble, &fValue[valuesReadNum]);
-                if (nColumns == 1) {
+                if (nColumns == 1)
+                {
                     fValue[valuesReadNum] = tmpDouble;
                 }
-                if (nColumns < 1 || nColumns > 2) {
+                if (nColumns < 1 || nColumns > 2)
+                {
                     break;
                 }
                 // init to get next token
                 szToken = NULL;
             }
             ++valuesReadNum;
-            if (valuesReadNum == sumChn) {
+            if (valuesReadNum == sumChn)
+            {
                 break;
             }
         }
         // it is faster to assign all values to the vector at once than having to grow the vector for every read value
         vnYData[i].SetSize(valuesReadNum);
-        for (int index = 0; index < valuesReadNum; ++index) {
+        for (int index = 0; index < valuesReadNum; ++index)
+        {
             vnYData[i].SetAt(index, (TFitData)fValue[index]);
         }
 
@@ -372,15 +384,18 @@ BOOL CEvaluation::ReadRefList(CString* refFileList, int iNumFile, int sumChn) {
     return TRUE;
 }
 
-void CEvaluation::SetParameters(int fitLow, int fitHigh, int polynomOrder, int lowPassFilter) {
+void CEvaluation::SetParameters(int fitLow, int fitHigh, int polynomOrder, int lowPassFilter)
+{
     m_window.fitLow = fitLow;
     m_window.fitHigh = fitHigh;
     m_window.polyOrder = polynomOrder;
     this->m_lowPassFiltering = lowPassFilter;
 }
 
-void CEvaluation::SetShiftAndSqueeze(int refNum, novac::SHIFT_TYPE shiftType, double shift, novac::SHIFT_TYPE squeezeType, double squeeze) {
-    if (refNum < 0 || refNum > m_window.nRef) {
+void CEvaluation::SetShiftAndSqueeze(int refNum, novac::SHIFT_TYPE shiftType, double shift, novac::SHIFT_TYPE squeezeType, double squeeze)
+{
+    if (refNum < 0 || refNum > m_window.nRef)
+    {
         return;
     }
     m_window.ref[refNum].m_shiftOption = shiftType;
@@ -391,7 +406,8 @@ void CEvaluation::SetShiftAndSqueeze(int refNum, novac::SHIFT_TYPE shiftType, do
 }
 
 /** Sets the fit window to use */
-void CEvaluation::SetFitWindow(const CFitWindow& window) {
+void CEvaluation::SetFitWindow(const CFitWindow& window)
+{
     this->m_window.channel = window.channel;
     m_window.fitHigh = window.fitHigh;
     m_window.fitLow = window.fitLow;
@@ -403,43 +419,53 @@ void CEvaluation::SetFitWindow(const CFitWindow& window) {
     m_window.specLength = window.specLength;
     m_window.offsetFrom = window.offsetFrom;
     m_window.offsetTo = window.offsetTo;
-    for (int i = 0; i < window.nRef; ++i) {
+    for (int i = 0; i < window.nRef; ++i)
+    {
         m_window.ref[i] = window.ref[i];
     }
 }
 
-void CEvaluation::RemoveOffset(double* spectrum, int specLen, int offsetFrom, int offsetTo) {
-    if (offsetFrom == offsetTo) {
+void CEvaluation::RemoveOffset(double* spectrum, int specLen, int offsetFrom, int offsetTo)
+{
+    if (offsetFrom == offsetTo)
+    {
         return;
     }
 
     //  remove any remaining offset in the spectrum
     double avg = 0;
-    for (int i = offsetFrom; i < offsetTo; i++) {
+    for (int i = offsetFrom; i < offsetTo; i++)
+    {
         avg += spectrum[i];
     }
     avg = avg / (double)(offsetTo - offsetFrom);
     Sub(spectrum, specLen, avg);
 }
 
-void CEvaluation::PrepareSpectra(double* dark, double* sky, double* meas, const CFitWindow& window) {
+void CEvaluation::PrepareSpectra(double* dark, double* sky, double* meas, const CFitWindow& window)
+{
 
-    if (window.fitType == FIT_HP_DIV) {
+    if (window.fitType == FIT_HP_DIV)
+    {
         return PrepareSpectra_HP_Div(dark, sky, meas, window);
     }
-    if (window.fitType == FIT_HP_SUB) {
+    if (window.fitType == FIT_HP_SUB)
+    {
         return PrepareSpectra_HP_Sub(dark, sky, meas, window);
     }
-    if (window.fitType == FIT_POLY) {
+    if (window.fitType == FIT_POLY)
+    {
         return PrepareSpectra_Poly(dark, sky, meas, window);
     }
 }
 
-void CEvaluation::PrepareSpectra_HP_Div(double* darkArray, double* skyArray, double* measArray, const CFitWindow& window) {
+void CEvaluation::PrepareSpectra_HP_Div(double* darkArray, double* skyArray, double* measArray, const CFitWindow& window)
+{
 
     // 1. Subtract the dark spectrum
     Sub(measArray, darkArray, window.specLength, 0.0);
-    if (m_subtractDarkFromSky) {
+    if (m_subtractDarkFromSky)
+    {
         // TODO:should never be called in re-evaluation mode or in adaptive mode if in real-time
         // TEST THIS!!!
         Sub(skyArray, darkArray, window.specLength, 0.0);
@@ -459,7 +485,8 @@ void CEvaluation::PrepareSpectra_HP_Div(double* darkArray, double* skyArray, dou
     Log(measArray, window.specLength);
 }
 
-void CEvaluation::PrepareSpectra_HP_Sub(double* darkArray, double* skyArray, double* measArray, const CFitWindow& window) {
+void CEvaluation::PrepareSpectra_HP_Sub(double* darkArray, double* skyArray, double* measArray, const CFitWindow& window)
+{
 
     // 1. spec = measured spectrum - dark spectrum
     Sub(measArray, darkArray, window.specLength, 0.0);
@@ -474,7 +501,8 @@ void CEvaluation::PrepareSpectra_HP_Sub(double* darkArray, double* skyArray, dou
     Log(measArray, window.specLength);
 }
 
-void CEvaluation::PrepareSpectra_Poly(double* darkArray, double* skyArray, double* measArray, const CFitWindow& window) {
+void CEvaluation::PrepareSpectra_Poly(double* darkArray, double* skyArray, double* measArray, const CFitWindow& window)
+{
 
     // 1. remove any remaining offset in the measured spectrum
     RemoveOffset(measArray, window.specLength, window.offsetFrom, window.offsetTo);
@@ -483,28 +511,35 @@ void CEvaluation::PrepareSpectra_Poly(double* darkArray, double* skyArray, doubl
     Log(measArray, window.specLength);
 
     // 3. Multiply the spectrum with -1 to get the correct sign for everything
-    for (int i = 0; i < window.specLength; ++i) {
+    for (int i = 0; i < window.specLength; ++i)
+    {
         measArray[i] *= -1.0;
     }
 }
 
-BOOL CEvaluation::IncludeAsReference(double* array, int sumChn, int refNum) {
+BOOL CEvaluation::IncludeAsReference(double* array, int sumChn, int refNum)
+{
 
-    if (refNum == -1) {
+    if (refNum == -1)
+    {
         vnYData[m_window.nRef].SetSize(sumChn);
-        for (int index = 0; index < sumChn; ++index) {
+        for (int index = 0; index < sumChn; ++index)
+        {
             vnYData[index].SetAt(index, (TFitData)array[index]);
         }
 
         ++m_window.nRef;
     }
-    else {
-        if (refNum > m_window.nRef - 1) {
+    else
+    {
+        if (refNum > m_window.nRef - 1)
+        {
             ++m_window.nRef;
         }
 
         vnYData[refNum].SetSize(sumChn);
-        for (int index = 0; index < sumChn; ++index) {
+        for (int index = 0; index < sumChn; ++index)
+        {
             vnYData[refNum].SetAt(index, (TFitData)array[index]);
         }
     }

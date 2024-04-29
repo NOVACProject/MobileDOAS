@@ -90,7 +90,7 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>$(PROJECT_DIR)SpectralEvaluation\include;%JAVA_HOME%\include\win32;%JAVA_HOME%\include;%OMNIDRIVER_HOME%\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PROJECT_DIR)SpectrometersLib\include;$(PROJECT_DIR)SpectralEvaluation\include;%JAVA_HOME%\include\win32;%JAVA_HOME%\include;%OMNIDRIVER_HOME%\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
@@ -141,7 +141,7 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>$(PROJECT_DIR)SpectralEvaluation\include;%JAVA_HOME%\include\win32;%JAVA_HOME%\include;%OMNIDRIVER_HOME%\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PROJECT_DIR)SpectrometersLib\include;$(PROJECT_DIR)MobileDoasLib\include;$(PROJECT_DIR)SpectralEvaluation\include;%JAVA_HOME%\include\win32;%JAVA_HOME%\include;%OMNIDRIVER_HOME%\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
@@ -188,7 +188,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(PROJECT_DIR)SpectralEvaluation\include;%JAVA_HOME%\include\win32;%JAVA_HOME%\include;%OMNIDRIVER_HOME%\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PROJECT_DIR)SpectrometersLib\include;$(PROJECT_DIR)MobileDoasLib\include;$(PROJECT_DIR)SpectralEvaluation\include;%JAVA_HOME%\include\win32;%JAVA_HOME%\include;%OMNIDRIVER_HOME%\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>true</MinimalRebuild>
@@ -238,7 +238,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(PROJECT_DIR)SpectralEvaluation\include;%JAVA_HOME%\include\win32;%JAVA_HOME%\include;%OMNIDRIVER_HOME%\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PROJECT_DIR)SpectrometersLib\include;$(PROJECT_DIR)MobileDoasLib\include;$(PROJECT_DIR)SpectralEvaluation\include;%JAVA_HOME%\include\win32;%JAVA_HOME%\include;%OMNIDRIVER_HOME%\include</AdditionalIncludeDirectories>
       <StringPooling>true</StringPooling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <SmallerTypeCheck>false</SmallerTypeCheck>
@@ -286,13 +286,10 @@
     <ClCompile Include="CCalibratePixelToWavelengthSetupDialog.cpp" />
     <ClCompile Include="CCalibrateReferencesDialog.cpp" />
     <ClCompile Include="CCreateStandardReferencesDialog.cpp" />
-    <ClCompile Include="CGpsData.cpp" />
     <ClCompile Include="CLogDialog.cpp" />
     <ClCompile Include="CommentDlg.cpp" />
     <ClCompile Include="Common.cpp" />
-    <ClCompile Include="Common\CDateTime.cpp" />
     <ClCompile Include="Common\CSpectrum.cpp" />
-    <ClCompile Include="Common\KMLFileHandler.cpp" />
     <ClCompile Include="Common\SpectrumIO.cpp" />
     <ClCompile Include="Common\XMLFileReader.cpp" />
     <ClCompile Include="Configuration\ConfigurationDialog.cpp" />
@@ -318,9 +315,6 @@
     <ClCompile Include="DMSpec.cpp" />
     <ClCompile Include="DMSpecDoc.cpp" />
     <ClCompile Include="DMSpecView.cpp" />
-    <ClCompile Include="DualBeam\DualBeamCalculator.cpp" />
-    <ClCompile Include="DualBeam\DualBeamMeasSettings.cpp" />
-    <ClCompile Include="DualBeam\PlumeHeightCalculator.cpp" />
     <ClCompile Include="DualBeam\PostPlumeHeightDlg.cpp" />
     <ClCompile Include="DualBeam\PostWindDlg.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
@@ -328,20 +322,12 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="DualBeam\WindSpeedCalculator.cpp" />
-    <ClCompile Include="EvaluationLogFileHandler.cpp" />
     <ClCompile Include="Evaluation\Evaluation.cpp" />
     <ClCompile Include="Evaluation\EvaluationResult.cpp" />
     <ClCompile Include="Evaluation\FitWindow.cpp" />
     <ClCompile Include="Evaluation\RealTimeCalibration.cpp" />
-    <ClCompile Include="Evaluation\ReferenceFitResult.cpp" />
-    <ClCompile Include="Evaluation\TraverseResult.cpp" />
     <ClCompile Include="ExportEvLogDlg.cpp" />
-    <ClCompile Include="Flux1.cpp" />
     <ClCompile Include="FluxPathListBox.cpp" />
-    <ClCompile Include="Flux\Traverse.cpp" />
-    <ClCompile Include="Flux\WindField.cpp" />
-    <ClCompile Include="GPS.cpp" />
     <ClCompile Include="Graphs\ColumnGraph.cpp" />
     <ClCompile Include="Graphs\GraphCtrl.cpp" />
     <ClCompile Include="Graphs\SpectrumGraph.cpp" />
@@ -358,6 +344,7 @@
     <ClCompile Include="MeasurementModes\Measurement_View.cpp" />
     <ClCompile Include="MeasurementModes\Measurement_Wind.cpp" />
     <ClCompile Include="MeasurementModes\Measurement_Directory.cpp" />
+    <ClCompile Include="MeasurementSetup.cpp" />
     <ClCompile Include="OpenInstrumentCalibrationDialog.cpp" />
     <ClCompile Include="PostFluxDlg.cpp" />
     <ClCompile Include="RealTimeRoute.cpp" />
@@ -375,7 +362,6 @@
     <ClCompile Include="ReEvaluation\ReEval_SkyDlg.cpp" />
     <ClCompile Include="RouteDlg.cpp" />
     <ClCompile Include="RouteGraph.cpp" />
-    <ClCompile Include="SerialConnection.cpp" />
     <ClCompile Include="ShowFitDlg.cpp" />
     <ClCompile Include="SourceSelectionDlg.cpp" />
     <ClCompile Include="SpectralEvaluation\src\Calibration\Correspondence.cpp">
@@ -608,13 +594,10 @@
     <ClInclude Include="CCalibratePixelToWavelengthSetupDialog.h" />
     <ClInclude Include="CCalibrateReferencesDialog.h" />
     <ClInclude Include="CCreateStandardReferencesDialog.h" />
-    <ClInclude Include="CGpsData.h" />
     <ClInclude Include="CLogDialog.h" />
     <ClInclude Include="CommentDlg.h" />
     <ClInclude Include="Common.h" />
-    <ClInclude Include="Common\CDateTime.h" />
     <ClInclude Include="Common\CSpectrum.h" />
-    <ClInclude Include="Common\KMLFileHandler.h" />
     <ClInclude Include="Common\SpectrumIO.h" />
     <ClInclude Include="Common\XMLFileReader.h" />
     <ClInclude Include="Configuration\ConfigurationDialog.h" />
@@ -640,19 +623,12 @@
     <ClInclude Include="DMSpec.h" />
     <ClInclude Include="DMSpecDoc.h" />
     <ClInclude Include="DMSpecView.h" />
-    <ClInclude Include="DualBeam\DualBeamCalculator.h" />
-    <ClInclude Include="DualBeam\DualBeamMeasSettings.h" />
-    <ClInclude Include="DualBeam\PlumeHeightCalculator.h" />
     <ClInclude Include="DualBeam\PostPlumeHeightDlg.h" />
     <ClInclude Include="DualBeam\PostWindDlg.h" />
-    <ClInclude Include="DualBeam\WindSpeedCalculator.h" />
-    <ClInclude Include="EvaluationLogFileHandler.h" />
     <ClInclude Include="Evaluation\Evaluation.h" />
     <ClInclude Include="Evaluation\EvaluationResult.h" />
     <ClInclude Include="Evaluation\FitWindow.h" />
     <ClInclude Include="Evaluation\RealTimeCalibration.h" />
-    <ClInclude Include="Evaluation\ReferenceFitResult.h" />
-    <ClInclude Include="Evaluation\TraverseResult.h" />
     <ClInclude Include="ExportEvLogDlg.h" />
     <ClInclude Include="Fit\ApertureFunction.h" />
     <ClInclude Include="Fit\BandedMatrix.h" />
@@ -691,11 +667,7 @@
     <ClInclude Include="Fit\StatisticVector.h" />
     <ClInclude Include="Fit\SumFunction.h" />
     <ClInclude Include="Fit\Vector.h" />
-    <ClInclude Include="Flux1.h" />
     <ClInclude Include="FluxPathListBox.h" />
-    <ClInclude Include="Flux\Traverse.h" />
-    <ClInclude Include="Flux\WindField.h" />
-    <ClInclude Include="GPS.h" />
     <ClInclude Include="Graphs\ColumnGraph.h" />
     <ClInclude Include="Graphs\GraphCtrl.h" />
     <ClInclude Include="Graphs\SpectrumGraph.h" />
@@ -709,6 +681,7 @@
     <ClInclude Include="InformationDialog.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="MeasGrid.h" />
+    <ClInclude Include="MeasurementSetup.h" />
     <ClInclude Include="MeasurementModes\Measurement_Traverse.h" />
     <ClInclude Include="MeasurementModes\Measurement_View.h" />
     <ClInclude Include="MeasurementModes\Measurement_Wind.h" />
@@ -731,13 +704,12 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="RouteDlg.h" />
     <ClInclude Include="RouteGraph.h" />
-    <ClInclude Include="SerialConnection.h" />
     <ClInclude Include="SourceSelectionDlg.h" />
-    <ClInclude Include="Spectra.h" />
     <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\DialogControllers\InstrumentCalibrationInput.h" />
     <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\DialogControllers\InstrumentLineshapeCalibrationController.h" />
     <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\DialogControllers\ReferenceCreationController.h" />
     <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\DialogControllers\WavelengthCalibrationController.h" />
+    <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\StringUtils.h" />
     <ClInclude Include="Spectrometer.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="Version.h" />
@@ -760,6 +732,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="res\DMSpec.rc2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="MobileDoasLib\MobileDoasLib.vcxproj">
+      <Project>{0c7689e4-1214-417d-9083-d561d032454d}</Project>
+    </ProjectReference>
+    <ProjectReference Include="SpectrometersLib\SpectrometersLib.vcxproj">
+      <Project>{6cb8f413-8c91-4335-88ca-a34f2f10f773}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

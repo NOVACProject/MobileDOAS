@@ -1,8 +1,8 @@
 #pragma once
 #include "afxwin.h"
 #include "../Graphs/GraphCtrl.h"
-#include "WindSpeedCalculator.h"
-#include "DualBeamMeasSettings.h"
+#include <MobileDoasLib/DualBeam/WindSpeedCalculator.h>
+#include <MobileDoasLib/DualBeam/DualBeamMeasSettings.h>
 
 // CPostWindDlg dialog
 
@@ -70,16 +70,16 @@ private:
     CString m_evalLog[MAX_N_SERIES];
 
     /** Original measurement series, as they are in the file */
-    DualBeamMeasurement::CDualBeamCalculator::CMeasurementSeries* m_OriginalSeries[MAX_N_SERIES];
+    mobiledoas::CDualBeamCalculator::CMeasurementSeries* m_OriginalSeries[MAX_N_SERIES];
 
     /** Treated measurement series, low pass filtered etc. */
-    DualBeamMeasurement::CDualBeamCalculator::CMeasurementSeries* m_PreparedSeries[MAX_N_SERIES];
+    mobiledoas::CDualBeamCalculator::CMeasurementSeries* m_PreparedSeries[MAX_N_SERIES];
 
     /** The settings for how the windspeed calculations should be done */
-    DualBeamMeasurement::CDualBeamMeasSettings m_settings;
+    mobiledoas::CDualBeamMeasSettings m_settings;
 
     /** The wind speed measurement-calculator. */
-    DualBeamMeasurement::CWindSpeedCalculator m_calc;
+    mobiledoas::CWindSpeedCalculator m_calc;
 
     /** Choosing what to show in the dialog */
     int m_showOption;

@@ -2,7 +2,6 @@
 #include "stdafx.h"
 #include "../DMSpec.h"
 #include "../Dialogs/QueryStringDialog.h"
-//#include "../Evaluation/FitWindowFileHandler.h"
 #include "FitWindowListBox.h"
 
 using namespace DlgControls;

@@ -2,6 +2,8 @@
 #include "../DMSpec.h"
 #include "Configure_Spectrometer.h"
 #include "ConfigurationFile.h"
+#include <SpectralEvaluation/StringUtils.h>
+#include <sstream>
 
 using namespace Configuration;
 
@@ -123,7 +125,7 @@ BOOL CConfigure_Spectrometer::OnInitDialog() {
     for (k = 1; k < 22; ++k) {
         str.Format("COM%d", k);
         m_specPort.AddString(str);
-        if (Equals(str, m_conf->m_serialPort))
+        if (EqualsIgnoringCase(std::string((LPCSTR)str), m_conf->m_serialPort))
             toSelect = k - 1;
     }
     m_specPort.SetCurSel(toSelect);
@@ -158,7 +160,9 @@ void CConfigure_Spectrometer::SaveSettings() {
     int curChan = m_nChannels.GetCurSel();
 
     // The port
-    m_conf->m_serialPort.Format("COM%d", curPort + 1);
+    std::stringstream portNumber;
+    portNumber << "COM" << (curPort + 1);
+    m_conf->m_serialPort = portNumber.str();
 
     // The baudrate
     if (curBaud == -1) {
