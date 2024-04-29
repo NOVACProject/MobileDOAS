@@ -11,8 +11,8 @@
 #include "framework.h"
 
 // Definitions
-#define MANUFACTURER_SUPPORT_AVANTES 1
+// #define MANUFACTURER_SUPPORT_AVANTES 1
 
-// #define MANUFACTURER_SUPPORT_OCEANOPTICS 1
+#define MANUFACTURER_SUPPORT_OCEANOPTICS 1
 
 #endif //PCH_H
