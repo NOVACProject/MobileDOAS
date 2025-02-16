@@ -1,7 +1,6 @@
 #include <MobileDoasLib/GpsData.h>
 #include <MobileDoasLib/Definitions.h>
 #include <cmath>
-#include <iostream>
 
 //////////////////////////////////////////////////////////////////////
 // GpsData
@@ -99,14 +98,7 @@ static bool ChecksumIsCorrect(const std::string& message)
         return false;
     }
 
-    const bool isCorrect = (actualChecksum == expectedChecksum);
-
-    if (!isCorrect)
-    {
-        std::cout << "checksum mismatch: " << (int)expectedChecksum << " != " << (int)actualChecksum << std::endl;
-    }
-
-    return isCorrect;
+    return (actualChecksum == expectedChecksum);
 }
 
 static void SetTime(const std::string& curToken, GpsData& data)
@@ -366,7 +358,6 @@ static bool ParseRMC(const char* gpsString, GpsData& data)
 
     if (!ChecksumIsCorrect(message))
     {
-        std::cout << "Invalid checksum for message: " << message << std::endl;
         return false;
     }
 
