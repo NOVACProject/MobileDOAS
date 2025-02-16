@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Avantes">
+      <UniqueIdentifier>{6a6f3a25-a354-442c-bbb9-55b99ce07f1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OceanOptics">
+      <UniqueIdentifier>{e6ae6b7d-44c0-439a-a904-77a327afc4d8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Avantes\AvantesSpectrometerInterface.h">
+      <Filter>Avantes</Filter>
+    </ClInclude>
+    <ClInclude Include="OceanOptics\OceanOpticsSpectrometerInterface.h">
+      <Filter>OceanOptics</Filter>
+    </ClInclude>
+    <ClInclude Include="OceanOptics\OceanOpticsSpectrometerSerialInterface.h">
+      <Filter>OceanOptics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\SpectrometersLib\Spectrometers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="SpectrometersLib.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Avantes\AvantesSpectrometerInterface.cpp">
+      <Filter>Avantes</Filter>
+    </ClCompile>
+    <ClCompile Include="OceanOptics\OceanOpticsSpectrometerInterface.cpp">
+      <Filter>OceanOptics</Filter>
+    </ClCompile>
+    <ClCompile Include="OceanOptics\OceanOpticsSpectrometerSerialInterface.cpp">
+      <Filter>OceanOptics</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
+  </ItemGroup>
+</Project>

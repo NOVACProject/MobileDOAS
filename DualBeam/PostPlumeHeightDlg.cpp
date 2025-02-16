@@ -2,7 +2,7 @@
 #include "../DMSpec.h"
 #include "PostPlumeHeightDlg.h"
 #include "../SourceSelectionDlg.h"
-#include "../Flux1.h"
+#include <MobileDoasLib/Flux/Flux1.h>
 
 #undef min
 #undef max
@@ -12,7 +12,7 @@
 
 // CPostPlumeHeightDlg dialog
 
-using namespace DualBeamMeasurement;
+using namespace mobiledoas;
 
 IMPLEMENT_DYNAMIC(CPostPlumeHeightDlg, CDialog)
 CPostPlumeHeightDlg::CPostPlumeHeightDlg(CWnd* pParent /*=NULL*/)
@@ -113,12 +113,13 @@ bool CPostPlumeHeightDlg::ReadEvaluationLog(int channelIndex) {
     // the index in the traverse which we should read. Setting this to zero always assumes that we will always use
     //	the first species in the traverse to evaluate the windspeed...
     const int specieIndex = 0;
-    Flux::CFlux flux;		// The CFlux object helps with reading the data from the eval-log
+    mobiledoas::CFlux flux;		// The CFlux object helps with reading the data from the eval-log
     int nChannels = 1;		// the number of channels in the data-file
     double fileVersion = 0;	// the file-version of the evalution-log file
 
     // Read the header of the log file and see if it is an ok file
-    int fileType = flux.ReadSettingFile(m_evalLog[channelIndex], nChannels, fileVersion);
+    std::string filenameStr = (LPCSTR)m_evalLog[channelIndex];
+    int fileType = flux.ReadSettingFile(filenameStr, nChannels, fileVersion);
     if (fileType != 1) {
         MessageBox(TEXT("The file is not evaluation log file with right format.\nPlease choose a right file"), nullptr, MB_OK);
         return FAIL;
@@ -130,13 +131,14 @@ bool CPostPlumeHeightDlg::ReadEvaluationLog(int channelIndex) {
     }
 
     // Read the data from the file
-    if (0 == flux.ReadLogFile("", m_evalLog[channelIndex], nChannels, fileVersion)) {
+    std::string filePath = "";
+    if (0 == flux.ReadLogFile(filePath, filenameStr, nChannels, fileVersion)) {
         MessageBox(TEXT("That file is empty"));
         return FAIL;
     }
 
     // Copy the data to the local variables 'm_originalSeries'
-    const Flux::CTraverse* traverse = flux.m_traverse[specieIndex];
+    const mobiledoas::CTraverse* traverse = flux.m_traverse[specieIndex];
     const long traverseLength = traverse->m_recordNum;
 
     // create a new data series
@@ -144,7 +146,7 @@ bool CPostPlumeHeightDlg::ReadEvaluationLog(int channelIndex) {
     if (m_OriginalSeries[channelIndex] == nullptr)
         return FAIL; // <-- failed to allocate enough memory
 
-    Time startTime = traverse->time[0];
+    mobiledoas::Time startTime = traverse->time[0];
     for (int specIndex = 0; specIndex < traverseLength; ++specIndex) {
 
         // Get the column of this spectrum
@@ -157,7 +159,7 @@ bool CPostPlumeHeightDlg::ReadEvaluationLog(int channelIndex) {
         m_OriginalSeries[channelIndex]->lon[specIndex] = traverse->longitude[specIndex];
 
         // Get the start time of this spectrum
-        Time t = traverse->time[specIndex];
+        mobiledoas::Time t = traverse->time[specIndex];
 
         // Save the time difference
         m_OriginalSeries[channelIndex]->time[specIndex] =
@@ -211,8 +213,8 @@ void CPostPlumeHeightDlg::DrawColumn() {
             minT = std::min(minT, m_OriginalSeries[k]->time[0]);
             maxT = std::max(maxT, m_OriginalSeries[k]->time[m_OriginalSeries[k]->length - 1]);
 
-            minC = std::min(minC, Min(m_OriginalSeries[k]->column, m_OriginalSeries[k]->length));
-            maxC = std::max(maxC, Max(m_OriginalSeries[k]->column, m_OriginalSeries[k]->length));
+            minC = std::min(minC, MinValue(m_OriginalSeries[k]->column, m_OriginalSeries[k]->length));
+            maxC = std::max(maxC, MaxValue(m_OriginalSeries[k]->column, m_OriginalSeries[k]->length));
 
             ++nSeries;
         }

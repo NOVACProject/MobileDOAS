@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "XMLFileReader.h"
 #include "../Common.h"
+#include <SpectralEvaluation/StringUtils.h>
 
 using namespace FileHandler;
 
@@ -52,7 +53,7 @@ char* CXMLFileReader::NextToken() {
     }
     return pt;
 }
-/** General parsing of a single, simple string item */
+
 int CXMLFileReader::Parse_StringItem(const CString& label, CString& string) {
     while (szToken = NextToken()) {
 
@@ -64,6 +65,19 @@ int CXMLFileReader::Parse_StringItem(const CString& label, CString& string) {
 
     return 0;
 }
+
+int CXMLFileReader::Parse_StringItem(const std::string& label, std::string& string) {
+    while (szToken = NextToken()) {
+
+        if (EqualsIgnoringCase(szToken, label))
+            return 1;
+
+        string = std::string(szToken);
+    }
+
+    return 0;
+}
+
 int CXMLFileReader::Parse_LongItem(const CString& label, long& number) {
 
     while (szToken = NextToken()) {

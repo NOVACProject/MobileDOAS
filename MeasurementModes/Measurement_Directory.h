@@ -6,8 +6,12 @@ class CMeasurement_Directory :
     public CSpectrometer
 {
 public:
-    CMeasurement_Directory();
-    ~CMeasurement_Directory();
+    CMeasurement_Directory(
+        CView& mainForm,
+        std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface,
+        std::unique_ptr<Configuration::CMobileConfiguration> conf);
+
+    virtual ~CMeasurement_Directory();
 
     /**
         This is used to monitor directory for spectra collected and

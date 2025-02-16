@@ -4,7 +4,8 @@
 
 #if !defined(AFX_DMSPECVIEW_H__8A3F075C_24B5_4BB0_897A_E1285CBD8628__INCLUDED_)
 #define AFX_DMSPECVIEW_H__8A3F075C_24B5_4BB0_897A_E1285CBD8628__INCLUDED_
-#include "GPS.h"
+
+#include <MobileDoasLib/GPS.h>
 #include "Spectrometer.h"
 #include "Graphs/GraphCtrl.h"
 #include "PostFluxDlg.h"
@@ -19,12 +20,10 @@
 
 #include "afxcmn.h"
 #include "afxwin.h"
-#if _MSC_VER > 1000
+
 #pragma once
-#endif // _MSC_VER > 1000
 
 UINT CollectSpectra(LPVOID pParam);
-UINT CollectSpectra_Wind(LPVOID pParam);
 
 class CDMSpecView : public CFormView
 {
@@ -39,25 +38,25 @@ public:
     // ------------------- DIALOG COMPONENTS -------------------------
 
     /** The edit-box for the basename */
-    CEdit						m_BaseEdit;
+    CEdit m_BaseEdit;
 
     /** The background color for the main-plot */
-    COLORREF					m_bkColor;
+    COLORREF m_bkColor;
 
     /** The colors for drawing the results from the master and slave channels */
-    COLORREF					m_PlotColor[2];
+    COLORREF m_PlotColor[2];
 
     /** The color of the master-channel spectrum */
-    COLORREF					m_Spectrum0Color;
+    COLORREF m_Spectrum0Color;
 
     /** The color of the fit-region of the master-channel spectrum */
-    COLORREF					m_Spectrum0FitColor;
+    COLORREF m_Spectrum0FitColor;
 
     /** The color of the slave-channel spectrum */
-    COLORREF					m_Spectrum1Color;
+    COLORREF m_Spectrum1Color;
 
     /** The color of the fit-region of the slave-channel spectrum */
-    COLORREF					m_Spectrum1FitColor;
+    COLORREF m_Spectrum1FitColor;
 
     /* Measurement points with intensity below 'intensityLimit' does not affect the column scale */
     CSliderCtrl m_intensitySliderLow;
@@ -65,25 +64,24 @@ public:
     /** The actual graph, shows the columns, the spectra, the intensities, etc...*/
     Graph::CGraphCtrl m_ColumnPlot;
 
+    DlgControls::CLabel m_expLabel;
+    DlgControls::CLabel m_scanNoLabel;
+    DlgControls::CLabel m_colLabel;
+    DlgControls::CLabel m_noSpecLabel;
+    DlgControls::CLabel m_shiftLabel;
+    DlgControls::CLabel m_squeezeLabel;
+    DlgControls::CLabel m_tempLabel;
 
-    DlgControls::CLabel	m_expLabel;
-    DlgControls::CLabel	m_scanNoLabel;
-    DlgControls::CLabel	m_colLabel;
-    DlgControls::CLabel	m_noSpecLabel;
-    DlgControls::CLabel	m_shiftLabel;
-    DlgControls::CLabel	m_squeezeLabel;
-    DlgControls::CLabel	m_tempLabel;
+    DlgControls::CLabel m_gpsLatLabel;
+    DlgControls::CLabel m_gpsLonLabel;
+    DlgControls::CLabel m_gpsTimeLabel;
+    DlgControls::CLabel m_gpsNSatLabel;
 
-    DlgControls::CLabel	m_gpsLatLabel;
-    DlgControls::CLabel	m_gpsLonLabel;
-    DlgControls::CLabel	m_gpsTimeLabel;
-    DlgControls::CLabel	m_gpsNSatLabel;
-
-    DlgControls::CLabel	m_colorLabelSpectrum1;
-    DlgControls::CLabel	m_colorLabelSpectrum2;
-    DlgControls::CLabel	m_colorLabelSeries1;
-    DlgControls::CLabel	m_colorLabelSeries2;
-    CStatic				m_legendSeries1, m_legendSeries2, m_legendSpectrum1, m_legendSpectrum2;
+    DlgControls::CLabel m_colorLabelSpectrum1;
+    DlgControls::CLabel m_colorLabelSpectrum2;
+    DlgControls::CLabel m_colorLabelSeries1;
+    DlgControls::CLabel m_colorLabelSeries2;
+    CStatic m_legendSeries1, m_legendSeries2, m_legendSpectrum1, m_legendSpectrum2;
 
 
 
@@ -93,15 +91,15 @@ public:
 
     /** The wind-direction and wind-speed, used in the main window so that the user
             can set the parameters for calculating flux. */
-    double						m_WindDirection;
-    double						m_WindSpeed;
+    double m_WindDirection;
+    double m_WindSpeed;
 
     /** The spectrometer. Takes care of spectral collection, evaluation
             and storing of spectra and results. */
     CSpectrometer* m_Spectrometer;
 
     /** The option whether we shall show the column-error bars or not */
-    BOOL						m_showErrorBar;
+    BOOL m_showErrorBar;
 
     // --------------------- EVENT HANDLERS ---------------------------
 
@@ -213,6 +211,11 @@ public:
 
     /** Toggles the showing of the column error bars */
     afx_msg void OnViewColumnError();
+
+    afx_msg void OnClose();
+    afx_msg void OnDestroy();
+    afx_msg void OnAnalysisCalibratespectrometer();
+
     // --------------------- PUBLIC METHODS ----------------------------
     void DrawSpectrum();
 
@@ -225,7 +228,7 @@ public:
     int m_SpectrumLineWidth;
 
     /** Updates the labels explaining which color belongs to which series */
-    void	UpdateLegend();
+    void UpdateLegend();
 
     void ShowStatusMsg(CString& str);
 
@@ -242,10 +245,10 @@ protected:
     // ------------------- PROTECTED DATA -------------------------
 
     /** The real-time route window */
-    Dialogs::CRealTimeRoute   m_realTimeRouteGraph;
+    Dialogs::CRealTimeRoute m_realTimeRouteGraph;
 
     /** The real-time spectrum fit window */
-    Dialogs::CShowFitDlg      m_showFitDlg;
+    Dialogs::CShowFitDlg m_showFitDlg;
 
     Dialogs::CSpectrumSettingsDlg m_specSettingsDlg;
 
@@ -265,12 +268,14 @@ protected:
     /** Used to set the range for the column plot*/
     double m_columnLimit;
 
-    /** Used to set the range for the spectrum plot */
-    double m_minSaturationRatio;
-    double m_maxSaturationRatio;
+    /* m_minSaturationRatio is where the spectrum display y-axis starts at, in percent. Default is 0.0 */
+    double m_minSaturationRatio = 0.0;
+
+    /* m_maxSaturationRatio is where the spectrum display y-axis ends at, in percent. Default is 100.0 */
+    double m_maxSaturationRatio = 100.0;
 
     /** Tells us the mode the spectrometer is running in, if it's running */
-    SPECTROMETER_MODE		m_spectrometerMode;
+    SPECTROMETER_MODE m_spectrometerMode;
 
     // ------------------- PROTECTED METHODS -------------------------
 
@@ -282,10 +287,6 @@ protected:
 
     /** Called when the window is created */
     virtual void OnInitialUpdate();
-public:
-    afx_msg void OnClose();
-    afx_msg void OnDestroy();
-    afx_msg void OnAnalysisCalibratespectrometer();
 };
 
 #ifndef _DEBUG  // debug version in DMSpecView.cpp

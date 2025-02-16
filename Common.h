@@ -12,6 +12,7 @@
 #include <math.h>
 #include <vector>
 #include <string>
+#include <MobileDoasLib/Definitions.h>
 
 #define MAX_TRAVERSE_SHOWN 16384
 
@@ -33,48 +34,6 @@
 #define WM_EVAL         WM_USER + 6
 #define WM_GOTO_SLEEP   WM_USER + 7
 
-// ----------------------------------------------------------------
-// ---------------- MATHEMATICAL CONSTANTS ------------------------
-// ----------------------------------------------------------------
-#define DEGREETORAD   0.01745329251994 
-#define RADTODEGREE   57.29577951308232
-#define HALF_PI       1.57079632679490
-#define M_PI          3.14159265358979
-#define TWO_PI        6.28318530717959
-
-// ----------------------------------------------------------------
-// ------------ SIMPLE MATHEMATICAL FUNCTIONS  --------------------
-// ----------------------------------------------------------------
-// #define round(x) (x < 0 ? ceil((x)-0.5) : floor((x)+0.5))
-
-// ---------------------------------------------------------------
-// ---------------- DEFINED CONSTANTS ----------------------------
-// ---------------------------------------------------------------
-// conversion from ppmm to mg/m^2 for SO2
-#define GASFACTOR_SO2 2.66
-
-// conversion from ppmm to mg/m^2 for O3
-#define GASFACTOR_O3 1.99
-
-// conversion from ppmm to mg/m^2 for NO2
-#define GASFACTOR_NO2 1.93
-
-// conversion from ppmm to mg/m^2 for HCHO
-#define GASFACTOR_HCHO 1.25
-
-// the maximum number of channels on the spectrometer that we can handle 
-#define MAX_N_CHANNELS 2
-
-// The maximum number of fit-regions that we can use at any single time
-#define MAX_FIT_WINDOWS 2
-
-// the maximum length of any single spectrum
-#define MAX_SPECTRUM_LENGTH 3648
-
-// function returns
-#define SUCCESS true
-#define FAIL false
-
 struct plotRange {
     double maxLat;
     double maxLon;
@@ -82,11 +41,6 @@ struct plotRange {
     double minLon;
 };
 
-typedef struct gpsPosition {
-    double latitude = 0.0;
-    double longitude = 0.0;
-    double altitude = 0.0;
-}gpsPosition;
 
 
 
@@ -117,14 +71,6 @@ public:
     Common();
     virtual ~Common();
     void WriteLogFile(CString filename, CString txt);
-    static void GetDateText(char* txt);
-    static void GetDateText(CString& str);
-    static void GetTimeText(char* txt);
-    static void GetTimeText(CString& str);
-    static void GetDateTimeText(char* txt);
-    static void GetDateTimeText(CString& str);
-    static void GetDateTimeTextPlainFormat(char* txt);
-    static void GetDateTimeTextPlainFormat(CString& str);
 
     // ---------------- PATH MANAGING FUNCTIONS -----------------
 
@@ -170,27 +116,9 @@ public:
 
     // ---------------- MATHEMATICAL FUNCTIONS --------------------
 
-    /*  adapts parameters k and m so that y = k*x + m, in a least square sense.
-          Algorithm found at: http://mathworld.wolfram.com/LeastSquaresFittingPolynomial.html */
-    static int AdaptStraightLine(double* x, double* y, unsigned int l, double* k, double* m);
-
     /** Guesses the name of the specie in the reference-file whos filename
             is given in 'fileName'. */
     static void GuessSpecieName(const CString& fileName, CString& specie);
-
-    // ------------- BINARY FUNCTIONS ------------------
-
-    /** This function swaps the place of the MostSignificantByte and
-            the LeastSignificantByte of the given number */
-    static unsigned short Swp(unsigned short in);
-
-    // --------------------------------------------------------------------
-    // ---------------------- DATE & TIME ---------------------------------
-    // --------------------------------------------------------------------
-
-    /** Takes a given year and month and returns the number of days in that month.
-            The month ranges from 1 to 12. Any illegal values in the month will return 0. */
-    static int DaysInMonth(int year, int month);
 
 };
 
@@ -198,23 +126,6 @@ public:
   return value is true if the errorCode can be found, else false. */
 bool FormatErrorCode(DWORD error, CString& string);
 
-/* This function returns the distance in meters between the two points defined
-  by (lat1,lon1) and (lat2, lon2). All angles must be in degrees */
-double GPSDistance(double lat1, double lon1, double lat2, double lon2);
-
-/* This function returns the initial bearing (degrees) when travelling from
-  the point defined by (lat1, lon1) to the point (lat2, lon2).
-  All angles must be in degrees */
-double GPSBearing(double lat1, double lon1, double lat2, double lon2);
-
-/** This function calculates the latitude and longitude for point
-        which is the distance 'dist' m and bearing 'az' degrees from
-        the point defied by 'lat1' and 'lon1' */
-void	CalculateDestination(double lat1, double lon1, double dist, double az, double& lat2, double& lon2);
-
-/* This function calculates the wind factor when travelling from point
- 1 to point 2 and the wind is defined by 'windAngle' */
-double GetWindFactor(double lat1, double lon1, double lat2, double lon2, double windAngle);
 
 
 // --------------------------------------------------------------------
@@ -225,7 +136,7 @@ double GetWindFactor(double lat1, double lon1, double lat2, double lon2, double 
     @param pBuffer - The array in which to search for an element.
     @param bufLen - The length of the array.
     @return - The maximum value in the array */
-template <class T> T Max(T* pBuffer, long bufLen) {
+template <class T> T MaxValue(T* pBuffer, long bufLen) {
     T maxValue = pBuffer[0];
     for (long i = 1; i < bufLen; ++i) {
         if (pBuffer[i] > maxValue)
@@ -238,7 +149,7 @@ template <class T> T Max(T* pBuffer, long bufLen) {
     @param pBuffer - The array in which to search for an element.
     @param bufLen - The length of the array.
     @return - The minimum value in the array */
-template <class T> T Min(T* pBuffer, long bufLen) {
+template <class T> T MinValue(T* pBuffer, long bufLen) {
     T minValue = pBuffer[0];
     for (long i = 1; i < bufLen; i++) {
         if (pBuffer[i] < minValue)

@@ -1,6 +1,7 @@
 #pragma once
 #include <afxstr.h>
 #include <afxwin.h>
+#include <string>
 
 namespace FileHandler
 {
@@ -15,6 +16,9 @@ namespace FileHandler
 
         /** General parsing of a single, simple string item */
         int Parse_StringItem(const CString& label, CString& string);
+
+        /** General parsing of a single, simple string item */
+        int Parse_StringItem(const std::string& label, std::string& string);
 
         /** General parsing of a single, simple float item */
         int Parse_FloatItem(const CString& label, double& number);

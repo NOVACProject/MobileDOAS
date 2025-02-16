@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "../DMSpec.h"
 #include "Configure_GPS.h"
+#include <SpectralEvaluation/StringUtils.h>
+#include <sstream>
 
 using namespace Configuration;
 
@@ -59,7 +61,7 @@ BOOL CConfigure_GPS::OnInitDialog() {
     for (k = 1; k < 22; ++k) {
         str.Format("COM%d", k);
         m_gpsPort.AddString(str);
-        if (Equals(str, m_conf->m_gpsPort))
+        if (EqualsIgnoringCase(std::string((LPCSTR)str), m_conf->m_gpsPort))
             toSelect = k - 1;
     }
     m_gpsPort.SetCurSel(toSelect);
@@ -85,7 +87,9 @@ void CConfigure_GPS::SaveSettings() {
     int curBaud = m_gpsBaudrate.GetCurSel();
 
     // The port
-    m_conf->m_gpsPort.Format("COM%d", curPort + 1);
+    std::stringstream portNumber;
+    portNumber << "COM" << (curPort + 1);
+    m_conf->m_gpsPort = portNumber.str();
 
     // The baudrate
     if (curBaud == -1) {

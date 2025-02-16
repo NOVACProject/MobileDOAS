@@ -1,8 +1,14 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26730.3
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32804.467
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MobileDOAS", "DMSpec.vcxproj", "{C360C2C6-8B27-4407-8343-3BF76669EFD2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MobileDoasLib", "MobileDoasLib\MobileDoasLib.vcxproj", "{0C7689E4-1214-417D-9083-D561D032454D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MobileDoasLibTest", "MobileDoasLibTest\MobileDoasLibTest.vcxproj", "{61005011-B0F7-4FD2-9937-7FD5E19B30E8}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SpectrometersLib", "SpectrometersLib\SpectrometersLib.vcxproj", "{6CB8F413-8C91-4335-88CA-A34F2F10F773}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,6 +26,30 @@ Global
 		{C360C2C6-8B27-4407-8343-3BF76669EFD2}.Release|Win32.Build.0 = Release|Win32
 		{C360C2C6-8B27-4407-8343-3BF76669EFD2}.Release|x64.ActiveCfg = Release|x64
 		{C360C2C6-8B27-4407-8343-3BF76669EFD2}.Release|x64.Build.0 = Release|x64
+		{0C7689E4-1214-417D-9083-D561D032454D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0C7689E4-1214-417D-9083-D561D032454D}.Debug|Win32.Build.0 = Debug|Win32
+		{0C7689E4-1214-417D-9083-D561D032454D}.Debug|x64.ActiveCfg = Debug|x64
+		{0C7689E4-1214-417D-9083-D561D032454D}.Debug|x64.Build.0 = Debug|x64
+		{0C7689E4-1214-417D-9083-D561D032454D}.Release|Win32.ActiveCfg = Release|Win32
+		{0C7689E4-1214-417D-9083-D561D032454D}.Release|Win32.Build.0 = Release|Win32
+		{0C7689E4-1214-417D-9083-D561D032454D}.Release|x64.ActiveCfg = Release|x64
+		{0C7689E4-1214-417D-9083-D561D032454D}.Release|x64.Build.0 = Release|x64
+		{61005011-B0F7-4FD2-9937-7FD5E19B30E8}.Debug|Win32.ActiveCfg = Debug|Win32
+		{61005011-B0F7-4FD2-9937-7FD5E19B30E8}.Debug|Win32.Build.0 = Debug|Win32
+		{61005011-B0F7-4FD2-9937-7FD5E19B30E8}.Debug|x64.ActiveCfg = Debug|x64
+		{61005011-B0F7-4FD2-9937-7FD5E19B30E8}.Debug|x64.Build.0 = Debug|x64
+		{61005011-B0F7-4FD2-9937-7FD5E19B30E8}.Release|Win32.ActiveCfg = Release|Win32
+		{61005011-B0F7-4FD2-9937-7FD5E19B30E8}.Release|Win32.Build.0 = Release|Win32
+		{61005011-B0F7-4FD2-9937-7FD5E19B30E8}.Release|x64.ActiveCfg = Release|x64
+		{61005011-B0F7-4FD2-9937-7FD5E19B30E8}.Release|x64.Build.0 = Release|x64
+		{6CB8F413-8C91-4335-88CA-A34F2F10F773}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6CB8F413-8C91-4335-88CA-A34F2F10F773}.Debug|Win32.Build.0 = Debug|Win32
+		{6CB8F413-8C91-4335-88CA-A34F2F10F773}.Debug|x64.ActiveCfg = Debug|x64
+		{6CB8F413-8C91-4335-88CA-A34F2F10F773}.Debug|x64.Build.0 = Debug|x64
+		{6CB8F413-8C91-4335-88CA-A34F2F10F773}.Release|Win32.ActiveCfg = Release|Win32
+		{6CB8F413-8C91-4335-88CA-A34F2F10F773}.Release|Win32.Build.0 = Release|Win32
+		{6CB8F413-8C91-4335-88CA-A34F2F10F773}.Release|x64.ActiveCfg = Release|x64
+		{6CB8F413-8C91-4335-88CA-A34F2F10F773}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

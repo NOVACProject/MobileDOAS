@@ -9,6 +9,7 @@
 #include <SpectralEvaluation/DialogControllers/InstrumentLineshapeCalibrationController.h>
 #include <SpectralEvaluation/File/File.h>
 #include <SpectralEvaluation/Calibration/InstrumentCalibration.h>
+#include <SpectralEvaluation/VectorUtils.h>
 #include <algorithm>
 #include <sstream>
 
@@ -246,8 +247,8 @@ void CCalibrateInstrumentLineShape::OnLbnSelchangeFoundPeak()
 
         m_spectrumPlot.SetRangeX(lambdaMin, lambdaMax, 1, false);
         m_spectrumPlot.SetRangeY(
-            Min(m_controller->m_inputSpectrum.data() + firstPixel, lastPixel - firstPixel),
-            Max(m_controller->m_inputSpectrum.data() + firstPixel, lastPixel - firstPixel),
+            Min(begin(m_controller->m_inputSpectrum) + firstPixel, begin(m_controller->m_inputSpectrum) + lastPixel),
+            Max(begin(m_controller->m_inputSpectrum) + firstPixel, begin(m_controller->m_inputSpectrum) + lastPixel),
             true);
 
         m_saveButton.EnableWindow(TRUE);
@@ -261,8 +262,8 @@ void CCalibrateInstrumentLineShape::OnLbnSelchangeFoundPeak()
             0,
             false);
         m_spectrumPlot.SetRangeY(
-            Min(m_controller->m_inputSpectrum.data(), static_cast<long>(m_controller->m_inputSpectrum.size())),
-            Max(m_controller->m_inputSpectrum.data(), static_cast<long>(m_controller->m_inputSpectrum.size())),
+            Min(m_controller->m_inputSpectrum),
+            Max(m_controller->m_inputSpectrum),
             true);
 
         m_saveButton.EnableWindow(FALSE);

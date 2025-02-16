@@ -52,13 +52,15 @@ END_MESSAGE_MAP()
 
 // CReEval_DoEvaluationDlg message handlers
 
-void CReEval_DoEvaluationDlg::OnBnClickedDoEvaluation() {
-
-    if (m_reeval->fRun && m_reeval->m_sleeping) {
+void CReEval_DoEvaluationDlg::OnBnClickedDoEvaluation()
+{
+    if (m_reeval->fRun && m_reeval->m_sleeping)
+    {
         pReEvalThread->ResumeThread();
     }
-    else {
-        m_reeval->pView = this;
+    else
+    {
+        m_reeval->m_mainView = this;
 
         // start the reevaluation thread
         pReEvalThread = AfxBeginThread(DoEvaluation, (LPVOID)(m_reeval), THREAD_PRIORITY_BELOW_NORMAL, 0, 0, NULL);
@@ -74,13 +76,15 @@ void CReEval_DoEvaluationDlg::OnBnClickedDoEvaluation() {
     //UpdateData(FALSE);
 }
 
-LRESULT CReEval_DoEvaluationDlg::OnProgress(WPARAM wp, LPARAM lp) {
+LRESULT CReEval_DoEvaluationDlg::OnProgress(WPARAM wp, LPARAM lp)
+{
 
     m_progressCtrl.SetRange(0, 1000);
     m_progressCtrl.SetPos((int)(1000 * m_reeval->m_progress));
 
     CString statusMsg;
-    switch (m_reeval->m_mode) {
+    switch (m_reeval->m_mode)
+    {
     case CReEvaluator::MODE_READING_OFFSETS:
         statusMsg.Format("Reading Offsets - %.0lf%% done", 100 * m_reeval->m_progress); break;
     default:
@@ -92,7 +96,8 @@ LRESULT CReEval_DoEvaluationDlg::OnProgress(WPARAM wp, LPARAM lp) {
     return 0;
 }
 
-LRESULT CReEval_DoEvaluationDlg::OnCancel(WPARAM wp, LPARAM lp) {
+LRESULT CReEval_DoEvaluationDlg::OnCancel(WPARAM wp, LPARAM lp)
+{
     // update the window
     m_progressCtrl.SetRange(0, 1000);
     m_progressCtrl.SetPos(0);
@@ -106,7 +111,8 @@ LRESULT CReEval_DoEvaluationDlg::OnCancel(WPARAM wp, LPARAM lp) {
     return 0;
 }
 
-LRESULT CReEval_DoEvaluationDlg::OnDone(WPARAM wp, LPARAM lp) {
+LRESULT CReEval_DoEvaluationDlg::OnDone(WPARAM wp, LPARAM lp)
+{
 
     // update the window
     m_progressCtrl.SetRange(0, 1000);
@@ -136,7 +142,8 @@ LRESULT CReEval_DoEvaluationDlg::OnDone(WPARAM wp, LPARAM lp) {
     return 0;
 }
 
-LRESULT CReEval_DoEvaluationDlg::OnStatusUpdate(WPARAM wp, LPARAM lp) {
+LRESULT CReEval_DoEvaluationDlg::OnStatusUpdate(WPARAM wp, LPARAM lp)
+{
 
     m_outputList.AddString(m_reeval->m_statusMsg);
     UpdateData(FALSE);
@@ -145,7 +152,8 @@ LRESULT CReEval_DoEvaluationDlg::OnStatusUpdate(WPARAM wp, LPARAM lp) {
 }
 
 // Called when a spectrum has been evaluated, update the graph window
-LRESULT CReEval_DoEvaluationDlg::OnEvaluatedSpectrum(WPARAM wp, LPARAM lp) {
+LRESULT CReEval_DoEvaluationDlg::OnEvaluatedSpectrum(WPARAM wp, LPARAM lp)
+{
     DrawSpec();
 
     UpdateScreen();
@@ -153,18 +161,22 @@ LRESULT CReEval_DoEvaluationDlg::OnEvaluatedSpectrum(WPARAM wp, LPARAM lp) {
     return 0;
 }
 
-void CReEval_DoEvaluationDlg::DrawSpec() {
+void CReEval_DoEvaluationDlg::DrawSpec()
+{
     m_graph.CleanPlot();
-    if (m_showFit.GetCheck()) {
+    if (m_showFit.GetCheck())
+    {
         this->DrawFit();
     }
-    else {
+    else
+    {
         this->DrawResidual();
     }
 
     return;
 }
-void CReEval_DoEvaluationDlg::DrawFit() {
+void CReEval_DoEvaluationDlg::DrawFit()
+{
     static double spectrum[MAX_SPECTRUM_LENGTH];
     static double fitResult[MAX_SPECTRUM_LENGTH];
     static double residual[MAX_SPECTRUM_LENGTH];
@@ -172,8 +184,10 @@ void CReEval_DoEvaluationDlg::DrawFit() {
     static double pixels[MAX_SPECTRUM_LENGTH];
     static int firstCall = 1;
 
-    if (firstCall) {
-        for (int k = 0; k < MAX_SPECTRUM_LENGTH; ++k) {
+    if (firstCall)
+    {
+        for (int k = 0; k < MAX_SPECTRUM_LENGTH; ++k)
+        {
             pixels[k] = k;
         }
         firstCall = 0;
@@ -200,7 +214,8 @@ void CReEval_DoEvaluationDlg::DrawFit() {
 
     return;
 }
-void CReEval_DoEvaluationDlg::DrawResidual() {
+void CReEval_DoEvaluationDlg::DrawResidual()
+{
     static double spectrum[MAX_SPECTRUM_LENGTH];
     static double fitResult[MAX_SPECTRUM_LENGTH];
     static double residual[MAX_SPECTRUM_LENGTH];
@@ -219,7 +234,8 @@ void CReEval_DoEvaluationDlg::DrawResidual() {
     m_graph.Plot(residual + m_reeval->m_settings.m_window.fitLow, (int)fitWidth);
 }
 
-UINT DoEvaluation(LPVOID pParam) {
+UINT DoEvaluation(LPVOID pParam)
+{
     CReEvaluator* m_reeval = (CReEvaluator*)pParam;
 
     m_reeval->fRun = true;
@@ -228,15 +244,18 @@ UINT DoEvaluation(LPVOID pParam) {
 }
 
 
-void CReEval_DoEvaluationDlg::OnBnClickedCancel() {
+void CReEval_DoEvaluationDlg::OnBnClickedCancel()
+{
 
-    if (m_reeval->fRun && m_reeval->m_sleeping) {
+    if (m_reeval->fRun && m_reeval->m_sleeping)
+    {
         pReEvalThread->ResumeThread();
     }
 
     DWORD dwExitCode;
     HANDLE hThread = this->pReEvalThread->m_hThread;
-    if (hThread != nullptr && GetExitCodeThread(hThread, &dwExitCode) && dwExitCode == STILL_ACTIVE) {
+    if (hThread != nullptr && GetExitCodeThread(hThread, &dwExitCode) && dwExitCode == STILL_ACTIVE)
+    {
         AfxGetApp()->BeginWaitCursor();
         this->m_reeval->Stop();
         this->m_reeval->m_pause = FALSE; // un-pause the thread to let it terminate
@@ -254,7 +273,8 @@ void CReEval_DoEvaluationDlg::OnBnClickedCancel() {
 }
 
 // initialize the dialog window
-BOOL CReEval_DoEvaluationDlg::OnInitDialog() {
+BOOL CReEval_DoEvaluationDlg::OnInitDialog()
+{
     CPropertyPage::OnInitDialog();
 
     CRect rect;
@@ -279,7 +299,8 @@ BOOL CReEval_DoEvaluationDlg::OnInitDialog() {
     // EXCEPTION: OCX Property Pages should return FALSE
 }
 
-void CReEval_DoEvaluationDlg::UpdateScreen() {
+void CReEval_DoEvaluationDlg::UpdateScreen()
+{
     CString str;
 
     // the spectrum number
@@ -299,17 +320,20 @@ void CReEval_DoEvaluationDlg::UpdateScreen() {
     SetDlgItemText(IDC_REEVAL_FITRESULT_REFERENCE5, str);
 
     // update the columns
-    if (m_reeval->m_settings.m_window.fitType != Evaluation::FIT_HP_DIV) {
+    if (m_reeval->m_settings.m_window.fitType != Evaluation::FIT_HP_DIV)
+    {
         int skyRef = m_reeval->m_settings.m_window.nRef - 1;
         str.Format("Sky shift: %.5lf ± %.5lf", m_reeval->m_evResult[skyRef][2], m_reeval->m_evResult[skyRef][3]);
         SetDlgItemText(IDC_REEVAL_FITRESULT_REFERENCE5, str);
     }
 
-    int nReferencesToShow = (m_reeval->m_settings.m_window.fitType != Evaluation::FIT_HP_DIV) ? m_reeval->m_settings.m_window.nRef : m_reeval->m_settings.m_window.nRef - 1;
-    for (int i = 0; i < nReferencesToShow; ++i) {
-        str.Format("%4s: %2.2e ± %2.2e", m_reeval->m_settings.m_window.ref[i].m_specieName,
+    int nReferencesToShow = (m_reeval->m_settings.m_window.fitType == Evaluation::FIT_HP_DIV) ? m_reeval->m_settings.m_window.nRef : m_reeval->m_settings.m_window.nRef - 1;
+    for (int i = 0; i < nReferencesToShow; ++i)
+    {
+        str.Format("%4s: %2.2e ± %2.2e", m_reeval->m_settings.m_window.ref[i].m_specieName.c_str(),
             m_reeval->m_evResult[i][0], m_reeval->m_evResult[i][1]);
-        switch (i) {
+        switch (i)
+        {
         case 0: SetDlgItemText(IDC_REEVAL_FITRESULT_REFERENCE1, str); break;
         case 1: SetDlgItemText(IDC_REEVAL_FITRESULT_REFERENCE2, str); break;
         case 2: SetDlgItemText(IDC_REEVAL_FITRESULT_REFERENCE3, str); break;
@@ -318,11 +342,13 @@ void CReEval_DoEvaluationDlg::UpdateScreen() {
     }
 }
 
-void CReEval_DoEvaluationDlg::SaveData() {
+void CReEval_DoEvaluationDlg::SaveData()
+{
     UpdateData(TRUE);
 }
 
-LRESULT CReEval_DoEvaluationDlg::OnEvaluationSleep(WPARAM wp, LPARAM lp) {
+LRESULT CReEval_DoEvaluationDlg::OnEvaluationSleep(WPARAM wp, LPARAM lp)
+{
 
     SetDlgItemText(IDC_STATUSBAR, "Waiting...");
     m_cancelButton.EnableWindow(TRUE);

@@ -9,12 +9,15 @@
 class CMeasurement_View : public CSpectrometer
 {
 public:
-    CMeasurement_View(void);
-    ~CMeasurement_View(void);
+    CMeasurement_View(
+        CView& mainForm,
+        std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface,
+        std::unique_ptr<Configuration::CMobileConfiguration> conf);
+
+    virtual ~CMeasurement_View();
 
     /** This is used to collect spectra from the spectrometer and show them in the interface
         without performing any data-analysis
     */
     void Run();
-
 };
