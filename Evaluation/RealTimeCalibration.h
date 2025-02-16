@@ -10,6 +10,7 @@ namespace Configuration
 namespace novac
 {
     class CSpectrumInfo;
+    class ILogger;
 }
 
 namespace Evaluation
@@ -30,6 +31,7 @@ namespace Evaluation
             const novac::CSpectrumInfo& spectrumInfo,
             const std::string& outputDirectory,
             Configuration::CMobileConfiguration& settings,
+            novac::ILogger& log,
             double spectrometerMaximumIntensityForSingleReadoutOverride = -1.0);
 
     };

@@ -8,6 +8,7 @@ class CMeasurement_Directory :
 public:
     CMeasurement_Directory(
         CView& mainForm,
+        novac::ILogger& log,
         std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface,
         std::unique_ptr<Configuration::CMobileConfiguration> conf);
 

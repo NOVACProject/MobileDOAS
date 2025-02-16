@@ -22,13 +22,13 @@ std::unique_ptr<mobiledoas::SpectrometerInterface> GetSingleSpectrometerInterfac
     return nullptr;
 }
 
-CSpectrometer* CreateSpectrometer(SPECTROMETER_MODE measurementMode, CView& mainForm, std::unique_ptr<Configuration::CMobileConfiguration> conf)
+CSpectrometer* CreateSpectrometer(SPECTROMETER_MODE measurementMode, CView& mainForm, novac::ILogger& log, std::unique_ptr<Configuration::CMobileConfiguration> conf)
 {
 
     if (measurementMode == MODE_DIRECTORY)
     {
         // Directory mode doesn't require a SpectrometerInterface
-        return new CMeasurement_Directory(mainForm, nullptr, std::move(conf));
+        return new CMeasurement_Directory(mainForm, log, nullptr, std::move(conf));
     }
 
     auto connectionType = mobiledoas::SpectrometerConnectionType::USB;
@@ -65,11 +65,11 @@ CSpectrometer* CreateSpectrometer(SPECTROMETER_MODE measurementMode, CView& main
     switch (measurementMode)
     {
     case MODE_TRAVERSE:
-        return new CMeasurement_Traverse(mainForm, std::move(spectrometerInterface), std::move(conf));
+        return new CMeasurement_Traverse(mainForm, log, std::move(spectrometerInterface), std::move(conf));
     case MODE_VIEW:
-        return new CMeasurement_View(mainForm, std::move(spectrometerInterface), std::move(conf));
+        return new CMeasurement_View(mainForm, log, std::move(spectrometerInterface), std::move(conf));
     case MODE_WIND:
-        return new CMeasurement_Wind(mainForm, std::move(spectrometerInterface), std::move(conf));
+        return new CMeasurement_Wind(mainForm, log, std::move(spectrometerInterface), std::move(conf));
     }
 
     MessageBox(nullptr, "Error in program-logic: CreateSpectrometer was called with an unsupported measurement mode", "Error", MB_OK);

@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <SpectralEvaluation/Log.h>
 
 // CLogDialog dialog
 
@@ -10,7 +11,7 @@ class CLogDialog : public CDialog
     DECLARE_DYNAMIC(CLogDialog)
 
 public:
-    CLogDialog(std::vector<std::string>& logEntries, CWnd* pParent = nullptr);
+    CLogDialog(novac::ILogger& log, CWnd* pParent = nullptr);
     virtual ~CLogDialog();
 
     /** Initializes the controls and the dialog */
@@ -29,5 +30,5 @@ public:
     CListBox m_listBox;
 
 private:
-    std::vector<std::string> m_logEntries;
+    novac::ILogger& m_log;
 };

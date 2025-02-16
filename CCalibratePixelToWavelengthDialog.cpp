@@ -9,7 +9,6 @@
 #include <SpectralEvaluation/DialogControllers/WavelengthCalibrationController.h>
 #include <SpectralEvaluation/DialogControllers/ReferenceCreationController.h>
 #include "CCalibratePixelToWavelengthSetupDialog.h"
-#include "CLogDialog.h"
 #include "CCreateStandardReferencesDialog.h"
 #include <fstream>
 #include <SpectralEvaluation/File/File.h>
@@ -25,7 +24,7 @@ CDialog* wavelengthCalibrationDialog = nullptr;
 
 IMPLEMENT_DYNAMIC(CCalibratePixelToWavelengthDialog, CPropertyPage)
 
-CCalibratePixelToWavelengthDialog::CCalibratePixelToWavelengthDialog(CWnd* pParent /*=nullptr*/)
+CCalibratePixelToWavelengthDialog::CCalibratePixelToWavelengthDialog(novac::ILogger& log, CWnd* pParent /*=nullptr*/)
     : CPropertyPage(IDD_CALIBRATE_WAVELENGTH_DIALOG)
     , m_inputSpectrumFile(_T(""))
     , m_darkSpectrumFile(_T(""))
@@ -34,7 +33,7 @@ CCalibratePixelToWavelengthDialog::CCalibratePixelToWavelengthDialog(CWnd* pPare
 {
     wavelengthCalibrationDialog = this;
 
-    m_controller = new MobileDoasWavelengthCalibrationController();
+    m_controller = new MobileDoasWavelengthCalibrationController(log);
 }
 
 CCalibratePixelToWavelengthDialog::~CCalibratePixelToWavelengthDialog()
@@ -43,7 +42,8 @@ CCalibratePixelToWavelengthDialog::~CCalibratePixelToWavelengthDialog()
     delete m_standardCrossSections;
 }
 
-BOOL CCalibratePixelToWavelengthDialog::OnInitDialog() {
+BOOL CCalibratePixelToWavelengthDialog::OnInitDialog()
+{
     CPropertyPage::OnInitDialog();
 
     CRect rect;
@@ -90,7 +90,6 @@ void CCalibratePixelToWavelengthDialog::DoDataExchange(CDataExchange* pDX)
     DDX_Control(pDX, IDC_BUTTON_SAVE_REFERENCES, m_saveReferencesButton);
     DDX_Control(pDX, IDC_LIST_GRAPH_TYPE, m_graphTypeList);
     DDX_Control(pDX, IDC_WAVELENGTH_CALIBRATION_DETAILS_LIST, m_detailedResultList);
-    DDX_Control(pDX, IDC_BUTTON_VIEW_LOG, m_viewLogButton);
     DDX_Control(pDX, IDC_STATIC_LEGEND_GREEN, m_greenLegendLabel);
     DDX_Control(pDX, IDC_STATIC_LEGEND_RED, m_redLegendLabel);
     DDX_Control(pDX, IDC_STATIC_RED, m_redLegendIcon);
@@ -107,7 +106,7 @@ BEGIN_MESSAGE_MAP(CCalibratePixelToWavelengthDialog, CPropertyPage)
     ON_MESSAGE(WM_DONE, OnCalibrationDone)
     ON_LBN_SELCHANGE(IDC_LIST_GRAPH_TYPE, &CCalibratePixelToWavelengthDialog::OnSelchangeListGraphType)
     ON_BN_CLICKED(IDC_BUTTON_SETUP_WAVELENGTH_CALIBRATION, &CCalibratePixelToWavelengthDialog::OnBnClickedSetupWavelengthCalibration)
-    ON_BN_CLICKED(IDC_BUTTON_VIEW_LOG, &CCalibratePixelToWavelengthDialog::OnBnClickedButtonViewLog)
+    // ON_BN_CLICKED(IDC_BUTTON_VIEW_LOG, &CCalibratePixelToWavelengthDialog::OnBnClickedButtonViewLog)
 END_MESSAGE_MAP()
 
 // Persisting the setup to file
@@ -614,8 +613,6 @@ LRESULT CCalibratePixelToWavelengthDialog::OnCalibrationDone(WPARAM wParam, LPAR
         m_runButton.SetWindowTextA(runButtonOriginalText);
     }
 
-    m_viewLogButton.EnableWindow(m_controller->m_log.size() > 0);
-
     return 0;
 }
 
@@ -626,7 +623,6 @@ void CCalibratePixelToWavelengthDialog::HandleCalibrationFailure(const char* err
     m_saveCalibrationButton.EnableWindow(FALSE);
     m_saveReferencesButton.EnableWindow(FALSE);
     m_runButton.EnableWindow(TRUE);
-    m_viewLogButton.EnableWindow(m_controller->m_log.size() > 0);
 
     SaveSetup();
     UpdateGraph();
@@ -740,11 +736,13 @@ void CCalibratePixelToWavelengthDialog::OnBnClickedSetupWavelengthCalibration()
     setupDlg.DoModal();
 }
 
+/*
 void CCalibratePixelToWavelengthDialog::OnBnClickedButtonViewLog()
 {
-    CLogDialog logDialog{ m_controller->m_log };
+    CLogDialog logDialog{m_controller->m_log};
     logDialog.DoModal();
 }
+*/
 
 void CCalibratePixelToWavelengthDialog::UpdateGreenLegend(bool show, const char* message)
 {

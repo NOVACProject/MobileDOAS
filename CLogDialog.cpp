@@ -11,8 +11,8 @@
 
 IMPLEMENT_DYNAMIC(CLogDialog, CDialog)
 
-CLogDialog::CLogDialog(std::vector<std::string>& logEntries, CWnd* pParent /*=nullptr*/)
-    : m_logEntries(logEntries), CDialog(IDD_VIEW_LOG_DIALOG, pParent)
+CLogDialog::CLogDialog(novac::ILogger& log, CWnd* pParent /*=nullptr*/)
+    : m_log(log), CDialog(IDD_VIEW_LOG_DIALOG, pParent)
 {
 }
 
@@ -20,13 +20,16 @@ CLogDialog::~CLogDialog()
 {
 }
 
-BOOL CLogDialog::OnInitDialog() {
+BOOL CLogDialog::OnInitDialog()
+{
     CDialog::OnInitDialog();
 
-    for (const std::string& msg : this->m_logEntries)
-    {
-        m_listBox.AddString(msg.c_str());
-    }
+    // TODO: How to handle this ??
+    /*    for (const std::string& msg : this->m_logEntries)
+        {
+            m_listBox.AddString(msg.c_str());
+        }
+    */
 
     return TRUE;  // return TRUE unless you set the focus to a control
 }

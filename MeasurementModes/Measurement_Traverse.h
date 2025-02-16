@@ -11,6 +11,7 @@ class CMeasurement_Traverse : public CSpectrometer
 public:
     CMeasurement_Traverse(
         CView& mainForm,
+        novac::ILogger& log,
         std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface,
         std::unique_ptr<Configuration::CMobileConfiguration> conf);
 

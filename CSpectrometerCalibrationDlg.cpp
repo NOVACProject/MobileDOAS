@@ -10,13 +10,13 @@
 
 // CSpectrometerCalibrationDlg dialog
 
-CSpectrometerCalibrationDlg::CSpectrometerCalibrationDlg()
+CSpectrometerCalibrationDlg::CSpectrometerCalibrationDlg(novac::ILogger& log)
     : CPropertySheet()
 {
     m_calibrateInstrumentLineShape = new CCalibrateInstrumentLineShape();
     m_calibrateInstrumentLineShape->Construct(IDD_CALIBRATE_LINESHAPE_DIALOG);
 
-    m_calibratePixelToWavelength = new CCalibratePixelToWavelengthDialog();
+    m_calibratePixelToWavelength = new CCalibratePixelToWavelengthDialog(log);
     m_calibratePixelToWavelength->Construct(IDD_CALIBRATE_WAVELENGTH_DIALOG);
 
     m_calibrateReferences = new CCalibrateReferencesDialog();

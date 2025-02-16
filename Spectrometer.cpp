@@ -36,9 +36,10 @@ static char THIS_FILE[] = __FILE__;
 
 CSpectrometer::CSpectrometer(
     CView& mainForm,
+    novac::ILogger& log,
     std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface,
     std::unique_ptr<Configuration::CMobileConfiguration> configuration)
-    : m_mainForm(mainForm), m_useGps(true), m_scanNum(0), m_spectrumCounter(0)
+    : m_mainForm(mainForm), m_log(log), m_useGps(true), m_scanNum(0), m_spectrumCounter(0)
 {
     sprintf(m_GPSPort, "COM5");
 
@@ -1868,6 +1869,7 @@ bool CSpectrometer::RunInstrumentCalibration(const double* measuredSpectrum, con
             spectrumInfo,
             outputDirectory,
             *m_conf,
+            m_log,
             m_spectrometerDynRange);
 
         if (referencesUpdated)
