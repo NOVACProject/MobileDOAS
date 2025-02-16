@@ -10,6 +10,7 @@ class MobileDoasWavelengthCalibrationController;
 namespace novac
 {
     class StandardCrossSectionSetup;
+    class ILogger;
 }
 
 /// <summary>
@@ -46,7 +47,7 @@ class CCalibratePixelToWavelengthDialog : public CPropertyPage
     DECLARE_DYNAMIC(CCalibratePixelToWavelengthDialog)
 
 public:
-    CCalibratePixelToWavelengthDialog(CWnd* pParent = nullptr);   // standard constructor
+    CCalibratePixelToWavelengthDialog(novac::ILogger& log, CWnd* pParent = nullptr);   // standard constructor
     virtual ~CCalibratePixelToWavelengthDialog();
 
     /** Initializes the controls and the dialog */
@@ -79,8 +80,6 @@ public:
 
     CListBox m_detailedResultList; // detailed presentation of the results
 
-    CButton m_viewLogButton;
-
     CStatic m_greenLegendIcon;
     CStatic m_greenLegendLabel;
     CStatic m_redLegendIcon;
@@ -91,7 +90,7 @@ public:
     afx_msg void OnClickedButtonRun();
     afx_msg void OnClickedButtonSaveCalibration();
     afx_msg void OnClickedButtonSaveReferences();
-    afx_msg void OnBnClickedButtonViewLog();
+    // afx_msg void OnBnClickedButtonViewLog();
     afx_msg void OnSelchangeListGraphType();
     afx_msg void OnBnClickedSetupWavelengthCalibration();
 

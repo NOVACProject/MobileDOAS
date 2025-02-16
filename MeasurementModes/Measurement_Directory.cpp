@@ -7,9 +7,10 @@ extern CString g_exePath;  // <-- This is the path to the executable. This is a 
 
 CMeasurement_Directory::CMeasurement_Directory(
     CView& mainForm,
+    novac::ILogger& log,
     std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface,
     std::unique_ptr<Configuration::CMobileConfiguration> conf)
-    : CSpectrometer(mainForm, std::move(spectrometerInterface), std::move(conf))
+    : CSpectrometer(mainForm, log, std::move(spectrometerInterface), std::move(conf))
 {
     m_spectrometerMode = MODE_DIRECTORY;
 }

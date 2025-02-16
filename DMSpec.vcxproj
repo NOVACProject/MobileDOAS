@@ -709,6 +709,7 @@
     <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\DialogControllers\InstrumentLineshapeCalibrationController.h" />
     <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\DialogControllers\ReferenceCreationController.h" />
     <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\DialogControllers\WavelengthCalibrationController.h" />
+    <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\Log.h" />
     <ClInclude Include="SpectralEvaluation\include\SpectralEvaluation\StringUtils.h" />
     <ClInclude Include="Spectrometer.h" />
     <ClInclude Include="StdAfx.h" />

@@ -37,6 +37,7 @@ const enum SPECTROMETER_MODE { MODE_TRAVERSE, MODE_WIND, MODE_VIEW, MODE_DIRECTO
 namespace novac
 {
 class CDateTime;
+class ILogger;
 }
 class CSpectrum;
 
@@ -70,6 +71,7 @@ protected:
 public:
     CSpectrometer(
         CView& mainForm,
+        novac::ILogger& log,
         std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface,
         std::unique_ptr<Configuration::CMobileConfiguration> configuration);
 
@@ -274,6 +276,8 @@ protected:
         @return 1 if the collection failed or the collection should stop
          */
     int Scan(int sumInComputer, int sumInSpectrometer, mobiledoas::MeasuredSpectrum& result);
+
+    novac::ILogger& m_log;
 
     /** the desired time resolution of the measurement
         (i.e. how often a spectrum should) be stored to file. In milliseconds */

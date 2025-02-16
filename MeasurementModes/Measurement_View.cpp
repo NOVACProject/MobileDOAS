@@ -6,9 +6,10 @@ extern CString g_exePath;  // <-- This is the path to the executable. This is a 
 
 CMeasurement_View::CMeasurement_View(
     CView& mainForm,
+    novac::ILogger& log,
     std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface,
     std::unique_ptr<Configuration::CMobileConfiguration> conf)
-    : CSpectrometer(mainForm, std::move(spectrometerInterface), std::move(conf))
+    : CSpectrometer(mainForm, log, std::move(spectrometerInterface), std::move(conf))
 {
     m_spectrometerMode = MODE_VIEW;
 }
@@ -37,7 +38,7 @@ void CMeasurement_View::Run()
         ShowMessageBox("Please point the spectrometer to sky", "Notice");
         AdjustIntegrationTime();
     }
-    else 
+    else
     {
         m_integrationTime = (short)m_fixexptime;
     }

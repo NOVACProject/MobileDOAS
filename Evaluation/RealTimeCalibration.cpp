@@ -127,17 +127,12 @@ std::vector<novac::CReferenceFile> CreateStandardReferences(
     return referencesCreated;
 }
 
-void ReplaceReferences(std::vector<novac::CReferenceFile>& newReferences, Configuration::CMobileConfiguration& settings)
+static void ReplaceReferences(std::vector<novac::CReferenceFile>& newReferences, Configuration::CMobileConfiguration& settings)
 {
     // First make sure that all the cross sections could be read in before attempting to replace anything
     for (size_t idx = 0; idx < newReferences.size(); ++idx)
     {
-        if (newReferences[idx].ReadCrossSectionDataFromFile())
-        {
-            std::stringstream message;
-            message << "Failed to read cross section data from file: " << newReferences[idx].m_path << std::endl;
-            throw std::invalid_argument(message.str());
-        }
+        newReferences[idx].ReadCrossSectionDataFromFile();
 
         if (newReferences[idx].m_data == nullptr ||
             newReferences[idx].m_data->m_crossSection.size() == 0)
@@ -169,6 +164,7 @@ bool CRealTimeCalibration::RunInstrumentCalibration(
     const novac::CSpectrumInfo& spectrumInfo,
     const std::string& outputDirectory,
     Configuration::CMobileConfiguration& settings,
+    novac::ILogger& log,
     double spectrometerMaximumIntensityForSingleReadoutOverride)
 {
     bool referencesReplaced = false;
@@ -176,7 +172,7 @@ bool CRealTimeCalibration::RunInstrumentCalibration(
     // Use the WavelengthCalibrationController, which is also used when the 
     //  user performs the instrument calibrations using the CCalibratePixelToWavelengthDialog.
     // This makes sure we get the same behavior in the dialog and here.
-    InMemoryWavelengthCalibrationController calibrationController;
+    InMemoryWavelengthCalibrationController calibrationController(log);
     calibrationController.m_spectrometerMaximumIntensityForSingleReadout = spectrometerMaximumIntensityForSingleReadoutOverride;
     calibrationController.m_spectraAreAverages = true; // MobileDOAS will always inherently average spectra.
 

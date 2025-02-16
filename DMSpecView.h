@@ -20,6 +20,7 @@
 
 #include "afxcmn.h"
 #include "afxwin.h"
+#include <SpectralEvaluation/Log.h>
 
 #pragma once
 
@@ -287,6 +288,11 @@ protected:
 
     /** Called when the window is created */
     virtual void OnInitialUpdate();
+
+private:
+
+    novac::ConsoleLog m_log;
+
 };
 
 #ifndef _DEBUG  // debug version in DMSpecView.cpp

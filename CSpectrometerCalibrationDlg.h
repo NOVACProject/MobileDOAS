@@ -1,11 +1,16 @@
 #pragma once
 
+namespace novac
+{
+class ILogger;
+}
+
 // This is the spectrometer calibration dialog
 //  where we can both fit an instrument line shape _and_ calibrate the wavelength
 class CSpectrometerCalibrationDlg : public CPropertySheet
 {
 public:
-    CSpectrometerCalibrationDlg();   // standard constructor
+    CSpectrometerCalibrationDlg(novac::ILogger& log);   // standard constructor
     virtual ~CSpectrometerCalibrationDlg();
 
     virtual BOOL OnInitDialog();
