@@ -52,10 +52,6 @@ public:
     /** Sets the fit window to use */
     void  SetFitWindow(const CFitWindow& window);
 
-    // initialize the shift parameters for the evaluation, if these are more 
-    //  complicated than what can be handled by using the 'Evaluate'-function itself
-    void SetShiftAndSqueeze(int refNum, novac::SHIFT_TYPE shiftType, double shift, novac::SHIFT_TYPE squeezeType, double squeeze);
-
     /** Evaluate the following spectra, the parameters for the fit are defined in 'm_fitWindow' */
     void Evaluate(const double* darkArray, const double* skyArray, const double* specMem, long numSteps = 400);
 
@@ -119,9 +115,6 @@ private:
 
     /** The fit window object, this holds the parameters for the fitting */
     CFitWindow m_fitWindow;
-
-    /** resultSet is used as buffer when returning the result of the evaluation */
-    double resultSet[6];
 
     /** 'lowPassFiltering' is true only if the spectra should be low-pass filtered
             before evaluation. This is by default false. */

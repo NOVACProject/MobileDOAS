@@ -47,10 +47,6 @@ namespace mobiledoas {
         void SetPort(int portNumber);
         void SetPort(const std::string& port);
 
-        /** Getting the status */
-        long GetBaudrate() const { return this->baudrate; }
-        const char* GetPort() const { return this->serialPort; }
-
         /** Checks the serial port for more data.
             @param timeOut The serial read timeout, in milliseconds.
             @return true if there is more data to be read out from 'Read' */

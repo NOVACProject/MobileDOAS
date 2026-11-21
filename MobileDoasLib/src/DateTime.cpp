@@ -104,17 +104,6 @@ namespace mobiledoas {
         hr = hr % 24;
     }
 
-    std::string FormatTime(long hhmmss, char separatorCharacter)
-    {
-        int hr, min, sec;
-        GetHrMinSec(hhmmss, hr, min, sec);
-
-        char msgBuffer[64];
-        sprintf_s(msgBuffer, "%02d%c%02d%c%02d", hr, separatorCharacter, min, separatorCharacter, sec);
-
-        return std::string(msgBuffer);
-    }
-
 
     void GetDateText(char* txt)
     {

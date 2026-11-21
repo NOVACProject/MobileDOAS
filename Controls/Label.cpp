@@ -25,11 +25,6 @@ BEGIN_MESSAGE_MAP(CLabel, CStatic)
 	ON_WM_CTLCOLOR_REFLECT()
 END_MESSAGE_MAP()
 
-/** Sets the text color */
-void CLabel::SetForegroundColor(COLORREF rgb){
-	m_textColor = rgb;
-}
-
 /** Sets the background color */
 void CLabel::SetBackgroundColor(COLORREF rgb){
 	m_backgroundColor = rgb;

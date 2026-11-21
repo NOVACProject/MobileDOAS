@@ -121,34 +121,14 @@ public:
     /** Turns the showing of the X-units and scale off */
     void HideXScale() { this->m_axisOptions.drawXUnits = false; }
 
-    /** Turns the showing of the X-units and scale on */
-    void ShowXScale() { this->m_axisOptions.drawXUnits = true; }
-
     /** Turns the showing of the Y-units and scale off */
     void HideYScale() { this->m_axisOptions.drawYUnits = false; }
-
-    /** Turns the showing of the Y-units and scale on */
-    void ShowYScale() { this->m_axisOptions.drawYUnits = true; }
 
     /** Sets the unit label of the Y-axis */
     void SetYUnits(CString string);
 
     /** Sets and enables the unit for the second Y-axis, to the right */
     void SetSecondYUnit(CString string);
-
-    /** Sets the width of the fonts used. Use FW_REGULAR, FW_NORMAL or FW_BOLD. */
-    void SetFontWidth(int width) {
-        m_axisOptions.axisFont.width = width;
-        m_axisOptions.unitFont.width = width;
-        InvalidateCtrl();
-    }
-
-    /** Sets the height of the fonts used. */
-    void SetFontHeight(int height) {
-        m_axisOptions.axisFont.height = height;
-        m_axisOptions.unitFont.height = height;
-        InvalidateCtrl();
-    }
 
     /** Returns the maximum value of the X-axis */
     double GetXMax(int dim = 0) {
@@ -185,14 +165,8 @@ public:
         set to true then the plot will be cleared, otherwise it will stay. */
     void SetPlotColor(COLORREF color, bool redraw = false);
 
-    /** Retrieves the color of the plot */
-    COLORREF GetPlotColor();
-
     /** Sets the color of the background */
     void SetBackgroundColor(COLORREF color);
-
-    /** Retrieves the color of the background */
-    COLORREF GetBackgroundColor();
 
     /** Sets the color for the circles */
     void SetCircleColor(COLORREF color, bool clear = false);
@@ -448,12 +422,6 @@ protected:
 
     /** The unit of the right y-axis */
     CString m_strRightYUnit;
-
-    /** The unit of the left y-axis */
-    CString m_strYMin;
-
-    /** The unit of the x-axis */
-    CString m_strYMax;
 
     /** The bounding box for the client area (the total plot) */
     CRect  m_rectClient;

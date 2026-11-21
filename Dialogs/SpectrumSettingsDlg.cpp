@@ -217,40 +217,6 @@ void CSpectrumSettingsDlg::OnChangeSpinAverage(NMHDR* pNMHDR, LRESULT* pResult)
     m_averageEdit.SetWindowText(str);
 }
 
-/** Retrieves the list of spectrometers from the CSpectrometer and
-    updates the combo-box */
-void CSpectrumSettingsDlg::UpdateListOfSpectrometers()
-{
-    const auto spectrometers = m_Spectrometer->GetConnectedSpectrometers();
-
-    if (spectrometers.size() == 0 || (m_Spectrometer->m_spectrometerIndex < 0 || m_Spectrometer->m_spectrometerIndex >= spectrometers.size()))
-    {
-        return;
-    }
-    else
-    {
-        // build the list 
-        m_comboSpecs.ResetContent();
-        for (const std::string& serial : spectrometers)
-        {
-            m_comboSpecs.AddString(serial.c_str());
-        }
-
-        // also select the currently used one
-        if (m_Spectrometer->m_spectrometerIndex >= 0)
-        {
-            m_comboSpecs.SetCurSel(m_Spectrometer->m_spectrometerIndex);
-        }
-
-        // Not least, set the channel to use
-        this->m_channel = m_Spectrometer->m_spectrometerChannel;
-
-        UpdateData(FALSE);
-    }
-
-    return;
-}
-
 /** Updates the dialog with the list of spectrometers from CSpectrometer */
 LRESULT CSpectrumSettingsDlg::OnChangeSpectrometer(WPARAM wParam, LPARAM lParam)
 {

@@ -228,14 +228,6 @@ COLORREF CGraphCtrl::GetGridColor() {
     return m_colors.grid;
 }
 
-COLORREF CGraphCtrl::GetPlotColor() {
-    return m_colors.plot;
-}
-
-COLORREF CGraphCtrl::GetBackgroundColor() {
-    return m_colors.background;
-}
-
 
 /////////////////////////////////////////////////////////////////////////////
 void CGraphCtrl::IncreaseLineWidth() {

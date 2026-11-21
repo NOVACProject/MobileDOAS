@@ -59,11 +59,6 @@ namespace mobiledoas
     /** This function converts a time value given as an integer to three values (hour, minute second) */
     void GetHrMinSec(int time, int& hr, int& min, int& sec);
 
-    /** Formats the provided timestamp (which should be in hhmmss format) as a string with
-        the given separator character.
-        E.g. the values hhmmss=121314 and separatorCharacter=':' will return the string "12:13:14" */
-    std::string FormatTime(long hhmmss, char separatorCharacter = ':');
-
     /** Formats the current date (from the computer clock) into a string using the YYYY.MM.DD format */
     void GetDateText(char* txt);
 

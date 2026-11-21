@@ -66,9 +66,5 @@ namespace Dialogs {
 
         // The selected channel on the spectrometer
         int m_channel = 0;
-
-        /** Retrieves the list of spectrometers from the CSpectrometer and
-            updates the combo-box */
-        void UpdateListOfSpectrometers();
     };
 }

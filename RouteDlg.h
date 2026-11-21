@@ -63,9 +63,6 @@ public:
     /* Calculating the range of the plot */
     void   GetPlotRange(struct plotRange& range);
 
-    /* Calculating the color range of the plot */
-    void   GetColorRange(double& minValue, double& maxValue);
-
     // Dialog Data
     //{{AFX_DATA(CRouteDlg)
     enum { IDD = IDD_ROUTEDLG };

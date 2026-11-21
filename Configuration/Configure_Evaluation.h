@@ -23,9 +23,6 @@ public:
     /** The local handle to the CMobileConfiguration object that we're changing */
     std::shared_ptr<CMobileConfiguration> m_conf;
 
-    /** The local handle to the option of whether to use this window or not */
-    int* m_Evaluate;
-
     /** The main-specie that this window evaluates for */
     CString m_specieName;
 

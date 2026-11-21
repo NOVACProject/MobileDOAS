@@ -102,7 +102,6 @@ void CRealTimeRoute::OnSize(UINT nType, int cx, int cy)
 
     if (IsWindow(m_plotArea.m_hWnd))
     {
-        int legendSpace = 70;
         m_plotArea.MoveWindow(0, 0, cx - m_legendWidth, cy, FALSE);
         m_gpsPlot.MoveWindow(0, 0, cx - m_legendWidth, cy, FALSE);
         m_gpsPlot.CleanPlot();

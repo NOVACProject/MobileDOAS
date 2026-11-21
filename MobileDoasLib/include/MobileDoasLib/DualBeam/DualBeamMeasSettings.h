@@ -21,9 +21,6 @@ namespace mobiledoas {
         /** The minimum column value that will be taken into account */
         double columnMin = -300.0;
 
-        /** The minimum sigma - level (???) */
-        double sigmaMin = 0.1;
-
         /** The plume height */
         double plumeHeight = 1000.0;
 

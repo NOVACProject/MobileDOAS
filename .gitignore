@@ -18,3 +18,10 @@ Old/MobileDOASDevelopment_2009_03_10/
 Old/MobileDOASDevelopment_OmniDriver_2009_11_30/
 .vs/ProjectSettings.json
 /.vs
+
+# Visual Studio / Visual C++ 6 IDE artefacts (never commit)
+*.aps
+*.clw
+*.opt
+*.plg
+*.ncb

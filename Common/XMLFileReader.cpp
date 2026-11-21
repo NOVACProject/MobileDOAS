@@ -16,11 +16,6 @@ CXMLFileReader::~CXMLFileReader(void)
 {
 }
 
-void CXMLFileReader::SetFile(CStdioFile* file)
-{
-    m_File = file;
-}
-
 char* CXMLFileReader::NextToken() {
     char separators[] = "<>\t";
     static char* pt = nullptr;
@@ -111,24 +106,6 @@ int CXMLFileReader::Parse_IntItem(const CString& label, int& number) {
             return 1;
 
         number = _tstoi(szToken);
-    }
-
-    return 0;
-}
-
-/** General parsing of a single, simple long integer item */
-int CXMLFileReader::Parse_IPNumber(const CString& label, BYTE& ip0, BYTE& ip1, BYTE& ip2, BYTE& ip3) {
-    while (szToken = NextToken()) {
-        int i0, i1, i2, i3;
-
-        if (Equals(szToken, label))
-            return 1;
-
-        sscanf(szToken, "%d.%d.%d.%d", &i0, &i1, &i2, &i3);
-        ip0 = i0;
-        ip1 = i1;
-        ip2 = i2;
-        ip3 = i3;
     }
 
     return 0;

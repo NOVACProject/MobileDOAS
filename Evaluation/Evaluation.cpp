@@ -70,7 +70,7 @@ CEvaluation::~CEvaluation()
 void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum, const double* measSpectrum, long numSteps)
 {
 
-    CString szOut, szTmp;
+    CString szOut;
     int iNumSpec = m_window.nRef;
     int sumChn = m_window.specLength;
     //////////////////////////////////////////////////////////////////
@@ -390,19 +390,6 @@ void CEvaluation::SetParameters(int fitLow, int fitHigh, int polynomOrder, int l
     m_window.fitHigh = fitHigh;
     m_window.polyOrder = polynomOrder;
     this->m_lowPassFiltering = lowPassFilter;
-}
-
-void CEvaluation::SetShiftAndSqueeze(int refNum, novac::SHIFT_TYPE shiftType, double shift, novac::SHIFT_TYPE squeezeType, double squeeze)
-{
-    if (refNum < 0 || refNum > m_window.nRef)
-    {
-        return;
-    }
-    m_window.ref[refNum].m_shiftOption = shiftType;
-    m_window.ref[refNum].m_shiftValue = shift;
-    m_window.ref[refNum].m_squeezeOption = squeezeType;
-    m_window.ref[refNum].m_squeezeValue = squeeze;
-
 }
 
 /** Sets the fit window to use */

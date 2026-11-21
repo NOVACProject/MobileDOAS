@@ -86,6 +86,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <Optimization>Full</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -137,6 +138,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <Optimization>Full</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -187,6 +189,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(PROJECT_DIR)SpectrometersLib\include;$(PROJECT_DIR)MobileDoasLib\include;$(PROJECT_DIR)SpectralEvaluation\include;%JAVA_HOME%\include\win32;%JAVA_HOME%\include;%OMNIDRIVER_HOME%\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -237,6 +240,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(PROJECT_DIR)SpectrometersLib\include;$(PROJECT_DIR)MobileDoasLib\include;$(PROJECT_DIR)SpectralEvaluation\include;%JAVA_HOME%\include\win32;%JAVA_HOME%\include;%OMNIDRIVER_HOME%\include</AdditionalIncludeDirectories>
       <StringPooling>true</StringPooling>

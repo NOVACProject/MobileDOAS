@@ -11,9 +11,6 @@ namespace DlgControls{
 		CLabel();
 		virtual ~CLabel();
 
-		/** Sets the text color */
-		void SetForegroundColor(COLORREF rgb);
-
 		/** Sets the background color */
 		void SetBackgroundColor(COLORREF rgb);
 

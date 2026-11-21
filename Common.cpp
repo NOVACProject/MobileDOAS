@@ -204,52 +204,6 @@ bool Common::BrowseForDirectory(CString& folder)
     return success;
 }
 
-std::vector<std::string> Common::ListFilesInDirectory(const char* directory, const char* fileNameFilter)
-{
-    std::vector<std::string> result;
-
-    char searchPattern[MAX_PATH];
-    if (fileNameFilter == nullptr)
-    {
-        sprintf(searchPattern, "%s*", directory);
-    }
-    else
-    {
-        sprintf(searchPattern, "%s%s", directory, fileNameFilter);
-    }
-
-    WIN32_FIND_DATA FindFileData;
-    HANDLE hFile = FindFirstFile(searchPattern, &FindFileData);
-
-    if (hFile == INVALID_HANDLE_VALUE)
-    {
-        return result; // no files found
-    }
-
-    do {
-        if (Equals(FindFileData.cFileName, ".") || Equals(FindFileData.cFileName, ".."))
-        {
-            continue;
-        }
-
-        if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-        {
-            // This is a directory that we've found. Skip
-        }
-        else
-        {
-            // Get the full name of the file that we've just found...
-            CString fileName;
-            fileName.Format("%s%s", directory, FindFileData.cFileName);
-            result.push_back(std::string(fileName));
-        }
-    } while (0 != FindNextFile(hFile, &FindFileData));
-
-    FindClose(hFile);
-
-    return result;
-}
-
 std::vector<CString> Common::BrowseForFiles()
 {
     std::vector<CString> filenames;

@@ -1030,8 +1030,6 @@ void CDMSpecView::OnControlStop()
 
 void CDMSpecView::DrawSpectrum()
 {
-    CString lambdaStr;
-
     // if the program is no longer running, then don't try to draw anything more...
     if (!s_spectrometerAcquisitionThreadIsRunning)
     {

@@ -543,37 +543,6 @@ void CRouteDlg::GetPlotRange(struct plotRange& range) {
     return;
 }
 
-void CRouteDlg::GetColorRange(double& minValue, double& maxValue) {
-    int i;
-    Common common;
-
-    minValue = 0;
-    maxValue = 1;
-
-    for (i = 0; i < m_traversesToShow; ++i) {
-        if (!m_evalLogList.GetSel(i))
-            continue;
-
-        switch (m_selectedDisplay) {
-        case SHOW_INTENSITY:
-            minValue = std::min(MinValue(m_int[i], m_recordLen[i]), minValue);
-            maxValue = std::max(MaxValue(m_int[i], m_recordLen[i]), maxValue);
-            break;
-        case SHOW_ALTITUDE:
-            minValue = std::min(MinValue(m_alt[i], m_recordLen[i]), minValue);
-            maxValue = std::max(MaxValue(m_alt[i], m_recordLen[i]), maxValue);
-            break;
-        case SHOW_COLUMN:
-            minValue = std::min(MinValue(m_col[i], m_recordLen[i]), minValue);
-            maxValue = std::max(MaxValue(m_col[i], m_recordLen[i]), maxValue);
-            break;
-        default:
-            minValue = std::min(MinValue(m_col[i], m_recordLen[i]), minValue);
-            maxValue = std::max(MaxValue(m_col[i], m_recordLen[i]), maxValue);
-        }
-    }
-}
-
 void CRouteDlg::InitBuffers() {
     int i, j, k, sum;
 
