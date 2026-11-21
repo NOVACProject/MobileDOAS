@@ -251,7 +251,7 @@ void CPostWindDlg::DrawColumn()
         return; // <-- nothing to plot
     }
 
-                // Set the range for the plot
+    // Set the range for the plot
     m_columnGraph.SetRange(minT, maxT, 0, minC, maxC, 1);
 
     // Draw the time series
@@ -394,7 +394,7 @@ void CPostWindDlg::OnCalculateWindspeed()
 
     double delay; // <-- the calculated delay
 
-                  // 1. Perform the correlation - calculations...
+    // 1. Perform the correlation - calculations...
     if (SUCCESS != m_calc.CalculateDelay(delay, m_OriginalSeries[0], m_OriginalSeries[1], m_settings))
     {
         switch (m_calc.m_lastError)

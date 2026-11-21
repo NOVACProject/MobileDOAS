@@ -2,7 +2,7 @@
 
 namespace Dialogs
 {
-    // CInformationDialog dialog
+// CInformationDialog dialog
 
 class CInformationDialog : public CDialog
 {

@@ -26,7 +26,7 @@
 
 class CPostFluxDlg : public CDialog
 {
-    // Construction
+// Construction
 public:
     CPostFluxDlg(CWnd* pParent = nullptr);   // standard constructor
     ~CPostFluxDlg();

@@ -73,7 +73,7 @@ void CReEval_DoEvaluationDlg::OnBnClickedDoEvaluation()
     m_cancelButton.EnableWindow(TRUE);
     m_btnDoEvaluation.EnableWindow(FALSE);
 
-    //UpdateData(FALSE);
+//UpdateData(FALSE);
 }
 
 LRESULT CReEval_DoEvaluationDlg::OnProgress(WPARAM wp, LPARAM lp)
@@ -301,7 +301,7 @@ BOOL CReEval_DoEvaluationDlg::OnInitDialog()
     m_showFit.SetCheck(TRUE);
 
     return TRUE;  // return TRUE unless you set the focus to a control
-    // EXCEPTION: OCX Property Pages should return FALSE
+// EXCEPTION: OCX Property Pages should return FALSE
 }
 
 void CReEval_DoEvaluationDlg::UpdateScreen()

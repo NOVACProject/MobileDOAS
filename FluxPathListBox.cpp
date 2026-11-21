@@ -32,7 +32,7 @@ void CFluxPathListBox::OnContextMenu(CWnd* pWnd, CPoint point)
     int selected = this->GetCurSel();
     if (selected == LB_ERR)
     {
-  /* no selection made */
+        /* no selection made */
         pPopup->EnableMenuItem(ID_RELOAD_LOGFILE, MF_DISABLED | MF_GRAYED);
     }
     else

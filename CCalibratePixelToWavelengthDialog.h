@@ -55,7 +55,7 @@ public:
     /** Initializes the controls and the dialog */
     virtual BOOL OnInitDialog();
 
-    // Dialog Data
+// Dialog Data
 #ifdef AFX_DESIGN_TIME
     enum
     {

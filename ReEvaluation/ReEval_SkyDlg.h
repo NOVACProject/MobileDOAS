@@ -40,11 +40,11 @@ public:
 
     afx_msg void SaveData();
 
-        /*CEdit m_intensityLow;
-        CEdit m_intensityHigh;
-        CEdit m_intensityChannel;
-        CEdit m_columnLow;
-        CEdit m_columnHigh;*/
+    /*CEdit m_intensityLow;
+    CEdit m_intensityHigh;
+    CEdit m_intensityChannel;
+    CEdit m_columnLow;
+    CEdit m_columnHigh;*/
     CEdit m_editSkySpec, m_editSkySpecDark;
     CButton m_btnBrowseSky, m_btnBrowseDark;
     virtual BOOL OnInitDialog();

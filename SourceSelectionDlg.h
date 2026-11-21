@@ -18,7 +18,7 @@ public:
     CSourceSelectionDlg(CWnd* pParent = nullptr);   // standard constructor
     virtual ~CSourceSelectionDlg();
 
-// Dialog Data
+    // Dialog Data
     enum
     {
         IDD = IDD_SOURCE_SELECTION_DLG

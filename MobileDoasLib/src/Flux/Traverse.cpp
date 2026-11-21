@@ -67,7 +67,7 @@ long CTraverse::DeletePoints(long lowIndex, long highIndex)
     return gap;
 }
 
-    /* Delete all data points with an intensity lower than @intensityLimit */
+/* Delete all data points with an intensity lower than @intensityLimit */
 long CTraverse::DeleteLowIntensityPoints(double intensityLimit)
 {
     long nDeleted = 0;
@@ -85,7 +85,7 @@ long CTraverse::DeleteLowIntensityPoints(double intensityLimit)
     return nDeleted;
 }
 
-    /* Delete all data points with an intensity higher than @intensityLimit */
+/* Delete all data points with an intensity higher than @intensityLimit */
 long CTraverse::DeleteHighIntensityPoints(double intensityLimit)
 {
     long nDeleted = 0;
@@ -103,8 +103,8 @@ long CTraverse::DeleteHighIntensityPoints(double intensityLimit)
     return nDeleted;
 }
 
-    /** Calculates the flux using the wind field defined by the vectors 'm_windspeed'
-        and 'm_windDirection'. */
+/** Calculates the flux using the wind field defined by the vectors 'm_windspeed'
+    and 'm_windDirection'. */
 double CTraverse::GetTotalFlux()
 {
     return GetTotalFlux(0, 1e9);
@@ -118,14 +118,14 @@ double CTraverse::GetTotalFlux(double windSpeed, double windDirection)
     long i;
     double column, accColumn;
 
-        // the last point which we know had connection with the GPS-satellites
+    // the last point which we know had connection with the GPS-satellites
     gpsPosition lastPointWithGPS;
     int lastPointWithGPSIndex = 0;
 
-        // the current point
+    // the current point
     gpsPosition thisPoint;
 
-        // extra traverse information
+    // extra traverse information
     m_traverseLength = 0;
     m_correctedTraverseLength = 0;
     m_plumeWidth = 0;
@@ -148,15 +148,15 @@ double CTraverse::GetTotalFlux(double windSpeed, double windDirection)
         }
     }
 
-        /* Correction for the fact that if the GPS-connection
-          is gone in the beginning of the traverse, no flux can be calculated */
+    /* Correction for the fact that if the GPS-connection
+      is gone in the beginning of the traverse, no flux can be calculated */
     while (latitude[m_lowIndex] == 0 && longitude[m_lowIndex] == 0)
     {
         ++m_lowIndex;
     }
 
-        /* Check that we have any points with valid GPS-data, and that the selected
-            part of the traverse contains at least one data point */
+    /* Check that we have any points with valid GPS-data, and that the selected
+        part of the traverse contains at least one data point */
     if (m_lowIndex >= m_highIndex)
     {
         // MessageBox(NULL, "No data points with valid GPS data found. No Flux could be calculated", "Error", MB_OK);

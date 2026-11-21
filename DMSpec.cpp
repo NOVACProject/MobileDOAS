@@ -38,8 +38,8 @@ END_MESSAGE_MAP()
 
 CDMSpecApp::CDMSpecApp()
 {
-    // TODO: add construction code here,
-    // Place all significant initialization in InitInstance
+// TODO: add construction code here,
+// Place all significant initialization in InitInstance
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -54,15 +54,15 @@ BOOL CDMSpecApp::InitInstance()
 {
     AfxEnableControlContainer();
 
-    // Standard initialization
-    // If you are not using these features and wish to reduce the size
-    //  of your final executable, you should remove from the following
-    //  the specific initialization routines you do not need.
+// Standard initialization
+// If you are not using these features and wish to reduce the size
+//  of your final executable, you should remove from the following
+//  the specific initialization routines you do not need.
 
 #ifdef _AFXDLL
     Enable3dControls();   // Call this when using MFC in a shared DLL
-    //#else
-    //  Enable3dControlsStatic();   // Call this when linking to MFC statically
+//#else
+//  Enable3dControlsStatic();   // Call this when linking to MFC statically
 #endif
 
     // Change the registry key under which our settings are stored.
@@ -114,13 +114,13 @@ public:
     {
         IDD = IDD_ABOUTBOX
     };
-    //}}AFX_DATA
+//}}AFX_DATA
 
-    // ClassWizard generated virtual function overrides
-    //{{AFX_VIRTUAL(CAboutDlg)
+// ClassWizard generated virtual function overrides
+//{{AFX_VIRTUAL(CAboutDlg)
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-    //}}AFX_VIRTUAL
+//}}AFX_VIRTUAL
 
 // Implementation
 protected:
@@ -132,8 +132,8 @@ protected:
 CAboutDlg::CAboutDlg()
     : CDialog(CAboutDlg::IDD)
 {
-    //{{AFX_DATA_INIT(CAboutDlg)
-    //}}AFX_DATA_INIT
+//{{AFX_DATA_INIT(CAboutDlg)
+//}}AFX_DATA_INIT
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange* pDX)
@@ -149,8 +149,8 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
-    //{{AFX_MSG_MAP(CAboutDlg)
-    //}}AFX_MSG_MAP
+//{{AFX_MSG_MAP(CAboutDlg)
+//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 // App command to run the dialog

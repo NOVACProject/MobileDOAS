@@ -26,22 +26,22 @@ protected:
 
     DECLARE_MESSAGE_MAP()
 
-        /** The script that we're working on */
+    /** The script that we're working on */
     CReEvaluation_Script m_script;
 
-        // The settings file, this should be used in every job that we create
+    // The settings file, this should be used in every job that we create
     CString m_settingsFile;
 
-        // --------- ITEMS IN THE DIALOG --------------
+    // --------- ITEMS IN THE DIALOG --------------
     CButton m_btnInsertEvalLog, m_btnRemoveEvalLog, m_btnScanEvalLogs, m_btnSaveScript;
     CListBox m_listEvalLogs;
     CComboBox m_comboThreadNum;
 
-        // ---------- HANDLING THE INTERFACE ----------
+    // ---------- HANDLING THE INTERFACE ----------
     void UpdateControls();
     void UpdateEvalLogList();
 
-        // ----------- HANDLING THE USER ------------
+    // ----------- HANDLING THE USER ------------
     afx_msg void OnBrowseSettingsFile();
     afx_msg void OnSaveScript();
     afx_msg void OnBrowseEvallog();

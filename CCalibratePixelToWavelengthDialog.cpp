@@ -108,7 +108,7 @@ BEGIN_MESSAGE_MAP(CCalibratePixelToWavelengthDialog, CPropertyPage)
     ON_LBN_SELCHANGE(IDC_LIST_GRAPH_TYPE, &CCalibratePixelToWavelengthDialog::OnSelchangeListGraphType)
     ON_BN_CLICKED(IDC_BUTTON_SETUP_WAVELENGTH_CALIBRATION,
                   &CCalibratePixelToWavelengthDialog::OnBnClickedSetupWavelengthCalibration)
-    // ON_BN_CLICKED(IDC_BUTTON_VIEW_LOG, &CCalibratePixelToWavelengthDialog::OnBnClickedButtonViewLog)
+// ON_BN_CLICKED(IDC_BUTTON_VIEW_LOG, &CCalibratePixelToWavelengthDialog::OnBnClickedButtonViewLog)
 END_MESSAGE_MAP()
 
 // Persisting the setup to file

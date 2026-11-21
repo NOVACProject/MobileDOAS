@@ -16,11 +16,11 @@ protected: // create from serialization only
 public:
 // Operations
 public:
-// Overrides
-    // ClassWizard generated virtual function overrides
-    //{{AFX_VIRTUAL(CMainFrame)
+    // Overrides
+        // ClassWizard generated virtual function overrides
+        //{{AFX_VIRTUAL(CMainFrame)
     virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-    //}}AFX_VIRTUAL
+//}}AFX_VIRTUAL
 
 // Implementation
 public:
@@ -38,9 +38,9 @@ public:  // control bar embedded members
 protected:
     //{{AFX_MSG(CMainFrame)
     afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-        // NOTE - the ClassWizard will add and remove member functions here.
-        //    DO NOT EDIT what you see in these blocks of generated code!
-    //}}AFX_MSG
+    // NOTE - the ClassWizard will add and remove member functions here.
+    //    DO NOT EDIT what you see in these blocks of generated code!
+//}}AFX_MSG
     DECLARE_MESSAGE_MAP()
 };
 

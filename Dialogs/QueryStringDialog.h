@@ -3,7 +3,7 @@
 namespace Dialogs
 {
 
-    // CQueryStringDialog dialog
+// CQueryStringDialog dialog
 
 class CQueryStringDialog : public CDialog
 {
@@ -15,16 +15,16 @@ public:
 
     virtual BOOL OnInitDialog();
 
-            // Dialog Data
+    // Dialog Data
     enum
     {
         IDD = IDD_QUERY_STRING_DIALOG
     };
 
-      /** The window text */
+    /** The window text */
     CString m_windowText;
 
-      /** The returned string */
+    /** The returned string */
     CString* m_inputString;
 
 protected:
@@ -32,10 +32,10 @@ protected:
 
     DECLARE_MESSAGE_MAP()
 
-            /** The input edit-box */
+    /** The input edit-box */
     CEdit m_editBox;
 
-            /** When the user presses the 'ok' button */
+    /** When the user presses the 'ok' button */
     virtual void OnOK();
 };
 

@@ -13,10 +13,10 @@ public:
     CKMLFileHandler(void);
     ~CKMLFileHandler(void);
 
-        /** Writes the information of one traverse to a KML file
-            @param traverse - the traverse to store to file
-            @praram fileName - the name (including full path) of the file to write
-            @return 0 on success. */
+    /** Writes the information of one traverse to a KML file
+        @param traverse - the traverse to store to file
+        @praram fileName - the name (including full path) of the file to write
+        @return 0 on success. */
     static int StoreTraverseAsKML(mobiledoas::CTraverse& traverse, const std::string& fileName, int scalingHeight);
 
 private:

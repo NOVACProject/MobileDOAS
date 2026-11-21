@@ -21,7 +21,7 @@ public:
 public:
     virtual BOOL OnNewDocument();
     virtual void Serialize(CArchive& ar);
-    //}}AFX_VIRTUAL
+//}}AFX_VIRTUAL
 
 // Implementation
 public:

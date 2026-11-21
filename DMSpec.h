@@ -22,15 +22,15 @@ class CDMSpecApp : public CWinApp
 public:
     CDMSpecApp();
 
-    // Overrides
-        // ClassWizard generated virtual function overrides
-        //{{AFX_VIRTUAL(CDMSpecApp)
+// Overrides
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CDMSpecApp)
 public:
     virtual BOOL InitInstance();
     //}}AFX_VIRTUAL
 
-// Implementation
-    //{{AFX_MSG(CDMSpecApp)
+    // Implementation
+        //{{AFX_MSG(CDMSpecApp)
     afx_msg void OnAppAbout();
     // NOTE - the ClassWizard will add and remove member functions here.
     //    DO NOT EDIT what you see in these blocks of generated code !

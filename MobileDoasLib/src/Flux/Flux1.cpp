@@ -21,7 +21,7 @@ double GetWindFactor(double lat1, double lon1, double lat2, double lon2, double 
 
     travelAngle = DEGREETORAD * mobiledoas::GPSBearing(lat1, lon1, lat2, lon2);
 
-        /* plumeAngle = pi + windAngle */
+    /* plumeAngle = pi + windAngle */
     difAngle = travelAngle + 1.5 * M_PI -
                windAngle * DEGREETORAD; // this is the difference between travel direction and plume direction
     windFactor = std::cos(difAngle);
@@ -34,7 +34,7 @@ CFlux::CFlux()
     m_curTraverse = 0;
     m_traverseNum = 0;
 
-        // allocate space for one traverse...
+    // allocate space for one traverse...
     m_traverse.push_back(new CTraverse());
 
     m_windField = nullptr;
@@ -67,9 +67,9 @@ CFlux::~CFlux()
     }
 }
 
-    /**Calculate flux and record every calculated flux value in "postFluxRecord.txt" file
-    *
-    */
+/**Calculate flux and record every calculated flux value in "postFluxRecord.txt" file
+*
+*/
 double CFlux::GetTotalFlux()
 {
     if (fCreateAdditionalLog)
@@ -79,8 +79,8 @@ double CFlux::GetTotalFlux()
         m_traverse[m_curTraverse]->m_additionalLogName = std::string(additionalLogName);
     }
 
-        // ----------------------- CALCULATING THE FLUX -------------------------
-        // Calculate the flux
+    // ----------------------- CALCULATING THE FLUX -------------------------
+    // Calculate the flux
     if (m_traverse[m_curTraverse]->m_useWindField)
     {
         m_totalFlux = m_traverse[m_curTraverse]->GetTotalFlux();
@@ -90,29 +90,29 @@ double CFlux::GetTotalFlux()
         m_totalFlux = m_traverse[m_curTraverse]->GetTotalFlux(m_windSpeed, m_windAngle);
     }
 
-        // save some more data
+    // save some more data
     this->plumeWidth = m_traverse[m_curTraverse]->m_plumeWidth;
     this->traverseLength = m_traverse[m_curTraverse]->m_traverseLength;
 
-        // -------------------- ESTIMATING THE ERROR IN FLUX -----------------------
+    // -------------------- ESTIMATING THE ERROR IN FLUX -----------------------
     mobiledoas::CTraverse* upperTraverse = new mobiledoas::CTraverse();
     mobiledoas::CTraverse* lowerTraverse = new mobiledoas::CTraverse();
     mobiledoas::CTraverse* curTraverse = m_traverse[m_curTraverse];
     *upperTraverse = *curTraverse;
     *lowerTraverse = *curTraverse;
 
-        // Get the offset that the user has chosen
+    // Get the offset that the user has chosen
     double userOffset = curTraverse->m_Offset;
 
-        // Find the average column error
+    // Find the average column error
     double avgColErr =
         Average(begin(curTraverse->columnError), begin(curTraverse->columnError) + curTraverse->m_recordNum);
 
     int k;
-        // Go through the traverse, for each data point with a column value less than
-        //      (offset + avgColErr) decrease the column value with its column error
-        //      and for each data point with a column value higher than (offset + avgColErr)
-        //      increase the column value with its column error.
+    // Go through the traverse, for each data point with a column value less than
+    //      (offset + avgColErr) decrease the column value with its column error
+    //      and for each data point with a column value higher than (offset + avgColErr)
+    //      increase the column value with its column error.
     for (k = 0; k < curTraverse->m_recordNum; ++k)
     {
         if (curTraverse->columnArray[k] < (userOffset + avgColErr))
@@ -126,11 +126,11 @@ double CFlux::GetTotalFlux()
             upperTraverse->columnArray[k] = curTraverse->columnArray[k] + curTraverse->columnError[k];
         }
     }
-        // correct the offsets
+    // correct the offsets
     lowerTraverse->m_Offset = userOffset + avgColErr;
     upperTraverse->m_Offset = userOffset - avgColErr;
 
-        // Calculate the fluxes
+    // Calculate the fluxes
     if (m_traverse[m_curTraverse]->m_useWindField)
     {
         m_totalFlux_Low = lowerTraverse->GetTotalFlux();
@@ -148,13 +148,13 @@ double CFlux::GetTotalFlux()
     return m_totalFlux;
 }
 
-    /* called when reading a new evaluation log */
+/* called when reading a new evaluation log */
 long CFlux::ReadLogFile(std::string filePath, std::string fileName, int nChannels, double fileVersion)
 {
     return ReadLogFile(filePath, fileName, m_traverseNum, nChannels, fileVersion);
 }
 
-    /* called when re-reading an old evaluation log */
+/* called when re-reading an old evaluation log */
 long CFlux::ReadLogFile(std::string filePath, std::string fileName, long fileIndex, int nChannels, double fileVersion)
 {
     char buf[4096];
@@ -166,7 +166,7 @@ long CFlux::ReadLogFile(std::string filePath, std::string fileName, long fileInd
         f = fopen((filePath + std::string("\\") + fileName).c_str(), "r");
         if (nullptr == f)
         {
-                // MessageBox(NULL, TEXT("Can not read log file"), TEXT("Error"), MB_OK);
+            // MessageBox(NULL, TEXT("Can not read log file"), TEXT("Error"), MB_OK);
             return 0;
         }
     }
@@ -180,7 +180,7 @@ long CFlux::ReadLogFile(std::string filePath, std::string fileName, long fileInd
     double fValue[3];
     int i = 0;
 
-        // Read the data from the evaluation file into the correct columns
+    // Read the data from the evaluation file into the correct columns
     while (fgets(buf, 4095, f))
     { // fgets reads until the next newline character
         char* szToken = buf;
@@ -216,7 +216,7 @@ long CFlux::ReadLogFile(std::string filePath, std::string fileName, long fileInd
 
         if (n == MAX_TRAVERSELENGTH)
         {
-                // CString message;
+            // CString message;
             // message.Format("Traverses longer than %d data points cannot be read fully. Reading stopped at datapoint %d.", MAX_TRAVERSELENGTH, MAX_TRAVERSELENGTH);
             // MessageBox(NULL, message, "Too long traverse", MB_OK);
             break;
@@ -593,9 +593,9 @@ int CFlux::ReadSettingFile(std::string filename, long /*fileIndex*/, int& nChann
 void CFlux::Reset()
 {
     /*  memset((void*)columnArray, 0, sizeof(double)*2*65536);
-            memset((void*)latArray, 0, sizeof(double)*2*65536);
-            memset((void*)longitude, 0, sizeof(double)*2*65536);
-          memset((void*)altArray, 0, sizeof(double)*2*65536);*/
+        memset((void*)latArray, 0, sizeof(double)*2*65536);
+        memset((void*)longitude, 0, sizeof(double)*2*65536);
+      memset((void*)altArray, 0, sizeof(double)*2*65536);*/
 }
 
 bool CFlux::hasValidGPS(int file)

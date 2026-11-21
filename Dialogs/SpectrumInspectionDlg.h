@@ -7,7 +7,7 @@
 
 namespace Dialogs
 {
-    // CSpectrumInspectionDlg dialog
+// CSpectrumInspectionDlg dialog
 
 class CSpectrumInspectionDlg : public CDialog
 {
@@ -28,78 +28,78 @@ protected:
 
     DECLARE_MESSAGE_MAP()
 public:
-        /** Initializes the controls and the dialog */
+    /** Initializes the controls and the dialog */
     virtual BOOL OnInitDialog();
 
-        /** Initializes the list of spectrum properties */
+    /** Initializes the list of spectrum properties */
     void InitPropertiesList();
 
-        /** The spectrum plot */
+    /** The spectrum plot */
     Graph::CSpectrumGraph m_spectrumGraph;
 
-        /** This is the border for the spectrum graph */
+    /** This is the border for the spectrum graph */
     CStatic m_graphFrame;
 
-        /** The scroll bar. Lets the user select which spectrum to see */
+    /** The scroll bar. Lets the user select which spectrum to see */
     CScrollBar m_spectrumScrollBar;
 
-        /** Called when the user browses an evaluation log */
+    /** Called when the user browses an evaluation log */
     afx_msg void OnBrowseEvallog();
 
-        /** Called when the user wants to see another spectrum (by pressing the slider bar) */
+    /** Called when the user wants to see another spectrum (by pressing the slider bar) */
     afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 
-        /** Zooming in the graph */
+    /** Zooming in the graph */
     LRESULT OnZoomGraph(WPARAM wParam, LPARAM lParam);
 
-        /** Called on timer-events */
+    /** Called on timer-events */
     afx_msg void OnTimer(UINT_PTR nIDEvent);
 
-        /** Gets the range of the plot, this is to enable zooming of the graph */
+    /** Gets the range of the plot, this is to enable zooming of the graph */
     void GetPlotRange(Graph::CSpectrumGraph::plotRange& range, const CSpectrum* spectrum = nullptr);
 
-        /** The directory where the spectra are stored (and where the evaluation-log file is stored) */
+    /** The directory where the spectra are stored (and where the evaluation-log file is stored) */
     CString m_spectrumPath;
 
-        /** The evaluation log file */
+    /** The evaluation log file */
     CString m_evaluationLog;
 
-        /** The currently show spectrum (ranging from -2 to n)
-            -3 is the offset-spectrum (if any)
-            -2 is the dark-spectrum (or dark-current spectrum)
-            -1 is the sky-spectrum
-            0  is the first measured spectrum (00000_0.STD)
-        */
+    /** The currently show spectrum (ranging from -2 to n)
+        -3 is the offset-spectrum (if any)
+        -2 is the dark-spectrum (or dark-current spectrum)
+        -1 is the sky-spectrum
+        0  is the first measured spectrum (00000_0.STD)
+    */
     int m_selectedSpectrum;
 
-        /** The total amount of spectra in the currently selected measurement */
+    /** The total amount of spectra in the currently selected measurement */
     int m_totalSpecNum;
 
-        /** Draws the currently selected spectrum */
+    /** Draws the currently selected spectrum */
     void DrawSpectrum();
 
-        /** Fills in the property list with information about the current spectrum
-            if spectrum is NULL then the list is just cleared */
+    /** Fills in the property list with information about the current spectrum
+        if spectrum is NULL then the list is just cleared */
     void FillInSpectrumPropertiesList(const CSpectrum* spec);
 
-        /** This is the x-axis */
+    /** This is the x-axis */
     double* m_number;
 
-        /** the color of the spectrum */
+    /** the color of the spectrum */
     COLORREF m_spectrumColor;
 
-        /** the frame for the properties list */
+    /** the frame for the properties list */
     CStatic m_propertiesFrame;
 
-        /** The list of the properties of the currently shown spectrum */
+    /** The list of the properties of the currently shown spectrum */
     CListCtrl m_propertyList;
 
-        /** Reads the given evaluation log file.
-            @return 0 on success. */
+    /** Reads the given evaluation log file.
+        @return 0 on success. */
     int ReadEvaluationLog(const CString& fullFileName);
 
-        /** The timer, to restore the zoomability of the graph 0.5 seconds after
-                the user has opened the file */
+    /** The timer, to restore the zoomability of the graph 0.5 seconds after
+            the user has opened the file */
     UINT_PTR m_timer;
 };
 }

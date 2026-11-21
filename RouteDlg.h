@@ -24,7 +24,7 @@
 // CRouteDlg dialog
 class CRouteDlg : public CDialog
 {
-    // Construction
+// Construction
 public:
     CRouteDlg(CWnd* pParent = NULL);   // standard constructor
 
@@ -64,7 +64,7 @@ public:
     {
         IDD = IDD_ROUTEDLG
     };
-    // NOTE: the ClassWizard will add data members here
+// NOTE: the ClassWizard will add data members here
 //}}AFX_DATA
 
 
@@ -73,7 +73,7 @@ public:
     //{{AFX_VIRTUAL(CRouteDlg)
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-    //}}AFX_VIRTUAL
+//}}AFX_VIRTUAL
 
 // Implementation
 protected:
@@ -106,7 +106,7 @@ private:
     COLORREF m_windFieldColor;
     COLORREF m_circlesColor;
 
-    /** The color of the grid */
+/** The color of the grid */
 public:
     /* Calculating distance and bearing */
     CButton m_calcDistance;

@@ -125,7 +125,7 @@ void CMeasurement_Traverse::Run()
             OnUpdatedIntegrationTime();
         }
 
-        /* ----------------  Get the spectrum --------------------  */
+/* ----------------  Get the spectrum --------------------  */
 #ifdef _DEBUG
         cFinish = clock();
         gpsSecond = ((double)(cFinish - cStart) / (double)CLOCKS_PER_SEC);

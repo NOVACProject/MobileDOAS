@@ -22,7 +22,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
         // NOTE - the ClassWizard will add and remove mapping macros here.
         //    DO NOT EDIT what you see in these blocks of generated code !
     ON_WM_CREATE()
-    //}}AFX_MSG_MAP
+//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 static UINT indicators[] = {
@@ -37,7 +37,7 @@ static UINT indicators[] = {
 
 CMainFrame::CMainFrame()
 {
-    // TODO: add member initialization code here
+// TODO: add member initialization code here
 }
 
 CMainFrame::~CMainFrame()

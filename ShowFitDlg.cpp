@@ -79,7 +79,7 @@ BOOL CShowFitDlg::OnInitDialog()
     DrawFit();
 
     return TRUE;  // return TRUE unless you set the focus to a control
-    // EXCEPTION: OCX Property Pages should return FALSE
+// EXCEPTION: OCX Property Pages should return FALSE
 }
 
 void CShowFitDlg::OnSize(UINT nType, int cx, int cy)

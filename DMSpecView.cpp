@@ -1693,7 +1693,7 @@ void CDMSpecView::OnUpdateWindMeasurement(CCmdUI* pCmdUI)
 
 void CDMSpecView::OnUpdate_StartTheGps(CCmdUI* pCmdUI)
 {
-    // only available for debugging...
+// only available for debugging...
 #ifdef _DEBUG
     pCmdUI->Enable(TRUE);
 #else

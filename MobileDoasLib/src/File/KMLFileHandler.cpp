@@ -19,24 +19,24 @@ int CKMLFileHandler::StoreTraverseAsKML(mobiledoas::CTraverse& traverse, const s
 {
     int k;
 
-        // 0. Check the input
+    // 0. Check the input
     if (traverse.m_recordNum == 0)
     {
         return 0;
     }
 
-        // 1. Open the file
+    // 1. Open the file
     FILE* f = fopen(fileName.c_str(), "w");
     if (f == nullptr)
     {
         return 1;
     }
 
-        // 2. We need to scale the columns to make sure that they are visible on the map
+    // 2. We need to scale the columns to make sure that they are visible on the map
     std::vector<double> scaledColumns(traverse.m_recordNum);
     std::vector<int> levels(traverse.m_recordNum);
 
-        // get the minimum and maximum column...
+    // get the minimum and maximum column...
     double minColumn = Min(begin(traverse.columnArray), begin(traverse.columnArray) + traverse.m_recordNum);
     double scaleFactor =
         scalingHeight / Max(begin(traverse.columnArray), begin(traverse.columnArray) + traverse.m_recordNum);
@@ -48,14 +48,14 @@ int CKMLFileHandler::StoreTraverseAsKML(mobiledoas::CTraverse& traverse, const s
         levels[k] = (int)(std::min(nLevels - 1.0, floor(scaledColumns[k] / (scalingHeight / double(nLevels)))));
     }
 
-        // Write the header
+    // Write the header
     fprintf(f, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
     fprintf(f, "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");
     fprintf(f, "<Document>\n");
 
     fprintf(f, "\t<name>%s</name>\n", traverse.m_fileName.c_str());
 
-        // write the list of available styles
+    // write the list of available styles
     WriteStyles(nLevels, f);
 
     int start = 0;
@@ -75,11 +75,11 @@ int CKMLFileHandler::StoreTraverseAsKML(mobiledoas::CTraverse& traverse, const s
         }
     }
 
-        // Finish the document
+    // Finish the document
     fprintf(f, "</Document>\n");
     fprintf(f, "</kml>\n");
 
-        // Always remember to close the file
+    // Always remember to close the file
     fclose(f);
 
     return 0;
@@ -99,7 +99,7 @@ void CKMLFileHandler::WritePlaceMark(double* longitude, double* latitude, double
 
     fprintf(f, "\t\t\t<coordinates>\n");
 
-        // Write each of the data points
+    // Write each of the data points
     for (k = 0; k < length; ++k)
     {
         fprintf(f, "\t\t\t\t%.6lf,%.6lf,%.1lf\n", longitude[k], latitude[k], height[k]);
@@ -119,7 +119,7 @@ void CKMLFileHandler::WriteStyles(int numberOfStyles, FILE* f)
     for (int level = 0; level < numberOfStyles; ++level)
     {
 
-            // Get the color we should use for this style
+        // Get the color we should use for this style
         char colorStr[64];
         if (level < halfC)
         {
@@ -132,7 +132,7 @@ void CKMLFileHandler::WriteStyles(int numberOfStyles, FILE* f)
             sprintf_s(colorStr, "00%02x%02x", (unsigned char)(255 * (1 - a)), (unsigned char)(255 * a));
         }
 
-            // Write the style to file
+        // Write the style to file
         fprintf(f, "\t<Style id=\"style%d\">\n", level);
         fprintf(f, "\t\t<LineStyle>\n");
         fprintf(f, "\t\t\t<color>7f%s</color>\n", colorStr);

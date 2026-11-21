@@ -247,7 +247,7 @@ void CPostPlumeHeightDlg::DrawColumn()
         return; // <-- nothing to plot
     }
 
-                // Set the range for the plot
+    // Set the range for the plot
     m_columnGraph.SetRange(minT, maxT, 0, minC, maxC, 1);
 
     // Draw the time series
@@ -326,7 +326,7 @@ void CPostPlumeHeightDlg::OnCalculatePlumeHeight()
 {
     UpdateData(TRUE); // <-- start by saving the data in the dialog
 
-                      // Calculate the distance through the displacement of the centre of masses
+    // Calculate the distance through the displacement of the centre of masses
     double windDirection;
     double plumeHeight = m_calc.GetPlumeHeight_CentreOfMass(m_OriginalSeries[0], m_OriginalSeries[1], m_sourceLat,
                                                             m_sourceLon, m_settings.angleSeparation, &windDirection);

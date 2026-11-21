@@ -69,7 +69,7 @@ void CRouteDlg::DoDataExchange(CDataExchange* pDX)
 
     DDX_Control(pDX, IDC_CHECK_SHOW_INTERPOLATED_WINDFIELD, m_showInterpolatedWindField);
 
-    //}}AFX_DATA_MAP
+//}}AFX_DATA_MAP
 }
 
 
@@ -129,7 +129,7 @@ BEGIN_MESSAGE_MAP(CRouteDlg, CDialog)
     //  http://support.microsoft.com/kb/242577
     ON_WM_INITMENUPOPUP()
 
-    //}}AFX_MSG_MAP
+//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -222,7 +222,7 @@ BOOL CRouteDlg::OnInitDialog()
     DrawRouteGraph();
 
     return TRUE;  // return TRUE unless you set the focus to a control
-    // EXCEPTION: OCX Property Pages should return FALSE
+// EXCEPTION: OCX Property Pages should return FALSE
 }
 
 void CRouteDlg::DrawRouteGraph()

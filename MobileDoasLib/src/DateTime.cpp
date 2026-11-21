@@ -93,7 +93,7 @@ void GetHrMinSec(int time, int& hr, int& min, int& sec)
     min = (time - hr * 10000) / 100;
     sec = time % 100;
 
-        // make sure that there's no numbers greather than or equal to 60 (or 24) !!!
+    // make sure that there's no numbers greather than or equal to 60 (or 24) !!!
     if (sec >= 60)
     {
         sec -= 60;

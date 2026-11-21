@@ -30,7 +30,7 @@ END_MESSAGE_MAP()
 
 void CSpectrumGraph::OnMouseMove(UINT nFlags, CPoint point)
 {
-  // TODO: Add your message handler code here and/or call default
+    // TODO: Add your message handler code here and/or call default
 
     CGraphCtrl::OnMouseMove(nFlags, point);
 
@@ -41,7 +41,7 @@ void CSpectrumGraph::OnMouseMove(UINT nFlags, CPoint point)
     alpha = (point.y - m_rectPlot.top) / (double)(m_rectPlot.bottom - m_rectPlot.top);
     m_curIntens = alpha * m_axisOptions.first.bottom + (1 - alpha) * m_axisOptions.first.top;
 
-//  parentWnd->PostMessage(WM_SHOW_LATLONG);
+    //  parentWnd->PostMessage(WM_SHOW_LATLONG);
 
     // If the user is dragging with the left mouse button pressed
     if (nFlags & MK_LBUTTON)
@@ -56,7 +56,7 @@ void CSpectrumGraph::OnMouseMove(UINT nFlags, CPoint point)
             m_zooming = true;
         }
 
-      // in case we haven't established the memory dc's
+        // in case we haven't established the memory dc's
         CBitmap memBitmap;
 
         // Copy the m_dcRoute to m_dcPlot!
@@ -69,7 +69,7 @@ void CSpectrumGraph::OnMouseMove(UINT nFlags, CPoint point)
     {
         m_zooming = false;
 
-      // in case we haven't established the memory dc's
+        // in case we haven't established the memory dc's
         CBitmap memBitmap;
 
         // Copy the m_dcRoute to m_dcPlot!
@@ -106,7 +106,7 @@ void CSpectrumGraph::OnLButtonUp(UINT nFlags, CPoint point)
     }
     else
     {
-//    parentWnd->PostMessage(WM_LBU_IN_GPSPLOT);
+        //    parentWnd->PostMessage(WM_LBU_IN_GPSPLOT);
     }
 }
 

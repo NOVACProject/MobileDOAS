@@ -17,17 +17,17 @@ public:
 
     static const int MAX_N_EXPORT_COLUMNS = 9;
 
-        // Dialog Data
+    // Dialog Data
     enum
     {
         IDD = IDD_EXPORT_EVLOG_DIALOG
     };
 
-        /** Intitializing the controls */
+    /** Intitializing the controls */
     virtual BOOL OnInitDialog();
 
-        // -------------------- PUBLIC DIALOG DATA -------------------
-        /** The CTraverse - object holds all traverse data */
+    // -------------------- PUBLIC DIALOG DATA -------------------
+    /** The CTraverse - object holds all traverse data */
     mobiledoas::CTraverse* m_traverse;
 
 protected:
@@ -38,27 +38,27 @@ protected:
 
     DECLARE_MESSAGE_MAP()
 
-            // -------------------- DIALOG COMPONENTS -------------------------
+    // -------------------- DIALOG COMPONENTS -------------------------
 
-            /** The Labels saying 'Column 1', 'Column 2', etc.. */
+    /** The Labels saying 'Column 1', 'Column 2', etc.. */
     CStatic m_labels[MAX_N_EXPORT_COLUMNS];
 
-        /** The combo-boxes */
+    /** The combo-boxes */
     CComboBox m_combo[MAX_N_EXPORT_COLUMNS];
 
-        /** The border 'frame' around the column-combo-boxes */
+    /** The border 'frame' around the column-combo-boxes */
     CStatic m_columnFrame;
 
-        /** These are the models for the labels and the combo-boxes */
+    /** These are the models for the labels and the combo-boxes */
     CStatic m_labelModel;
     CComboBox m_comboModel;
 
-        // -------------------- DIALOG DATA ------------------------
+    // -------------------- DIALOG DATA ------------------------
 
-        /** The file to export data to */
+    /** The file to export data to */
     CString m_exportFileName;
 
-        /** The items to choose from */
+    /** The items to choose from */
     int m_nStrings;
     CString* m_strings;
 

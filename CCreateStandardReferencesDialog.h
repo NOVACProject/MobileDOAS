@@ -17,7 +17,7 @@ public:
     CCreateStandardReferencesDialog(CWnd* pParent = nullptr);   // standard constructor
     virtual ~CCreateStandardReferencesDialog();
 
-    // Dialog Data
+// Dialog Data
 #ifdef AFX_DESIGN_TIME
     enum
     {

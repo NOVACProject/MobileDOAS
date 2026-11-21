@@ -219,7 +219,7 @@ BOOL CReEval_EvalLogDlg::OnInitDialog()
     }
 
     return TRUE;  // return TRUE unless you set the focus to a control
-    // EXCEPTION: OCX Property Pages should return FALSE
+// EXCEPTION: OCX Property Pages should return FALSE
 }
 
 // if the user changes the number of spectra that are to be averaged together

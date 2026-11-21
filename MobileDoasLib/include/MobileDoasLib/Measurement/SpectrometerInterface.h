@@ -11,46 +11,46 @@ enum class SpectrometerConnectionType
     RS232
 };
 
-    /** SpectrometerInterface is an abstract base class for accessing the spectrometer hardware.
-        Different implementations enable different models and makes of spectrometers */
+/** SpectrometerInterface is an abstract base class for accessing the spectrometer hardware.
+    Different implementations enable different models and makes of spectrometers */
 class SpectrometerInterface
 {
 public:
     virtual ~SpectrometerInterface() {}
 
-        // ConnectionType returns the connection type which this SpectrometerInterface supports.
+    // ConnectionType returns the connection type which this SpectrometerInterface supports.
     virtual SpectrometerConnectionType ConnectionType() = 0;
 
-        // ScanDevices searches for spectrometers connected to this computer.
-        // This must be called before any other of the methods in this class.
-        // @return the serial numbers of the devices found.
+    // ScanDevices searches for spectrometers connected to this computer.
+    // This must be called before any other of the methods in this class.
+    // @return the serial numbers of the devices found.
     virtual std::vector<std::string> ScanForDevices() = 0;
 
-        // ListDevices returns the list of spectrometers connected to this computer.
-        // This will return the same list as the last call to ScanForDevices found and returned.
-        // @return the serial numbers of the devices connected.
+    // ListDevices returns the list of spectrometers connected to this computer.
+    // This will return the same list as the last call to ScanForDevices found and returned.
+    // @return the serial numbers of the devices connected.
     virtual std::vector<std::string> ListDevices() const = 0;
 
-        // Close closes the connection to the spectrometer library and will return all resources to the system.
-        // After this, all other methods below will return an error.
+    // Close closes the connection to the spectrometer library and will return all resources to the system.
+    // After this, all other methods below will return an error.
     virtual void Close() = 0;
 
-        // Start will start the spectrum acquisition.
-        // This may be necessary to call before calling 'GetNextSpectrum' in order to get a spectrum at all.
-        // This requires that ScanForDevices() and SetSpectrometer() have been called successfully.
-        // @return true if the measurement was started successfully.
+    // Start will start the spectrum acquisition.
+    // This may be necessary to call before calling 'GetNextSpectrum' in order to get a spectrum at all.
+    // This requires that ScanForDevices() and SetSpectrometer() have been called successfully.
+    // @return true if the measurement was started successfully.
     virtual bool Start() = 0;
 
-        // Stop will stop all running acquisitions.
-        // This does not close the connections to the spectrometers.
-        // @return true if the measurement was stopped successfully.
+    // Stop will stop all running acquisitions.
+    // This does not close the connections to the spectrometers.
+    // @return true if the measurement was stopped successfully.
     virtual bool Stop() = 0;
 
-        // SetSpectrometer decides on which of the connected spectrometers (of this particular make) to use.
-    // Provided spectrometerIndex must be >= 0 and less than the number of devices returned from ScanForDevices.
-    // If the spectrometer has multiple channels, then the first channel will be selected and used.
-    // @return true if the spectrometer connection was made, otherwise false.
-    // This requires that ScanForDevices() has been called successfully.
+    // SetSpectrometer decides on which of the connected spectrometers (of this particular make) to use.
+// Provided spectrometerIndex must be >= 0 and less than the number of devices returned from ScanForDevices.
+// If the spectrometer has multiple channels, then the first channel will be selected and used.
+// @return true if the spectrometer connection was made, otherwise false.
+// This requires that ScanForDevices() has been called successfully.
     virtual bool SetSpectrometer(int spectrometerIndex) = 0;
 
     // SetSpectrometer decides on which of the connected spectrometers (of this particular make) to use.

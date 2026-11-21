@@ -4,7 +4,7 @@
 namespace Dialogs
 {
 
-  // CSelectionDialog dialog
+// CSelectionDialog dialog
 
 class CSelectionDialog : public CDialog
 {
@@ -14,7 +14,7 @@ public:
     CSelectionDialog(CWnd* pParent = nullptr);   // standard constructor
     virtual ~CSelectionDialog();
 
-  // Dialog Data
+    // Dialog Data
     enum
     {
         IDD = IDD_QUERY_SELECTION_DIALOG

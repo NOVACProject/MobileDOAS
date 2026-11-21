@@ -28,7 +28,7 @@ protected:
 
     DECLARE_MESSAGE_MAP()
 
-        /** Called when the dialog is first opened */
+    /** Called when the dialog is first opened */
     virtual BOOL OnInitDialog();
 
     /** Called when the user presses the 'Use' button. This closes the dialog and

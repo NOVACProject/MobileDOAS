@@ -11,16 +11,16 @@ public:
     CReEvalScriptFileHandler(void);
     ~CReEvalScriptFileHandler(void);
 
-        /** Writes this script to the given file
-            @return 0 on success */
+    /** Writes this script to the given file
+        @return 0 on success */
     int WriteToFile(const CString& fileName, const ReEvaluation::CReEvaluation_Script& script);
 
-        /** Reads in a script from a file
-            @return 0 on success */
+    /** Reads in a script from a file
+        @return 0 on success */
     int ReadFromFile(const CString& fileName, ReEvaluation::CReEvaluation_Script& script);
 
 protected:
-        /** Starts the parsing */
+    /** Starts the parsing */
     int Parse(ReEvaluation::CReEvaluation_Script& script);
     int ParseJob(ReEvaluation::CReEvaluation_Script& script);
 };

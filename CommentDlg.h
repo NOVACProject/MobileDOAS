@@ -5,7 +5,7 @@
 
 namespace Dialogs
 {
-    // CCommentDlg dialog
+// CCommentDlg dialog
 
 class CCommentDlg : public CDialog
 {

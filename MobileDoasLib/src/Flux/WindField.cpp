@@ -18,12 +18,12 @@ CWindField::CWindField(CWindField& wf)
 {
     Reset();
 
-        // copy the other wind field
+    // copy the other wind field
     for (int i = 0; i < MAX_LAYERS; ++i)
     {
         m_altitude[i] = wf.m_altitude[i];
 
-            // copy the lists
+        // copy the lists
         for (int j = 0; j < MAX_HOURS; ++j)
         {
             this->m_wind[i][j] = std::vector<Wind>(wf.m_wind[i][j]);
@@ -37,15 +37,15 @@ CWindField::~CWindField(void)
 {
 }
 
-    /** Reads a wind field from file.
-      It is here assumed that the file is saved in chunks of tab separated data,
-      each using the following format:
+/** Reads a wind field from file.
+  It is here assumed that the file is saved in chunks of tab separated data,
+  each using the following format:
 
-      Lat=XX\tLong=YY\n
-      Altitude  Hour  wd  ws  whatever  Hour  wd  ws  whatever  ...
+  Lat=XX\tLong=YY\n
+  Altitude  Hour  wd  ws  whatever  Hour  wd  ws  whatever  ...
 
-      with at most 'MAX_HOURS' repititions on the 'Hour wd ws' sequence
-    */
+  with at most 'MAX_HOURS' repititions on the 'Hour wd ws' sequence
+*/
 bool CWindField::ReadWindField(const char* fileName)
 {
     const int BUFSIZE = 4096;
@@ -53,7 +53,7 @@ bool CWindField::ReadWindField(const char* fileName)
     char hour = 0;
     Wind wind;
 
-        // set all data to 0
+    // set all data to 0
     wind.lat = wind.lon = wind.wd = wind.ws = 0;
 
     bool readingHeaderLine = false; // true if the current line is a header line, explaining what each column represents

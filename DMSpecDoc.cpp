@@ -18,10 +18,10 @@ static char THIS_FILE[] = __FILE__;
 IMPLEMENT_DYNCREATE(CDMSpecDoc, CDocument)
 
 BEGIN_MESSAGE_MAP(CDMSpecDoc, CDocument)
-    //{{AFX_MSG_MAP(CDMSpecDoc)
-        // NOTE - the ClassWizard will add and remove mapping macros here.
-        //    DO NOT EDIT what you see in these blocks of generated code!
-    //}}AFX_MSG_MAP
+//{{AFX_MSG_MAP(CDMSpecDoc)
+    // NOTE - the ClassWizard will add and remove mapping macros here.
+    //    DO NOT EDIT what you see in these blocks of generated code!
+//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -29,7 +29,7 @@ END_MESSAGE_MAP()
 
 CDMSpecDoc::CDMSpecDoc()
 {
-    // TODO: add one-time construction code here
+// TODO: add one-time construction code here
 }
 
 CDMSpecDoc::~CDMSpecDoc()

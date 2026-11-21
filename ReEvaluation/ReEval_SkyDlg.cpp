@@ -125,7 +125,7 @@ BOOL CReEval_SkyDlg::OnInitDialog()
     UpdateControls();
 
     return TRUE;  // return TRUE unless you set the focus to a control
-    // EXCEPTION: OCX Property Pages should return FALSE
+// EXCEPTION: OCX Property Pages should return FALSE
 }
 
 void CReEval_SkyDlg::OnBrowseForSky()

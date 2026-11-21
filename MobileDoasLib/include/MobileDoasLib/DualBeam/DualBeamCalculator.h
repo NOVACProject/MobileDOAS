@@ -6,11 +6,11 @@
 namespace mobiledoas
 {
 
-    /** The <b>CDualBeamCalculator</b> class contains the basic
-            algorithms for calculating wind speeds from measured data series
-            of column variations, or calculating plume heights from data series measured
-            while performing a traverse using the correlation between the two
-            data series */
+/** The <b>CDualBeamCalculator</b> class contains the basic
+        algorithms for calculating wind speeds from measured data series
+        of column variations, or calculating plume heights from data series measured
+        while performing a traverse using the correlation between the two
+        data series */
 class CDualBeamCalculator
 {
 public:

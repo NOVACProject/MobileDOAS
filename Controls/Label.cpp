@@ -44,6 +44,6 @@ HBRUSH CLabel::CtlColor(CDC* pDC, UINT nCtlColor)
     //set the text's background color
     pDC->SetBkColor(m_backgroundColor);
 
-  //return the brush used for background this sets control background
+    //return the brush used for background this sets control background
     return m_backgroundBrush;
 }

@@ -49,7 +49,7 @@ BOOL CQueryStringDialog::OnInitDialog()
     m_editBox.SetFocus();
 
     return FALSE;  // return TRUE unless you set the focus to a control
-  // EXCEPTION: OCX Property Pages should return FALSE
+// EXCEPTION: OCX Property Pages should return FALSE
 }
 
 void CQueryStringDialog::OnOK()

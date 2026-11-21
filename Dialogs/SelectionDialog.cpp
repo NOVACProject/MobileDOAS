@@ -37,7 +37,7 @@ BOOL CSelectionDialog::OnInitDialog()
 {
     CDialog::OnInitDialog();
 
-  /** Add the strings */
+    /** Add the strings */
     for (int i = 0; i < MAX_OPTIONS; ++i)
     {
         if (strlen(m_option[i]) > 0)
@@ -47,13 +47,13 @@ BOOL CSelectionDialog::OnInitDialog()
     }
     m_comboBox.SetCurSel(0);
 
-  /** Set the window text */
+    /** Set the window text */
     this->SetWindowText(this->m_windowText);
 
     m_comboBox.SetFocus();
 
     return FALSE;  // return TRUE unless you set the focus to a control
-  // EXCEPTION: OCX Property Pages should return FALSE
+// EXCEPTION: OCX Property Pages should return FALSE
 }
 
 void CSelectionDialog::OnOK()

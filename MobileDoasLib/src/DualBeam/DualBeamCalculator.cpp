@@ -5,9 +5,9 @@
 namespace mobiledoas
 {
 
-    // ------------------------------------------------
-    // ------------- MEASUREMENT SERIES ---------------
-    // ------------------------------------------------
+// ------------------------------------------------
+// ------------- MEASUREMENT SERIES ---------------
+// ------------------------------------------------
 
 CDualBeamCalculator::CMeasurementSeries::CMeasurementSeries()
 {
@@ -67,7 +67,7 @@ double CDualBeamCalculator::CMeasurementSeries::AverageColumn(int from, int to) 
 {
     double sum = 0.0;
 
-        // check input
+    // check input
     if (from > to || from < 0 || to < 0 || from >= length || to >= length)
     {
         return 0.0;
@@ -80,7 +80,7 @@ double CDualBeamCalculator::CMeasurementSeries::AverageColumn(int from, int to) 
     return sum / (to - from + 1);
 }
 
-    // calculates and returns the average time between two measurements
+// calculates and returns the average time between two measurements
 double CDualBeamCalculator::CMeasurementSeries::SampleInterval()
 {
     if (length <= 0)
@@ -101,9 +101,9 @@ CDualBeamCalculator::CMeasurementSeries::~CMeasurementSeries()
     }
 }
 
-    // ------------------------------------------------
-    // ----------- DUAL BEAM CALCULATOR ---------------
-    // ------------------------------------------------
+// ------------------------------------------------
+// ----------- DUAL BEAM CALCULATOR ---------------
+// ------------------------------------------------
 
 CDualBeamCalculator::CDualBeamCalculator(void)
 {
@@ -113,20 +113,20 @@ CDualBeamCalculator::~CDualBeamCalculator(void)
 {
 }
 
-    /** Performs a low pass filtering on the supplied measurement series.
-        The number of iterations in the filtering is given by 'nIterations'
-        if nIterations is zero, nothing will be done. */
+/** Performs a low pass filtering on the supplied measurement series.
+    The number of iterations in the filtering is given by 'nIterations'
+    if nIterations is zero, nothing will be done. */
 bool CDualBeamCalculator::LowPassFilter(const CMeasurementSeries* series, CMeasurementSeries* result,
                                         unsigned int nIterations)
 {
 
-        // 1. Check for errors in input
+    // 1. Check for errors in input
     if (series == nullptr || series->length == 0 || result == nullptr)
     {
         return FAIL;
     }
 
-        // 2. Calculate the old and the new data series lengths
+    // 2. Calculate the old and the new data series lengths
     int length = series->length;       // <-- the length of the old data series
     int newLength = length - nIterations - 1;  // <-- the length of the new data series
 
@@ -135,7 +135,7 @@ bool CDualBeamCalculator::LowPassFilter(const CMeasurementSeries* series, CMeasu
         return FAIL;
     }
 
-        // 3. If no iterations should be done, the output should be a copy of the input...
+    // 3. If no iterations should be done, the output should be a copy of the input...
     if (nIterations == 0)
     {
         if (SUCCESS != result->SetLength(length))
@@ -152,13 +152,13 @@ bool CDualBeamCalculator::LowPassFilter(const CMeasurementSeries* series, CMeasu
         return SUCCESS;
     }
 
-        // 4. Change the length of the resulting series.
+    // 4. Change the length of the resulting series.
     if (SUCCESS != result->SetLength(newLength))
     {
         return FAIL;
     }
 
-        // 5. Calculate the factorials
+    // 5. Calculate the factorials
     double* factorial = new double[nIterations];
     factorial[0] = 1;
     if (nIterations > 1)
@@ -172,20 +172,20 @@ bool CDualBeamCalculator::LowPassFilter(const CMeasurementSeries* series, CMeasu
 
     double coeffSum = 0; // <-- the sum of all coefficients, to make sure that we dont increase the values...
 
-        // 6. Allocate temporary arrays for the time-stamps and the column values
+    // 6. Allocate temporary arrays for the time-stamps and the column values
     double* tmpCol = new double[newLength];
     double* tmpTime = new double[newLength];
     memset(tmpCol, 0, newLength * sizeof(double));
     memset(tmpTime, 0, newLength * sizeof(double));
 
-        // 7. Do the filtering...
+    // 7. Do the filtering...
     for (unsigned int k = 1; k < nIterations + 1; ++k)
     {
-            // 7a. The coefficient in the binomial - expansion
+        // 7a. The coefficient in the binomial - expansion
         double coefficient = factorial[nIterations - 1] / (factorial[nIterations - k] * factorial[k - 1]);
         coeffSum += coefficient;
 
-            // 7b. Do the filtering for all data points in the new time series
+        // 7b. Do the filtering for all data points in the new time series
         for (int i = 0; i < newLength; ++i)
         {
             tmpCol[i] += coefficient * series->column[k - 1 + i];
@@ -193,7 +193,7 @@ bool CDualBeamCalculator::LowPassFilter(const CMeasurementSeries* series, CMeasu
         }
     }
 
-        // 8. Divide by the coeffsum to preserve the energy...
+    // 8. Divide by the coeffsum to preserve the energy...
     for (int i = 0; i < newLength; ++i)
     {
         result->time[i] = tmpTime[i] / coeffSum;
@@ -208,8 +208,8 @@ bool CDualBeamCalculator::LowPassFilter(const CMeasurementSeries* series, CMeasu
     return SUCCESS;
 }
 
-    /** Calculates the correlation between the two vectors 'x' and 'y', both of length 'length'
-            @return - the correlation between the two vectors. */
+/** Calculates the correlation between the two vectors 'x' and 'y', both of length 'length'
+        @return - the correlation between the two vectors. */
 double CDualBeamCalculator::correlation(const double* x, const double* y, long length)
 {
     double s_xy = 0; // <-- the dot-product X*Y
@@ -249,14 +249,14 @@ double CDualBeamCalculator::correlation(const double* x, const double* y, long l
     return c;
 }
 
-    /** Shifts the vector 'shortVector' against the vector 'longVector' and returns the
-                shift for which the correlation between the two is highest. */
+/** Shifts the vector 'shortVector' against the vector 'longVector' and returns the
+            shift for which the correlation between the two is highest. */
 bool CDualBeamCalculator::FindBestCorrelation(const double* longVector, unsigned long longLength,
                                               const double* shortVector, unsigned long shortLength,
                                               unsigned int maximumShift, double& highestCorr, int& bestShift)
 {
 
-        // 0. Check for errors in the input
+    // 0. Check for errors in the input
     if (longLength == 0 || shortLength == 0)
     {
         return FAIL;
@@ -270,16 +270,16 @@ bool CDualBeamCalculator::FindBestCorrelation(const double* longVector, unsigned
         return FAIL;
     }
 
-        // Reset
+    // Reset
     highestCorr = 0;
     bestShift = 0;
 
-        // To calculate the correlation, we need to pick out a subvector (with length 'shortLength)
-        //  from the longVector and compare this with 'shortVector' and calculate the correlation.
-        // left is the startingpoint of this subvector
+    // To calculate the correlation, we need to pick out a subvector (with length 'shortLength)
+    //  from the longVector and compare this with 'shortVector' and calculate the correlation.
+    // left is the startingpoint of this subvector
     int left = 0;
 
-        // 1. Start shifting
+    // 1. Start shifting
     while ((left + shortLength) < (int)longLength && left < (int)maximumShift)
     {
         double C = correlation(shortVector, longVector + left, shortLength);

@@ -78,7 +78,7 @@ BOOL CReEval_DarkDlg::OnInitDialog()
     m_offsetPlot.CleanPlot();
 
     return TRUE;  // return TRUE unless you set the focus to a control
-    // EXCEPTION: OCX Property Pages should return FALSE
+// EXCEPTION: OCX Property Pages should return FALSE
 }
 
 void CReEval_DarkDlg::OnBnClickedCheckOffsets()

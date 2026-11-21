@@ -36,7 +36,7 @@ END_MESSAGE_MAP()
 
 BOOL CCommentDlg::Create(UINT nID, CWnd* pParentWnd)
 {
-  // TODO: Add your specialized code here and/or call the base class
+    // TODO: Add your specialized code here and/or call the base class
 
     return CDialog::Create(nID, pParentWnd);
 }
@@ -56,7 +56,7 @@ BOOL CCommentDlg::OnInitDialog()
     this->m_commentEdit.SetFocus();
 
     return TRUE;  // return TRUE unless you set the focus to a control
-  // EXCEPTION: OCX Property Pages should return FALSE
+// EXCEPTION: OCX Property Pages should return FALSE
 }
 
 void CCommentDlg::OnBnClickedOk()
