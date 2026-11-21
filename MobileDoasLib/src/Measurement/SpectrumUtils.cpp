@@ -24,7 +24,7 @@ bool CheckIfDark(const std::vector<double>& spectrum)
     }
     m_darkIntensity = std::accumulate(vec.begin(), vec.end(), 0.0) / vec.size();
 
-    // now calculate the average of the middle 20 pixels, again excluding the 3 highest intensities. 
+    // now calculate the average of the middle 20 pixels, again excluding the 3 highest intensities.
     vec.clear();
     int start = int(floor(detectorSize / 2) - 10);
     int end = int(floor(detectorSize / 2) + 10);
@@ -59,9 +59,13 @@ long AverageIntensity(const std::vector<double>& spectrum, long specCenter, long
     long num;
     // take the average of the 10 pixel surrounding the spec center
     if (specCenter <= specCenterHalfWidth)
+    {
         specCenter = specCenterHalfWidth;
+    }
     if (specCenter >= (long)spectrum.size() - specCenterHalfWidth)
+    {
         specCenter = (long)spectrum.size() - 2 * specCenterHalfWidth;
+    }
 
     for (int j = specCenter - specCenterHalfWidth; j < specCenter + specCenterHalfWidth; j++)
     {
@@ -117,7 +121,8 @@ double GetOffset(const std::vector<double>& spectrum)
 }
 
 // TODO: This needs tests and validation of the input parameters
-int CountRound(long timeResolution, long integrationTimeMs, long readoutDelay, long maximumAveragesInSpectrometer, SpectrumSummation& result)
+int CountRound(long timeResolution, long integrationTimeMs, long readoutDelay, long maximumAveragesInSpectrometer,
+               SpectrumSummation& result)
 {
 
     const long gpsDelay = 10;
@@ -178,49 +183,49 @@ int CountRound(long timeResolution, long integrationTimeMs, long readoutDelay, l
     return nRound;
 }
 
-short AdjustIntegrationTimeToLastIntensity(
-    SpectrumIntensityMeasurement spectrumIntensityMeasurement,
-    double minTolerableRatio,
-    double maxTolerableRatio,
-    long minAllowedExposureTime,
-    long maxAllowedExposureTime)
+short AdjustIntegrationTimeToLastIntensity(SpectrumIntensityMeasurement spectrumIntensityMeasurement,
+                                           double minTolerableRatio, double maxTolerableRatio,
+                                           long minAllowedExposureTime, long maxAllowedExposureTime)
 {
     const double ratioTolerance = 0.3;
 
     // Guard against invalid input parameters
     minTolerableRatio = std::max(0.0, std::min(1.0, minTolerableRatio));
     maxTolerableRatio = std::max(0.0, std::min(1.0, maxTolerableRatio));
-    maxAllowedExposureTime = std::min(maxAllowedExposureTime, 65535L); // the result is clamped to 65535 (from the type short)
+    maxAllowedExposureTime =
+        std::min(maxAllowedExposureTime, 65535L); // the result is clamped to 65535 (from the type short)
 
-    if (spectrumIntensityMeasurement.saturationRatio >= minTolerableRatio && spectrumIntensityMeasurement.saturationRatio <= maxTolerableRatio)
+    if (spectrumIntensityMeasurement.saturationRatio >= minTolerableRatio &&
+        spectrumIntensityMeasurement.saturationRatio <= maxTolerableRatio)
     {
         // nothing needs to be done...
         return spectrumIntensityMeasurement.integrationTime;
     }
 
     // Adjust the integration time
-    long desiredIntegrationTime = (spectrumIntensityMeasurement.saturationRatio < minTolerableRatio) ?
-        (long)round(spectrumIntensityMeasurement.integrationTime * (1.0 + ratioTolerance)) :
-        (long)round(spectrumIntensityMeasurement.integrationTime / (1.0 + ratioTolerance));
+    long desiredIntegrationTime =
+        (spectrumIntensityMeasurement.saturationRatio < minTolerableRatio)
+            ? (long)round(spectrumIntensityMeasurement.integrationTime * (1.0 + ratioTolerance))
+            : (long)round(spectrumIntensityMeasurement.integrationTime / (1.0 + ratioTolerance));
 
     long newRecommendation = std::max(minAllowedExposureTime, std::min(maxAllowedExposureTime, desiredIntegrationTime));
     return static_cast<short>(newRecommendation);
 }
 
-short EstimateNewIntegrationTime(
-    SpectrumIntensityMeasurement shortMeasurement,
-    SpectrumIntensityMeasurement longMeasurement,
-    double desiredSaturationRatio,
-    long minAllowedExposureTime,
-    long maxAllowedExposureTime)
+short EstimateNewIntegrationTime(SpectrumIntensityMeasurement shortMeasurement,
+                                 SpectrumIntensityMeasurement longMeasurement, double desiredSaturationRatio,
+                                 long minAllowedExposureTime, long maxAllowedExposureTime)
 {
     // Notice that the following forumula was used in earlier versions of MobileDoas, this does not seem to be correct...
     // m_integrationTime = (short)((m_spectrometerDynRange - int_short) * (maxExpTime - minExpTime) * m_percent / (int_long - int_short));
 
-    const double increaseInSaturationRatioPerMsIntegrationTime = (longMeasurement.saturationRatio - shortMeasurement.saturationRatio) / (double)(longMeasurement.integrationTime - shortMeasurement.integrationTime);
+    const double increaseInSaturationRatioPerMsIntegrationTime =
+        (longMeasurement.saturationRatio - shortMeasurement.saturationRatio) /
+        (double)(longMeasurement.integrationTime - shortMeasurement.integrationTime);
     const double saturationRatioRemainingAboveLongExposure = desiredSaturationRatio - longMeasurement.saturationRatio;
 
-    double recommendedChangeToLongExpTime = saturationRatioRemainingAboveLongExposure / increaseInSaturationRatioPerMsIntegrationTime;
+    double recommendedChangeToLongExpTime =
+        saturationRatioRemainingAboveLongExposure / increaseInSaturationRatioPerMsIntegrationTime;
 
     long newRecommendation = (long)(recommendedChangeToLongExpTime + longMeasurement.integrationTime);
 

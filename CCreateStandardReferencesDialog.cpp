@@ -38,7 +38,8 @@ void CCreateStandardReferencesDialog::DoDataExchange(CDataExchange* pDX)
 }
 
 BEGIN_MESSAGE_MAP(CCreateStandardReferencesDialog, CDialog)
-    ON_BN_CLICKED(IDC_BUTTON_BROWSE_STANDARD_REFERENCES_DIRECTORY, &CCreateStandardReferencesDialog::OnClickedButtonBrowseOutputDirectory)
+    ON_BN_CLICKED(IDC_BUTTON_BROWSE_STANDARD_REFERENCES_DIRECTORY,
+                  &CCreateStandardReferencesDialog::OnClickedButtonBrowseOutputDirectory)
     ON_EN_CHANGE(IDC_EDIT_INSTRUMENT_NAME, &CCreateStandardReferencesDialog::OnChangeInstrumentName)
     ON_EN_CHANGE(IDC_EDIT_FILE_SUFFIX, &CCreateStandardReferencesDialog::OnChangeFileSuffix)
 END_MESSAGE_MAP()
@@ -56,7 +57,8 @@ bool CCreateStandardReferencesDialog::IsSetupCorrectly() const
     return true;
 }
 
-std::string CCreateStandardReferencesDialog::ReferenceFileName(const std::string& nameOfReference, bool includFilteringInfix, bool includeDirectory) const
+std::string CCreateStandardReferencesDialog::ReferenceFileName(const std::string& nameOfReference,
+                                                               bool includFilteringInfix, bool includeDirectory) const
 {
     std::stringstream dstFileNameStream;
     if (includeDirectory)
@@ -91,9 +93,11 @@ std::string CCreateStandardReferencesDialog::FraunhoferReferenceName(bool includ
     return ReferenceFileName("Fraunhofer", false, includeDirectory);
 }
 
-std::string CCreateStandardReferencesDialog::ReferenceName(size_t referenceIdx, bool includFilteringInfix, bool includeDirectory) const
+std::string CCreateStandardReferencesDialog::ReferenceName(size_t referenceIdx, bool includFilteringInfix,
+                                                           bool includeDirectory) const
 {
-    return ReferenceFileName(m_standardCrossSections->ReferenceSpecieName(referenceIdx), includFilteringInfix, includeDirectory);
+    return ReferenceFileName(m_standardCrossSections->ReferenceSpecieName(referenceIdx), includFilteringInfix,
+                             includeDirectory);
 }
 
 void CCreateStandardReferencesDialog::OnClickedButtonBrowseOutputDirectory()
@@ -148,5 +152,4 @@ void CCreateStandardReferencesDialog::UpdateOutputFileNamesExplanation()
     m_outputFileNamesExplanation.Format("%s", message.str().c_str());
 
     UpdateData(FALSE); // Update the UI
-
 }

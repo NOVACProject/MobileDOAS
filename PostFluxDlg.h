@@ -1,9 +1,5 @@
-#if !defined(AFX_FLUXSETDLG_H__9D82D4EE_BF6E_44FC_9877_775FACDBB865__INCLUDED_)
-#define AFX_FLUXSETDLG_H__9D82D4EE_BF6E_44FC_9877_775FACDBB865__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
+
 // CPostFluxDlg.h : header file
 //
 #include "FluxPathListBox.h"
@@ -35,7 +31,10 @@ public:
     CPostFluxDlg(CWnd* pParent = nullptr);   // standard constructor
     ~CPostFluxDlg();
 
-    enum { IDD = IDD_POST_FLUX_DIALOG };
+    enum
+    {
+        IDD = IDD_POST_FLUX_DIALOG
+    };
 
 
 protected:
@@ -211,8 +210,8 @@ public:
     void ShowColumn();
 
     /* The high and low edges of the calculations */
-    int   m_right;
-    int   m_left;
+    int m_right;
+    int m_left;
 
     /** ?? */
     BOOL fMovePlot;
@@ -227,23 +226,23 @@ public:
     double avBuf[5];
 
     /** The slider that controls the offset */
-    CSliderCtrl	m_sliderOffset;
+    CSliderCtrl m_sliderOffset;
 
     /** The sliders that controls the range */
-    CSliderCtrl	m_sliderTo;
-    CSliderCtrl	m_sliderFrom;
+    CSliderCtrl m_sliderTo;
+    CSliderCtrl m_sliderFrom;
 
     /** The source */
-    double	m_srcLat;
-    double	m_srcLon;
+    double m_srcLat;
+    double m_srcLon;
 
     /** The wind field */
-    double	m_WindDirect;
-    double	m_WindSpeed;
+    double m_WindDirect;
+    double m_WindSpeed;
 
     /** The low and high index, decides what spectra are used to calculate the flux */
-    long	m_lowIndex;
-    long	m_highIndex;
+    long m_lowIndex;
+    long m_highIndex;
 
     /** The CFlux object, holds all important data and makes the calculations */
     mobiledoas::CFlux* m_flux;
@@ -278,7 +277,6 @@ public:
     void OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu);
 
 private:
-
     // -------------------------------------------------------------
     // ---------------------- PRIVATE DATA -------------------------
     // -------------------------------------------------------------
@@ -325,17 +323,16 @@ private:
     void UpdateMobileLog();
 
     /** Called to open a new log file */
-    int   OpenLogFile(CString& filename, CString& filePath);
+    int OpenLogFile(CString& filename, CString& filePath);
 
-    // the user has selected another log file to use 
-    int   OnChangeSelectedFile();
+    // the user has selected another log file to use
+    int OnChangeSelectedFile();
 
-    void  UpdatePropertiesWindow();
+    void UpdatePropertiesWindow();
+
 public:
     afx_msg void ChangeFluxUnit();
 };
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
-
-#endif // !defined(AFX_FLUXSETDLG_H__9D82D4EE_BF6E_44FC_9877_775FACDBB865__INCLUDED_)

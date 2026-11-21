@@ -14,7 +14,7 @@ using namespace mobiledoas;
 using namespace oceanoptics;
 
 OceanOpticsSpectrometerInterface::OceanOpticsSpectrometerInterface()
-    : m_spectrometerChannels{ 0 }
+    : m_spectrometerChannels{0}
 {
     m_wrapper = new Wrapper();
 }
@@ -43,7 +43,7 @@ std::vector<std::string> OceanOpticsSpectrometerInterface::ScanForDevices()
     for (int ii = 0; ii < numberOfSpectrometersFound; ++ii)
     {
         const char* serial = m_wrapper->getSerialNumber(ii).getASCII();
-        serialNumbers[ii] = std::string{ serial };
+        serialNumbers[ii] = std::string{serial};
     }
 
     m_spectrometersAttached = serialNumbers;
@@ -70,7 +70,7 @@ bool OceanOpticsSpectrometerInterface::Stop()
 
 bool OceanOpticsSpectrometerInterface::SetSpectrometer(int spectrometerIndex)
 {
-    std::vector<int> channels{ 0 };
+    std::vector<int> channels{0};
     return SetSpectrometer(spectrometerIndex);
 }
 
@@ -79,7 +79,8 @@ bool OceanOpticsSpectrometerInterface::SetSpectrometer(int spectrometerIndex, co
     if (spectrometerIndex < 0 || spectrometerIndex >= static_cast<int>(m_spectrometersAttached.size()))
     {
         std::stringstream message;
-        message << "Invalid spectrometer index " << spectrometerIndex << ". Number of spectrometers attached is: " << m_spectrometersAttached.size();
+        message << "Invalid spectrometer index " << spectrometerIndex
+                << ". Number of spectrometers attached is: " << m_spectrometersAttached.size();
         m_lastErrorMessage = message.str();
         return false;
     }
@@ -99,7 +100,8 @@ bool OceanOpticsSpectrometerInterface::SetSpectrometer(int spectrometerIndex, co
         if (channelIndex < 0 || channelIndex > nAvailableChannels)
         {
             std::stringstream message;
-            message << "Invalid channel index " << channelIndex << ". Number of channels on current spectrometer is: " << nAvailableChannels;
+            message << "Invalid channel index " << channelIndex
+                    << ". Number of channels on current spectrometer is: " << nAvailableChannels;
             m_lastErrorMessage = message.str();
             return false;
         }
@@ -115,13 +117,13 @@ bool OceanOpticsSpectrometerInterface::SetSpectrometer(int spectrometerIndex, co
 std::string OceanOpticsSpectrometerInterface::GetSerial()
 {
     const char* serial = m_wrapper->getSerialNumber(m_spectrometerIndex).getASCII();
-    return std::string{ serial };
+    return std::string{serial};
 }
 
 std::string OceanOpticsSpectrometerInterface::GetModel()
 {
     const char* model = m_wrapper->getName(m_spectrometerIndex).getASCII();
-    return std::string{ model };
+    return std::string{model};
 }
 
 int OceanOpticsSpectrometerInterface::GetNumberOfChannels()
@@ -151,7 +153,7 @@ int OceanOpticsSpectrometerInterface::GetWavelengths(std::vector<std::vector<dou
 
 int OceanOpticsSpectrometerInterface::GetSaturationIntensity()
 {
-    // For some spectrometers (notably the SD2000) does getSaturationIntensity return -1 
+    // For some spectrometers (notably the SD2000) does getSaturationIntensity return -1
     WrapperExtensions ext = m_wrapper->getWrapperExtensions();
     int saturationIntensity = ext.getSaturationIntensity(m_spectrometerIndex);
     if (saturationIntensity < 0)
@@ -272,7 +274,7 @@ std::string OceanOpticsSpectrometerInterface::GetLastError()
     {
         return std::string{};
     }
-    return std::string{ str };
+    return std::string{str};
 }
 
 #endif // MANUFACTURER_SUPPORT_OCEANOPTICS

@@ -37,10 +37,7 @@ void MeasuredSpectrum::CopyFrom(int channelNumber, double source[], int numberOf
 
     this->Resize(this->NumberOfChannels(), numberOfElements);
 
-    memcpy(
-    (void*)this->data[channelNumber].data(),
-    (void*)source, 
-    sizeof(double) * numberOfElements);
+    memcpy((void*)this->data[channelNumber].data(), (void*)source, sizeof(double) * numberOfElements);
 }
 
 }

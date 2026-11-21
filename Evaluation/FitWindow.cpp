@@ -13,7 +13,8 @@ CFitWindow::~CFitWindow(void)
 {
 }
 
-void CFitWindow::Clear() {
+void CFitWindow::Clear()
+{
     fitHigh = 460;
     fitLow = 320;
     channel = 0;
@@ -25,13 +26,15 @@ void CFitWindow::Clear() {
     polyOrder = 5;
     offsetFrom = 50;
     offsetTo = 200;
-    for (int i = 0; i < MAX_N_REFERENCES; ++i) {
+    for (int i = 0; i < MAX_N_REFERENCES; ++i)
+    {
         ref[i].m_path = "";
         ref[i].m_specieName = "";
     }
 }
 
-CFitWindow& CFitWindow::operator =(const CFitWindow& w2) {
+CFitWindow& CFitWindow::operator=(const CFitWindow& w2)
+{
     this->fitHigh = w2.fitHigh;
     this->fitLow = w2.fitLow;
     this->fitType = w2.fitType;
@@ -42,7 +45,8 @@ CFitWindow& CFitWindow::operator =(const CFitWindow& w2) {
     this->polyOrder = w2.polyOrder;
     this->offsetFrom = w2.offsetFrom;
     this->offsetTo = w2.offsetTo;
-    for (int i = 0; i < w2.nRef; ++i) {
+    for (int i = 0; i < w2.nRef; ++i)
+    {
         this->ref[i] = w2.ref[i];
     }
 

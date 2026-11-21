@@ -82,7 +82,6 @@ public:
 #pragma endregion
 
 private:
-
     /** The serial-communication object.*/
     mobiledoas::CSerialConnection serial;
 

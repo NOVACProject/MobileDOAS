@@ -44,8 +44,10 @@ CReEvaluator::CReEvaluator(void)
     m_darkSpecListLength[1] = 0;
 
     // handling the shift and squeeze
-    optimumShift = 1;   optimumShiftError = 0;
-    optimumSqueeze = 1;   optimumSqueezeError = 0;
+    optimumShift = 1;
+    optimumShiftError = 0;
+    optimumSqueeze = 1;
+    optimumSqueezeError = 0;
 
     // the wavelength calibration
     m_includePreCalSky = false;
@@ -93,7 +95,9 @@ int CReEvaluator::ReadEvaluationLog()
     memset(m_offset, 0, sizeof(double) * 2 * MAX_TRAVERSE_LENGTH);
 
     if (ReadSettings())
+    {
         return 1;
+    }
 
     if (!fileRef.Open(m_evalLogFileName, CFile::modeRead | CFile::typeText, &exceFile))
     {
@@ -122,24 +126,46 @@ int CReEvaluator::ReadEvaluationLog()
         {
 
             if (sscanf(szToken, "%lf", &fValue) != 1)
+            {
                 break;
+            }
 
             // init to get next token
             if (m_fileVersion == 4.0)
             {
                 switch (i)
                 {
-                case 0: sscanf(szToken, "%d:%d:%d", &tmpInt1, &tmpInt2, &tmpInt3);
-                    m_time[n] = tmpInt1 * 10000 + tmpInt2 * 100 + tmpInt3; break;
-                case 1: m_lat[n] = fValue; break;
-                case 2: m_lon[n] = fValue; break;
-                case 3: m_alt[n] = (int)fValue; break;
-                case 4: m_nspec[n] = (int)fValue; break;
-                case 5: m_exptime[n] = (int)fValue; break;
-                case 6: m_int[0][n] = fValue; break;
-                case 7: m_oldCol[0][n] = fValue; break;
-                case 8: m_int[1][n] = fValue; break;
-                case 9: m_oldCol[1][n] = fValue; break;
+                case 0:
+                    sscanf(szToken, "%d:%d:%d", &tmpInt1, &tmpInt2, &tmpInt3);
+                    m_time[n] = tmpInt1 * 10000 + tmpInt2 * 100 + tmpInt3;
+                    break;
+                case 1:
+                    m_lat[n] = fValue;
+                    break;
+                case 2:
+                    m_lon[n] = fValue;
+                    break;
+                case 3:
+                    m_alt[n] = (int)fValue;
+                    break;
+                case 4:
+                    m_nspec[n] = (int)fValue;
+                    break;
+                case 5:
+                    m_exptime[n] = (int)fValue;
+                    break;
+                case 6:
+                    m_int[0][n] = fValue;
+                    break;
+                case 7:
+                    m_oldCol[0][n] = fValue;
+                    break;
+                case 8:
+                    m_int[1][n] = fValue;
+                    break;
+                case 9:
+                    m_oldCol[1][n] = fValue;
+                    break;
                 }
             }
             else
@@ -148,35 +174,69 @@ int CReEvaluator::ReadEvaluationLog()
                 {
                     switch (i)
                     {
-                    case 0: sscanf(szToken, "%d:%d:%d", &tmpInt1, &tmpInt2, &tmpInt3);
-                        m_time[n] = tmpInt1 * 10000 + tmpInt2 * 100 + tmpInt3; break;
-                    case 1: m_lat[n] = fValue; break;
-                    case 2: m_lon[n] = fValue; break;
-                    case 3: m_alt[n] = (int)fValue; break;
-                    case 4: m_nspec[n] = (int)fValue; break;
-                    case 5: m_exptime[n] = (int)fValue; break;
-                    case 6: m_int[0][n] = fValue; break;
-                    case 7: m_oldCol[0][n] = fValue; break;
-                    case 9: m_int[1][n] = fValue; break;
-                    case 10: m_oldCol[1][n] = fValue; break;
+                    case 0:
+                        sscanf(szToken, "%d:%d:%d", &tmpInt1, &tmpInt2, &tmpInt3);
+                        m_time[n] = tmpInt1 * 10000 + tmpInt2 * 100 + tmpInt3;
+                        break;
+                    case 1:
+                        m_lat[n] = fValue;
+                        break;
+                    case 2:
+                        m_lon[n] = fValue;
+                        break;
+                    case 3:
+                        m_alt[n] = (int)fValue;
+                        break;
+                    case 4:
+                        m_nspec[n] = (int)fValue;
+                        break;
+                    case 5:
+                        m_exptime[n] = (int)fValue;
+                        break;
+                    case 6:
+                        m_int[0][n] = fValue;
+                        break;
+                    case 7:
+                        m_oldCol[0][n] = fValue;
+                        break;
+                    case 9:
+                        m_int[1][n] = fValue;
+                        break;
+                    case 10:
+                        m_oldCol[1][n] = fValue;
+                        break;
                     }
                 }
                 else
                 {
                     if (i == 0)
+                    {
                         m_time[n] = (int)fValue;
+                    }
                     else if (i == 1)
+                    {
                         m_lat[n] = fValue;
+                    }
                     else if (i == 2)
+                    {
                         m_lon[n] = fValue;
+                    }
                     else if (i == 3)
+                    {
                         m_int[0][n] = fValue;
+                    }
                     else if (i == 4)
+                    {
                         m_nspec[n] = (int)fValue;
+                    }
                     else if (i == 5)
+                    {
                         m_oldCol[0][n] = fValue;
+                    }
                     else if (i == 6)
+                    {
                         m_exptime[n] = (int)fValue;
+                    }
                 }
             }
 
@@ -186,7 +246,9 @@ int CReEvaluator::ReadEvaluationLog()
                 i = 0;
                 ++n;
                 if (n == MAX_TRAVERSE_LENGTH)
+                {
                     break;
+                }
             }
             szToken = NULL;
         }
@@ -211,8 +273,8 @@ int CReEvaluator::ReadSettings()
     FILE* fil;
     const int BUF_SIZE = 256;
     char txt[BUF_SIZE];
-    char nl[2] = { 0x0a, 0 };
-    char lf[2] = { 0x0d, 0 };
+    char nl[2] = {0x0a, 0};
+    char lf[2] = {0x0d, 0};
     bool foundRefFile = false;
 
     char msg[512];
@@ -233,10 +295,14 @@ int CReEvaluator::ReadSettings()
         {
             pt = txt;
             if (pt = strstr(txt, nl))
+            {
                 pt[0] = 0;
+            }
             pt = txt;
             if (pt = strstr(txt, lf))
+            {
                 pt[0] = 0;
+            }
 
             if (pt = strstr(txt, "VERSION="))
             {
@@ -327,7 +393,9 @@ int CReEvaluator::ReadAllOffsets()
         for (i = 0; i < m_recordNum[chn]; ++i)
         {
             if (!fRun)
+            {
                 return true;
+            }
 
             GetSpectrum(curSpectrum, i, chn);
 
@@ -343,12 +411,16 @@ int CReEvaluator::ReadAllOffsets()
             // tell the user about the progress
             m_progress = (nDone++) / nToDo;
             if (m_mainView != nullptr && (i % 10) == 0)
+            {
                 m_mainView->PostMessage(WM_PROGRESS, (WPARAM)(int)(100.0 * m_progress));
+            }
         }
     }
 
     if (m_mainView != nullptr)
+    {
         m_mainView->PostMessage(WM_DONE);
+    }
 
     return 0;
 }
@@ -386,15 +458,21 @@ bool CReEvaluator::DoEvaluation()
 
     /* Check the settings before we start */
     if (!MakeInitialSanityCheck())
+    {
         return false;
+    }
 
     /* Check the reference files */
     if (!ReadReferences(&evaluator))
+    {
         return false;
+    }
 
     /* create the output directory and the evaluation file */
     if (!CreateOutputDirectory())
+    {
         return false;
+    }
 
     /* if we are to interpolate the dark spectra, start by reading the spectra and register the offsets */
     if (m_settings.m_fInterpolateDark)
@@ -475,7 +553,7 @@ bool CReEvaluator::DoEvaluation()
                     MessageBox(NULL, "Cannot read offst spectrum. Evaluation stopped.", "Error", MB_OK);
                     return false;
                 }
-                darkcurSpectrum.Sub(offsetSpectrum);	// subtract offset from darkcur
+                darkcurSpectrum.Sub(offsetSpectrum); // subtract offset from darkcur
                 adaptiveMode = true;
             }
 
@@ -538,7 +616,9 @@ bool CReEvaluator::DoEvaluation()
 
             // create the evaluation log and write its header
             if (!WriteEvaluationLogHeader(chn))
+            {
                 return false;
+            }
 
             // now evaluate all the spectra
             for (m_curSpec = 0; m_curSpec < (m_recordNum[chn]); m_curSpec += m_settings.m_nAverageSpectra)
@@ -549,7 +629,9 @@ bool CReEvaluator::DoEvaluation()
                 {
                     // if the sky was included into the fit it should now be removed from the list of references used
                     if (m_settings.m_window.fitType == FIT_HP_SUB || m_settings.m_window.fitType == FIT_POLY)
+                    {
                         --m_settings.m_window.nRef;
+                    }
                     return true;
                 }
 
@@ -611,19 +693,22 @@ bool CReEvaluator::DoEvaluation()
                 if (m_mainView != nullptr)
                 {
                     // the measured spectrum
-                    memcpy(m_spectrum, evaluator.m_filteredSpectrum.data(), evaluator.m_filteredSpectrum.size() * sizeof(double));
+                    memcpy(m_spectrum, evaluator.m_filteredSpectrum.data(),
+                           evaluator.m_filteredSpectrum.size() * sizeof(double));
                     if (m_settings.m_window.fitType == FIT_HP_SUB || m_settings.m_window.fitType == FIT_POLY)
                     {
                         // remove the fitted sky spectrum
                         for (int tmpCounter = fitLow; tmpCounter < fitHigh; ++tmpCounter)
                         {
-                            m_spectrum[tmpCounter] -= evaluator.m_fitResult[m_settings.m_window.nRef - 1].GetAt(tmpCounter);
+                            m_spectrum[tmpCounter] -=
+                                evaluator.m_fitResult[m_settings.m_window.nRef - 1].GetAt(tmpCounter);
                         }
                     }
 
                     // the fitted references
                     memset(m_fitResult, 0, MAX_SPECTRUM_LENGTH * sizeof(double));
-                    int nRef = (m_settings.m_window.fitType == FIT_HP_DIV) ? m_settings.m_window.nRef : m_settings.m_window.nRef - 1;
+                    int nRef = (m_settings.m_window.fitType == FIT_HP_DIV) ? m_settings.m_window.nRef
+                                                                           : m_settings.m_window.nRef - 1;
 
                     // add the fitted references
                     for (int r = 0; r < nRef; ++r)
@@ -648,7 +733,9 @@ bool CReEvaluator::DoEvaluation()
                     CWinThread* thread = AfxGetThread();
                     m_sleeping = true;
                     if (m_mainView != 0)
+                    {
                         m_mainView->PostMessage(WM_GOTO_SLEEP);
+                    }
                     thread->SuspendThread();
                     m_sleeping = false;
                 }
@@ -656,21 +743,29 @@ bool CReEvaluator::DoEvaluation()
                 // tell the user about the progress
                 m_progress = (nDone++) / nToDo;
                 if (m_mainView != nullptr && (m_curSpec % 10) == 0)
+                {
                     m_mainView->PostMessage(WM_PROGRESS, (WPARAM)(int)(100.0 * m_progress));
+                }
             } // end for(m_curspec...
 
             // if the sky was included into the fit it should now be removed from the list of references used
             if (m_settings.m_window.fitType == FIT_HP_SUB || m_settings.m_window.fitType == FIT_POLY)
+            {
                 --m_settings.m_window.nRef;
+            }
 
             for (int tmpCounter = 0; tmpCounter < (fitHigh - fitLow); ++tmpCounter)
+            {
                 m_avgResidual[tmpCounter] /= m_nAveragedInResidual;
+            }
 
             WriteAverageResidualToFile();
-        }//end for chn..
+        } //end for chn..
 
         if (m_mainView != nullptr)
+        {
             m_mainView->PostMessage(WM_DONE);
+        }
     }
 
 
@@ -801,17 +896,17 @@ bool CReEvaluator::ReadSkySpectrum(CSpectrum& spec, int channel)
         //CString specFileName;
         //specFileName.Format("%s\\sky_%1d.STD", m_specFileDir, channel); // the file name
         //if(CSpectrumIO::readSTDFile(specFileName, &spec)){
-        //	specFileName.Format("%s\\sky.STD", m_specFileDir); // the file name
-        //	if(CSpectrumIO::readSTDFile(specFileName, &spec)){
-        //		CString message;
-        //		message.Format("Cannot read spectrum %s. Evaluation stopped.", specFileName);
-        //		MessageBox(NULL, message, "Error", MB_OK);
-        //		return false;
-        //	}
+        //  specFileName.Format("%s\\sky.STD", m_specFileDir); // the file name
+        //  if(CSpectrumIO::readSTDFile(specFileName, &spec)){
+        //      CString message;
+        //      message.Format("Cannot read spectrum %s. Evaluation stopped.", specFileName);
+        //      MessageBox(NULL, message, "Error", MB_OK);
+        //      return false;
+        //  }
         //}
         //if(m_mainView != nullptr){
-        //	m_statusMsg.Format("Read Sky spectrum");
-        //	m_mainView->PostMessage(WM_STATUS);
+        //  m_statusMsg.Format("Read Sky spectrum");
+        //  m_mainView->PostMessage(WM_STATUS);
         //}
         //return true;
         return ReadSpectrumFromFile(spec, "sky", channel);
@@ -894,7 +989,8 @@ bool CReEvaluator::CreateOutputDirectory()
 
     time(&t);
     tim = localtime(&t);
-    cDateTime.Format("%04d%02d%02d_%02d%02d", tim->tm_year + 1900, tim->tm_mon + 1, tim->tm_mday, tim->tm_hour, tim->tm_min);
+    cDateTime.Format("%04d%02d%02d_%02d%02d", tim->tm_year + 1900, tim->tm_mon + 1, tim->tm_mday, tim->tm_hour,
+                     tim->tm_min);
 
     m_outputDir = m_specFileDir + "\\ReEvaluation_" + cDateTime;
 
@@ -910,7 +1006,8 @@ bool CReEvaluator::CreateOutputDirectory()
             }
             else
             {
-                tmpStr.Format("Could not create output directory, not enough free disk space?. Error code returned %ld", errorCode);
+                tmpStr.Format("Could not create output directory, not enough free disk space?. Error code returned %ld",
+                              errorCode);
             }
             MessageBox(NULL, tmpStr, "ERROR", MB_OK);
             return false;
@@ -944,26 +1041,37 @@ bool CReEvaluator::WriteEvaluationLogHeader(int channel)
     {
         return false;
     }
-    fprintf(f, "***Desktop Mobile Program***\nVERSION=%1d.%1d.%1d\nFILETYPE=ReEvaluationlog\n", CVersion::majorNumber, CVersion::minorNumber, CVersion::patchNumber);
+    fprintf(f, "***Desktop Mobile Program***\nVERSION=%1d.%1d.%1d\nFILETYPE=ReEvaluationlog\n", CVersion::majorNumber,
+            CVersion::minorNumber, CVersion::patchNumber);
     fprintf(f, "Original EvaluationLog=%s\n", (LPCTSTR)m_evalLogFileName);
     fprintf(f, "***Settings Used in the Evaluation***\n");
-    fprintf(f, "FitFrom=%d\nFitTo=%d\nPolynom=%d\n", m_settings.m_window.fitLow, m_settings.m_window.fitHigh, m_settings.m_window.polyOrder);
+    fprintf(f, "FitFrom=%d\nFitTo=%d\nPolynom=%d\n", m_settings.m_window.fitLow, m_settings.m_window.fitHigh,
+            m_settings.m_window.polyOrder);
     fprintf(f, "Number of averaged spectra=%ld\n", m_settings.m_nAverageSpectra);
     switch (m_settings.m_ignoreDark.selection)
     {
-    case IGNORE_DARK:  fprintf(f, "Ignore Dark Spectra=1\n"); break;
-    case IGNORE_LIMIT: fprintf(f, "Ignore Spectra with intensity below=%.1lf @ channel %d\n", m_settings.m_ignoreDark.intensity, m_settings.m_ignoreDark.channel); break;
-    case IGNORE_LIST:  fprintf(f, "Ignore Spectrum number: ");
+    case IGNORE_DARK:
+        fprintf(f, "Ignore Dark Spectra=1\n");
+        break;
+    case IGNORE_LIMIT:
+        fprintf(f, "Ignore Spectra with intensity below=%.1lf @ channel %d\n", m_settings.m_ignoreDark.intensity,
+                m_settings.m_ignoreDark.channel);
+        break;
+    case IGNORE_LIST:
+        fprintf(f, "Ignore Spectrum number: ");
         for (i = 0; i < MAX_IGNORE_LIST_LENGTH; ++i)
         {
             if (m_settings.m_ignoreList_Lower[i] != -1)
+            {
                 fprintf(f, "%ld\t", m_settings.m_ignoreList_Lower[i]);
+            }
         }
         break;
     }
     if (m_settings.m_ignoreSaturated.selection == IGNORE_LIMIT)
     {
-        fprintf(f, "Ignore Spectra with intensity above=%.1lf @ channel %d\n", m_settings.m_ignoreSaturated.intensity, m_settings.m_ignoreSaturated.channel);
+        fprintf(f, "Ignore Spectra with intensity above=%.1lf @ channel %d\n", m_settings.m_ignoreSaturated.intensity,
+                m_settings.m_ignoreSaturated.channel);
     }
     fprintf(f, "Sky Spectrum=%s\n", "sky_0.STD");
     fprintf(f, "Dark Spectrum=%s\n", "dark_0.STD");
@@ -977,20 +1085,26 @@ bool CReEvaluator::WriteEvaluationLogHeader(int channel)
         switch (ref.m_shiftOption)
         {
         case novac::SHIFT_TYPE::SHIFT_FIX:
-            fprintf(f, "%0.3lf\t", ref.m_shiftValue); break;
+            fprintf(f, "%0.3lf\t", ref.m_shiftValue);
+            break;
         case novac::SHIFT_TYPE::SHIFT_LINK:
-            fprintf(f, "linked to %s\t", m_settings.m_window.ref[(int)ref.m_shiftValue].m_specieName.c_str()); break;
+            fprintf(f, "linked to %s\t", m_settings.m_window.ref[(int)ref.m_shiftValue].m_specieName.c_str());
+            break;
         default:
-            fprintf(f, "free\t"); break;
+            fprintf(f, "free\t");
+            break;
         }
         switch (ref.m_squeezeOption)
         {
         case novac::SHIFT_TYPE::SHIFT_FIX:
-            fprintf(f, "%0.3lf\t", ref.m_squeezeValue); break;
+            fprintf(f, "%0.3lf\t", ref.m_squeezeValue);
+            break;
         case novac::SHIFT_TYPE::SHIFT_LINK:
-            fprintf(f, "linked to %s\t", m_settings.m_window.ref[(int)ref.m_squeezeValue].m_specieName.c_str()); break;
+            fprintf(f, "linked to %s\t", m_settings.m_window.ref[(int)ref.m_squeezeValue].m_specieName.c_str());
+            break;
         default:
-            fprintf(f, "free\t"); break;
+            fprintf(f, "free\t");
+            break;
         }
         fprintf(f, "%s\n", ref.m_path.c_str());
     }
@@ -999,11 +1113,11 @@ bool CReEvaluator::WriteEvaluationLogHeader(int channel)
     for (i = 0; i < m_settings.m_window.nRef; ++i)
     {
         const char* name = m_settings.m_window.ref[i].m_specieName.c_str();
-        fprintf(f, "%s(column)\t%s(columnError)\t%s(shift)\t%s(shiftError)\t%s(squeeze)\t%s(squeezeError)\t",
-            name, (LPCTSTR)name, (LPCTSTR)name, (LPCTSTR)name, (LPCTSTR)name, (LPCTSTR)name);
+        fprintf(f, "%s(column)\t%s(columnError)\t%s(shift)\t%s(shiftError)\t%s(squeeze)\t%s(squeezeError)\t", name,
+                (LPCTSTR)name, (LPCTSTR)name, (LPCTSTR)name, (LPCTSTR)name, (LPCTSTR)name);
     }
 
-    fprintf(f, "Delta\tChi²\n");
+    fprintf(f, "Delta\tChi\xB2\n");
 
     // Write the information about the spectrometer
     fprintf(f, "***Spectrometer Information***\n");
@@ -1022,13 +1136,15 @@ bool CReEvaluator::AppendResultToEvaluationLog(int specIndex, int channel, Evalu
 
     FILE* f = fopen(m_outputLog, "a+");
     if (0 == f)
+    {
         return false;
+    }
 
     int hr, mi, se;
     mobiledoas::GetHrMinSec(m_time[specIndex], hr, mi, se);
     fprintf(f, "%02d:%02d:%02d\t", hr, mi, se);
-    fprintf(f, "%.6lf\t%.6lf\t%d\t%d\t%d\t%d\t",
-        m_lat[specIndex], m_lon[specIndex], m_alt[specIndex], m_nspec[specIndex], m_exptime[specIndex], (int)m_int[channel][specIndex]);
+    fprintf(f, "%.6lf\t%.6lf\t%d\t%d\t%d\t%d\t", m_lat[specIndex], m_lon[specIndex], m_alt[specIndex],
+            m_nspec[specIndex], m_exptime[specIndex], (int)m_int[channel][specIndex]);
 
     int nRef = 0;
     for (int i = 0; i < m_settings.m_window.nRef; ++i)
@@ -1064,12 +1180,14 @@ bool CReEvaluator::GetDarkSpectrum(CSpectrum& dark, int number, int channel)
 
     // If there are only one dark spectrum, don't do anything
     if (m_darkSpecListLength[channel] <= 0)
+    {
         return true;
+    }
 
-    // Find all dark spectra with the same exp-time as the supplied one. 
+    // Find all dark spectra with the same exp-time as the supplied one.
     int expTime = m_exptime[number];
     int foundDarkSpectra[256];
-    int	nFoundDarkSpectra = 0;
+    int nFoundDarkSpectra = 0;
     for (int k = 0; k < m_darkSpecListLength[channel]; ++k)
     {
         if (m_exptime[m_darkSpecList[channel][k]] == expTime)
@@ -1108,15 +1226,15 @@ bool CReEvaluator::GetDarkSpectrum(CSpectrum& dark, int number, int channel)
     }
 
     // If several found, find out if we should interpolate or take the closest one
-    int closestAbove = -1;	// <-- the dark spectrum with the nearest higher offset
-    int closestBelow = -1;	// <-- the dark spectrum with the nearest lower offset
+    int closestAbove = -1; // <-- the dark spectrum with the nearest higher offset
+    int closestBelow = -1; // <-- the dark spectrum with the nearest lower offset
     double specOffset = m_offset[channel][number]; // <-- the offset of the measured spectrum
     double closestHigherOffset = 1e16, closestLowerOffset = -1e16;
 
     // loop through all dark spectra with the same exposure-time
     for (int k = 0; k < nFoundDarkSpectra; ++k)
     {
-        // get the offset of dark spectrum number 'k' 
+        // get the offset of dark spectrum number 'k'
         double darkOffset = m_offset[channel][foundDarkSpectra[k]];
 
         if (darkOffset > specOffset)
@@ -1152,7 +1270,6 @@ bool CReEvaluator::GetDarkSpectrum(CSpectrum& dark, int number, int channel)
             m_mainView->PostMessage(WM_STATUS);
         }
         return GetSpectrum(dark, closestAbove, channel);
-
     }
     else if (closestBelow != -1 && closestAbove == -1)
     {
@@ -1169,7 +1286,6 @@ bool CReEvaluator::GetDarkSpectrum(CSpectrum& dark, int number, int channel)
             m_mainView->PostMessage(WM_STATUS);
         }
         return GetSpectrum(dark, closestBelow, channel);
-
     }
     else
     {
@@ -1191,7 +1307,8 @@ bool CReEvaluator::GetDarkSpectrum(CSpectrum& dark, int number, int channel)
         }
         if (m_mainView != nullptr)
         {
-            m_statusMsg.Format("Spec # %d - using average of spectra %d and %d as dark\n", number, closestBelow, closestAbove);
+            m_statusMsg.Format("Spec # %d - using average of spectra %d and %d as dark\n", number, closestBelow,
+                               closestAbove);
             m_mainView->PostMessage(WM_STATUS);
         }
         return true;
@@ -1207,20 +1324,23 @@ bool CReEvaluator::Stop()
     return true;
 }
 
-bool CReEvaluator::FindOptimalShiftAndSqueeze(Evaluation::CEvaluation& evaluator, int channel, CSpectrum& skySpectrum, CSpectrum& darkSpectrum)
+bool CReEvaluator::FindOptimalShiftAndSqueeze(Evaluation::CEvaluation& evaluator, int channel, CSpectrum& skySpectrum,
+                                              CSpectrum& darkSpectrum)
 {
-    double		sky[MAX_SPECTRUM_LENGTH];// temporary storage for the sky vector
+    double sky[MAX_SPECTRUM_LENGTH]; // temporary storage for the sky vector
     CSpectrum curSpectrum; // the read spectrum
-    double		maxColumn = -1e6;
-    int				indexOfMaxColumn = -1;
-    int				nLinked = 0;
-    int				linkTo = 0;
+    double maxColumn = -1e6;
+    int indexOfMaxColumn = -1;
+    int nLinked = 0;
+    int linkTo = 0;
 
     // first find the spectrum with the highest (credible) column value
     for (int i = 0; i < m_recordNum[channel]; ++i)
     {
         if (m_oldCol[channel][i] <= maxColumn)
+        {
             continue;
+        }
 
         if (m_int[channel][i] > MINIMUM_CREDIBLE_INTENSITY)
         {
@@ -1233,7 +1353,9 @@ bool CReEvaluator::FindOptimalShiftAndSqueeze(Evaluation::CEvaluation& evaluator
         }
     }
     if (indexOfMaxColumn == -1)
+    {
         return false; // no credible column value found...
+    }
 
     // start by setting the shift and squeeze of the first referenceFile to SHIFT_FREE
     //  and link the other references to this referenceFile
@@ -1349,7 +1471,10 @@ bool CReEvaluator::MakeInitialSanityCheck()
 
     if (this->m_recordNum[0] == 0)
     {
-        MessageBox(NULL, "No spectra found. You have either not chosen an evaluation log or evaluation log is empty. Please choose a proper evaluation log", "Error", MB_OK);
+        MessageBox(NULL,
+                   "No spectra found. You have either not chosen an evaluation log or evaluation log is empty. Please "
+                   "choose a proper evaluation log",
+                   "Error", MB_OK);
         return false;
     }
 
@@ -1370,11 +1495,13 @@ bool CReEvaluator::MakeInitialSanityCheck()
             if (m_settings.m_window.ref[k].m_shiftOption != novac::SHIFT_TYPE::SHIFT_LINK && k != i)
             {
                 CString msg;
-                msg.Format("You have selected 'find optimum' for reference %s. This means that all references will be linked to this reference and the optimum shift and squeeze for all references will be searched for", m_settings.m_window.ref[k].m_specieName);
+                msg.Format(
+                    "You have selected 'find optimum' for reference %s. This means that all references will be linked "
+                    "to this reference and the optimum shift and squeeze for all references will be searched for",
+                    m_settings.m_window.ref[k].m_specieName);
                 MessageBox(NULL, msg, "Info", MB_OK);
             }
         }
-
     }
 
     return true;
@@ -1388,7 +1515,9 @@ bool CReEvaluator::WriteAverageResidualToFile()
     CString fileName = m_outputDir + "\\AverageResidual.txt";
     FILE* f = fopen(fileName, "w");
     if (f == nullptr)
+    {
         return false;
+    }
 
     for (int i = 0; i < fitWidth; ++i)
     {
@@ -1427,14 +1556,19 @@ int CReEvaluator::Ignore(CSpectrum& spec, int spectrumNumber)
     if (m_settings.m_ignoreDark.selection == IGNORE_DARK)
     {
         if (IsDark(spec))
+        {
             return INTENSITY_DARK;
+        }
     }
 
     // if the user wants to ignore spectra with intensity lower than a certain limit
     if (m_settings.m_ignoreDark.selection == IGNORE_LIMIT)
     {
-        if (spec.GetAverage(m_settings.m_ignoreDark.channel - 10, m_settings.m_ignoreDark.channel + 10) < m_settings.m_ignoreDark.intensity)
+        if (spec.GetAverage(m_settings.m_ignoreDark.channel - 10, m_settings.m_ignoreDark.channel + 10) <
+            m_settings.m_ignoreDark.intensity)
+        {
             return INTENSITY_DARK;
+        }
     }
 
     // if the user has a list of spectra to ignore
@@ -1443,15 +1577,20 @@ int CReEvaluator::Ignore(CSpectrum& spec, int spectrumNumber)
         for (int i = 0; i < MAX_IGNORE_LIST_LENGTH; ++i)
         {
             if (m_settings.m_ignoreList_Lower[i] == spectrumNumber)
+            {
                 return INTENSITY_DARK;
+            }
         }
     }
 
     // if the user wants to ignore spectra with intensity higher than a certain limit
     if (m_settings.m_ignoreSaturated.selection == IGNORE_LIMIT)
     {
-        if (spec.GetAverage(m_settings.m_ignoreSaturated.channel - 10, m_settings.m_ignoreSaturated.channel + 10) > m_settings.m_ignoreSaturated.intensity)
+        if (spec.GetAverage(m_settings.m_ignoreSaturated.channel - 10, m_settings.m_ignoreSaturated.channel + 10) >
+            m_settings.m_ignoreSaturated.intensity)
+        {
             return INTENSITY_SATURATED;
+        }
     }
 
     // no reason has been found why we should ignore the following spectrum
@@ -1468,7 +1607,8 @@ bool CReEvaluator::GetResult(const Evaluation::CEvaluation& evaluator)
 }
 
 /** Includes the sky spectrum into the fit */
-bool  CReEvaluator::IncludeSkySpecInFit(Evaluation::CEvaluation& eval, const CSpectrum& skySpectrum, Evaluation::CFitWindow& window)
+bool CReEvaluator::IncludeSkySpecInFit(Evaluation::CEvaluation& eval, const CSpectrum& skySpectrum,
+                                       Evaluation::CFitWindow& window)
 {
     double sky[MAX_SPECTRUM_LENGTH];
 
@@ -1480,7 +1620,9 @@ bool  CReEvaluator::IncludeSkySpecInFit(Evaluation::CEvaluation& eval, const CSp
     memcpy(sky, tmpSpec.I, specLen * sizeof(double));
     eval.RemoveOffset(sky, specLen, window.offsetFrom, window.offsetTo);
     if (window.fitType == FIT_HP_SUB)
+    {
         eval.HighPassBinomial(sky, specLen, 500);
+    }
 
     eval.Log(sky, specLen);
     eval.IncludeAsReference(sky, specLen, window.nRef);
@@ -1512,7 +1654,9 @@ bool CReEvaluator::AllSpectraHaveSameExpTime()
     for (int k = 1; k < m_recordNum[0]; ++k)
     {
         if (m_exptime[k] != expT)
+        {
             return false;
+        }
     }
 
     return true;

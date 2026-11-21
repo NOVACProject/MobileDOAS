@@ -3,9 +3,10 @@
 #include "MobileConfiguration.h"
 #include "../resource.h"
 
-namespace Configuration {
+namespace Configuration
+{
 
-class 	CConfigure_Directory : public CPropertyPage
+class CConfigure_Directory : public CPropertyPage
 {
     DECLARE_DYNAMIC(CConfigure_Directory)
 
@@ -13,7 +14,10 @@ public:
     CConfigure_Directory();
     virtual ~CConfigure_Directory();
 
-    enum { IDD = IDD_CONFIGURE_DIRECTORY };
+    enum
+    {
+        IDD = IDD_CONFIGURE_DIRECTORY
+    };
 
     /** The local handle to the CMobileConfiguration object that we're changing */
     std::shared_ptr<CMobileConfiguration> m_conf;

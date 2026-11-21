@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Evaluation/Evaluation.h"
 #include <MobileDoasLib/GPS.h>
 #include "Configuration/MobileConfiguration.h"
@@ -9,22 +11,21 @@
 #include <memory>
 #include <limits>
 
-#pragma once
 
-#define WM_STATUSMSG  WM_USER + 8   //define the message for set statusbar message
-#define WM_DRAWCOLUMN  WM_USER + 9
-#define WM_DRAWMAX   WM_USER +12
-#define WM_READGPS   WM_USER +14
-#define WM_SHOWINTTIME  WM_USER +15
-#define WM_DRAWSPECTRUM  WM_USER +16
-#define WM_SHOWDIALOG  WM_USER +17
-#define WM_CHANGEDSPEC  WM_USER +18
-#define WM_CHANGEDSPECSCALE WM_USER +19
+#define WM_STATUSMSG WM_USER + 8   //define the message for set statusbar message
+#define WM_DRAWCOLUMN WM_USER + 9
+#define WM_DRAWMAX WM_USER + 12
+#define WM_READGPS WM_USER + 14
+#define WM_SHOWINTTIME WM_USER + 15
+#define WM_DRAWSPECTRUM WM_USER + 16
+#define WM_SHOWDIALOG WM_USER + 17
+#define WM_CHANGEDSPEC WM_USER + 18
+#define WM_CHANGEDSPECSCALE WM_USER + 19
 
 
-#define DARK_DIALOG           0
-#define INVALID_GPS           1
-#define CHANGED_EXPOSURETIME  2
+#define DARK_DIALOG 0
+#define INVALID_GPS 1
+#define CHANGED_EXPOSURETIME 2
 
 // the maximum and minimum exposure time
 #define MAX_EXPOSURETIME 5000
@@ -62,17 +63,16 @@ protected:
             the result of the fit. */
     typedef struct FitRegion
     {
-        Evaluation::CFitWindow  window;
+        Evaluation::CFitWindow window;
         Evaluation::CEvaluation* eval[MAX_N_CHANNELS];
-        CVector vColumn[6]; /* The evaluation results from the master channel [col, colError, shift, shiftError, squeeze, squeezeError] */
-    }FitRegion;
+        CVector vColumn
+            [6]; /* The evaluation results from the master channel [col, colError, shift, shiftError, squeeze, squeezeError] */
+    } FitRegion;
 
 public:
-    CSpectrometer(
-        CView& mainForm,
-        novac::ILogger& log,
-        std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface,
-        std::unique_ptr<Configuration::CMobileConfiguration> configuration);
+    CSpectrometer(CView& mainForm, novac::ILogger& log,
+                  std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface,
+                  std::unique_ptr<Configuration::CMobileConfiguration> configuration);
 
     virtual ~CSpectrometer();
 
@@ -188,7 +188,8 @@ public:
     void GetNSpecAverage(int& averageInSpectrometer, int& averageInComputer);
 
     /* Create Spectrum data object. */
-    void CreateSpectrum(CSpectrum& spectrum, const std::vector<double>& spec, const std::string& startDate, long startTime, long elapsedSecond);
+    void CreateSpectrum(CSpectrum& spectrum, const std::vector<double>& spec, const std::string& startDate,
+                        long startTime, long elapsedSecond);
 
     /** This retrieves a list of all spectrometers that are connected to this computer
         Notice that this will not attempt to rebuild the list. */
@@ -206,17 +207,11 @@ public:
 
     /** Retrieves the lower range for the fit region for
         fit window number 'region' */
-    inline int GetFitLow(int region = 0) const
-    {
-        return m_fitRegion[region].window.fitLow;
-    }
+    inline int GetFitLow(int region = 0) const { return m_fitRegion[region].window.fitLow; }
 
     /** Retrieves the upper range for the fit region for
         fit window number 'region' */
-    inline int GetFitHigh(int region = 0) const
-    {
-        return m_fitRegion[region].window.fitHigh;
-    }
+    inline int GetFitHigh(int region = 0) const { return m_fitRegion[region].window.fitHigh; }
 
     /** Copies out the last read and processed (high-pass filtered) spectrum. Useful for plotting.
         @return number of copied data points. */
@@ -224,21 +219,12 @@ public:
 
     /** Retrieves the number of fit regions that we are evaluating
         each spectrum in */
-    inline int GetFitRegionNum() const
-    {
-        return m_fitRegionNum;
-    }
+    inline int GetFitRegionNum() const { return m_fitRegionNum; }
 
-    long GetNumberOfSpectraAcquired() const
-    {
-        return m_scanNum;
-    }
+    long GetNumberOfSpectraAcquired() const { return m_scanNum; }
 
     /** Retrieves the name of the fit region with the given index. */
-    inline const CString& GetFitWindowName(int windowNum) const
-    {
-        return m_fitRegion[windowNum].window.name;
-    }
+    inline const CString& GetFitWindowName(int windowNum) const { return m_fitRegion[windowNum].window.name; }
 
     /** @return the currently used integration time, in milli seconds */
     long GetCurrentIntegrationTime() { return (long)m_integrationTime; }
@@ -265,7 +251,6 @@ public:
     void RequestIntegrationTimeChange() { this->m_adjustIntegrationTime = TRUE; }
 
 protected:
-
     /* Collects a spectrum from the spectrometer.
         @param sumInComputer - the number of spectra to add together in the computer
         @param sumInSpectrometer - the number of spectra to add together in the spectrometer
@@ -322,7 +307,7 @@ protected:
     long m_fixexptime;
 
     /** True if the user wants us to update the integration time. */
-    BOOL  m_adjustIntegrationTime;
+    BOOL m_adjustIntegrationTime;
 
     /** fills up the 'specInfo' structure with information from the supplied spectrum */
     void GetSpectrumInfo(const mobiledoas::MeasuredSpectrum& spectrum);
@@ -356,7 +341,8 @@ protected:
         @param pDark - the dark spectrum(-a) to use (for the measured spectrum,
             the sky should already be dark-corrected
         @param pSpectrum - the spectrum to evaluate.  */
-    void DoEvaluation(mobiledoas::MeasuredSpectrum& sky, mobiledoas::MeasuredSpectrum& dark, mobiledoas::MeasuredSpectrum& spectrum);
+    void DoEvaluation(mobiledoas::MeasuredSpectrum& sky, mobiledoas::MeasuredSpectrum& dark,
+                      mobiledoas::MeasuredSpectrum& spectrum);
 
     /** Copies the current sky-spectrum to 'tmpSky' */
     void GetSky();
@@ -495,7 +481,7 @@ protected:
 
     // ------------------------------ Misc ------------------------
 
-     /* Returns the current time in UMT as a long, must have gotten
+    /* Returns the current time in UMT as a long, must have gotten
         at least one GPS-time value to work properly, otherwise the local time will be returned */
     long GetTimeValue_UMT();
 
@@ -567,7 +553,7 @@ protected:
         /** True if the program judges that the spectrum is dark */
         bool isDark = false;
 
-    }SpectrumInfo;
+    } SpectrumInfo;
 
     /** Information about the last spectrum collected */
     SpectrumInfo m_specInfo[MAX_N_CHANNELS];
@@ -658,7 +644,6 @@ protected:
     void DisplayDialog(int dialogToDisplay) const;
 
 private:
-
     // -------------------- PRIVATE DATA --------------------
 
     /** Used by 'CountFlux' to calculate the flux.

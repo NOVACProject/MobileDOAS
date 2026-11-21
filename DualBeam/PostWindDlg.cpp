@@ -16,7 +16,8 @@ CPostWindDlg::CPostWindDlg(CWnd* pParent /*=NULL*/)
 {
     m_showOption = 0;
 
-    for (int k = 0; k < MAX_N_SERIES; ++k) {
+    for (int k = 0; k < MAX_N_SERIES; ++k)
+    {
         this->m_OriginalSeries[k] = nullptr;
         this->m_PreparedSeries[k] = nullptr;
     }
@@ -28,7 +29,8 @@ CPostWindDlg::CPostWindDlg(CWnd* pParent /*=NULL*/)
 
 CPostWindDlg::~CPostWindDlg()
 {
-    for (int k = 0; k < MAX_N_SERIES; ++k) {
+    for (int k = 0; k < MAX_N_SERIES; ++k)
+    {
         delete m_OriginalSeries[k];
         delete m_PreparedSeries[k];
     }
@@ -75,13 +77,15 @@ END_MESSAGE_MAP()
 void CPostWindDlg::OnBrowseEvallogSeries1()
 {
     CString selectedLogFile;
-    if (!Common::BrowseForEvaluationLog(selectedLogFile)) {
+    if (!Common::BrowseForEvaluationLog(selectedLogFile))
+    {
         return;
     }
 
     m_evalLog[0].Format("%s", (LPCTSTR)selectedLogFile);
 
-    if (ReadEvaluationLog(0)) {
+    if (ReadEvaluationLog(0))
+    {
         // Update the text on the screen
         SetDlgItemText(IDC_EDIT_EVALLOG_SERIES1, m_evalLog[0]);
         // Redraw the screen
@@ -92,13 +96,15 @@ void CPostWindDlg::OnBrowseEvallogSeries1()
 void CPostWindDlg::OnBrowseEvallogSeries2()
 {
     CString selectedLogFile;
-    if (!Common::BrowseForEvaluationLog(selectedLogFile)) {
+    if (!Common::BrowseForEvaluationLog(selectedLogFile))
+    {
         return;
     }
 
     m_evalLog[1].Format("%s", (LPCTSTR)selectedLogFile);
 
-    if (ReadEvaluationLog(1)) {
+    if (ReadEvaluationLog(1))
+    {
         // Update the text on the screen
         SetDlgItemText(IDC_EDIT_EVALLOG_SERIES2, m_evalLog[1]);
         // Redraw the screen
@@ -106,30 +112,40 @@ void CPostWindDlg::OnBrowseEvallogSeries2()
     }
 }
 
-bool CPostWindDlg::ReadEvaluationLog(int channelIndex) {
-    if (channelIndex < 0 || channelIndex > 1) { throw std::invalid_argument("Invalid channel index passed to ReadEvaluationLog!"); }
+bool CPostWindDlg::ReadEvaluationLog(int channelIndex)
+{
+    if (channelIndex < 0 || channelIndex > 1)
+    {
+        throw std::invalid_argument("Invalid channel index passed to ReadEvaluationLog!");
+    }
 
     // the index in the traverse which we should read. Setting this to zero always assumes that we will always use
-    //	the first species in the traverse to evaluate the windspeed...
+    //  the first species in the traverse to evaluate the windspeed...
     const int specieIndex = 0;
-    mobiledoas::CFlux flux;		// The CFlux object helps with reading the data from the eval-log
-    int nChannels = 1;		// the number of channels in the data-file
-    double fileVersion = 0;	// the file-version of the evalution-log file
+    mobiledoas::CFlux flux;  // The CFlux object helps with reading the data from the eval-log
+    int nChannels = 1;  // the number of channels in the data-file
+    double fileVersion = 0; // the file-version of the evalution-log file
 
     // Read the header of the log file and see if it is an ok file
     int fileType = flux.ReadSettingFile((LPCSTR)m_evalLog[channelIndex], nChannels, fileVersion);
-    if (fileType != 1) {
-        MessageBox(TEXT("The file is not evaluation log file with right format.\nPlease choose a right file"), NULL, MB_OK);
+    if (fileType != 1)
+    {
+        MessageBox(TEXT("The file is not evaluation log file with right format.\nPlease choose a right file"), NULL,
+                   MB_OK);
         return FAIL;
     }
 
-    if (nChannels != 1) {
-        MessageBox(TEXT("The evaluation log does not contain evaluation data from one single channel. Please select another file in a correct format."), NULL, MB_OK);
+    if (nChannels != 1)
+    {
+        MessageBox(TEXT("The evaluation log does not contain evaluation data from one single channel. Please select "
+                        "another file in a correct format."),
+                   NULL, MB_OK);
         return FAIL;
     }
 
     // Read the data from the file
-    if (0 == flux.ReadLogFile("", (LPCSTR)m_evalLog[channelIndex], nChannels, fileVersion)) {
+    if (0 == flux.ReadLogFile("", (LPCSTR)m_evalLog[channelIndex], nChannels, fileVersion))
+    {
         MessageBox(TEXT("That file is empty"));
         return FAIL;
     }
@@ -140,12 +156,14 @@ bool CPostWindDlg::ReadEvaluationLog(int channelIndex) {
 
     // create a new data series
     m_OriginalSeries[channelIndex] = new mobiledoas::CDualBeamCalculator::CMeasurementSeries(traverseLength);
-    if (m_OriginalSeries[channelIndex] == nullptr) {
+    if (m_OriginalSeries[channelIndex] == nullptr)
+    {
         return FAIL; // <-- failed to allocate enough memory
     }
 
     mobiledoas::Time startTime = traverse->time[0];
-    for (int spectrumIndex = 0; spectrumIndex < traverseLength; ++spectrumIndex) {
+    for (int spectrumIndex = 0; spectrumIndex < traverseLength; ++spectrumIndex)
+    {
 
         // Get the column of this spectrum
         m_OriginalSeries[channelIndex]->column[spectrumIndex] = traverse->columnArray[spectrumIndex];
@@ -155,9 +173,7 @@ bool CPostWindDlg::ReadEvaluationLog(int channelIndex) {
 
         // Save the time difference
         m_OriginalSeries[channelIndex]->time[spectrumIndex] =
-            3600 * (t.hour - startTime.hour) +
-            60 * (t.minute - startTime.minute) +
-            (t.second - startTime.second);
+            3600 * (t.hour - startTime.hour) + 60 * (t.minute - startTime.minute) + (t.second - startTime.second);
     }
 
     return SUCCESS;
@@ -172,8 +188,10 @@ BOOL CPostWindDlg::OnInitDialog()
     m_frameColumn.GetWindowRect(rect);
     int height = rect.bottom - rect.top;
     int width = rect.right - rect.left;
-    rect.top = 20; rect.bottom = height - 10;
-    rect.left = 10; rect.right = width - 10;
+    rect.top = 20;
+    rect.bottom = height - 10;
+    rect.left = 10;
+    rect.right = width - 10;
     m_columnGraph.Create(WS_VISIBLE | WS_CHILD, rect, &m_frameColumn);
     m_columnGraph.SetXUnits("Time [s]");
     m_columnGraph.SetYUnits("Column [ppmm]");
@@ -186,8 +204,10 @@ BOOL CPostWindDlg::OnInitDialog()
     m_frameResult.GetWindowRect(rect);
     height = rect.bottom - rect.top;
     width = rect.right - rect.left;
-    rect.top = 20; rect.bottom = height - 10;
-    rect.left = 10; rect.right = width - 10;
+    rect.top = 20;
+    rect.bottom = height - 10;
+    rect.left = 10;
+    rect.right = width - 10;
     m_resultGraph.Create(WS_VISIBLE | WS_CHILD, rect, &m_frameResult);
     m_resultGraph.SetXUnits("Time [s]");
     m_resultGraph.SetYUnits("Wind Speed [m/s]");
@@ -206,13 +226,16 @@ BOOL CPostWindDlg::OnInitDialog()
 }
 
 
-void CPostWindDlg::DrawColumn() {
+void CPostWindDlg::DrawColumn()
+{
     double minT = 1e16, maxT = -1e16, minC = 1e16, maxC = -1e16;
     int nSeries = 0;
 
     // get the range for the plot
-    for (int k = 0; k < MAX_N_SERIES; ++k) {
-        if (m_OriginalSeries[k] != nullptr) {
+    for (int k = 0; k < MAX_N_SERIES; ++k)
+    {
+        if (m_OriginalSeries[k] != nullptr)
+        {
             minT = std::min(minT, m_OriginalSeries[k]->time[0]);
             maxT = std::max(maxT, m_OriginalSeries[k]->time[m_OriginalSeries[k]->length - 1]);
 
@@ -224,51 +247,51 @@ void CPostWindDlg::DrawColumn() {
     }
 
     if (nSeries == 0)
+    {
         return; // <-- nothing to plot
+    }
 
                 // Set the range for the plot
     m_columnGraph.SetRange(minT, maxT, 0, minC, maxC, 1);
 
     // Draw the time series
-    for (int k = 0; k < MAX_N_SERIES; ++k) {
-        if (m_OriginalSeries[k] != nullptr) {
+    for (int k = 0; k < MAX_N_SERIES; ++k)
+    {
+        if (m_OriginalSeries[k] != nullptr)
+        {
 
             // ---------- Draw the original time series -----------
             // set the color
             m_columnGraph.SetPlotColor(m_colorSeries[k % 3]);
 
             // draw the series
-            m_columnGraph.XYPlot(
-                m_OriginalSeries[k]->time,
-                m_OriginalSeries[k]->column,
-                m_OriginalSeries[k]->length,
-                Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
+            m_columnGraph.XYPlot(m_OriginalSeries[k]->time, m_OriginalSeries[k]->column, m_OriginalSeries[k]->length,
+                                 Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
 
             // ---------- Draw the filtered time series -----------
-            if (m_settings.lowPassFilterAverage > 0) {
+            if (m_settings.lowPassFilterAverage > 0)
+            {
                 m_columnGraph.SetLineWidth(2);
                 m_columnGraph.SetPlotColor(RGB(255, 255, 255));
                 // perform the low pass filtering
                 LowPassFilter(k);
 
                 // draw the series
-                m_columnGraph.XYPlot(
-                    m_PreparedSeries[k]->time,
-                    m_PreparedSeries[k]->column,
-                    m_PreparedSeries[k]->length,
-                    Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
+                m_columnGraph.XYPlot(m_PreparedSeries[k]->time, m_PreparedSeries[k]->column,
+                                     m_PreparedSeries[k]->length,
+                                     Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
 
-                //				m_columnGraph.SetLineWidth(1);
+                //              m_columnGraph.SetLineWidth(1);
             }
-
         }
-
     }
 }
 
-void CPostWindDlg::DrawResult() {
+void CPostWindDlg::DrawResult()
+{
 
-    if (m_calc.m_length == 0 || m_calc.corr == 0) {
+    if (m_calc.m_length == 0 || m_calc.corr == 0)
+    {
         return;
     }
 
@@ -277,59 +300,81 @@ void CPostWindDlg::DrawResult() {
     /** Copy the values to the local buffers */
     int length = 0;
     const double distance = m_settings.plumeHeight * tan(DEGREETORAD * m_settings.angleSeparation);
-    for (int k = 0; k < m_calc.m_length; ++k) {
-        if (length > MAX_CORRELATION_NUM) {
+    for (int k = 0; k < m_calc.m_length; ++k)
+    {
+        if (length > MAX_CORRELATION_NUM)
+        {
             break;
         }
-        if (m_calc.used[k]) {
+        if (m_calc.used[k])
+        {
             correlations[length] = m_calc.corr[k];
             timeDelay[length] = m_calc.delays[k];
-            if (fabs(m_calc.delays[k]) < 1e-5) {
+            if (fabs(m_calc.delays[k]) < 1e-5)
+            {
                 windspeeds[length] = 0.0;
             }
-            else {
+            else
+            {
                 windspeeds[length] = distance / m_calc.delays[k];
             }
             ++length;
         }
     }
 
-    if (m_showOption == 0) {
+    if (m_showOption == 0)
+    {
         /** Draw the correlation */
         m_resultGraph.SetYUnits("Correlation [-]");
         m_resultGraph.XYPlot(nullptr, correlations.data(), length);
     }
-    else if (m_showOption == 1) {
+    else if (m_showOption == 1)
+    {
         /** Draw the timeDelay */
         m_resultGraph.SetYUnits("Temporal delay [s]");
         m_resultGraph.XYPlot(nullptr, timeDelay.data(), length);
     }
-    else if (m_showOption == 2) {
+    else if (m_showOption == 2)
+    {
         /** Draw the resulting wind speed */
         m_resultGraph.SetYUnits("Wind speed [m/s]");
         m_resultGraph.XYPlot(nullptr, windspeeds.data(), length);
     }
 }
 
-int	CPostWindDlg::LowPassFilter(int seriesNo) {
+int CPostWindDlg::LowPassFilter(int seriesNo)
+{
     if (m_settings.lowPassFilterAverage <= 0)
+    {
         return 0;
+    }
 
     if (seriesNo < 0 || seriesNo > MAX_N_SERIES)
+    {
         return 0;
+    }
 
     if (m_OriginalSeries[seriesNo] == nullptr)
+    {
         return 0;
+    }
 
     int length = m_OriginalSeries[seriesNo]->length;
     if (length <= 0)
+    {
         return 0;
+    }
 
     if (m_PreparedSeries[seriesNo] == nullptr)
+    {
         m_PreparedSeries[seriesNo] = new mobiledoas::CWindSpeedCalculator::CMeasurementSeries();
+    }
 
-    if (SUCCESS != mobiledoas::CWindSpeedCalculator::LowPassFilter(m_OriginalSeries[seriesNo], m_PreparedSeries[seriesNo], m_settings.lowPassFilterAverage))
+    if (SUCCESS != mobiledoas::CWindSpeedCalculator::LowPassFilter(
+                       m_OriginalSeries[seriesNo], m_PreparedSeries[seriesNo], m_settings.lowPassFilterAverage))
+    {
         return 0;
+    }
 
     return 1;
 }
@@ -337,7 +382,8 @@ int	CPostWindDlg::LowPassFilter(int seriesNo) {
 void CPostWindDlg::OnChangeLPIterations()
 {
     UpdateData(TRUE); // <-- save the data in the dialog
-    if (m_settings.lowPassFilterAverage >= 0) {
+    if (m_settings.lowPassFilterAverage >= 0)
+    {
         DrawColumn();
     }
 }
@@ -349,43 +395,58 @@ void CPostWindDlg::OnCalculateWindspeed()
     double delay; // <-- the calculated delay
 
                   // 1. Perform the correlation - calculations...
-    if (SUCCESS != m_calc.CalculateDelay(delay, m_OriginalSeries[0], m_OriginalSeries[1], m_settings)) {
-        switch (m_calc.m_lastError) {
+    if (SUCCESS != m_calc.CalculateDelay(delay, m_OriginalSeries[0], m_OriginalSeries[1], m_settings))
+    {
+        switch (m_calc.m_lastError)
+        {
         case mobiledoas::CWindSpeedCalculator::ERROR_TOO_SHORT_DATASERIES:
-            MessageBox("The time series is too short to be used with these settings. Please check the settings and try again"); break;
+            MessageBox(
+                "The time series is too short to be used with these settings. Please check the settings and try again");
+            break;
         case mobiledoas::CWindSpeedCalculator::ERROR_LOWPASSFILTER:
-            MessageBox("Failed to low-pass filter the time-series. Please check settings and try again"); break;
+            MessageBox("Failed to low-pass filter the time-series. Please check settings and try again");
+            break;
         case mobiledoas::CWindSpeedCalculator::ERROR_DIFFERENT_SAMPLEINTERVALS:
-            MessageBox("Failed to correlate the time-series. They have different sample-intervals"); break;
+            MessageBox("Failed to correlate the time-series. They have different sample-intervals");
+            break;
         default:
-            MessageBox("Faile to correlate the time-series. Unknown error"); break;
+            MessageBox("Faile to correlate the time-series. Unknown error");
+            break;
         }
         return;
     }
 
     // 2. Calculate the average value of the correlation
-    double	 avgCorr1 = Average(m_calc.corr, m_calc.m_length);
+    double avgCorr1 = Average(m_calc.corr, m_calc.m_length);
 
     // 3. Perform the correlation - calculations with the second series as upwind
-    if (SUCCESS != m_calc.CalculateDelay(delay, m_OriginalSeries[1], m_OriginalSeries[0], m_settings)) {
-        switch (m_calc.m_lastError) {
+    if (SUCCESS != m_calc.CalculateDelay(delay, m_OriginalSeries[1], m_OriginalSeries[0], m_settings))
+    {
+        switch (m_calc.m_lastError)
+        {
         case mobiledoas::CWindSpeedCalculator::ERROR_TOO_SHORT_DATASERIES:
-            MessageBox("The time series is too short to be used with these settings. Please check the settings and try again"); break;
+            MessageBox(
+                "The time series is too short to be used with these settings. Please check the settings and try again");
+            break;
         case mobiledoas::CWindSpeedCalculator::ERROR_LOWPASSFILTER:
-            MessageBox("Failed to low-pass filter the time-series. Please check settings and try again"); break;
+            MessageBox("Failed to low-pass filter the time-series. Please check settings and try again");
+            break;
         case mobiledoas::CWindSpeedCalculator::ERROR_DIFFERENT_SAMPLEINTERVALS:
-            MessageBox("Failed to correlate the time-series. They have different sample-intervals"); break;
+            MessageBox("Failed to correlate the time-series. They have different sample-intervals");
+            break;
         default:
-            MessageBox("Faile to correlate the time-series. Unknown error"); break;
+            MessageBox("Faile to correlate the time-series. Unknown error");
+            break;
         }
         return;
     }
 
     // 4. Calculate the average correlation for the second case
-    double	avgCorr2 = Average(m_calc.corr, m_calc.m_length);
+    double avgCorr2 = Average(m_calc.corr, m_calc.m_length);
 
     // 5. Use the results which gave the highest average correlation
-    if (avgCorr1 > avgCorr2) {
+    if (avgCorr1 > avgCorr2)
+    {
         m_calc.CalculateDelay(delay, m_OriginalSeries[0], m_OriginalSeries[1], m_settings);
     }
 
@@ -402,14 +463,16 @@ void CPostWindDlg::OnChangePlumeHeight()
     UpdateData(TRUE);
 
     // 2. Update the result-graph, if necessary
-    if (m_showOption == 2) {
+    if (m_showOption == 2)
+    {
         DrawResult();
     }
 }
 
-void CPostWindDlg::SaveResult() {
+void CPostWindDlg::SaveResult()
+{
     // 1. Get the directory where the evaluation log-file is. The
-    //		wind-speed log-file will be saved in the same directory
+    //      wind-speed log-file will be saved in the same directory
     CString directory;
     directory.Format(m_evalLog[0]);
     Common::GetDirectory(directory);
@@ -421,7 +484,8 @@ void CPostWindDlg::SaveResult() {
 
     // 3. Open the log-file for writing
     FILE* f = fopen(fileName, "w");
-    if (f == nullptr) {
+    if (f == nullptr)
+    {
         // Could not open the file
         MessageBox("Could not open log-file for writing, no data saved");
         return;
@@ -437,15 +501,19 @@ void CPostWindDlg::SaveResult() {
     // 5. Write the result
     double distance = m_settings.plumeHeight * tan(DEGREETORAD * m_settings.angleSeparation);
     fprintf(f, "\nCorrelation\tDelay[s]\tWindSpeed[m/s]\n");
-    for (int k = 0; k < m_calc.m_length; ++k) {
-        if (m_calc.used[k]) {
+    for (int k = 0; k < m_calc.m_length; ++k)
+    {
+        if (m_calc.used[k])
+        {
             fprintf(f, "%lf\t", m_calc.corr[k]);
             fprintf(f, "%lf\t", m_calc.delays[k]);
-            if (fabs(m_calc.delays[k]) < 1e-5) {
+            if (fabs(m_calc.delays[k]) < 1e-5)
+            {
                 fprintf(f, "%%0.0\n");
             }
         }
-        else {
+        else
+        {
             fprintf(f, "%lf\n", distance / m_calc.delays[k]);
         }
     }

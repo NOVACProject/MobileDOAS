@@ -1,0 +1,20 @@
+# Line endings: store text files with LF in the repository, check out with the platform's native ending.
+# The shared .editorconfig relies on this and does not set end_of_line.
+* text=auto
+
+# Visual Studio expects CRLF in these files
+*.sln text eol=crlf
+*.vcxproj text eol=crlf
+*.filters text eol=crlf
+*.rc text eol=crlf
+
+# Binary files
+*.aps binary
+*.bmp binary
+*.ico binary
+*.lib binary
+*.dll binary
+*.zip binary
+*.pdf binary
+*.doc binary
+*.db binary

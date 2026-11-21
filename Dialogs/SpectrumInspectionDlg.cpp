@@ -21,7 +21,8 @@ CSpectrumInspectionDlg::CSpectrumInspectionDlg(CWnd* pParent /*=NULL*/)
     m_spectrumPath.Format("");
 
     m_number = new double[4096];
-    for (int k = 0; k < 4096; k += 4) {
+    for (int k = 0; k < 4096; k += 4)
+    {
         m_number[k] = k;
         m_number[k + 1] = k + 1;
         m_number[k + 2] = k + 2;
@@ -37,7 +38,8 @@ CSpectrumInspectionDlg::CSpectrumInspectionDlg(CWnd* pParent /*=NULL*/)
 
 CSpectrumInspectionDlg::~CSpectrumInspectionDlg()
 {
-    if (m_number != nullptr) {
+    if (m_number != nullptr)
+    {
         delete m_number;
         m_number = nullptr;
     }
@@ -66,7 +68,8 @@ END_MESSAGE_MAP()
 
 // CSpectrumInspectionDlg message handlers
 
-BOOL CSpectrumInspectionDlg::OnInitDialog() {
+BOOL CSpectrumInspectionDlg::OnInitDialog()
+{
     CDialog::OnInitDialog();
     CRect rect;
 
@@ -96,12 +99,12 @@ BOOL CSpectrumInspectionDlg::OnInitDialog() {
     ScrollInfo.fMask = SIF_ALL;                 // parameters to set
     ScrollInfo.nMin = 0;                        // minimum scrolling position
     ScrollInfo.nPage = 20;                      // the page size of the scroll box
-    ScrollInfo.nMax = m_totalSpecNum + 1 + ScrollInfo.nPage;		// maximum scrolling position
+    ScrollInfo.nMax = m_totalSpecNum + 1 + ScrollInfo.nPage;  // maximum scrolling position
     ScrollInfo.nPos = 0;                        // initial position of the scroll box
     ScrollInfo.nTrackPos = 0;                   // immediate position of a scroll box that the user is dragging
     m_spectrumScrollBar.SetScrollInfo(&ScrollInfo);
 
-    // initialize 
+    // initialize
     InitPropertiesList();
 
     // Draw the spectrum (if we have any)
@@ -121,16 +124,18 @@ void CSpectrumInspectionDlg::OnBrowseEvallog()
     filter[n + 2] = 0;
 
     // 0. Turn off the zooming temporarily, this since if the user double-clicks
-    //		in the dialog we want to show then this can be percieved as a zoom-click by the graph...
+    //      in the dialog we want to show then this can be percieved as a zoom-click by the graph...
     m_spectrumGraph.m_userZoomableGraph = false;
 
-    if (!common.BrowseForFile(filter, fileName)) {
+    if (!common.BrowseForFile(filter, fileName))
+    {
         m_spectrumGraph.m_userZoomableGraph = true;
         return;
     }
 
     // read the evaluation-log
-    if (0 == ReadEvaluationLog(fileName)) {
+    if (0 == ReadEvaluationLog(fileName))
+    {
 
         /** Save the directory where the evaluation log (and also the spectra) are stored */
         m_spectrumPath.Format(fileName);
@@ -147,7 +152,7 @@ void CSpectrumInspectionDlg::OnBrowseEvallog()
         ScrollInfo.fMask = SIF_ALL;                 // parameters to set
         ScrollInfo.nMin = 0;                        // minimum scrolling position
         ScrollInfo.nPage = 20;                      // the page size of the scroll box
-        ScrollInfo.nMax = m_totalSpecNum + 1 + ScrollInfo.nPage;		// maximum scrolling position
+        ScrollInfo.nMax = m_totalSpecNum + 1 + ScrollInfo.nPage;  // maximum scrolling position
         ScrollInfo.nPos = 0;                        // initial position of the scroll box
         ScrollInfo.nTrackPos = 0;                   // immediate position of a scroll box that the user is dragging
         m_spectrumScrollBar.SetScrollInfo(&ScrollInfo);
@@ -157,7 +162,8 @@ void CSpectrumInspectionDlg::OnBrowseEvallog()
 
         DrawSpectrum();
     }
-    else {
+    else
+    {
         MessageBox("Cannot parse that evaluation log");
     }
 
@@ -191,33 +197,41 @@ void CSpectrumInspectionDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScr
 
     case SB_LINELEFT:      // Scroll left.
         if (curpos > minpos)
+        {
             curpos--;
+        }
         break;
 
     case SB_LINERIGHT:   // Scroll right.
         if (curpos < maxpos)
+        {
             curpos++;
+        }
         break;
 
     case SB_PAGELEFT:    // Scroll one page left.
     {
-        // Get the page size. 
-        SCROLLINFO   info;
+        // Get the page size.
+        SCROLLINFO info;
         pScrollBar->GetScrollInfo(&info, SIF_ALL);
 
         if (curpos > minpos)
+        {
             curpos = max(minpos, curpos - (int)info.nPage);
+        }
     }
     break;
 
     case SB_PAGERIGHT:      // Scroll one page right.
     {
-        // Get the page size. 
-        SCROLLINFO   info;
+        // Get the page size.
+        SCROLLINFO info;
         pScrollBar->GetScrollInfo(&info, SIF_ALL);
 
         if (curpos < maxpos)
+        {
             curpos = min(maxpos, curpos + (int)info.nPage);
+        }
     }
     break;
 
@@ -242,20 +256,24 @@ void CSpectrumInspectionDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScr
 
 
 /** Zooming in the graph */
-LRESULT CSpectrumInspectionDlg::OnZoomGraph(WPARAM wParam, LPARAM lParam) {
+LRESULT CSpectrumInspectionDlg::OnZoomGraph(WPARAM wParam, LPARAM lParam)
+{
     this->DrawSpectrum();
 
     return 0;
 }
 
 /** Draws the currently selected spectrum */
-void CSpectrumInspectionDlg::DrawSpectrum() {
+void CSpectrumInspectionDlg::DrawSpectrum()
+{
     CString fileName, fullFileName, userMessage;
     CSpectrum spectrum;
     Graph::CSpectrumGraph::plotRange range;
 
     if (m_selectedSpectrum >= m_totalSpecNum || m_spectrumPath.GetLength() <= 3)
+    {
         return; // this spectrum does not exist don't even try to draw it...
+    }
 
     // begin by clearing the graph
     m_spectrumGraph.CleanPlot();
@@ -263,26 +281,31 @@ void CSpectrumInspectionDlg::DrawSpectrum() {
     // the name of the spectrum to open
     fullFileName.Format(m_spectrumPath);
 
-    if (m_selectedSpectrum == -3) {
+    if (m_selectedSpectrum == -3)
+    {
         fileName.Format("offset_0.STD");
     }
-    else if (m_selectedSpectrum == -2) {
+    else if (m_selectedSpectrum == -2)
+    {
         fileName.Format("dark_0.STD");
     }
-    else if (m_selectedSpectrum == -1) {
+    else if (m_selectedSpectrum == -1)
+    {
         fileName.Format("sky_0.STD");
     }
-    else {
+    else
+    {
         fileName.Format("%05d_0.STD", m_selectedSpectrum);
     }
     fullFileName.AppendFormat(fileName);
     userMessage.Format("Showing spectrum: %s (out of %d spectra)", (LPCTSTR)fileName, m_totalSpecNum);
 
-    // Tell the user which spectrum he's seeing 
+    // Tell the user which spectrum he's seeing
     SetDlgItemText(IDC_LABEL_SPECTRUMNUMBER, userMessage);
 
     // if this file does not exist, then return
-    if (!IsExistingFile(fullFileName) || 0 != CSpectrumIO::readSTDFile(fullFileName, &spectrum)) {
+    if (!IsExistingFile(fullFileName) || 0 != CSpectrumIO::readSTDFile(fullFileName, &spectrum))
+    {
         GetPlotRange(range);
 
         double xmin = (range.maxLambda - range.minLambda) * 0.333;
@@ -294,28 +317,33 @@ void CSpectrumInspectionDlg::DrawSpectrum() {
 
         m_spectrumGraph.DrawTextBox(xmin, xmax, ymin, ymax, userMessage);
     }
-    else {
+    else
+    {
         GetPlotRange(range, &spectrum);
 
         m_spectrumGraph.SetPlotColor(m_spectrumColor);
         m_spectrumGraph.SetRange(range.minLambda, range.maxLambda, 0, range.minIntens, range.maxIntens, 0);
-        m_spectrumGraph.XYPlot(m_number, spectrum.I, spectrum.length, Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
+        m_spectrumGraph.XYPlot(m_number, spectrum.I, spectrum.length,
+                               Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
 
         FillInSpectrumPropertiesList(&spectrum);
     }
 }
 
 /** Gets the range of the plot */
-void CSpectrumInspectionDlg::GetPlotRange(Graph::CSpectrumGraph::plotRange& range, const CSpectrum* spectrum) {
+void CSpectrumInspectionDlg::GetPlotRange(Graph::CSpectrumGraph::plotRange& range, const CSpectrum* spectrum)
+{
     Graph::CSpectrumGraph::plotRange rect;
 
     // See if the user has determined any range...
     m_spectrumGraph.GetZoomRect(rect);
-    if (fabs(rect.maxLambda) > 0.1) {
+    if (fabs(rect.maxLambda) > 0.1)
+    {
         range = rect;
         return;
     }
-    else if (spectrum != nullptr) {
+    else if (spectrum != nullptr)
+    {
         long maxV = (long)spectrum->GetMax();
         range.minIntens = 0.0;
         range.maxIntens = maxV;
@@ -324,7 +352,8 @@ void CSpectrumInspectionDlg::GetPlotRange(Graph::CSpectrumGraph::plotRange& rang
 
         return;
     }
-    else {
+    else
+    {
         range.minIntens = 0.0;
         range.maxIntens = 4095;
         range.minLambda = 0.0;
@@ -334,14 +363,17 @@ void CSpectrumInspectionDlg::GetPlotRange(Graph::CSpectrumGraph::plotRange& rang
     }
 }
 
-void CSpectrumInspectionDlg::InitPropertiesList() {
+void CSpectrumInspectionDlg::InitPropertiesList()
+{
     // Put out the list of properties...
     CRect rect;
     this->m_propertiesFrame.GetWindowRect(rect);
     int height = rect.bottom - rect.top;
     int width = rect.right - rect.left;
-    rect.top = 20; rect.bottom = height - 10;
-    rect.left = 10; rect.right = width - 10;
+    rect.top = 20;
+    rect.bottom = height - 10;
+    rect.left = 10;
+    rect.right = width - 10;
     int columnWidth0 = (int)(0.6 * (rect.right - rect.left));
     int columnWidth1 = (int)(0.4 * (rect.right - rect.left));
 
@@ -367,16 +399,17 @@ void CSpectrumInspectionDlg::InitPropertiesList() {
     m_propertyList.InsertItem(index++, "GPS Status:");
     m_propertyList.InsertItem(index++, "Speed [m/s]:");
     m_propertyList.InsertItem(index++, "Course [deg]:");
-
 }
 
 /** Fills in the property list with information about the current spectrum
     if spectrum is NULL then the list is just cleared */
-void CSpectrumInspectionDlg::FillInSpectrumPropertiesList(const CSpectrum* spec) {
+void CSpectrumInspectionDlg::FillInSpectrumPropertiesList(const CSpectrum* spec)
+{
     CString str;
     int index = 0;
 
-    if (spec != nullptr) {
+    if (spec != nullptr)
+    {
         // ---- Show the information to the user... ----
         str.Format("%s", (LPCTSTR)spec->spectrometerSerial);
         m_propertyList.SetItemText(index++, 1, str);
@@ -412,10 +445,12 @@ void CSpectrumInspectionDlg::FillInSpectrumPropertiesList(const CSpectrum* spec)
         m_propertyList.SetItemText(index++, 1, str);
 
         str.Format("Not Available");
-        if (spec->gpsStatus == "A") {
+        if (spec->gpsStatus == "A")
+        {
             str.Format("%s", "Active");
         }
-        if (spec->gpsStatus == "V") {
+        if (spec->gpsStatus == "V")
+        {
             str.Format("%s", "Void");
         }
         m_propertyList.SetItemText(index++, 1, str);
@@ -425,9 +460,9 @@ void CSpectrumInspectionDlg::FillInSpectrumPropertiesList(const CSpectrum* spec)
 
         str.Format("%.1lf", spec->course);
         m_propertyList.SetItemText(index++, 1, str);
-
     }
-    else {
+    else
+    {
         str.Format("");
         m_propertyList.SetItemText(index++, 1, str);
         m_propertyList.SetItemText(index++, 1, str);
@@ -448,30 +483,36 @@ void CSpectrumInspectionDlg::FillInSpectrumPropertiesList(const CSpectrum* spec)
 
 /** Reads the given evaluation log file.
     @return 0 on success. */
-int CSpectrumInspectionDlg::ReadEvaluationLog(const CString& fullFileName) {
+int CSpectrumInspectionDlg::ReadEvaluationLog(const CString& fullFileName)
+{
     mobiledoas::CFlux flux;
-    int nChannels;	// the number of channels that was used in this measurement
+    int nChannels; // the number of channels that was used in this measurement
     double fileVersion; // the version number of the evaluation-log file
     CString fileName, filePath;
 
     // Get the path and name of the file
-    fileName.Format(fullFileName);	Common::GetFileName(fileName);
-    filePath.Format(fullFileName);	Common::GetDirectory(filePath);
+    fileName.Format(fullFileName);
+    Common::GetFileName(fileName);
+    filePath.Format(fullFileName);
+    Common::GetDirectory(filePath);
 
     // Read the header of the log file and see if it is an ok file
     int fileType = flux.ReadSettingFile((LPCSTR)fileName, nChannels, fileVersion);
-    if (fileType != 1) {
+    if (fileType != 1)
+    {
         return 1;
     }
 
     // allocate space for the new channels
-    for (int k = 1; k <= nChannels; ++k) {
+    for (int k = 1; k <= nChannels; ++k)
+    {
         mobiledoas::CTraverse* tr = new mobiledoas::CTraverse();
         flux.m_traverse.push_back(tr);
     }
 
     // Read the data from the file
-    if (0 == flux.ReadLogFile((LPCSTR)filePath, (LPCSTR)fileName, nChannels, fileVersion)) {
+    if (0 == flux.ReadLogFile((LPCSTR)filePath, (LPCSTR)fileName, nChannels, fileVersion))
+    {
         MessageBox(TEXT("That file is empty"));
         return 1;
     }
@@ -479,7 +520,8 @@ int CSpectrumInspectionDlg::ReadEvaluationLog(const CString& fullFileName) {
     m_totalSpecNum = flux.m_traverse[0]->m_recordNum;
 
     // Delete the data we don't need
-    for (int k = 0; k <= nChannels; ++k) {
+    for (int k = 0; k <= nChannels; ++k)
+    {
         mobiledoas::CTraverse* tr = flux.m_traverse[k];
         delete tr;
     }

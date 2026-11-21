@@ -113,7 +113,8 @@ END_MESSAGE_MAP()
 
 
 // CConfigure_Spectrometer message handlers
-BOOL CConfigure_Spectrometer::OnInitDialog() {
+BOOL CConfigure_Spectrometer::OnInitDialog()
+{
 
     CPropertyPage::OnInitDialog();
 
@@ -122,27 +123,35 @@ BOOL CConfigure_Spectrometer::OnInitDialog() {
 
     // Initialize the serial-port combo-box
     int toSelect = -1;
-    for (k = 1; k < 22; ++k) {
+    for (k = 1; k < 22; ++k)
+    {
         str.Format("COM%d", k);
         m_specPort.AddString(str);
         if (EqualsIgnoringCase(std::string((LPCSTR)str), m_conf->m_serialPort))
+        {
             toSelect = k - 1;
+        }
     }
     m_specPort.SetCurSel(toSelect);
 
     // Initialize the baudrate-combo-box
     toSelect = -1;
-    for (k = 0; k < 6; ++k) {
+    for (k = 0; k < 6; ++k)
+    {
         str.Format("%d", m_availableBaudrates[k]);
         m_specBaudrate.AddString(str);
         if (m_availableBaudrates[k] == m_conf->m_baudrate)
+        {
             toSelect = k;
+        }
     }
     m_specBaudrate.SetCurSel(toSelect);
 
     // Initialize the channels - combo-box
-    str.Format("1");		m_nChannels.AddString(str);
-    str.Format("2");		m_nChannels.AddString(str);
+    str.Format("1");
+    m_nChannels.AddString(str);
+    str.Format("2");
+    m_nChannels.AddString(str);
     m_nChannels.SetCurSel(m_conf->m_nChannels - 1);
 
     EnableControls();
@@ -153,7 +162,8 @@ BOOL CConfigure_Spectrometer::OnInitDialog() {
     return TRUE;
 }
 
-void CConfigure_Spectrometer::SaveSettings() {
+void CConfigure_Spectrometer::SaveSettings()
+{
     UpdateData(TRUE); // <-- save the data in the dialog
     int curPort = m_specPort.GetCurSel();
     int curBaud = m_specBaudrate.GetCurSel();
@@ -165,11 +175,13 @@ void CConfigure_Spectrometer::SaveSettings() {
     m_conf->m_serialPort = portNumber.str();
 
     // The baudrate
-    if (curBaud == -1) {
+    if (curBaud == -1)
+    {
         m_conf->m_baudrate = 9600;
         m_specBaudrate.SetCurSel(1);
     }
-    else {
+    else
+    {
         m_conf->m_baudrate = m_availableBaudrates[curBaud];
     }
 
@@ -181,40 +193,47 @@ void CConfigure_Spectrometer::SaveSettings() {
 
 /** Enables the controls that should be enabled, and disables
         the ones which should be disabled */
-void CConfigure_Spectrometer::EnableControls() {
+void CConfigure_Spectrometer::EnableControls()
+{
     UpdateData(TRUE); // <-- save the data in the dialog
 
     // Enable or disable the combo-boxes based on the preferred method of connection
-    if (m_conf->m_spectrometerConnection == CMobileConfiguration::CONNECTION_USB) {
+    if (m_conf->m_spectrometerConnection == CMobileConfiguration::CONNECTION_USB)
+    {
         m_specPort.EnableWindow(FALSE);
         m_specBaudrate.EnableWindow(FALSE);
     }
-    else if (m_conf->m_spectrometerConnection == CMobileConfiguration::CONNECTION_RS232) {
+    else if (m_conf->m_spectrometerConnection == CMobileConfiguration::CONNECTION_RS232)
+    {
         m_specPort.EnableWindow(TRUE);
         m_specBaudrate.EnableWindow(TRUE);
     }
-    else if (m_conf->m_spectrometerConnection == CMobileConfiguration::CONNECTION_DIRECTORY) {
+    else if (m_conf->m_spectrometerConnection == CMobileConfiguration::CONNECTION_DIRECTORY)
+    {
         m_specPort.EnableWindow(FALSE);
         m_specBaudrate.EnableWindow(FALSE);
     }
 
-    // Enable or disable the edit-boxes based on the preferred method 
-    //		of calculating the exposure time
-    if (m_conf->m_expTimeMode == CMobileConfiguration::EXPOSURETIME_AUTOMATIC) {
+    // Enable or disable the edit-boxes based on the preferred method
+    //      of calculating the exposure time
+    if (m_conf->m_expTimeMode == CMobileConfiguration::EXPOSURETIME_AUTOMATIC)
+    {
         m_editSpecCenter.EnableWindow(TRUE);
         m_editPercent.EnableWindow(TRUE);
         m_editFixExpTime.EnableWindow(FALSE);
         m_editSaturationLow.EnableWindow(FALSE);
         m_editSaturationHigh.EnableWindow(FALSE);
     }
-    else if (m_conf->m_expTimeMode == CMobileConfiguration::EXPOSURETIME_FIXED) {
+    else if (m_conf->m_expTimeMode == CMobileConfiguration::EXPOSURETIME_FIXED)
+    {
         m_editSpecCenter.EnableWindow(FALSE);
         m_editPercent.EnableWindow(FALSE);
         m_editFixExpTime.EnableWindow(TRUE);
         m_editSaturationLow.EnableWindow(FALSE);
         m_editSaturationHigh.EnableWindow(FALSE);
     }
-    else if (m_conf->m_expTimeMode == CMobileConfiguration::EXPOSURETIME_ADAPTIVE) {
+    else if (m_conf->m_expTimeMode == CMobileConfiguration::EXPOSURETIME_ADAPTIVE)
+    {
         m_editSpecCenter.EnableWindow(TRUE);
         m_editPercent.EnableWindow(TRUE);
         m_editFixExpTime.EnableWindow(FALSE);
@@ -236,13 +255,17 @@ void CConfigure_Spectrometer::OnOK()
     }
 }
 
-void CConfigure_Spectrometer::InitToolTips() {
+void CConfigure_Spectrometer::InitToolTips()
+{
     // Don't initialize the tool tips twice
     if (m_toolTip.m_hWnd != nullptr)
+    {
         return;
+    }
 
     // Enable the tool tips
-    if (!m_toolTip.Create(this)) {
+    if (!m_toolTip.Create(this))
+    {
         TRACE0("Failed to create tooltip control\n");
     }
     m_toolTip.AddTool(&m_specPort, IDC_COMBO_PORT);
@@ -262,9 +285,9 @@ void CConfigure_Spectrometer::InitToolTips() {
     m_toolTip.Activate(TRUE);
 }
 
-BOOL CConfigure_Spectrometer::PreTranslateMessage(MSG* pMsg) {
+BOOL CConfigure_Spectrometer::PreTranslateMessage(MSG* pMsg)
+{
     m_toolTip.RelayEvent(pMsg);
 
     return CPropertyPage::PreTranslateMessage(pMsg);
 }
-

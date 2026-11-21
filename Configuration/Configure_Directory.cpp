@@ -44,12 +44,14 @@ BEGIN_MESSAGE_MAP(CConfigure_Directory, CPropertyPage)
     ON_BN_CLICKED(IDC_BROWSE_DIR_OFFSET, &CConfigure_Directory::OnBnClickedBrowseDirOffset)
 END_MESSAGE_MAP()
 
-BOOL CConfigure_Directory::OnInitDialog() {
+BOOL CConfigure_Directory::OnInitDialog()
+{
     CPropertyPage::OnInitDialog();
     return TRUE;
 }
 
-void CConfigure_Directory::SaveData() {
+void CConfigure_Directory::SaveData()
+{
     UpdateData(TRUE);
 }
 
@@ -58,7 +60,8 @@ void Configuration::CConfigure_Directory::OnBnClickedBrowseDirectory()
     Common common;
     CString folder = m_conf->m_directory;
     bool result = common.BrowseForDirectory(folder);
-    if (result) {
+    if (result)
+    {
         m_conf->m_directory = folder;
         UpdateData(FALSE);
     }
@@ -69,7 +72,8 @@ void Configuration::CConfigure_Directory::OnBnClickedBrowseDirSky()
 {
     Common common;
     CString m_file;
-    if (common.BrowseForFile("*.std", m_file)) {
+    if (common.BrowseForFile("*.std", m_file))
+    {
         m_conf->m_defaultSkyFile = m_file;
         UpdateData(FALSE);
     }
@@ -80,7 +84,8 @@ void Configuration::CConfigure_Directory::OnBnClickedBrowseDirDark()
 {
     Common common;
     CString m_file;
-    if (common.BrowseForFile("*.std", m_file)) {
+    if (common.BrowseForFile("*.std", m_file))
+    {
         m_conf->m_defaultDarkFile = m_file;
         UpdateData(FALSE);
     }
@@ -91,7 +96,8 @@ void Configuration::CConfigure_Directory::OnBnClickedBrowseDirDarkcur()
 {
     Common common;
     CString m_file;
-    if (common.BrowseForFile("*.std", m_file)) {
+    if (common.BrowseForFile("*.std", m_file))
+    {
         m_conf->m_defaultDarkcurFile = m_file;
         UpdateData(FALSE);
     }
@@ -102,14 +108,17 @@ void Configuration::CConfigure_Directory::OnBnClickedBrowseDirOffset()
 {
     Common common;
     CString m_file;
-    if (common.BrowseForFile("*.std", m_file)) {
+    if (common.BrowseForFile("*.std", m_file))
+    {
         m_conf->m_defaultOffsetFile = m_file;
         UpdateData(FALSE);
     }
 }
 
-BOOL CConfigure_Directory::OnSetActive() {
-    if (m_conf->m_spectrometerConnection == CMobileConfiguration::CONNECTION_DIRECTORY) {
+BOOL CConfigure_Directory::OnSetActive()
+{
+    if (m_conf->m_spectrometerConnection == CMobileConfiguration::CONNECTION_DIRECTORY)
+    {
         GetDlgItem(IDC_EDIT_DIRECTORY)->EnableWindow(TRUE);
         GetDlgItem(IDC_EDIT_DYNAMIC_RANGE)->EnableWindow(TRUE);
         GetDlgItem(IDC_EDIT_SLEEP)->EnableWindow(TRUE);
@@ -118,7 +127,8 @@ BOOL CConfigure_Directory::OnSetActive() {
         GetDlgItem(IDC_EDIT_DARKCUR_FILE)->EnableWindow(TRUE);
         GetDlgItem(IDC_EDIT_OFFSET_FILE)->EnableWindow(TRUE);
     }
-    else {
+    else
+    {
         GetDlgItem(IDC_EDIT_DIRECTORY)->EnableWindow(FALSE);
         GetDlgItem(IDC_EDIT_DYNAMIC_RANGE)->EnableWindow(FALSE);
         GetDlgItem(IDC_EDIT_SLEEP)->EnableWindow(FALSE);

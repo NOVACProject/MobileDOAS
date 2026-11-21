@@ -28,9 +28,9 @@ BEGIN_MESSAGE_MAP(CDMSpecApp, CWinApp)
     //    DO NOT EDIT what you see in these blocks of generated code!
 //}}AFX_MSG_MAP
 // Standard file based document commands
-ON_COMMAND(ID_FILE_NEW, CWinApp::OnFileNew)
-ON_COMMAND(ID_FILE_OPEN, CWinApp::OnFileOpen)
-ON_COMMAND(ID_HELP_ABOUTMOBILEDOAS, OnAppAbout)
+    ON_COMMAND(ID_FILE_NEW, CWinApp::OnFileNew)
+    ON_COMMAND(ID_FILE_OPEN, CWinApp::OnFileOpen)
+    ON_COMMAND(ID_HELP_ABOUTMOBILEDOAS, OnAppAbout)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -60,9 +60,9 @@ BOOL CDMSpecApp::InitInstance()
     //  the specific initialization routines you do not need.
 
 #ifdef _AFXDLL
-    Enable3dControls();			// Call this when using MFC in a shared DLL
+    Enable3dControls();   // Call this when using MFC in a shared DLL
     //#else
-    //	Enable3dControlsStatic();	// Call this when linking to MFC statically
+    //  Enable3dControlsStatic();   // Call this when linking to MFC statically
 #endif
 
     // Change the registry key under which our settings are stored.
@@ -76,11 +76,9 @@ BOOL CDMSpecApp::InitInstance()
     //  serve as the connection between documents, frame windows and views.
 
     CSingleDocTemplate* pDocTemplate;
-    pDocTemplate = new CSingleDocTemplate(
-        IDR_MAINFRAME,
-        RUNTIME_CLASS(CDMSpecDoc),
-        RUNTIME_CLASS(CMainFrame),       // main SDI frame window
-        RUNTIME_CLASS(CDMSpecView));
+    pDocTemplate = new CSingleDocTemplate(IDR_MAINFRAME, RUNTIME_CLASS(CDMSpecDoc),
+                                          RUNTIME_CLASS(CMainFrame),       // main SDI frame window
+                                          RUNTIME_CLASS(CDMSpecView));
     AddDocTemplate(pDocTemplate);
 
     // Parse command line for standard shell commands, DDE, file open
@@ -89,7 +87,9 @@ BOOL CDMSpecApp::InitInstance()
 
     // Dispatch commands specified on the command line
     if (!ProcessShellCommand(cmdInfo))
+    {
         return FALSE;
+    }
 
     // The one and only window has been initialized, so show and update it.
     m_pMainWnd->SetWindowText(TEXT("Mobile DOAS"));
@@ -110,7 +110,10 @@ public:
 
     // Dialog Data
         //{{AFX_DATA(CAboutDlg)
-    enum { IDD = IDD_ABOUTBOX };
+    enum
+    {
+        IDD = IDD_ABOUTBOX
+    };
     //}}AFX_DATA
 
     // ClassWizard generated virtual function overrides
@@ -126,7 +129,8 @@ protected:
     DECLARE_MESSAGE_MAP()
 };
 
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD)
+CAboutDlg::CAboutDlg()
+    : CDialog(CAboutDlg::IDD)
 {
     //{{AFX_DATA_INIT(CAboutDlg)
     //}}AFX_DATA_INIT
@@ -138,7 +142,8 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
     CDialog::DoDataExchange(pDX);
     //{{AFX_DATA_MAP(CAboutDlg)
     //}}AFX_DATA_MAP
-    version.Format("Mobile DOAS Version %1d.%1d.%1d (Build %s)", CVersion::majorNumber, CVersion::minorNumber, CVersion::patchNumber, __DATE__);
+    version.Format("Mobile DOAS Version %1d.%1d.%1d (Build %s)", CVersion::majorNumber, CVersion::minorNumber,
+                   CVersion::patchNumber, __DATE__);
 
     DDX_Text(pDX, IDC_STATIC_VERSION, version);
 }

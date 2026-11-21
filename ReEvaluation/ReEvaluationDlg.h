@@ -12,8 +12,7 @@
 namespace ReEvaluation
 {
 
-class CReEvaluationDlg :
-    public CPropertySheet
+class CReEvaluationDlg : public CPropertySheet
 {
 public:
     CReEvaluationDlg(void);
@@ -39,6 +38,5 @@ public:
     CReEval_SkyDlg m_page3;
     CReEval_FitWindowsDlg m_page4;
     CReEval_DoEvaluationDlg m_page5;
-
 };
 }

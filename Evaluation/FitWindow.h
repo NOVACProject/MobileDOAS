@@ -2,8 +2,6 @@
 
 #include <SpectralEvaluation/Evaluation/ReferenceFile.h>
 
-#ifndef _FITWINDOW_H
-#define _FITWINDOW_H
 
 // The maximum number of references that we can use in fitting
 #define MAX_N_REFERENCES 10
@@ -30,7 +28,12 @@ namespace Evaluation
                      No filtering shold be done on the references
                      before running the measurements.
     */
-    enum FIT_TYPE { FIT_HP_DIV, FIT_HP_SUB, FIT_POLY };
+enum FIT_TYPE
+{
+    FIT_HP_DIV,
+    FIT_HP_SUB,
+    FIT_POLY
+};
 
 
     /** The class <b>CFitWindow</b> is used to store the settings
@@ -40,52 +43,50 @@ namespace Evaluation
         but also other properties such as which pixels should
         be used to calculate the offset. */
     // TODO: Replace this class with the CFitWindow from SpectralEvaluation
-    class CFitWindow
-    {
-    public:
-        CFitWindow(void);
-        ~CFitWindow(void);
+class CFitWindow
+{
+public:
+    CFitWindow(void);
+    ~CFitWindow(void);
 
         /** Resets the data to their default values */
-        void Clear();
+    void Clear();
 
         /** The lower edge of the fit window (in pixels) */
-        int fitLow;
+    int fitLow;
 
         /** The upper edge of the fit window (in pixels) */
-        int fitHigh;
+    int fitHigh;
 
         /** The channel which is used in this fit window */
-        int channel;
+    int channel;
 
         /** The reference files to use */
-        novac::CReferenceFile  ref[MAX_N_REFERENCES];
+    novac::CReferenceFile ref[MAX_N_REFERENCES];
 
         /** The number of references to use */
-        int nRef;
+    int nRef;
 
         /** The order of the polynomial that will also be fitted */
-        int polyOrder;
+    int polyOrder;
 
         /** The length of the spectra */
-        int specLength;
+    int specLength;
 
         /** The name of the fit window */
-        CString name;
+    CString name;
 
         /** The type of fit */
-        FIT_TYPE fitType;
+    FIT_TYPE fitType;
 
         /** True if the spectra are read out in an interlaced way */
-        BOOL interlaced;
+    BOOL interlaced;
 
         /** The offset should be removed between 'offsetFrom' and 'offsetTo' */
-        int offsetFrom;
-        int offsetTo;
+    int offsetFrom;
+    int offsetTo;
 
         /** Assignment operator, for convenience... */
-        CFitWindow& operator=(const CFitWindow& w2);
-    };
+    CFitWindow& operator=(const CFitWindow& w2);
+};
 }
-
-#endif

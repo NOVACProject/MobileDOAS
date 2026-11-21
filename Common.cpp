@@ -18,24 +18,30 @@ static char THIS_FILE[] = __FILE__;
 // ---------------------------------------------------------------
 // ---------------- GLOBAL FUNCTIONS -----------------------------
 // ---------------------------------------------------------------
-int Equals(const CString& str1, const CString& str2) {
+int Equals(const CString& str1, const CString& str2)
+{
     return (0 == _tcsnicmp(str1, str2, max(strlen(str1), strlen(str2))));
 }
 
-int Equals(const CString& str1, const CString& str2, unsigned int nCharacters) {
+int Equals(const CString& str1, const CString& str2, unsigned int nCharacters)
+{
     return (0 == _tcsnicmp(str1, str2, min(nCharacters, max(strlen(str1), strlen(str2)))));
 }
 
-int IsExistingFile(const CString* fileName) {
+int IsExistingFile(const CString* fileName)
+{
     FILE* f = fopen(*fileName, "r");
     if (f < (FILE*)1)
-        return(0);
+    {
+        return (0);
+    }
 
     fclose(f);
-    return(1);
+    return (1);
 }
 
-int IsExistingFile(const CString& fileName) {
+int IsExistingFile(const CString& fileName)
+{
     return IsExistingFile(&fileName);
 }
 
@@ -45,19 +51,18 @@ int IsExistingFile(const CString& fileName) {
 
 Common::Common()
 {
-
 }
 
 Common::~Common()
 {
-
 }
 void Common::WriteLogFile(CString filename, CString txt)
 {
     FILE* f;
     f = fopen(filename, "a+");
 
-    if (f < (FILE*)1) {
+    if (f < (FILE*)1)
+    {
         CString tmpStr;
         tmpStr.Format("Could not write to log file: %s. Not enough free space?", (LPCTSTR)filename);
         MessageBox(NULL, tmpStr, "Big Error", MB_OK);
@@ -78,21 +83,27 @@ void Common::GetExePath()
     m_exePath = m_exePath.Left(position + 1);
 }
 
-void Common::GuessSpecieName(const CString& fileName, CString& specie) {
+void Common::GuessSpecieName(const CString& fileName, CString& specie)
+{
     specie.Format("");
-    CString spc[] = { "SO2", "NO2", "O3", "O4", "HCHO", "RING", "H2O", "CLO", "BRO", "CHOCHO", "Glyoxal", "Formaldehyde" };
+    CString spc[] = {"SO2", "NO2", "O3",  "O4",     "HCHO",    "RING",
+                     "H2O", "CLO", "BRO", "CHOCHO", "Glyoxal", "Formaldehyde"};
     int nSpecies = 12;
 
     int index = fileName.ReverseFind('\\');
     if (index == 0)
+    {
         return;
+    }
 
     CString fil;
     fil.Format("%s", (LPCTSTR)fileName.Right((int)strlen(fileName) - index - 1));
     fil.MakeUpper();
 
-    for (int i = 0; i < nSpecies; ++i) {
-        if (strstr(fil, spc[i])) {
+    for (int i = 0; i < nSpecies; ++i)
+    {
+        if (strstr(fil, spc[i]))
+        {
             specie.Format("%s", (LPCTSTR)spc[i]);
             return;
         }
@@ -103,62 +114,77 @@ void Common::GuessSpecieName(const CString& fileName, CString& specie) {
 }
 
 
-bool FormatErrorCode(DWORD error, CString& string) {
+bool FormatErrorCode(DWORD error, CString& string)
+{
     /* from System Error Codes */
-    switch (error) {
+    switch (error)
+    {
     case ERROR_FILE_NOT_FOUND:
-        string.Format("File not found"); return true;
+        string.Format("File not found");
+        return true;
     case ERROR_PATH_NOT_FOUND:
-        string.Format("Path not found"); return true;
+        string.Format("Path not found");
+        return true;
     case ERROR_TOO_MANY_OPEN_FILES:
-        string.Format("Too many open files"); return true;
+        string.Format("Too many open files");
+        return true;
     case ERROR_ACCESS_DENIED:
-        string.Format("Access denied"); return true;
+        string.Format("Access denied");
+        return true;
     case ERROR_NOT_ENOUGH_MEMORY:
-        string.Format("Not enough memory"); return true;
+        string.Format("Not enough memory");
+        return true;
     case ERROR_OUTOFMEMORY:
-        string.Format("Out of memory"); return true;
+        string.Format("Out of memory");
+        return true;
     case ERROR_WRITE_PROTECT:
-        string.Format("The media is write protected"); return true;
+        string.Format("The media is write protected");
+        return true;
     case ERROR_SEEK:
-        string.Format("The drive cannot locate a specific area or track on the disk."); return true;
+        string.Format("The drive cannot locate a specific area or track on the disk.");
+        return true;
     case ERROR_WRITE_FAULT:
-        string.Format("The system cannot write to the specified device"); return true;
+        string.Format("The system cannot write to the specified device");
+        return true;
     case ERROR_READ_FAULT:
-        string.Format("The system cannot read from the specified device"); return true;
+        string.Format("The system cannot read from the specified device");
+        return true;
     case ERROR_HANDLE_DISK_FULL:
     case ERROR_DISK_FULL:
-        string.Format("The disk is full"); return true;
+        string.Format("The disk is full");
+        return true;
     case ERROR_CANNOT_MAKE:
-        string.Format("The directory or file cannot be created"); return true;
+        string.Format("The directory or file cannot be created");
+        return true;
     case ERROR_BUFFER_OVERFLOW:
-        string.Format("The file name is too long"); return true;
+        string.Format("The file name is too long");
+        return true;
     case ERROR_INVALID_NAME:
-        string.Format("The filename, directory name, or volume label syntax is incorrect"); return true;
+        string.Format("The filename, directory name, or volume label syntax is incorrect");
+        return true;
     case ERROR_DIRECTORY:
-        string.Format("The directory name is invalid"); return true;
+        string.Format("The directory name is invalid");
+        return true;
     case ERROR_DISK_TOO_FRAGMENTED:
-        string.Format("The volume is too fragmented to complete this operation"); return true;
+        string.Format("The volume is too fragmented to complete this operation");
+        return true;
     case ERROR_ARITHMETIC_OVERFLOW:
-        string.Format("Arithmetic result exceeded 32 bits"); return true;
+        string.Format("Arithmetic result exceeded 32 bits");
+        return true;
     case ERROR_ALREADY_EXISTS:
-        string.Format("The file already exists"); return true;
-
+        string.Format("The file already exists");
+        return true;
     }
 
     return false;
 }
 
 
-
 bool Common::BrowseForDirectory(CString& folder)
 {
     IFileOpenDialog* pfd;
     // CoCreate the dialog object.
-    HRESULT hr = CoCreateInstance(CLSID_FileOpenDialog,
-        NULL,
-        CLSCTX_INPROC_SERVER,
-        IID_PPV_ARGS(&pfd));
+    HRESULT hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd));
     bool success = false;
 
     if (SUCCEEDED(hr))
@@ -174,10 +200,12 @@ bool Common::BrowseForDirectory(CString& folder)
         if (SUCCEEDED(hr))
         {
             // Show the Open dialog.
-            if (!folder.IsEmpty()) {
+            if (!folder.IsEmpty())
+            {
                 IShellItem* dir;
                 hr = SHCreateItemFromParsingName(CT2CW(folder), NULL, IID_IShellItem, (void**)&dir);
-                if (SUCCEEDED(hr)) {
+                if (SUCCEEDED(hr))
+                {
                     pfd->SetFolder(dir);
                 }
             }
@@ -209,10 +237,7 @@ std::vector<CString> Common::BrowseForFiles()
     std::vector<CString> filenames;
     IFileOpenDialog* pfd;
     // CoCreate the dialog object.
-    HRESULT hr = CoCreateInstance(CLSID_FileOpenDialog,
-        NULL,
-        CLSCTX_INPROC_SERVER,
-        IID_PPV_ARGS(&pfd));
+    HRESULT hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd));
 
     if (SUCCEEDED(hr))
     {
@@ -228,9 +253,7 @@ std::vector<CString> Common::BrowseForFiles()
         if (SUCCEEDED(hr))
         {
 
-            COMDLG_FILTERSPEC aFileTypes[] = {
-                { L"Text files", L"*.txt" }
-            };
+            COMDLG_FILTERSPEC aFileTypes[] = {{L"Text files", L"*.txt"}};
             hr = pfd->SetFileTypes(ARRAYSIZE(aFileTypes), aFileTypes);
         }
 
@@ -250,8 +273,10 @@ std::vector<CString> Common::BrowseForFiles()
                     DWORD numFiles;
                     hr = results->GetCount(&numFiles);
                     filenames.reserve(numFiles);
-                    if (SUCCEEDED(hr)) {
-                        for (DWORD j = 0; j < numFiles; j++) {
+                    if (SUCCEEDED(hr))
+                    {
+                        for (DWORD j = 0; j < numFiles; j++)
+                        {
                             IShellItem* file;
                             results->GetItemAt(j, &file);
                             LPWSTR dn;
@@ -275,7 +300,8 @@ std::vector<CString> Common::BrowseForFiles()
 }
 
 // open a browser window and let the user search for a file
-bool Common::BrowseForFile(const char* filter, CString& fileName) {
+bool Common::BrowseForFile(const char* filter, CString& fileName)
+{
     static char szFile[4096];
     szFile[0] = 0;
 
@@ -294,7 +320,8 @@ bool Common::BrowseForFile(const char* filter, CString& fileName) {
     ofn.lpstrInitialDir = nullptr;
     ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_EXPLORER;
 
-    if (GetOpenFileName(&ofn) == TRUE) {
+    if (GetOpenFileName(&ofn) == TRUE)
+    {
         fileName.Format(szFile);
         return SUCCESS;
     }
@@ -354,18 +381,18 @@ bool Common::BrowseForFile_SaveAs(TCHAR* filter, CString& fileName, int* filterT
 }
 
 /** Take out the exe name from a long path
-      @param fileName path of the exe file	*/
+      @param fileName path of the exe file  */
 void Common::GetFileName(CString& fileName)
 {
     int position = fileName.ReverseFind('\\');
     int length = CString::StringLength(fileName);
     fileName = fileName.Right(length - position - 1);
-
 }
 
 /** Take out the directory from a long path name.
     @param fileName - the complete path of the file */
-void Common::GetDirectory(CString& fileName) {
+void Common::GetDirectory(CString& fileName)
+{
     int position = fileName.ReverseFind('\\');
     fileName = fileName.Left(position + 1);
 }

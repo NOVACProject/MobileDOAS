@@ -1,16 +1,12 @@
+#pragma once
+
 // Evaluation.h: interface for the CEvaluation class.
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_EVALUATION_H__DB88EE51_7ED0_4131_AE07_79F0F0C3106C__INCLUDED_)
-#define AFX_EVALUATION_H__DB88EE51_7ED0_4131_AE07_79F0F0C3106C__INCLUDED_
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
 
 #include "../BasicMath.h"
-#include "../FIT\Vector.h"	// Added by ClassView
+#include "../FIT\Vector.h" // Added by ClassView
 
 #include "FitWindow.h"
 #include "EvaluationResult.h"
@@ -32,7 +28,6 @@ struct EvaluationResult
 class CEvaluation : public CBasicMath
 {
 public:
-
     CEvaluation();
     virtual ~CEvaluation();
 
@@ -41,16 +36,16 @@ public:
     // -------------------------------------------------------------
 
     /** Reads the supplied list of references.
-            @param refFileList	- an array of CStrings containing the file-names to read
-            @param iNumFile			- the number of reference-files to read
-            @param sumChn				- the number of data points that we want to have in each file. */
+            @param refFileList  - an array of CStrings containing the file-names to read
+            @param iNumFile         - the number of reference-files to read
+            @param sumChn               - the number of data points that we want to have in each file. */
     BOOL ReadRefList(CString* refFileList, int iNumFile, int sumChn);
 
     // initialize the evaluation. Must be called before 'Evaluate' is called
     void SetParameters(int fitLow, int fitHigh, int polynomOrder, int lowPassFilter = 0);
 
     /** Sets the fit window to use */
-    void  SetFitWindow(const CFitWindow& window);
+    void SetFitWindow(const CFitWindow& window);
 
     /** Evaluate the following spectra, the parameters for the fit are defined in 'm_fitWindow' */
     void Evaluate(const double* darkArray, const double* skyArray, const double* specMem, long numSteps = 400);
@@ -119,7 +114,5 @@ private:
     /** 'lowPassFiltering' is true only if the spectra should be low-pass filtered
             before evaluation. This is by default false. */
     int m_lowPassFiltering;
-
 };
 }
-#endif // !defined(AFX_EVALUATION_H__DB88EE51_7ED0_4131_AE07_79F0F0C3106C__INCLUDED_)

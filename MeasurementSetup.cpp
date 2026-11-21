@@ -10,11 +10,15 @@
 // GetSingleSpectrometerInterface selects _one_ spectrometer interface for which it is possible to find connected devices.
 // This will currently return the first interface for which there are devices connected.
 // Multiple devices from different manufaturers is currently not supported.
-std::unique_ptr<mobiledoas::SpectrometerInterface> GetSingleSpectrometerInterface(std::vector < std::unique_ptr<mobiledoas::SpectrometerInterface>>& allInterfaces) {
+std::unique_ptr<mobiledoas::SpectrometerInterface>
+GetSingleSpectrometerInterface(std::vector<std::unique_ptr<mobiledoas::SpectrometerInterface>>& allInterfaces)
+{
 
-    for (size_t idx = 0; idx < allInterfaces.size(); ++idx) {
+    for (size_t idx = 0; idx < allInterfaces.size(); ++idx)
+    {
         auto allDevices = allInterfaces[idx]->ScanForDevices();
-        if (allDevices.size() != 0) {
+        if (allDevices.size() != 0)
+        {
             return std::move(allInterfaces[idx]);
         }
     }
@@ -22,7 +26,8 @@ std::unique_ptr<mobiledoas::SpectrometerInterface> GetSingleSpectrometerInterfac
     return nullptr;
 }
 
-CSpectrometer* CreateSpectrometer(SPECTROMETER_MODE measurementMode, CView& mainForm, novac::ILogger& log, std::unique_ptr<Configuration::CMobileConfiguration> conf)
+CSpectrometer* CreateSpectrometer(SPECTROMETER_MODE measurementMode, CView& mainForm, novac::ILogger& log,
+                                  std::unique_ptr<Configuration::CMobileConfiguration> conf)
 {
 
     if (measurementMode == MODE_DIRECTORY)
@@ -72,8 +77,8 @@ CSpectrometer* CreateSpectrometer(SPECTROMETER_MODE measurementMode, CView& main
         return new CMeasurement_Wind(mainForm, log, std::move(spectrometerInterface), std::move(conf));
     }
 
-    MessageBox(nullptr, "Error in program-logic: CreateSpectrometer was called with an unsupported measurement mode", "Error", MB_OK);
+    MessageBox(nullptr, "Error in program-logic: CreateSpectrometer was called with an unsupported measurement mode",
+               "Error", MB_OK);
 
     return nullptr;
 }
-

@@ -17,7 +17,10 @@ public:
 
     // Dialog Data
 #ifdef AFX_DESIGN_TIME
-    enum { IDD = IDD_CALIBRATE_OPEN_CALIBRATION };
+    enum
+    {
+        IDD = IDD_CALIBRATE_OPEN_CALIBRATION
+    };
 #endif
 
     /// <summary>
@@ -45,6 +48,4 @@ private:
     char* m_initialCalibrationFileTypeFilter = nullptr;
 
     void SetInitialCalibrationFiletypeFilter();
-
 };
-

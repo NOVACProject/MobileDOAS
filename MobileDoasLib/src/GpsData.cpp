@@ -9,20 +9,22 @@
 
 namespace mobiledoas
 {
-GpsData::GpsData() {}
+GpsData::GpsData()
+{
+}
 
 GpsData::GpsData(const GpsData& other)
-    : latitude(other.latitude),
-    longitude(other.longitude),
-    altitude(other.altitude),
-    time(other.time),
-    date(other.date),
-    nSatellitesTracked(other.nSatellitesTracked),
-    nSatellitesSeen(other.nSatellitesSeen),
-    fixQuality(other.fixQuality),
-    speed(other.speed),
-    course(other.course),
-    status(other.status)
+    : latitude(other.latitude)
+    , longitude(other.longitude)
+    , altitude(other.altitude)
+    , time(other.time)
+    , date(other.date)
+    , nSatellitesTracked(other.nSatellitesTracked)
+    , nSatellitesSeen(other.nSatellitesSeen)
+    , fixQuality(other.fixQuality)
+    , speed(other.speed)
+    , course(other.course)
+    , status(other.status)
 {
 }
 
@@ -54,7 +56,8 @@ bool IsValidGpsData(const GpsData& data)
     {
         return false;
     }
-    else if (std::abs(data.latitude) < std::numeric_limits<double>::epsilon() && std::abs(data.longitude) < std::numeric_limits<double>::epsilon())
+    else if (std::abs(data.latitude) < std::numeric_limits<double>::epsilon() &&
+             std::abs(data.longitude) < std::numeric_limits<double>::epsilon())
     {
         // Invalid data, no latitude / longitude could be retrieved
         return false;
@@ -146,7 +149,8 @@ static void SetLatitude(const std::string& curToken, GpsData& data)
     }
 
     const double latInDegreesAndMinutes = std::atof(curToken.c_str());
-    if (std::abs(latInDegreesAndMinutes) < std::numeric_limits<double>::epsilon() || !std::isfinite(latInDegreesAndMinutes))
+    if (std::abs(latInDegreesAndMinutes) < std::numeric_limits<double>::epsilon() ||
+        !std::isfinite(latInDegreesAndMinutes))
     {
         return;
     }
@@ -166,7 +170,8 @@ static void SetLongitude(const std::string& curToken, GpsData& data)
     }
 
     const double lonInDegreesAndMinutes = std::atof(curToken.c_str());
-    if (std::abs(lonInDegreesAndMinutes) < std::numeric_limits<double>::epsilon() || !std::isfinite(lonInDegreesAndMinutes))
+    if (std::abs(lonInDegreesAndMinutes) < std::numeric_limits<double>::epsilon() ||
+        !std::isfinite(lonInDegreesAndMinutes))
     {
         return;
     }
@@ -284,7 +289,6 @@ static void SetStatus(const std::string& curToken, GpsData& data)
     {
         return; // invalid status format.
     }
-
 }
 
 static void SetSpeed(const std::string& curToken, GpsData& data)
@@ -371,23 +375,32 @@ static bool ParseRMC(const char* gpsString, GpsData& data)
         switch (fieldIdx)
         {
         case 1:
-            SetTime(curToken, data); break;
+            SetTime(curToken, data);
+            break;
         case 2:
-            SetStatus(curToken, data); break;
+            SetStatus(curToken, data);
+            break;
         case 3:
-            SetLatitude(curToken, data); break;
+            SetLatitude(curToken, data);
+            break;
         case 4:
-            SetHemisphere(curToken, data); break;
+            SetHemisphere(curToken, data);
+            break;
         case 5:
-            SetLongitude(curToken, data); break;
+            SetLongitude(curToken, data);
+            break;
         case 6:
-            SetHemisphere(curToken, data); break;
+            SetHemisphere(curToken, data);
+            break;
         case 7:
-            SetSpeed(curToken, data); break;
+            SetSpeed(curToken, data);
+            break;
         case 8:
-            SetCourse(curToken, data); break;
+            SetCourse(curToken, data);
+            break;
         case 9:
-            SetDate(curToken, data); break;
+            SetDate(curToken, data);
+            break;
         case 10:
             /* magnetic variation */ break;
         }
@@ -431,33 +444,47 @@ static bool ParseGGA(const char* gpsString, GpsData& data)
         switch (fieldIdx)
         {
         case 1:
-            SetTime(curToken, data); break;
+            SetTime(curToken, data);
+            break;
         case 2:
-            SetLatitude(curToken, data); break;
+            SetLatitude(curToken, data);
+            break;
         case 3:
-            SetHemisphere(curToken, data); break;
+            SetHemisphere(curToken, data);
+            break;
         case 4:
-            SetLongitude(curToken, data); break;
+            SetLongitude(curToken, data);
+            break;
         case 5:
-            SetHemisphere(curToken, data); break;
+            SetHemisphere(curToken, data);
+            break;
         case 6:
-            SetFixQuality(curToken, data); break;
+            SetFixQuality(curToken, data);
+            break;
         case 7:
-            SetNumberOfSatellitesTracked(curToken, data); break;
+            SetNumberOfSatellitesTracked(curToken, data);
+            break;
         case 8:
-            /* horizontal dillution of precision */; break;
+            /* horizontal dillution of precision */;
+            break;
         case 9:
-            SetAltitude(curToken, data); break;
+            SetAltitude(curToken, data);
+            break;
         case 10:
-            SetAltitudeUnit(curToken, data); break;
+            SetAltitudeUnit(curToken, data);
+            break;
         case 11:
-            /* Height of geoid, above WGS84 */; break;
+            /* Height of geoid, above WGS84 */;
+            break;
         case 12:
-            /* Unit of Height of geoid, above WGS84 */; break;
+            /* Unit of Height of geoid, above WGS84 */;
+            break;
         case 13:
-            /* Time since last DGPS update */; break;
+            /* Time since last DGPS update */;
+            break;
         case 14:
-            /* DGPS station ID. */; break;
+            /* DGPS station ID. */;
+            break;
         }
 
         ++fieldIdx;
@@ -585,15 +612,20 @@ double GPSBearing(double lat1, double lon1, double lat2, double lon2)
     dLon = lon1 - lon2;
 
     if ((dLon == 0) && (dLat == 0))
+    {
         angle = 0;
+    }
     else
-        angle = atan2(-sin(dLon) * cos(lat2),
-            cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon));
+    {
+        angle = atan2(-sin(dLon) * cos(lat2), cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon));
+    }
 
-    /*  	angle = atan2(lon1*cos(lat1)-lon2*cos(lat2), lat1-lat2); */
+    /*      angle = atan2(lon1*cos(lat1)-lon2*cos(lat2), lat1-lat2); */
 
     if (angle < 0)
+    {
         angle = TWO_PI + angle;
+    }
 
     angle = RADTODEGREE * angle;
     return angle;

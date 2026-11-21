@@ -3,13 +3,12 @@
 #include "../Common/SpectrumIO.h"
 #include <MobileDoasLib/Measurement/SpectrumUtils.h>
 
-extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
+extern CString
+    g_exePath; // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
 
-CMeasurement_Directory::CMeasurement_Directory(
-    CView& mainForm,
-    novac::ILogger& log,
-    std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface,
-    std::unique_ptr<Configuration::CMobileConfiguration> conf)
+CMeasurement_Directory::CMeasurement_Directory(CView& mainForm, novac::ILogger& log,
+                                               std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface,
+                                               std::unique_ptr<Configuration::CMobileConfiguration> conf)
     : CSpectrometer(mainForm, log, std::move(spectrometerInterface), std::move(conf))
 {
     m_spectrometerMode = MODE_DIRECTORY;
@@ -42,10 +41,10 @@ void CMeasurement_Directory::Run()
     }
     m_subFolder = m_conf->m_directory;
 
-    // Update MobileLog.txt 
+    // Update MobileLog.txt
     UpdateMobileLog();
 
-    // get sky 
+    // get sky
     if (!ReadSky())
     {
         return;
@@ -106,7 +105,8 @@ void CMeasurement_Directory::Run()
         {
             m_darkCur[0][i] = m_darkCur[0][i] - m_offset[0][i];
         }
-        m_averageSpectrumIntensity[0] = mobiledoas::AverageIntensity(m_sky[0], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
+        m_averageSpectrumIntensity[0] =
+            mobiledoas::AverageIntensity(m_sky[0], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
 
         // remove the dark spectrum from sky
         GetDark();
@@ -207,7 +207,7 @@ bool CMeasurement_Directory::ProcessSpectrum(CString latestSpectrum)
         }
         int channel = atoi(latestSpectrum.Mid(7, 1));
 
-        // copy data to current spectrum 
+        // copy data to current spectrum
         m_curSpectrum.CopyFrom(channel, spec.I, MAX_SPECTRUM_LENGTH); // for plot
 
         // extract spectrum integration time and total spec num
@@ -217,8 +217,8 @@ bool CMeasurement_Directory::ProcessSpectrum(CString latestSpectrum)
         OnUpdatedIntegrationTime();
 
         // get spectrum date & time
-        m_spectrumGpsData[m_spectrumCounter].date
-            = stoi(spec.date.substr(7, 2) + spec.date.substr(3, 2) + spec.date.substr(0, 2));
+        m_spectrumGpsData[m_spectrumCounter].date =
+            stoi(spec.date.substr(7, 2) + spec.date.substr(3, 2) + spec.date.substr(0, 2));
         char startTime[6];
         snprintf(startTime, 6, "%02d%02d%02d", spec.startTime[0], spec.startTime[1], spec.startTime[2]);
         m_spectrumGpsData[m_spectrumCounter].time = atoi(startTime);
@@ -230,7 +230,8 @@ bool CMeasurement_Directory::ProcessSpectrum(CString latestSpectrum)
         this->UpdateGpsLocation();
 
         // calculate average intensity
-        m_averageSpectrumIntensity[channel] = mobiledoas::AverageIntensity(m_curSpectrum[channel], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
+        m_averageSpectrumIntensity[channel] =
+            mobiledoas::AverageIntensity(m_curSpectrum[channel], m_conf->m_specCenter, m_conf->m_specCenterHalfWidth);
         m_intensityOfMeasuredSpectrum.push_back(m_averageSpectrumIntensity[channel]);
 
         // get spectrum info

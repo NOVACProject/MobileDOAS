@@ -12,7 +12,8 @@
 IMPLEMENT_DYNAMIC(CLogDialog, CDialog)
 
 CLogDialog::CLogDialog(novac::ILogger& log, CWnd* pParent /*=nullptr*/)
-    : m_log(log), CDialog(IDD_VIEW_LOG_DIALOG, pParent)
+    : m_log(log)
+    , CDialog(IDD_VIEW_LOG_DIALOG, pParent)
 {
 }
 

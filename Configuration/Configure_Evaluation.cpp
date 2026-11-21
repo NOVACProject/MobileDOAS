@@ -64,10 +64,11 @@ END_MESSAGE_MAP()
 // CConfigure_Evaluation message handlers
 
 // CConfigure_Spectrometer message handlers
-BOOL CConfigure_Evaluation::OnInitDialog() {
+BOOL CConfigure_Evaluation::OnInitDialog()
+{
     CPropertyPage::OnInitDialog();
 
-    // Populate the fit window - list 
+    // Populate the fit window - list
     m_windowList.m_conf = m_conf;
     m_windowList.PopulateList();
     OnChangeFitWindow(); // Update
@@ -84,7 +85,8 @@ BOOL CConfigure_Evaluation::OnInitDialog() {
     return TRUE;
 }
 
-void CConfigure_Evaluation::InitReferenceFileControl() {
+void CConfigure_Evaluation::InitReferenceFileControl()
+{
 
     // Get the dimensions of the reference frame
     CRect rect;
@@ -115,15 +117,17 @@ void CConfigure_Evaluation::InitReferenceFileControl() {
     m_referenceGrid.SetFixedRowCount(1);
 
     // make sure the user can edit items in the grid
-    //m_referenceGrid.SetEditable(TRUE); 
+    //m_referenceGrid.SetEditable(TRUE);
 
     // Disable the small title tips
     m_referenceGrid.EnableTitleTips(FALSE);
 }
 
-void CConfigure_Evaluation::PopulateReferenceFileControl() {
+void CConfigure_Evaluation::PopulateReferenceFileControl()
+{
     int curSel = m_windowList.GetCurSel();
-    if (curSel == -1) {
+    if (curSel == -1)
+    {
         m_windowList.SetCurSel(0);
         curSel = 0;
     }
@@ -139,14 +143,15 @@ void CConfigure_Evaluation::PopulateReferenceFileControl() {
 
     //// if there's no references defined
     //if(window.nRef == 0){
-    //	m_btnRefProp.EnableWindow(FALSE);
-    //	m_btnRemoveRef.EnableWindow(FALSE);
+    //  m_btnRefProp.EnableWindow(FALSE);
+    //  m_btnRemoveRef.EnableWindow(FALSE);
     //}else{
-    //	m_btnRefProp.EnableWindow(TRUE);
-    //	m_btnRemoveRef.EnableWindow(TRUE);
+    //  m_btnRefProp.EnableWindow(TRUE);
+    //  m_btnRemoveRef.EnableWindow(TRUE);
     //}
     int i;
-    for (i = 0; i < window.nRef; i++) {
+    for (i = 0; i < window.nRef; i++)
+    {
 
         novac::CReferenceFile& ref = window.ref[i];
 
@@ -154,25 +159,37 @@ void CConfigure_Evaluation::PopulateReferenceFileControl() {
         m_referenceGrid.SetItemTextFmt(1 + i, 1, ref.m_path.c_str());
 
         if (ref.m_shiftOption == novac::SHIFT_TYPE::SHIFT_FREE)
+        {
             m_referenceGrid.SetItemTextFmt(1 + i, 2, "free");
+        }
 
         if (ref.m_shiftOption == novac::SHIFT_TYPE::SHIFT_FIX)
+        {
             m_referenceGrid.SetItemTextFmt(1 + i, 2, "fixed to %.2lf", ref.m_shiftValue);
+        }
 
         if (ref.m_shiftOption == novac::SHIFT_TYPE::SHIFT_LINK)
+        {
             m_referenceGrid.SetItemTextFmt(1 + i, 2, "linked to %.2lf", ref.m_shiftValue);
+        }
 
         //if(ref.m_shiftOption == novac::SHIFT_TYPE::SHIFT_LIMIT)
         //  m_referenceGrid.SetItemTextFmt(1 + i, 2, "limited to %.2lf", ref.m_shiftValue);
 
         if (ref.m_squeezeOption == novac::SHIFT_TYPE::SHIFT_FREE)
+        {
             m_referenceGrid.SetItemTextFmt(1 + i, 3, "free");
+        }
 
         if (ref.m_squeezeOption == novac::SHIFT_TYPE::SHIFT_FIX)
+        {
             m_referenceGrid.SetItemTextFmt(1 + i, 3, "fixed to %.2lf", ref.m_squeezeValue);
+        }
 
         if (ref.m_squeezeOption == novac::SHIFT_TYPE::SHIFT_LINK)
+        {
             m_referenceGrid.SetItemTextFmt(1 + i, 3, "linked to %.2lf", ref.m_squeezeValue);
+        }
 
         //if(ref.m_squeezeOption == novac::SHIFT_TYPE::SHIFT_LIMIT)
     //    m_referenceGrid.SetItemTextFmt(1 + i, 3, "limited to %.2lf", ref.m_squeezeValue);
@@ -186,10 +203,13 @@ void CConfigure_Evaluation::PopulateReferenceFileControl() {
 
     // Update the grid
     if (m_referenceGrid.m_hWnd != nullptr)
+    {
         m_referenceGrid.UpdateData(FALSE);
+    }
 }
 
-void CConfigure_Evaluation::OnRemoveReference() {
+void CConfigure_Evaluation::OnRemoveReference()
+{
 
     // save the data in the dialog
     UpdateData(TRUE);
@@ -197,12 +217,16 @@ void CConfigure_Evaluation::OnRemoveReference() {
     // Get the currently selected fit window
     int curSel = m_windowList.GetCurSel();
     if (curSel < 0)
+    {
         return;
+    }
     Evaluation::CFitWindow& window = m_conf->m_fitWindow[curSel];
 
     // if there's no reference file, then there's nothing to remove
     if (window.nRef <= 0)
+    {
         return;
+    }
 
     // Get the selected reference files
     CCellRange cellRange = m_referenceGrid.GetSelectedCellRange();
@@ -210,11 +234,13 @@ void CConfigure_Evaluation::OnRemoveReference() {
     int minRow = cellRange.GetMinRow() - 1;
     int nRows = cellRange.GetRowSpan();
 
-    if (nRows <= 0) {
+    if (nRows <= 0)
+    {
         return;
     }
     // move every reference file in the list down one step
-    for (int i = minRow; i < window.nRef; i++) {
+    for (int i = minRow; i < window.nRef; i++)
+    {
         window.ref[i] = window.ref[i + nRows];
     }
 
@@ -225,16 +251,19 @@ void CConfigure_Evaluation::OnRemoveReference() {
     PopulateReferenceFileControl();
 }
 
-void CConfigure_Evaluation::OnInsertReference() {
+void CConfigure_Evaluation::OnInsertReference()
+{
 
     // save the data in the dialog
     UpdateData(TRUE);
 
     // Get the currently selected fit window
     int curSel = m_windowList.GetCurSel();
-    if (curSel < 0) {
+    if (curSel < 0)
+    {
         curSel = 0;
-        if (m_windowList.GetCount() == 0) {
+        if (m_windowList.GetCount() == 0)
+        {
             // insert a new fit-window (this makes the interface much more intuitive...)
             m_conf->m_fitWindow[0].name.Format("NEW");
             m_conf->m_fitWindow[0].nRef = 0;
@@ -247,7 +276,8 @@ void CConfigure_Evaluation::OnInsertReference() {
     // Let the user browse for the reference files
     Common common;
     std::vector<CString> filenames = common.BrowseForFiles();
-    for (int i = 0; i < filenames.size(); i++) {
+    for (int i = 0; i < filenames.size(); i++)
+    {
         const CString fileName = filenames[i];
 
         // The user has selected a new reference file, insert it into the list
@@ -258,27 +288,33 @@ void CConfigure_Evaluation::OnInsertReference() {
         // 2. make a guess of the specie name
         CString specie;
         Common::GuessSpecieName(fileName, specie);
-        if (strlen(specie) != 0) {
+        if (strlen(specie) != 0)
+        {
             window.ref[window.nRef].m_specieName = std::string((LPCSTR)specie);
 
-            if (Equals(specie, "NO2")) {
+            if (Equals(specie, "NO2"))
+            {
                 window.ref[window.nRef].m_gasFactor = GASFACTOR_NO2;
             }
-            else if (Equals(specie, "O3")) {
+            else if (Equals(specie, "O3"))
+            {
                 window.ref[window.nRef].m_gasFactor = GASFACTOR_O3;
             }
-            else if (Equals(specie, "HCHO")) {
+            else if (Equals(specie, "HCHO"))
+            {
                 window.ref[window.nRef].m_gasFactor = GASFACTOR_HCHO;
             }
         }
 
         // 3. Set the shift and squeeze options for this reference
-        if (window.nRef == 0) {
-            // If it is the first one, select 'optimal' 
+        if (window.nRef == 0)
+        {
+            // If it is the first one, select 'optimal'
             window.ref[window.nRef].m_shiftOption = novac::SHIFT_TYPE::SHIFT_FIX;
             window.ref[window.nRef].m_squeezeOption = novac::SHIFT_TYPE::SHIFT_FIX;
         }
-        else {
+        else
+        {
             window.ref[window.nRef].m_shiftOption = novac::SHIFT_TYPE::SHIFT_LINK;
             window.ref[window.nRef].m_shiftValue = 0;
             window.ref[window.nRef].m_squeezeOption = novac::SHIFT_TYPE::SHIFT_LINK;
@@ -289,7 +325,8 @@ void CConfigure_Evaluation::OnInsertReference() {
         window.nRef += 1;
 
         // If this is the first reference inserted, also make a guess for the window name; if there isn't already a window name
-        if (window.nRef == 1 && strlen(specie) != 0 && window.name == "NEW") {
+        if (window.nRef == 1 && strlen(specie) != 0 && window.name == "NEW")
+        {
             window.name.Format("%s", specie);
             PopulateWindowList();
         }
@@ -297,13 +334,14 @@ void CConfigure_Evaluation::OnInsertReference() {
 
     // Update the grid
     PopulateReferenceFileControl();
-
 }
 
-void CConfigure_Evaluation::PopulateWindowList() {
+void CConfigure_Evaluation::PopulateWindowList()
+{
     m_windowList.ResetContent(); // clear the list
 
-    for (int i = 0; i < m_conf->m_nFitWindows; ++i) {
+    for (int i = 0; i < m_conf->m_nFitWindows; ++i)
+    {
         m_windowList.AddString(m_conf->m_fitWindow[i].name);
     }
 
@@ -356,13 +394,17 @@ void CConfigure_Evaluation::OnChangeFitWindow()
     UpdateData(FALSE);
 }
 
-void CConfigure_Evaluation::InitToolTips() {
+void CConfigure_Evaluation::InitToolTips()
+{
     // Don't initialize the tool tips twice
     if (m_toolTip.m_hWnd != nullptr)
+    {
         return;
+    }
 
     // Enable the tool tips
-    if (!m_toolTip.Create(this)) {
+    if (!m_toolTip.Create(this))
+    {
         TRACE0("Failed to create tooltip control\n");
     }
 
@@ -370,13 +412,15 @@ void CConfigure_Evaluation::InitToolTips() {
     m_toolTip.Activate(TRUE);
 }
 
-BOOL CConfigure_Evaluation::PreTranslateMessage(MSG* pMsg) {
+BOOL CConfigure_Evaluation::PreTranslateMessage(MSG* pMsg)
+{
     m_toolTip.RelayEvent(pMsg);
 
     return CPropertyPage::PreTranslateMessage(pMsg);
 }
 
-void CConfigure_Evaluation::OnShowProperties() {
+void CConfigure_Evaluation::OnShowProperties()
+{
 
     // save the data in the dialog
     UpdateData(TRUE);
@@ -384,19 +428,24 @@ void CConfigure_Evaluation::OnShowProperties() {
     // Get the currently selected fit window
     int curSel = m_windowList.GetCurSel();
     if (curSel < 0)
+    {
         return;
+    }
     Evaluation::CFitWindow& window = m_conf->m_fitWindow[curSel];
 
     // if there's no reference file, then there's nothing to remove
     if (window.nRef <= 0)
+    {
         return;
+    }
 
     // Get the selected reference file
     CCellRange cellRange = m_referenceGrid.GetSelectedCellRange();
     int minRow = cellRange.GetMinRow() - 1;
     int nRows = cellRange.GetRowSpan();
 
-    if (nRows <= 0 || nRows > 1) { /* nothing selected or several lines selected */
+    if (nRows <= 0 || nRows > 1)
+    { /* nothing selected or several lines selected */
         MessageBox("Please select a reference file.", "Properties");
         return;
     }
@@ -410,19 +459,24 @@ void CConfigure_Evaluation::OnShowProperties() {
     PopulateReferenceFileControl();
 }
 
-void CConfigure_Evaluation::OnShowReferenceGraph() {
+void CConfigure_Evaluation::OnShowReferenceGraph()
+{
     // save the data in the dialog
     UpdateData(TRUE);
 
     // Get the currently selected fit window
     int curSel = m_windowList.GetCurSel();
     if (curSel < 0)
+    {
         return;
+    }
     Evaluation::CFitWindow& window = m_conf->m_fitWindow[curSel];
 
     // if there's no reference file, then there's nothing to show
     if (window.nRef <= 0)
+    {
         return;
+    }
 
     // Open the dialog
     Dialogs::CReferencePlotDlg dlg;

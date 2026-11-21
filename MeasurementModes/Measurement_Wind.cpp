@@ -3,13 +3,12 @@
 #include "../Common/SpectrumIO.h"
 #include <MobileDoasLib/Measurement/SpectrumUtils.h>
 
-extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
+extern CString
+    g_exePath; // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
 
-CMeasurement_Wind::CMeasurement_Wind(
-    CView& mainForm,
-    novac::ILogger& log,
-    std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface,
-    std::unique_ptr<Configuration::CMobileConfiguration> conf)
+CMeasurement_Wind::CMeasurement_Wind(CView& mainForm, novac::ILogger& log,
+                                     std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface,
+                                     std::unique_ptr<Configuration::CMobileConfiguration> conf)
     : CSpectrometer(mainForm, log, std::move(spectrometerInterface), std::move(conf))
 {
     m_spectrometerMode = MODE_WIND;
@@ -194,14 +193,14 @@ void CMeasurement_Wind::Run()
 #ifndef _DEBUG
             if (!m_specInfo->isDark)
             {
-                ShowMessageBox("It seems like the dark spectrum is not completely dark, consider restarting the program", "Error");
+                ShowMessageBox(
+                    "It seems like the dark spectrum is not completely dark, consider restarting the program", "Error");
             }
 #endif
 
             ShowMessageBox("Point the spectrometer to sky", "Notice");
 
             UpdateStatusBarMessage("Measuring the sky spectrum");
-
         }
         else if (m_scanNum == SKY_SPECTRUM)
         {
@@ -256,7 +255,6 @@ void CMeasurement_Wind::Run()
                 ShowMessageBox("It seems like the sky spectrum is dark, consider restarting the program", "Error");
             }
 #endif
-
         }
         else if (m_scanNum > SKY_SPECTRUM)
         {
@@ -276,7 +274,6 @@ void CMeasurement_Wind::Run()
                 GetDark();
                 GetSky();
                 DoEvaluation(m_tmpSky, m_tmpDark, scanResult);
-
             }
             else
             {
@@ -294,7 +291,9 @@ void CMeasurement_Wind::Run()
         evSecond = ((double)(cFinish - cStart) / (double)CLOCKS_PER_SEC);
 
         /* aggressive timing */
-        tmpString.Format("GPS-Reading took: %lf [s] \t Scanning took %lf [s] \t Evaluation took %lf [s] \t Writing to file took: %lf [s]\n", gpsSecond, scanSecond, evSecond, writeSecond);
+        tmpString.Format("GPS-Reading took: %lf [s] \t Scanning took %lf [s] \t Evaluation took %lf [s] \t Writing to "
+                         "file took: %lf [s]\n",
+                         gpsSecond, scanSecond, evSecond, writeSecond);
         timerFile = fopen("times.txt", "a");
         fprintf(timerFile, tmpString);
         fclose(timerFile);

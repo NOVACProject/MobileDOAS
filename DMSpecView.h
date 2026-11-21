@@ -1,9 +1,9 @@
+#pragma once
+
 // DMSpecView.h : interface of the CDMSpecView class
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_DMSPECVIEW_H__8A3F075C_24B5_4BB0_897A_E1285CBD8628__INCLUDED_)
-#define AFX_DMSPECVIEW_H__8A3F075C_24B5_4BB0_897A_E1285CBD8628__INCLUDED_
 
 #include <MobileDoasLib/GPS.h>
 #include "Spectrometer.h"
@@ -22,7 +22,6 @@
 #include "afxwin.h"
 #include <SpectralEvaluation/Log.h>
 
-#pragma once
 
 UINT CollectSpectra(LPVOID pParam);
 
@@ -35,7 +34,6 @@ protected: // create from serialization only
     DECLARE_DYNCREATE(CDMSpecView)
 
 public:
-
     // ------------------- DIALOG COMPONENTS -------------------------
 
     /** The edit-box for the basename */
@@ -85,10 +83,12 @@ public:
     CStatic m_legendSeries1, m_legendSeries2, m_legendSpectrum1, m_legendSpectrum2;
 
 
-
     // ---------------------- PUBLIC DATA ----------------------------
 
-    enum { IDD = IDD_DMSPEC_FORM };
+    enum
+    {
+        IDD = IDD_DMSPEC_FORM
+    };
 
     /** The wind-direction and wind-speed, used in the main window so that the user
             can set the parameters for calculating flux. */
@@ -242,7 +242,6 @@ public:
 #endif
 
 protected:
-
     // ------------------- PROTECTED DATA -------------------------
 
     /** The real-time route window */
@@ -290,9 +289,7 @@ protected:
     virtual void OnInitialUpdate();
 
 private:
-
     novac::ConsoleLog m_log;
-
 };
 
 #ifndef _DEBUG  // debug version in DMSpecView.cpp
@@ -306,5 +303,3 @@ inline CDMSpecDoc* CDMSpecView::GetDocument()
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
-
-#endif // !defined(AFX_DMSPECVIEW_H__8A3F075C_24B5_4BB0_897A_E1285CBD8628__INCLUDED_)

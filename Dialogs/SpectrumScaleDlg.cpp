@@ -83,9 +83,13 @@ void CSpectrumScaleDlg::OnChangeSpinMinvalue(NMHDR* pNMHDR, LRESULT* pResult)
     // Check which direction the user has pressed the spinbutton (which is upside down)
     //  and change the circle radius accordingly
     if (pNMUpDown->iDelta > 0)
+    {
         --m_minValue;
+    }
     if (pNMUpDown->iDelta < 0)
+    {
         ++m_minValue;
+    }
 
     // Enforce the limits
     m_minValue = std::max(0, m_minValue);
@@ -112,9 +116,13 @@ void CSpectrumScaleDlg::OnChangeSpinMaxvalue(NMHDR* pNMHDR, LRESULT* pResult)
     // Check which direction the user has pressed the spinbutton (which is upside down)
     //  and change the circle radius accordingly
     if (pNMUpDown->iDelta > 0)
+    {
         --m_maxValue;
+    }
     if (pNMUpDown->iDelta < 0)
+    {
         ++m_maxValue;
+    }
 
     // Enforce the limits
     m_maxValue = std::max(m_minValue + 1, m_maxValue);

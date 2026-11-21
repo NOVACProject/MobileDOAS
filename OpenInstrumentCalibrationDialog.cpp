@@ -54,7 +54,8 @@ END_MESSAGE_MAP()
 
 void OpenInstrumentCalibrationDialog::OnButtonBrowseLineShape()
 {
-    if (!Common::BrowseForFile("Instrument Line Shape Files\0*.slf\0Spectrum Files\0*.txt;*.xs\0", this->m_state.instrumentLineshapeFile))
+    if (!Common::BrowseForFile("Instrument Line Shape Files\0*.slf\0Spectrum Files\0*.txt;*.xs\0",
+                               this->m_state.instrumentLineshapeFile))
     {
         return;
     }

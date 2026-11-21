@@ -1,12 +1,10 @@
-#ifndef _EVALLOGDLG_
-#define _EVALLOGDLG_
+#pragma once
 
 #include "ReEvaluator.h"
 
 #include "../Graphs/GraphCtrl.h"
 #include "afxwin.h"
 
-#pragma once
 
 // CReEval_EvalLogDlg dialog
 namespace ReEvaluation
@@ -21,16 +19,18 @@ public:
     virtual ~CReEval_EvalLogDlg();
 
     // Dialog Data
-    enum { IDD = IDD_REEVAL_EVALUATIONLOG };
+    enum
+    {
+        IDD = IDD_REEVAL_EVALUATIONLOG
+    };
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
     DECLARE_MESSAGE_MAP()
 private:
-
     /** The column plot - shows the data from the traverse */
-    Graph::CGraphCtrl   m_ColumnPlot;
+    Graph::CGraphCtrl m_ColumnPlot;
 
     /** The (static) frame for the graph showing the data in the traverse */
     CStatic m_graphBoundary;
@@ -45,8 +45,8 @@ private:
     CButton m_ignoreDarkCheck;
 
     CButton m_viewButton;
-public:
 
+public:
     /** Called to draw the column plot */
     void DrawColumn();
 
@@ -65,7 +65,5 @@ public:
 
     /** A pointer to the CReEvaluator object that we're modifying */
     CReEvaluator* m_reeval;
-
 };
 }
-#endif

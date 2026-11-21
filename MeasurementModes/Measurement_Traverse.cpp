@@ -3,13 +3,12 @@
 #include "../Common/SpectrumIO.h"
 #include <MobileDoasLib/Measurement/SpectrumUtils.h>
 
-extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
+extern CString
+    g_exePath; // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
 
-CMeasurement_Traverse::CMeasurement_Traverse(
-    CView& mainForm,
-    novac::ILogger& log,
-    std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface,
-    std::unique_ptr<Configuration::CMobileConfiguration> conf)
+CMeasurement_Traverse::CMeasurement_Traverse(CView& mainForm, novac::ILogger& log,
+                                             std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface,
+                                             std::unique_ptr<Configuration::CMobileConfiguration> conf)
     : CSpectrometer(mainForm, log, std::move(spectrometerInterface), std::move(conf))
 {
     m_spectrometerMode = MODE_TRAVERSE;
@@ -188,7 +187,8 @@ void CMeasurement_Traverse::Run()
 #ifndef _DEBUG
             if (!m_specInfo->isDark)
             {
-                ShowMessageBox("It seems like the dark spectrum is not completely dark, consider restarting the program", "Error");
+                ShowMessageBox(
+                    "It seems like the dark spectrum is not completely dark, consider restarting the program", "Error");
             }
 #endif
 
@@ -243,7 +243,6 @@ void CMeasurement_Traverse::Run()
                 ShowMessageBox("It seems like the sky spectrum is dark, consider restarting the program", "Error");
             }
 #endif
-
         }
         else if (m_scanNum > SKY_SPECTRUM)
         {
@@ -274,7 +273,9 @@ void CMeasurement_Traverse::Run()
         evSecond = ((double)(cFinish - cStart) / (double)CLOCKS_PER_SEC);
 
         /* aggressive timing */
-        tmpString.Format("GPS-Reading took: %lf [s] \t Scanning took %lf [s] \t Evaluation took %lf [s] \t Writing to file took: %lf [s]\n", gpsSecond, scanSecond, evSecond, writeSecond);
+        tmpString.Format("GPS-Reading took: %lf [s] \t Scanning took %lf [s] \t Evaluation took %lf [s] \t Writing to "
+                         "file took: %lf [s]\n",
+                         gpsSecond, scanSecond, evSecond, writeSecond);
         timerFile = fopen("times.txt", "a");
         fprintf(timerFile, tmpString);
         fclose(timerFile);
@@ -376,7 +377,9 @@ void CMeasurement_Traverse::Run_Adaptive()
 #ifndef _DEBUG
             if (!m_specInfo->isDark)
             {
-                ShowMessageBox("It seems like the offset spectrum is not completely dark, consider restarting the program", "Error");
+                ShowMessageBox(
+                    "It seems like the offset spectrum is not completely dark, consider restarting the program",
+                    "Error");
             }
 #endif
             UpdateStatusBarMessage("Measuring the dark_current spectrum");
@@ -386,7 +389,6 @@ void CMeasurement_Traverse::Run_Adaptive()
             m_sumInComputer = 1;
             m_sumInSpectrometer = 1;
             OnUpdatedIntegrationTime();
-
         }
         else if (m_scanNum == DARKCURRENT_SPECTRUM)
         {
@@ -476,8 +478,7 @@ void CMeasurement_Traverse::Run_Adaptive()
             m_sumInComputer = CountRound(m_timeResolution, spectrumSummation);
             m_sumInSpectrometer = spectrumSummation.SumInSpectrometer;
             OnUpdatedIntegrationTime();
-
-            }
+        }
         else if (m_scanNum > SKY_SPECTRUM)
         {
             /* -------------- IF THE MEASURED SPECTRUM WAS A NORMAL SPECTRUM ------------- */
@@ -496,10 +497,9 @@ void CMeasurement_Traverse::Run_Adaptive()
 
             // Update the exposure time based on the current integration time, saturation ratio and the limits from the settings.
             m_integrationTime = mobiledoas::AdjustIntegrationTimeToLastIntensity(
-                mobiledoas::SpectrumIntensityMeasurement(m_averageSpectrumIntensity[0], m_spectrometerDynRange, m_integrationTime),
-                m_conf->m_saturationLow / 100.0,
-                m_conf->m_saturationHigh / 100.0,
-                MIN_EXPOSURETIME,
+                mobiledoas::SpectrumIntensityMeasurement(m_averageSpectrumIntensity[0], m_spectrometerDynRange,
+                                                         m_integrationTime),
+                m_conf->m_saturationLow / 100.0, m_conf->m_saturationHigh / 100.0, MIN_EXPOSURETIME,
                 this->m_timeResolution);
 
             mobiledoas::SpectrumSummation spectrumSummation;
@@ -515,10 +515,10 @@ void CMeasurement_Traverse::Run_Adaptive()
 
         scanResult.SetToZero();
         m_scanNum++;
-        }
+    }
 
     // we have to call this before exiting the application otherwise we'll have trouble next time we start...
     CloseSpectrometerConnection();
 
     return;
-    }
+}

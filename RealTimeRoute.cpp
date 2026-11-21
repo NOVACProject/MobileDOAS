@@ -14,8 +14,14 @@ using namespace Dialogs;
 
 IMPLEMENT_DYNAMIC(CRealTimeRoute, CDialog)
 CRealTimeRoute::CRealTimeRoute(CWnd* pParent /*=NULL*/)
-    : CDialog(CRealTimeRoute::IDD, pParent),
-    m_pointNum(0), fVisible(false), m_intensityLimit(400), m_legendWidth(0), m_spectrometer(nullptr), m_srcLat(0.0), m_srcLon(0.0)
+    : CDialog(CRealTimeRoute::IDD, pParent)
+    , m_pointNum(0)
+    , fVisible(false)
+    , m_intensityLimit(400)
+    , m_legendWidth(0)
+    , m_spectrometer(nullptr)
+    , m_srcLat(0.0)
+    , m_srcLon(0.0)
 {
     // There is a maximum size to the dataset available, stick to that
     m_lat.resize(65536);
@@ -67,8 +73,8 @@ BOOL CRealTimeRoute::OnInitDialog()
     m_gpsPlot.EnableGridLinesY(true);
     m_gpsPlot.SetBackgroundColor(RGB(0, 0, 0));
     m_gpsPlot.SetGridColor(RGB(255, 255, 255));
-    m_gpsPlot.SetAxisEqual();					// make sure that the latitude scale and the longitude scale are the same
-    m_gpsPlot.SetMarginSpace(0.01f);			// Set some space around the graph
+    m_gpsPlot.SetAxisEqual();     // make sure that the latitude scale and the longitude scale are the same
+    m_gpsPlot.SetMarginSpace(0.01f);   // Set some space around the graph
     m_gpsPlot.SetRange(m_range.minLat, m_range.maxLat, 2, m_range.minLon, m_range.maxLon, 2);
 
     DrawRouteGraph();
@@ -98,7 +104,9 @@ void CRealTimeRoute::OnSize(UINT nType, int cx, int cy)
 {
     CDialog::OnSize(nType, cx, cy);
     if (nType != SIZE_RESTORED)
+    {
         return;
+    }
 
     if (IsWindow(m_plotArea.m_hWnd))
     {
@@ -123,9 +131,12 @@ BOOL CRealTimeRoute::Create(UINT nID, CWnd* pParentWnd)
 void CRealTimeRoute::ReadData()
 {
     if (nullptr == m_spectrometer)
+    {
         return;
+    }
 
-    long sum = std::min(65535L, m_spectrometer->GetColumnNumber()); // limit the number here since the vectors aren't long enough...
+    long sum = std::min(
+        65535L, m_spectrometer->GetColumnNumber()); // limit the number here since the vectors aren't long enough...
     m_spectrometer->GetLatLongAlt(m_lat.data(), m_lon.data(), nullptr, sum);
     m_spectrometer->GetColumns(m_col, sum);
     m_spectrometer->GetIntensity(m_int, sum);
@@ -150,7 +161,9 @@ void CRealTimeRoute::ReadData()
     }
 
     if (sum == 0)
+    {
         return;
+    }
 
     m_pointNum = sum;
 

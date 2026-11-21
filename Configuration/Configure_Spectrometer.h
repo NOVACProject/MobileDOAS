@@ -5,7 +5,8 @@
 
 // CConfigure_Spectrometer dialog
 
-namespace Configuration {
+namespace Configuration
+{
 class CConfigure_Spectrometer : public CPropertyPage
 {
     DECLARE_DYNAMIC(CConfigure_Spectrometer)
@@ -15,7 +16,10 @@ public:
     virtual ~CConfigure_Spectrometer();
 
     // Dialog Data
-    enum { IDD = IDD_CONFIGURE_SPECTROMETER };
+    enum
+    {
+        IDD = IDD_CONFIGURE_SPECTROMETER
+    };
 
     /** The local handle to the configuration that we're changing */
     std::shared_ptr<CMobileConfiguration> m_conf;
@@ -34,7 +38,7 @@ protected:
 
     /** Enables the controls that should be enabled, and disables
             the ones which should be disabled */
-    afx_msg void	EnableControls();
+    afx_msg void EnableControls();
 
     /** Writes the configuration to file again and closes the dialog */
     afx_msg void OnOK();
@@ -48,13 +52,13 @@ protected:
     // -------------- DIALOG COMPONENTS -----------------
 
     /** The selection of port to use for the RS232 communication with the spectrometer */
-    CComboBox	m_specPort;
+    CComboBox m_specPort;
 
     /** The baudrate to use when talking to the spectrometer through RS232 */
-    CComboBox	m_specBaudrate;
+    CComboBox m_specBaudrate;
 
     /** The number of channels to use on the spectrometer */
-    CComboBox	m_nChannels;
+    CComboBox m_nChannels;
 
     /** The set point for CCD temperature */
     CEdit m_editSetPoint;
@@ -79,13 +83,13 @@ protected:
     CEdit m_editTimeResolution;
 
     /** The edit-boxes for the offset-removal */
-    CEdit	m_editOffsetTo, m_editOffsetFrom;
+    CEdit m_editOffsetTo, m_editOffsetFrom;
 
     // -------------------- PROTECTED DATA --------------------------
 
     /** The baudrates that the user can choose from */
-    long	m_availableBaudrates[6];
-public:
+    long m_availableBaudrates[6];
 
+public:
 };
 }

@@ -38,7 +38,6 @@ void CReEval_FitWindowsDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 
-
 BEGIN_MESSAGE_MAP(CReEval_FitWindowsDlg, CPropertyPage)
 
     // The user has pressed the 'insert' item on the reference-grid context menu
@@ -71,7 +70,7 @@ BOOL CReEval_FitWindowsDlg::OnInitDialog()
 {
     CPropertyPage::OnInitDialog();
 
-    // Populate the fit window - list 
+    // Populate the fit window - list
     PopulateWindowList();
 
     // Initialize the reference grid control
@@ -127,7 +126,9 @@ void CReEval_FitWindowsDlg::PopulateReferenceFileControl()
     int curWindow = m_windowList.GetCurSel();
 
     if (curWindow == -1)
+    {
         return;
+    }
 
     Evaluation::CFitWindow& window = m_reeval->m_settings.m_window;
     m_referenceGrid.m_window = &window;
@@ -145,28 +146,46 @@ void CReEval_FitWindowsDlg::PopulateReferenceFileControl()
         m_referenceGrid.SetItemTextFmt(1 + i, 1, ref.m_path.c_str());
 
         if (ref.m_shiftOption == novac::SHIFT_TYPE::SHIFT_FREE)
+        {
             m_referenceGrid.SetItemTextFmt(1 + i, 2, "free");
+        }
 
         if (ref.m_shiftOption == novac::SHIFT_TYPE::SHIFT_FIX)
+        {
             m_referenceGrid.SetItemTextFmt(1 + i, 2, "fixed to %.2lf", ref.m_shiftValue);
+        }
 
         if (ref.m_shiftOption == novac::SHIFT_TYPE::SHIFT_LINK)
-            m_referenceGrid.SetItemTextFmt(1 + i, 2, "linked to %s", window.ref[(int)ref.m_shiftValue].m_specieName.c_str());
+        {
+            m_referenceGrid.SetItemTextFmt(1 + i, 2, "linked to %s",
+                                           window.ref[(int)ref.m_shiftValue].m_specieName.c_str());
+        }
 
         if (ref.m_shiftOption == novac::SHIFT_TYPE::SHIFT_OPTIMAL)
+        {
             m_referenceGrid.SetItemTextFmt(1 + i, 2, "find optimal");
+        }
 
         if (ref.m_squeezeOption == novac::SHIFT_TYPE::SHIFT_FREE)
+        {
             m_referenceGrid.SetItemTextFmt(1 + i, 3, "free");
+        }
 
         if (ref.m_squeezeOption == novac::SHIFT_TYPE::SHIFT_FIX)
+        {
             m_referenceGrid.SetItemTextFmt(1 + i, 3, "fixed to %.2lf", ref.m_squeezeValue);
+        }
 
         if (ref.m_squeezeOption == novac::SHIFT_TYPE::SHIFT_LINK)
-            m_referenceGrid.SetItemTextFmt(1 + i, 3, "linked to %s", window.ref[(int)ref.m_squeezeValue].m_specieName.c_str());
+        {
+            m_referenceGrid.SetItemTextFmt(1 + i, 3, "linked to %s",
+                                           window.ref[(int)ref.m_squeezeValue].m_specieName.c_str());
+        }
 
         if (ref.m_squeezeOption == novac::SHIFT_TYPE::SHIFT_OPTIMAL)
+        {
             m_referenceGrid.SetItemTextFmt(1 + i, 3, "find optimal");
+        }
     }
 
     // make sure that the last line is clear
@@ -186,12 +205,16 @@ void CReEval_FitWindowsDlg::OnRemoveReference()
     // Get the currently selected fit window
     int curSel = m_windowList.GetCurSel();
     if (curSel < 0)
+    {
         return;
+    }
     Evaluation::CFitWindow& window = m_reeval->m_settings.m_window;
 
     // if there's no reference file, then there's nothing to remove
     if (window.nRef <= 0)
+    {
         return;
+    }
 
     // Get the selected reference file
     CCellRange cellRange = m_referenceGrid.GetSelectedCellRange();
@@ -225,14 +248,17 @@ void CReEval_FitWindowsDlg::OnInsertReference()
     // Get the currently selected fit window
     int curSel = m_windowList.GetCurSel();
     if (curSel < 0)
+    {
         return;
+    }
     Evaluation::CFitWindow& window = m_reeval->m_settings.m_window;
 
     // Check so that there is space for more references in this fit window
     if (window.nRef == MAX_N_REFERENCES)
     {
         CString errorMessage;
-        errorMessage.Format("Cannot insert more references. The maximum number of references in a fit window is %d", MAX_N_REFERENCES);
+        errorMessage.Format("Cannot insert more references. The maximum number of references in a fit window is %d",
+                            MAX_N_REFERENCES);
         MessageBox(errorMessage, "Cannot insert");
         return;
     }
@@ -273,7 +299,7 @@ void CReEval_FitWindowsDlg::OnInsertReference()
         // 3. Set the shift and squeeze options for this reference
         if (window.nRef == 0)
         {
-            // If it is the first one, select 'optimal' 
+            // If it is the first one, select 'optimal'
             window.ref[window.nRef].m_shiftOption = novac::SHIFT_TYPE::SHIFT_FIX;
             window.ref[window.nRef].m_squeezeOption = novac::SHIFT_TYPE::SHIFT_FIX;
         }
@@ -311,12 +337,16 @@ void CReEval_FitWindowsDlg::OnShowProperties()
     // Get the currently selected fit window
     int curSel = m_windowList.GetCurSel();
     if (curSel < 0)
+    {
         return;
+    }
     Evaluation::CFitWindow& window = m_reeval->m_settings.m_window;
 
     // if there's no reference file, then there's nothing to remove
     if (window.nRef <= 0)
+    {
         return;
+    }
 
     // Get the selected reference file
     CCellRange cellRange = m_referenceGrid.GetSelectedCellRange();
@@ -348,12 +378,16 @@ void CReEval_FitWindowsDlg::OnShowReferenceGraph()
     // Get the currently selected fit window
     int curSel = m_windowList.GetCurSel();
     if (curSel < 0)
+    {
         return;
+    }
     Evaluation::CFitWindow& window = m_reeval->m_settings.m_window;
 
     // if there's no reference file, then there's nothing to show
     if (window.nRef <= 0)
+    {
         return;
+    }
 
     // Open the dialog
     Dialogs::CReferencePlotDlg dlg;

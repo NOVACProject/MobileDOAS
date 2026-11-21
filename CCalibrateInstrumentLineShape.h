@@ -19,7 +19,10 @@ public:
 
     // Dialog Data
 #ifdef AFX_DESIGN_TIME
-    enum { IDD = IDD_CALIBRATE_LINESHAPE_DIALOG };
+    enum
+    {
+        IDD = IDD_CALIBRATE_LINESHAPE_DIALOG
+    };
 #endif
 
 protected:
@@ -27,7 +30,6 @@ protected:
 
     DECLARE_MESSAGE_MAP()
 public:
-
     CString m_inputSpectrum;
     CString m_darkSpectrum;
     CListBox m_peaksList;
@@ -35,7 +37,7 @@ public:
     Graph::CGraphCtrl m_minimapPlot; // The minimap for the spectrum, showing where we have zoomed in
     CStatic m_graphHolder;   // Holder for the plot, for easy ui access
     CStatic m_minimapHolder; // Holder for the zoomed out graph (minimap)
-    int m_fitFunctionOption = 0; // The option for which function to fit to the line shape. 
+    int m_fitFunctionOption = 0; // The option for which function to fit to the line shape.
     CStatic m_labelSpectrumContainsNoWavelengthCalibration;
     BOOL m_autoDetermineCalibration;
     CButton m_saveButton;
@@ -68,7 +70,7 @@ private:
     void UpdateGraph(bool reset = true);
 
     /// <summary>
-    /// Updates the function fitted to the line shape with the currently selected 
+    /// Updates the function fitted to the line shape with the currently selected
     /// peak and type of function
     /// </summary>
     void UpdateFittedLineShape();

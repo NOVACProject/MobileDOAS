@@ -18,7 +18,10 @@ public:
     virtual ~CShowFitDlg();
 
     // Dialog Data
-    enum { IDD = IDD_VIEW_FIT_DLG };
+    enum
+    {
+        IDD = IDD_VIEW_FIT_DLG
+    };
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
@@ -26,7 +29,6 @@ protected:
     DECLARE_MESSAGE_MAP()
 
 public:
-
     /** Called when the dialog is opened */
     virtual BOOL OnInitDialog();
 
@@ -45,7 +47,6 @@ public:
     void DrawFit();
 
 private:
-
     static const COLORREF red = RGB(255, 0, 0);
     static const COLORREF cyan = RGB(0, 255, 255);
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef MANUFACTURER_SUPPORT_AVANTES 
+#ifdef MANUFACTURER_SUPPORT_AVANTES
 
 #include <vector>
 #include <MobileDoasLib/Measurement/SpectrometerInterface.h>
@@ -77,7 +77,6 @@ public:
 #pragma endregion
 
 private:
-
     // Handling the internal state.
     void* m_state = nullptr;
 
@@ -93,4 +92,4 @@ private:
 };
 }
 
-#endif // MANUFACTURER_SUPPORT_AVANTES 
+#endif // MANUFACTURER_SUPPORT_AVANTES

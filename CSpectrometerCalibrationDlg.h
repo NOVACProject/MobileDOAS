@@ -24,5 +24,4 @@ private:
     CPropertyPage* m_calibrateInstrumentLineShape;
     CPropertyPage* m_calibratePixelToWavelength;
     CPropertyPage* m_calibrateReferences;
-
 };

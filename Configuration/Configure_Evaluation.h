@@ -7,7 +7,8 @@
 
 // CConfigure_Evaluation dialog
 
-namespace Configuration {
+namespace Configuration
+{
 
 class CConfigure_Evaluation : public CPropertyPage
 {
@@ -18,7 +19,10 @@ public:
     virtual ~CConfigure_Evaluation();
 
     // Dialog Data
-    enum { IDD = IDD_CONFIGURE_EVALUATION };
+    enum
+    {
+        IDD = IDD_CONFIGURE_EVALUATION
+    };
 
     /** The local handle to the CMobileConfiguration object that we're changing */
     std::shared_ptr<CMobileConfiguration> m_conf;

@@ -13,15 +13,9 @@ namespace mobiledoas
 /// </summary>
 struct MeasuredSpectrum
 {
-    MeasuredSpectrum()
-    {
-        Resize(MAX_N_CHANNELS, MAX_SPECTRUM_LENGTH);
-    }
+    MeasuredSpectrum() { Resize(MAX_N_CHANNELS, MAX_SPECTRUM_LENGTH); }
 
-    MeasuredSpectrum(int numberOfChannels, int spectrumLength)
-    {
-        Resize(numberOfChannels, spectrumLength);
-    }
+    MeasuredSpectrum(int numberOfChannels, int spectrumLength) { Resize(numberOfChannels, spectrumLength); }
 
     void SetToZero();
 
@@ -32,10 +26,7 @@ struct MeasuredSpectrum
     /// </summary>
     /// <param name="channelIdx">The channel to retrieve.</param>
     /// <returns>The measured data for the given channel.</returns>
-    std::vector<double>& operator[](size_t channelIdx)
-    {
-        return data[channelIdx];
-    }
+    std::vector<double>& operator[](size_t channelIdx) { return data[channelIdx]; }
 
     /// <summary>
     /// Copies the data from this measured spectrum to the destination.
@@ -53,10 +44,7 @@ struct MeasuredSpectrum
 
     int NumberOfChannels() const { return static_cast<int>(data.size()); }
 
-    int SpectrumLength() const
-    {
-        return (data.size() == 0) ? 0 : static_cast<int>(data[0].size());
-    }
+    int SpectrumLength() const { return (data.size() == 0) ? 0 : static_cast<int>(data[0].size()); }
 
     std::vector<std::vector<double>> data;
 };

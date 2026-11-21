@@ -28,27 +28,29 @@ BOOL Configuration::CConfigurationDialog::OnInitDialog()
     CWnd* pOk = this->GetDlgItem(IDOK);
 
     // Get the position of the 'Apply'-button, and then remove it
-    if (pApply) {
+    if (pApply)
+    {
         pApply->GetWindowRect(rectAppl);
         ScreenToClient(rectAppl);
         pApply->DestroyWindow();
     }
 
     // Get the position of the 'Cancel'-button and then
-    //	move it to where the 'Apply'-button was
-    if (pCancel) {
+    //  move it to where the 'Apply'-button was
+    if (pCancel)
+    {
         pCancel->GetWindowRect(rectCancel);
         ScreenToClient(rectCancel);
         pCancel->MoveWindow(rectAppl);
     }
 
     // Change the 'OK'-button to a 'Save'-button and move it to where
-    //	the 'cancel'-button was
-    if (pOk) {
+    //  the 'cancel'-button was
+    if (pOk)
+    {
         pOk->SetWindowText("Save");
         pOk->MoveWindow(rectCancel);
     }
 
     return bResult;
 }
-

@@ -9,11 +9,9 @@
 class CMeasurement_View : public CSpectrometer
 {
 public:
-    CMeasurement_View(
-        CView& mainForm,
-        novac::ILogger& log,
-        std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface,
-        std::unique_ptr<Configuration::CMobileConfiguration> conf);
+    CMeasurement_View(CView& mainForm, novac::ILogger& log,
+                      std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface,
+                      std::unique_ptr<Configuration::CMobileConfiguration> conf);
 
     virtual ~CMeasurement_View();
 

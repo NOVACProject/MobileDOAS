@@ -37,7 +37,6 @@ using namespace MathFit;
 using namespace Evaluation;
 
 
-
 /////////////////////////////////////////////////////////////////////////////
 // The one and only application object
 
@@ -51,7 +50,7 @@ using namespace std;
 
 CEvaluation::CEvaluation()
 {
-    //	iNumSpec = 1;
+    //  iNumSpec = 1;
     m_lowPassFiltering = 0;
 
     m_subtractDarkFromSky = true;
@@ -59,7 +58,6 @@ CEvaluation::CEvaluation()
 
 CEvaluation::~CEvaluation()
 {
-
 }
 
 /** Evaluate in multiple reference spectra and 2 modes(evaluate 1024 or 2048 channels)
@@ -67,7 +65,8 @@ CEvaluation::~CEvaluation()
 ** @skyArray - sky reference
 ** @specMem - measured spectrum
 */
-void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum, const double* measSpectrum, long numSteps)
+void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum, const double* measSpectrum,
+                           long numSteps)
 {
 
     CString szOut;
@@ -75,7 +74,7 @@ void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum
     int sumChn = m_window.specLength;
     //////////////////////////////////////////////////////////////////
     // Define the number of used reference spectra
-    //	const int iNumSpec = 1;//5;
+    //  const int iNumSpec = 1;//5;
 
     CVector vXData, vMeas;
 
@@ -136,9 +135,9 @@ void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum
     // we first create a summation object
     CSimpleDOASFunction cRefSum;
 
-    // now we create the required CReferecneSpectrumFunction objects that actually represent the 
+    // now we create the required CReferecneSpectrumFunction objects that actually represent the
     // reference spectra used in the DOAS model function
-    //	CReferenceSpectrumFunction ref[iNumSpec];
+    //  CReferenceSpectrumFunction ref[iNumSpec];
     CReferenceSpectrumFunction ref[20];
     for (int i = 0; i < iNumSpec; i++)
     {
@@ -151,7 +150,7 @@ void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum
         ref[i].SetNormalize(true);
 
         // set the spectral data of the reference spectrum to the object. This also causes an internal
-        // transformation of the spectral data into a B-Spline that will be used to interpolate the 
+        // transformation of the spectral data into a B-Spline that will be used to interpolate the
         // reference spectrum during shift and squeeze operations
         if (!ref[i].SetData(vXData.SubVector(0, vnYData[i].GetSize()), vnYData[i]))
         {
@@ -161,32 +160,51 @@ void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum
         // Set the column (if wanted)
         switch (m_window.ref[i].m_columnOption)
         {
-        case novac::SHIFT_TYPE::SHIFT_FIX:   ref[i].FixParameter(CReferenceSpectrumFunction::CONCENTRATION, m_window.ref[i].m_columnValue * ref[i].GetAmplitudeScale()); break;
-        case novac::SHIFT_TYPE::SHIFT_LINK:  ref[(int)m_window.ref[i].m_columnValue].LinkParameter(CReferenceSpectrumFunction::CONCENTRATION, ref[i], CReferenceSpectrumFunction::CONCENTRATION); break;
+        case novac::SHIFT_TYPE::SHIFT_FIX:
+            ref[i].FixParameter(CReferenceSpectrumFunction::CONCENTRATION,
+                                m_window.ref[i].m_columnValue * ref[i].GetAmplitudeScale());
+            break;
+        case novac::SHIFT_TYPE::SHIFT_LINK:
+            ref[(int)m_window.ref[i].m_columnValue].LinkParameter(CReferenceSpectrumFunction::CONCENTRATION, ref[i],
+                                                                  CReferenceSpectrumFunction::CONCENTRATION);
+            break;
         }
 
         // Set the shift
         switch (m_window.ref[i].m_shiftOption)
         {
-        case novac::SHIFT_TYPE::SHIFT_FIX:   ref[i].FixParameter(CReferenceSpectrumFunction::SHIFT, m_window.ref[i].m_shiftValue); break;
-        case novac::SHIFT_TYPE::SHIFT_LINK:  ref[(int)m_window.ref[i].m_shiftValue].LinkParameter(CReferenceSpectrumFunction::SHIFT, ref[i], CReferenceSpectrumFunction::SHIFT); break;
-        default:          ref[i].SetDefaultParameter(CReferenceSpectrumFunction::SHIFT, (TFitData)0.0);
+        case novac::SHIFT_TYPE::SHIFT_FIX:
+            ref[i].FixParameter(CReferenceSpectrumFunction::SHIFT, m_window.ref[i].m_shiftValue);
+            break;
+        case novac::SHIFT_TYPE::SHIFT_LINK:
+            ref[(int)m_window.ref[i].m_shiftValue].LinkParameter(CReferenceSpectrumFunction::SHIFT, ref[i],
+                                                                 CReferenceSpectrumFunction::SHIFT);
+            break;
+        default:
+            ref[i].SetDefaultParameter(CReferenceSpectrumFunction::SHIFT, (TFitData)0.0);
             ref[i].SetParameterLimits(CReferenceSpectrumFunction::SHIFT, (TFitData)-5.0, (TFitData)5.0, (TFitData)1e2);
         }
 
         // Set the squeeze
         switch (m_window.ref[i].m_squeezeOption)
         {
-        case novac::SHIFT_TYPE::SHIFT_FIX:   ref[i].FixParameter(CReferenceSpectrumFunction::SQUEEZE, m_window.ref[i].m_squeezeValue); break;
-        case novac::SHIFT_TYPE::SHIFT_LINK:  ref[(int)m_window.ref[i].m_squeezeValue].LinkParameter(CReferenceSpectrumFunction::SQUEEZE, ref[i], CReferenceSpectrumFunction::SQUEEZE); break;
-        default:          ref[i].SetDefaultParameter(CReferenceSpectrumFunction::SQUEEZE, (TFitData)1.0);
-            ref[i].SetParameterLimits(CReferenceSpectrumFunction::SQUEEZE, (TFitData)0.9, (TFitData)1.1, (TFitData)1e5); break;
+        case novac::SHIFT_TYPE::SHIFT_FIX:
+            ref[i].FixParameter(CReferenceSpectrumFunction::SQUEEZE, m_window.ref[i].m_squeezeValue);
+            break;
+        case novac::SHIFT_TYPE::SHIFT_LINK:
+            ref[(int)m_window.ref[i].m_squeezeValue].LinkParameter(CReferenceSpectrumFunction::SQUEEZE, ref[i],
+                                                                   CReferenceSpectrumFunction::SQUEEZE);
+            break;
+        default:
+            ref[i].SetDefaultParameter(CReferenceSpectrumFunction::SQUEEZE, (TFitData)1.0);
+            ref[i].SetParameterLimits(CReferenceSpectrumFunction::SQUEEZE, (TFitData)0.9, (TFitData)1.1, (TFitData)1e5);
+            break;
         }
 
         // another requirement in the example fit scenario is that we need to link the shift parameters of all
         // references to the shift parameter of the first reference (Fraunhofer) except for the 3 reference spectrum (NO2)
-        //	if(i > 0 && i != 3)//stefans
-        //		ref[0].LinkParameter(CReferenceSpectrumFunction::SHIFT, ref[i], CReferenceSpectrumFunction::SHIFT);
+        //  if(i > 0 && i != 3)//stefans
+        //      ref[0].LinkParameter(CReferenceSpectrumFunction::SHIFT, ref[i], CReferenceSpectrumFunction::SHIFT);
 
         // at last add the reference to the summation object
         cRefSum.AddReference(ref[i]);
@@ -204,7 +222,7 @@ void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum
 
 
     /////////////////////////////////////////////////////////////////
-    // Now its time to create the fit object. The CStandardFit object will 
+    // Now its time to create the fit object. The CStandardFit object will
     // provide a combination of a linear Least Square Fit and a nonlinear Levenberg-Marquardt Fit, which
     // should be sufficient for most needs.
     CStandardFit cFirstFit(cDiff);
@@ -263,11 +281,13 @@ void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum
 
             // get the fit results (column, column error, shift, shift error, squeeze, squeeze error)
             m_result.m_ref[i].m_column = (double)ref[i].GetModelParameter(CReferenceSpectrumFunction::CONCENTRATION);
-            m_result.m_ref[i].m_columnError = (double)ref[i].GetModelParameterError(CReferenceSpectrumFunction::CONCENTRATION);
+            m_result.m_ref[i].m_columnError =
+                (double)ref[i].GetModelParameterError(CReferenceSpectrumFunction::CONCENTRATION);
             m_result.m_ref[i].m_shift = (double)ref[i].GetModelParameter(CReferenceSpectrumFunction::SHIFT);
             m_result.m_ref[i].m_shiftError = (double)ref[i].GetModelParameterError(CReferenceSpectrumFunction::SHIFT);
             m_result.m_ref[i].m_squeeze = (double)ref[i].GetModelParameter(CReferenceSpectrumFunction::SQUEEZE);
-            m_result.m_ref[i].m_squeezeError = (double)ref[i].GetModelParameterError(CReferenceSpectrumFunction::SQUEEZE);
+            m_result.m_ref[i].m_squeezeError =
+                (double)ref[i].GetModelParameterError(CReferenceSpectrumFunction::SQUEEZE);
 
             // clear the fitResult vector
             m_fitResult[i].SetSize(sumChn);
@@ -293,8 +313,8 @@ void CEvaluation::Evaluate(const double* darkSpectrum, const double* skySpectrum
         //    normally fail when there are linear dependecies in the matrix respectrively you have linear
         //    dependencies in your reference spectrum. Eg. you tried to fit the same reference spectrum twice at once.
         e.ReportError();
-        //	std::cout << "Failed: " << ++iFalseCount << std::endl;
-        //	std::cout << "Steps: " << cFirstFit.GetNonlinearMinimizer().GetFitSteps() << " - Chi: " << cFirstFit.GetNonlinearMinimizer().GetChiSquare() << std::endl;
+        //  std::cout << "Failed: " << ++iFalseCount << std::endl;
+        //  std::cout << "Steps: " << cFirstFit.GetNonlinearMinimizer().GetFitSteps() << " - Chi: " << cFirstFit.GetNonlinearMinimizer().GetChiSquare() << std::endl;
         MessageBox(NULL, TEXT("fit exception"), TEXT("notice"), MB_OK);
     }
 
@@ -322,7 +342,7 @@ EvaluationResult CEvaluation::GetResult(int referenceFile) const
     return result;
 }
 
-/**	read data from reference files
+/** read data from reference files
 ** @refFileList - the names of the files
 ** @iNumFile - the number of the files
 ** iNumFile<=20, because of vnYData[20]
@@ -333,7 +353,7 @@ BOOL CEvaluation::ReadRefList(CString* refFileList, int iNumFile, int sumChn)
     CFileException exceFile;
     CStdioFile fileRef[100];
     CString szLine;
-    double fValue[4096];    // this part has been speeded up by using an array as buffer
+    double fValue[4096]; // this part has been speeded up by using an array as buffer
     long valuesReadNum = 0;
     double tmpDouble;
     int nColumns;
@@ -446,7 +466,8 @@ void CEvaluation::PrepareSpectra(double* dark, double* sky, double* meas, const 
     }
 }
 
-void CEvaluation::PrepareSpectra_HP_Div(double* darkArray, double* skyArray, double* measArray, const CFitWindow& window)
+void CEvaluation::PrepareSpectra_HP_Div(double* darkArray, double* skyArray, double* measArray,
+                                        const CFitWindow& window)
 {
 
     // 1. Subtract the dark spectrum
@@ -472,7 +493,8 @@ void CEvaluation::PrepareSpectra_HP_Div(double* darkArray, double* skyArray, dou
     Log(measArray, window.specLength);
 }
 
-void CEvaluation::PrepareSpectra_HP_Sub(double* darkArray, double* skyArray, double* measArray, const CFitWindow& window)
+void CEvaluation::PrepareSpectra_HP_Sub(double* darkArray, double* skyArray, double* measArray,
+                                        const CFitWindow& window)
 {
 
     // 1. spec = measured spectrum - dark spectrum

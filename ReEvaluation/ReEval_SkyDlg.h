@@ -7,42 +7,47 @@
 namespace ReEvaluation
 {
 
-	class CReEval_SkyDlg : public CPropertyPage
-	{
-		DECLARE_DYNAMIC(CReEval_SkyDlg)
+class CReEval_SkyDlg : public CPropertyPage
+{
+    DECLARE_DYNAMIC(CReEval_SkyDlg)
 
-	public:
-		CReEval_SkyDlg();
-		virtual ~CReEval_SkyDlg();
+public:
+    CReEval_SkyDlg();
+    virtual ~CReEval_SkyDlg();
 
-	// Dialog Data
-		enum { IDD = IDD_REEVAL_SKY };
+    // Dialog Data
+    enum
+    {
+        IDD = IDD_REEVAL_SKY
+    };
 
-		CReEvaluator *m_reeval;
-	protected:
-		virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+    CReEvaluator* m_reeval;
 
-		DECLARE_MESSAGE_MAP()
+protected:
+    virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
-	private:
-		int       m_numSky;
-	public:
-		afx_msg void OnBrowseForSky();
-		afx_msg void OnBrowseForDark();
+    DECLARE_MESSAGE_MAP()
 
-		afx_msg void OnChangeSkyOption();
-		void UpdateControls();
+private:
+    int m_numSky;
 
-		afx_msg void SaveData();
-		
-		/*CEdit m_intensityLow;
-		CEdit m_intensityHigh;
-		CEdit m_intensityChannel;
-		CEdit m_columnLow;
-		CEdit m_columnHigh;*/
-		CEdit m_editSkySpec, m_editSkySpecDark;
-		CButton m_btnBrowseSky, m_btnBrowseDark;
-		virtual BOOL OnInitDialog();
-		virtual BOOL OnKillActive();
-	};
+public:
+    afx_msg void OnBrowseForSky();
+    afx_msg void OnBrowseForDark();
+
+    afx_msg void OnChangeSkyOption();
+    void UpdateControls();
+
+    afx_msg void SaveData();
+
+        /*CEdit m_intensityLow;
+        CEdit m_intensityHigh;
+        CEdit m_intensityChannel;
+        CEdit m_columnLow;
+        CEdit m_columnHigh;*/
+    CEdit m_editSkySpec, m_editSkySpecDark;
+    CButton m_btnBrowseSky, m_btnBrowseDark;
+    virtual BOOL OnInitDialog();
+    virtual BOOL OnKillActive();
+};
 }

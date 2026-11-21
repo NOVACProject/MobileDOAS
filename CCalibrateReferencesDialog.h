@@ -9,7 +9,7 @@ class ReferenceCreationController;
 
 namespace novac
 {
-    class StandardCrossSectionSetup;
+class StandardCrossSectionSetup;
 }
 
 class CCalibrateReferencesDialog : public CPropertyPage
@@ -25,7 +25,10 @@ public:
 
     // Dialog Data
 #ifdef AFX_DESIGN_TIME
-    enum { IDD = IDD_CALIBRATE_REFERENCES };
+    enum
+    {
+        IDD = IDD_CALIBRATE_REFERENCES
+    };
 #endif
 
 protected:
@@ -35,8 +38,10 @@ protected:
 public:
     CComboBox m_crossSectionsCombo;
 
-    CString m_calibrationFile;  //< the full calibration file, in the new xml-based format, OR the wavelength calibration file
-    CString m_instrumentLineshapeFile; //< the instrument line shape file, provided if m_calibrationFile is a wavelength only file
+    CString
+        m_calibrationFile; //< the full calibration file, in the new xml-based format, OR the wavelength calibration file
+    CString
+        m_instrumentLineshapeFile; //< the instrument line shape file, provided if m_calibrationFile is a wavelength only file
 
     BOOL m_highPassFilterReference;
     BOOL m_inputInVacuum;

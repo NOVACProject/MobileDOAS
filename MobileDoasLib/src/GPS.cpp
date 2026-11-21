@@ -8,12 +8,14 @@ namespace mobiledoas
 {
 
 CGPS::CGPS()
-    : m_gpsInfo(), fRun(false)
+    : m_gpsInfo()
+    , fRun(false)
 {
 }
 
 CGPS::CGPS(const char* pCOMPort, long pBaudrate, std::string& outputDirectory)
-    : m_gpsInfo(), fRun(false)
+    : m_gpsInfo()
+    , fRun(false)
 {
     m_logFile = outputDirectory + "/gps.log";
 
@@ -27,7 +29,8 @@ CGPS::CGPS(const char* pCOMPort, long pBaudrate, std::string& outputDirectory)
 }
 
 CGPS::CGPS(CSerialConnection&& serial)
-    : m_gpsInfo(), fRun(false)
+    : m_gpsInfo()
+    , fRun(false)
 {
     // Take ownership of the serial connection.
     this->serial = std::move(serial);
@@ -68,7 +71,8 @@ bool CGPS::Connect()
 
 void CGPS::Get(mobiledoas::GpsData& dst)
 {
-    std::lock_guard<std::mutex> guard(this->m_gpsInfoMutex); // lock the access to the 'm_gpsInfo' while we're copying out the data
+    std::lock_guard<std::mutex> guard(
+        this->m_gpsInfoMutex); // lock the access to the 'm_gpsInfo' while we're copying out the data
     dst = this->m_gpsInfo;
 }
 
@@ -118,7 +122,8 @@ bool CGPS::ReadGPS()
 
     // Copy the parsed data to our member structure in a controlled fashion
     {
-        std::lock_guard<std::mutex> guard(this->m_gpsInfoMutex); // lock the access to the 'm_gpsInfo' while we're copying out the data
+        std::lock_guard<std::mutex> guard(
+            this->m_gpsInfoMutex); // lock the access to the 'm_gpsInfo' while we're copying out the data
         this->m_gpsInfo = localGpsInfo;
     }
 
@@ -180,14 +185,18 @@ GpsAsyncReader::GpsAsyncReader(const char* pCOMPort, long baudrate, std::string&
 {
     m_gps = new CGPS(pCOMPort, baudrate, outputDirectory);
 
-    m_gpsThread = std::thread(&CollectGPSData, m_gps); // AfxBeginThread(CollectGPSData, (LPVOID)m_gps, THREAD_PRIORITY_NORMAL, 0, 0, nullptr);
+    m_gpsThread =
+        std::thread(&CollectGPSData,
+                    m_gps); // AfxBeginThread(CollectGPSData, (LPVOID)m_gps, THREAD_PRIORITY_NORMAL, 0, 0, nullptr);
 }
 
 GpsAsyncReader::GpsAsyncReader(CGPS&& gps)
 {
     m_gps = new CGPS(std::move(gps));
 
-    m_gpsThread = std::thread(&CollectGPSData, m_gps); // AfxBeginThread(CollectGPSData, (LPVOID)m_gps, THREAD_PRIORITY_NORMAL, 0, 0, nullptr);
+    m_gpsThread =
+        std::thread(&CollectGPSData,
+                    m_gps); // AfxBeginThread(CollectGPSData, (LPVOID)m_gps, THREAD_PRIORITY_NORMAL, 0, 0, nullptr);
 }
 
 
