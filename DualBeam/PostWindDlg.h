@@ -21,14 +21,16 @@ public:
     virtual ~CPostWindDlg();
 
     // Dialog Data
-    enum { IDD = IDD_POST_WINDDLG };
+    enum
+    {
+        IDD = IDD_POST_WINDDLG
+    };
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
     DECLARE_MESSAGE_MAP()
 public:
-
     // ------------------ DIALOG COMPONENTS -----------------------
     /** The frame around the column graph */
     CStatic m_frameColumn;
@@ -63,7 +65,6 @@ public:
     afx_msg void OnCalculateWindspeed();
 
 private:
-
     // ---------------------- PRIVATE DATA -------------------------
 
     /** The currently opened evaluation-log(s), one for each measurement series. */

@@ -73,7 +73,7 @@ void CReEval_DoEvaluationDlg::OnBnClickedDoEvaluation()
     m_cancelButton.EnableWindow(TRUE);
     m_btnDoEvaluation.EnableWindow(FALSE);
 
-    //UpdateData(FALSE);
+//UpdateData(FALSE);
 }
 
 LRESULT CReEval_DoEvaluationDlg::OnProgress(WPARAM wp, LPARAM lp)
@@ -86,7 +86,8 @@ LRESULT CReEval_DoEvaluationDlg::OnProgress(WPARAM wp, LPARAM lp)
     switch (m_reeval->m_mode)
     {
     case CReEvaluator::MODE_READING_OFFSETS:
-        statusMsg.Format("Reading Offsets - %.0lf%% done", 100 * m_reeval->m_progress); break;
+        statusMsg.Format("Reading Offsets - %.0lf%% done", 100 * m_reeval->m_progress);
+        break;
     default:
         statusMsg.Format("Evaluating - %.0lf%% done", 100 * m_reeval->m_progress);
     }
@@ -125,7 +126,8 @@ LRESULT CReEval_DoEvaluationDlg::OnDone(WPARAM wp, LPARAM lp)
     double fitWidth = m_reeval->m_settings.m_window.fitHigh - m_reeval->m_settings.m_window.fitLow;
 
     // copy the spectrum to the local variable
-    memcpy(residual + m_reeval->m_settings.m_window.fitLow, &m_reeval->m_avgResidual[0], (size_t)fitWidth * sizeof(double));
+    memcpy(residual + m_reeval->m_settings.m_window.fitLow, &m_reeval->m_avgResidual[0],
+           (size_t)fitWidth * sizeof(double));
 
     // draw the residual
     m_graph.CleanPlot();
@@ -206,11 +208,13 @@ void CReEval_DoEvaluationDlg::DrawFit()
 
     // draw the spectrum
     m_graph.SetPlotColor(RGB(255, 0, 0));
-    m_graph.XYPlot(pixels + m_reeval->m_settings.m_window.fitLow, spectrum + m_reeval->m_settings.m_window.fitLow, (int)fitWidth);
+    m_graph.XYPlot(pixels + m_reeval->m_settings.m_window.fitLow, spectrum + m_reeval->m_settings.m_window.fitLow,
+                   (int)fitWidth);
 
     // draw the fitted result
     m_graph.SetPlotColor(RGB(0, 0, 255), false);
-    m_graph.XYPlot(pixels + m_reeval->m_settings.m_window.fitLow, fitResult + m_reeval->m_settings.m_window.fitLow, (int)fitWidth, Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
+    m_graph.XYPlot(pixels + m_reeval->m_settings.m_window.fitLow, fitResult + m_reeval->m_settings.m_window.fitLow,
+                   (int)fitWidth, Graph::CGraphCtrl::PLOT_FIXED_AXIS | Graph::CGraphCtrl::PLOT_CONNECTED);
 
     return;
 }
@@ -227,7 +231,8 @@ void CReEval_DoEvaluationDlg::DrawResidual()
     double fitWidth = m_reeval->m_settings.m_window.fitHigh - m_reeval->m_settings.m_window.fitLow;
 
     // copy the fitted result to the local variable
-    memcpy(&residual[m_reeval->m_settings.m_window.fitLow], &m_reeval->m_residual[0], (size_t)fitWidth * sizeof(double));
+    memcpy(&residual[m_reeval->m_settings.m_window.fitLow], &m_reeval->m_residual[0],
+           (size_t)fitWidth * sizeof(double));
 
     // draw the spectrum
     m_graph.SetPlotColor(RGB(255, 0, 0));
@@ -296,7 +301,7 @@ BOOL CReEval_DoEvaluationDlg::OnInitDialog()
     m_showFit.SetCheck(TRUE);
 
     return TRUE;  // return TRUE unless you set the focus to a control
-    // EXCEPTION: OCX Property Pages should return FALSE
+// EXCEPTION: OCX Property Pages should return FALSE
 }
 
 void CReEval_DoEvaluationDlg::UpdateScreen()
@@ -308,7 +313,7 @@ void CReEval_DoEvaluationDlg::UpdateScreen()
     SetDlgItemText(IDC_REEVAL_FITRESULT_SPECTRUMNO, str);
 
     // chi2 of the fit
-    str.Format("Chi²: %.2e", m_reeval->m_chiSquare);
+    str.Format("Chi\xB2: %.2e", m_reeval->m_chiSquare);
     SetDlgItemText(IDC_REEVAL_FITRESULT_CHI2, str);
 
     // clear the columns
@@ -323,21 +328,31 @@ void CReEval_DoEvaluationDlg::UpdateScreen()
     if (m_reeval->m_settings.m_window.fitType != Evaluation::FIT_HP_DIV)
     {
         int skyRef = m_reeval->m_settings.m_window.nRef - 1;
-        str.Format("Sky shift: %.5lf ± %.5lf", m_reeval->m_evResult[skyRef][2], m_reeval->m_evResult[skyRef][3]);
+        str.Format("Sky shift: %.5lf \xB1 %.5lf", m_reeval->m_evResult[skyRef][2], m_reeval->m_evResult[skyRef][3]);
         SetDlgItemText(IDC_REEVAL_FITRESULT_REFERENCE5, str);
     }
 
-    int nReferencesToShow = (m_reeval->m_settings.m_window.fitType == Evaluation::FIT_HP_DIV) ? m_reeval->m_settings.m_window.nRef : m_reeval->m_settings.m_window.nRef - 1;
+    int nReferencesToShow = (m_reeval->m_settings.m_window.fitType == Evaluation::FIT_HP_DIV)
+                                ? m_reeval->m_settings.m_window.nRef
+                                : m_reeval->m_settings.m_window.nRef - 1;
     for (int i = 0; i < nReferencesToShow; ++i)
     {
-        str.Format("%4s: %2.2e ± %2.2e", m_reeval->m_settings.m_window.ref[i].m_specieName.c_str(),
-            m_reeval->m_evResult[i][0], m_reeval->m_evResult[i][1]);
+        str.Format("%4s: %2.2e \xB1 %2.2e", m_reeval->m_settings.m_window.ref[i].m_specieName.c_str(),
+                   m_reeval->m_evResult[i][0], m_reeval->m_evResult[i][1]);
         switch (i)
         {
-        case 0: SetDlgItemText(IDC_REEVAL_FITRESULT_REFERENCE1, str); break;
-        case 1: SetDlgItemText(IDC_REEVAL_FITRESULT_REFERENCE2, str); break;
-        case 2: SetDlgItemText(IDC_REEVAL_FITRESULT_REFERENCE3, str); break;
-        case 3: SetDlgItemText(IDC_REEVAL_FITRESULT_REFERENCE4, str); break;
+        case 0:
+            SetDlgItemText(IDC_REEVAL_FITRESULT_REFERENCE1, str);
+            break;
+        case 1:
+            SetDlgItemText(IDC_REEVAL_FITRESULT_REFERENCE2, str);
+            break;
+        case 2:
+            SetDlgItemText(IDC_REEVAL_FITRESULT_REFERENCE3, str);
+            break;
+        case 3:
+            SetDlgItemText(IDC_REEVAL_FITRESULT_REFERENCE4, str);
+            break;
         }
     }
 }

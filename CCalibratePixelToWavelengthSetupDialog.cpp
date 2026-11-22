@@ -16,10 +16,11 @@
 IMPLEMENT_DYNAMIC(CCalibratePixelToWavelengthSetupDialog, CDialog)
 
 CCalibratePixelToWavelengthSetupDialog::CCalibratePixelToWavelengthSetupDialog(
-    CalibratePixelToWavelengthDialogSetup* setup,
-    novac::StandardCrossSectionSetup* crossSections,
+    CalibratePixelToWavelengthDialogSetup* setup, novac::StandardCrossSectionSetup* crossSections,
     CWnd* pParent /*=nullptr*/)
-    : m_setup(setup), m_standardCrossSections(crossSections), CDialog(IDD_CALIBRATE_WAVELENGTH_SETTINGS_DIALOG, pParent)
+    : m_setup(setup)
+    , m_standardCrossSections(crossSections)
+    , CDialog(IDD_CALIBRATE_WAVELENGTH_SETTINGS_DIALOG, pParent)
 {
 }
 
@@ -29,7 +30,8 @@ CCalibratePixelToWavelengthSetupDialog::~CCalibratePixelToWavelengthSetupDialog(
     m_standardCrossSections = nullptr;
 }
 
-BOOL CCalibratePixelToWavelengthSetupDialog::OnInitDialog() {
+BOOL CCalibratePixelToWavelengthSetupDialog::OnInitDialog()
+{
     CDialog::OnInitDialog();
 
     UpdateData(FALSE);
@@ -41,7 +43,7 @@ BOOL CCalibratePixelToWavelengthSetupDialog::OnInitDialog() {
         auto allCrossSections = m_standardCrossSections->ListReferences();
         for (const std::string& crossSectionFile : allCrossSections)
         {
-            CString fileName{ crossSectionFile.c_str() };
+            CString fileName{crossSectionFile.c_str()};
             fileName.Append(" [Standard]");
             m_crossSectionsCombo.AddString(fileName);
         }
@@ -90,11 +92,15 @@ void CCalibratePixelToWavelengthSetupDialog::DoDataExchange(CDataExchange* pDX)
 }
 
 BEGIN_MESSAGE_MAP(CCalibratePixelToWavelengthSetupDialog, CDialog)
-    ON_BN_CLICKED(IDC_RADIO_INSTRUMENT_LINE_SHAPE_FIT_NOTHING, &CCalibratePixelToWavelengthSetupDialog::OnBnClickedRadioInstrumentLineShapeFitOption)
-    ON_BN_CLICKED(IDC_RADIO_INSTRUMENT_LINE_SHAPE_FIT_SUPER_GAUSS, &CCalibratePixelToWavelengthSetupDialog::OnBnClickedRadioInstrumentLineShapeFitOption)
+    ON_BN_CLICKED(IDC_RADIO_INSTRUMENT_LINE_SHAPE_FIT_NOTHING,
+                  &CCalibratePixelToWavelengthSetupDialog::OnBnClickedRadioInstrumentLineShapeFitOption)
+    ON_BN_CLICKED(IDC_RADIO_INSTRUMENT_LINE_SHAPE_FIT_SUPER_GAUSS,
+                  &CCalibratePixelToWavelengthSetupDialog::OnBnClickedRadioInstrumentLineShapeFitOption)
 
-    ON_BN_CLICKED(IDC_BUTTON_BROWSE_SOLAR_SPECTRUM_SETTING, &CCalibratePixelToWavelengthSetupDialog::OnClickedButtonBrowseSolarSpectrum)
-    ON_BN_CLICKED(IDC_BUTTON_SELECT_INITIAL_CALIBRATION_SETTING, &CCalibratePixelToWavelengthSetupDialog::OnButtonSelectInitialCalibration)
+    ON_BN_CLICKED(IDC_BUTTON_BROWSE_SOLAR_SPECTRUM_SETTING,
+                  &CCalibratePixelToWavelengthSetupDialog::OnClickedButtonBrowseSolarSpectrum)
+    ON_BN_CLICKED(IDC_BUTTON_SELECT_INITIAL_CALIBRATION_SETTING,
+                  &CCalibratePixelToWavelengthSetupDialog::OnButtonSelectInitialCalibration)
 
     ON_BN_CLICKED(IDOK, &CCalibratePixelToWavelengthSetupDialog::OnBnClickedOk)
     ON_BN_CLICKED(IDC_CHECK_INCLUDE_OZONE_ILS_FIT, &CCalibratePixelToWavelengthSetupDialog::OnToggleCheckIncludeOzone)
@@ -150,7 +156,9 @@ void CCalibratePixelToWavelengthSetupDialog::OnBnClickedOk()
     }
     if (!IsExistingFile(m_setup->m_initialCalibrationFile))
     {
-        MessageBox("Please select a file which contains an initial guess for the wavelength calibration of the spectrometer", "Missing input", MB_OK);
+        MessageBox(
+            "Please select a file which contains an initial guess for the wavelength calibration of the spectrometer",
+            "Missing input", MB_OK);
         return;
     }
     if (m_setup->m_fitInstrumentLineShapeOption == 1)
@@ -161,17 +169,20 @@ void CCalibratePixelToWavelengthSetupDialog::OnBnClickedOk()
 
         if (std::abs(fitRegionStart) < std::numeric_limits<float>::epsilon())
         {
-            MessageBox("Failed to interpret the fit from as a numeric value. Please check the value and try again.", "Cannot parse input", MB_OK);
+            MessageBox("Failed to interpret the fit from as a numeric value. Please check the value and try again.",
+                       "Cannot parse input", MB_OK);
             return;
         }
         if (std::abs(fitRegionStop) < std::numeric_limits<float>::epsilon())
         {
-            MessageBox("Failed to interpret the fit to as a numeric value. Please check the value and try again.", "Cannot parse input", MB_OK);
+            MessageBox("Failed to interpret the fit to as a numeric value. Please check the value and try again.",
+                       "Cannot parse input", MB_OK);
             return;
         }
         if (fitRegionStart > fitRegionStop)
         {
-            MessageBox("The 'fit from' is larger than 'fit to'. Please make sure the values are correct and try again.", "Cannot parse input", MB_OK);
+            MessageBox("The 'fit from' is larger than 'fit to'. Please make sure the values are correct and try again.",
+                       "Cannot parse input", MB_OK);
             return;
         }
     }

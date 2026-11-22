@@ -6,7 +6,7 @@
 
 namespace novac
 {
-    class StandardCrossSectionSetup;
+class StandardCrossSectionSetup;
 }
 
 class CCreateStandardReferencesDialog : public CDialog
@@ -17,9 +17,12 @@ public:
     CCreateStandardReferencesDialog(CWnd* pParent = nullptr);   // standard constructor
     virtual ~CCreateStandardReferencesDialog();
 
-    // Dialog Data
+// Dialog Data
 #ifdef AFX_DESIGN_TIME
-    enum { IDD = IDD_CALIBRATE_STANDARD_REFERENCES };
+    enum
+    {
+        IDD = IDD_CALIBRATE_STANDARD_REFERENCES
+    };
 #endif
 
 protected:
@@ -47,7 +50,6 @@ public:
     afx_msg void OnChangeFileSuffix();
 
 private:
-
     CString m_outputdirectory;
     CString m_instrumentName;
     CString m_fileNameSuffix;
@@ -56,6 +58,6 @@ private:
 
     void UpdateOutputFileNamesExplanation();
 
-    std::string ReferenceFileName(const std::string& nameOfReference, bool includFilteringInfix, bool includeDirectory = true) const;
-
+    std::string ReferenceFileName(const std::string& nameOfReference, bool includFilteringInfix,
+                                  bool includeDirectory = true) const;
 };

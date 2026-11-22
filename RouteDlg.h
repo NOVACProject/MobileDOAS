@@ -1,9 +1,4 @@
-#if !defined(AFX_ROUTEDLG_H__DB80A786_6CCE_4B5C_AF7F_2AE96E26BA18__INCLUDED_)
-#define AFX_ROUTEDLG_H__DB80A786_6CCE_4B5C_AF7F_2AE96E26BA18__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #define MAX_FLUX_LOGFILES 32
 
@@ -16,9 +11,9 @@
 #include "afxcmn.h"
 #include <MobileDoasLib/Flux/Flux1.h>
 
-#define SHOW_COLUMN        0
-#define SHOW_ALTITUDE      1
-#define SHOW_INTENSITY     2
+#define SHOW_COLUMN 0
+#define SHOW_ALTITUDE 1
+#define SHOW_INTENSITY 2
 
 
 // RouteDlg.h : header file
@@ -29,28 +24,28 @@
 // CRouteDlg dialog
 class CRouteDlg : public CDialog
 {
-    // Construction
+// Construction
 public:
     CRouteDlg(CWnd* pParent = NULL);   // standard constructor
 
     mobiledoas::CFlux* m_flux;
-    double  m_lon[MAX_FLUX_LOGFILES][MAX_TRAVERSELENGTH];
-    double  m_lat[MAX_FLUX_LOGFILES][MAX_TRAVERSELENGTH];
-    double  m_col[MAX_FLUX_LOGFILES][MAX_TRAVERSELENGTH];
-    double  m_alt[MAX_FLUX_LOGFILES][MAX_TRAVERSELENGTH];
-    double  m_int[MAX_FLUX_LOGFILES][MAX_TRAVERSELENGTH];
-    long    m_recordLen[MAX_FLUX_LOGFILES];
+    double m_lon[MAX_FLUX_LOGFILES][MAX_TRAVERSELENGTH];
+    double m_lat[MAX_FLUX_LOGFILES][MAX_TRAVERSELENGTH];
+    double m_col[MAX_FLUX_LOGFILES][MAX_TRAVERSELENGTH];
+    double m_alt[MAX_FLUX_LOGFILES][MAX_TRAVERSELENGTH];
+    double m_int[MAX_FLUX_LOGFILES][MAX_TRAVERSELENGTH];
+    long m_recordLen[MAX_FLUX_LOGFILES];
 
-    // The number of traverses to show, this is the smallest of 
-    //	m->flux.m_traversNum and MAX_FLUX_LOGFILES
-    long	m_traversesToShow;
+    // The number of traverses to show, this is the smallest of
+    //  m->flux.m_traversNum and MAX_FLUX_LOGFILES
+    long m_traversesToShow;
 
     // the wind speed and winddirection for every point, used only if there's a defined windfield
-    double  m_ws[MAX_FLUX_LOGFILES][MAX_TRAVERSELENGTH];
-    double  m_wd[MAX_FLUX_LOGFILES][MAX_TRAVERSELENGTH];
-    bool    m_useWindField[MAX_FLUX_LOGFILES];
+    double m_ws[MAX_FLUX_LOGFILES][MAX_TRAVERSELENGTH];
+    double m_wd[MAX_FLUX_LOGFILES][MAX_TRAVERSELENGTH];
+    bool m_useWindField[MAX_FLUX_LOGFILES];
 
-    void    InitBuffers();
+    void InitBuffers();
 
     double m_srcLat, m_srcLon;
 
@@ -58,15 +53,18 @@ public:
     Graph::CRouteGraph m_gpsPlot;
 
     /* Plotting the data */
-    void   DrawRouteGraph();
+    void DrawRouteGraph();
 
     /* Calculating the range of the plot */
-    void   GetPlotRange(struct plotRange& range);
+    void GetPlotRange(struct plotRange& range);
 
     // Dialog Data
     //{{AFX_DATA(CRouteDlg)
-    enum { IDD = IDD_ROUTEDLG };
-    // NOTE: the ClassWizard will add data members here
+    enum
+    {
+        IDD = IDD_ROUTEDLG
+    };
+// NOTE: the ClassWizard will add data members here
 //}}AFX_DATA
 
 
@@ -75,11 +73,10 @@ public:
     //{{AFX_VIRTUAL(CRouteDlg)
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-    //}}AFX_VIRTUAL
+//}}AFX_VIRTUAL
 
 // Implementation
 protected:
-
     // Generated message map functions
     //{{AFX_MSG(CRouteDlg)
     virtual BOOL OnInitDialog();
@@ -109,12 +106,12 @@ private:
     COLORREF m_windFieldColor;
     COLORREF m_circlesColor;
 
-    /** The color of the grid */
+/** The color of the grid */
 public:
     /* Calculating distance and bearing */
     CButton m_calcDistance;
-    double  lat1, lon1, lat2, lon2;
-    int     nClicks;
+    double lat1, lon1, lat2, lon2;
+    int nClicks;
     LRESULT OnLBUInGPSGraph(WPARAM wParam, LPARAM lParam);
 
     /** Zooming in the graph */
@@ -188,6 +185,3 @@ public:
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
-
-#endif // !defined(AFX_ROUTEDLG_H__DB80A786_6CCE_4B5C_AF7F_2AE96E26BA18__INCLUDED_)
-

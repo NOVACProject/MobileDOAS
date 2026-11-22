@@ -2,7 +2,8 @@
 
 #include "MobileConfiguration.h"
 
-namespace Configuration {
+namespace Configuration
+{
 class CConfigurationDialog : public CPropertySheet
 {
 public:
@@ -14,6 +15,5 @@ protected:
 
     /** Called when the dialog is to be shown */
     virtual BOOL OnInitDialog();
-
 };
 }

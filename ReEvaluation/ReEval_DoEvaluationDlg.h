@@ -21,14 +21,16 @@ public:
     CReEvaluator* m_reeval;
 
     // Dialog Data
-    enum { IDD = IDD_REEVAL_EVALUATE };
+    enum
+    {
+        IDD = IDD_REEVAL_EVALUATE
+    };
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
     DECLARE_MESSAGE_MAP()
 public:
-
     LRESULT OnProgress(WPARAM wp, LPARAM lp);
     LRESULT OnCancel(WPARAM wp, LPARAM lp);
     LRESULT OnDone(WPARAM wp, LPARAM lp);
@@ -73,6 +75,7 @@ public:
 
 private:
     Graph::CGraphCtrl m_graph;
+
 public:
     virtual void OnOK();
     afx_msg void OnClose();

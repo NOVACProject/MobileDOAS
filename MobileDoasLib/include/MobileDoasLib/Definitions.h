@@ -15,7 +15,7 @@
 // --------------------- MAXIMUM SIZES ----------------------------
 // ----------------------------------------------------------------
 
-// the maximum number of channels on the spectrometer that we can handle 
+// the maximum number of channels on the spectrometer that we can handle
 #define MAX_N_CHANNELS 2
 
 // The maximum number of fit-regions that we can use at any single time
@@ -27,11 +27,11 @@
 // ----------------------------------------------------------------
 // ---------------- MATHEMATICAL CONSTANTS ------------------------
 // ----------------------------------------------------------------
-#define DEGREETORAD   0.01745329251994 
-#define RADTODEGREE   57.29577951308232
-#define HALF_PI       1.57079632679490
-#define M_PI          3.14159265358979
-#define TWO_PI        6.28318530717959
+#define DEGREETORAD 0.01745329251994
+#define RADTODEGREE 57.29577951308232
+#define HALF_PI 1.57079632679490
+#define M_PI 3.14159265358979
+#define TWO_PI 6.28318530717959
 
 
 // ---------------------------------------------------------------

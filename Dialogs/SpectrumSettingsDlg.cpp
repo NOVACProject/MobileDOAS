@@ -12,10 +12,14 @@
 #include <algorithm>
 #include <SpectralEvaluation/StringUtils.h>
 
-int GetLargestDivisorBelow16(int n) {
-    for (int k = 15; k > 0; --k) {
+int GetLargestDivisorBelow16(int n)
+{
+    for (int k = 15; k > 0; --k)
+    {
         if (n % k == 0)
+        {
             return k;
+        }
     }
     return 1;
 }
@@ -86,9 +90,11 @@ BOOL CSpectrumSettingsDlg::OnInitDialog()
     return 0;
 }
 
-LRESULT CSpectrumSettingsDlg::UpdateDialogWithDataFromSpectrometer(WPARAM wParam, LPARAM lParam) {
+LRESULT CSpectrumSettingsDlg::UpdateDialogWithDataFromSpectrometer(WPARAM wParam, LPARAM lParam)
+{
 
-    if (this->m_Spectrometer == nullptr) {
+    if (this->m_Spectrometer == nullptr)
+    {
         return 0;
     }
 
@@ -98,14 +104,18 @@ LRESULT CSpectrumSettingsDlg::UpdateDialogWithDataFromSpectrometer(WPARAM wParam
 
     // Update the window
     if (this->m_hWnd != nullptr)
+    {
         UpdateData(FALSE);
+    }
 
     return 0;
 }
 
-void CSpectrumSettingsDlg::SaveDialogDataToSpectrometer() {
+void CSpectrumSettingsDlg::SaveDialogDataToSpectrometer()
+{
 
-    if (this->m_Spectrometer == nullptr) {
+    if (this->m_Spectrometer == nullptr)
+    {
         return;
     }
 
@@ -113,25 +123,30 @@ void CSpectrumSettingsDlg::SaveDialogDataToSpectrometer() {
     UpdateData(TRUE);
 
     // sanity check
-    if (m_integrationTimeMs < 3 || m_integrationTimeMs > 65536 || m_average < 1 || m_average > 50000) {
+    if (m_integrationTimeMs < 3 || m_integrationTimeMs > 65536 || m_average < 1 || m_average > 50000)
+    {
         return;
     }
 
     // set the parameters
     m_Spectrometer->m_integrationTime = m_integrationTimeMs;
-    if (EqualsIgnoringCase(m_Spectrometer->m_spectrometerModel, "USB2000+")) {
+    if (EqualsIgnoringCase(m_Spectrometer->m_spectrometerModel, "USB2000+"))
+    {
         m_Spectrometer->m_sumInSpectrometer = m_average;
         m_Spectrometer->m_sumInComputer = 1;
     }
-    else {
-        if (m_average > 15) {
+    else
+    {
+        if (m_average > 15)
+        {
             // Get the largest possible number to add together in the spectrometer
             int largestDivisor = GetLargestDivisorBelow16(m_average);
 
             m_Spectrometer->m_sumInSpectrometer = std::max(largestDivisor, 1);
             m_Spectrometer->m_sumInComputer = m_average / m_Spectrometer->m_sumInSpectrometer;
         }
-        else {
+        else
+        {
             m_Spectrometer->m_sumInSpectrometer = m_average;
             m_Spectrometer->m_sumInComputer = 1;
         }
@@ -177,9 +192,13 @@ void CSpectrumSettingsDlg::OnChangeSpinExptime(NMHDR* pNMHDR, LRESULT* pResult)
     // Check which direction the user has pressed the spinbutton (which is upside down)
     //  and change the circle radius accordingly
     if (pNMUpDown->iDelta > 0)
+    {
         --m_integrationTimeMs;
+    }
     if (pNMUpDown->iDelta < 0)
+    {
         ++m_integrationTimeMs;
+    }
 
     // Enforce the limits
     m_integrationTimeMs = std::max(3, m_integrationTimeMs);
@@ -190,7 +209,6 @@ void CSpectrumSettingsDlg::OnChangeSpinExptime(NMHDR* pNMHDR, LRESULT* pResult)
     // Update the screen
     str.Format("%d", m_integrationTimeMs);
     m_exptimeEdit.SetWindowText(str);
-
 }
 
 // Called when the user has pressed the spin button that controlls the number of spectra to average
@@ -202,9 +220,13 @@ void CSpectrumSettingsDlg::OnChangeSpinAverage(NMHDR* pNMHDR, LRESULT* pResult)
     // Check which direction the user has pressed the spinbutton (which is upside down)
     //  and change the circle radius accordingly
     if (pNMUpDown->iDelta > 0)
+    {
         --m_average;
+    }
     if (pNMUpDown->iDelta < 0)
+    {
         ++m_average;
+    }
 
     // Enforce the limits
     m_average = std::max(1, m_average);
@@ -223,7 +245,7 @@ LRESULT CSpectrumSettingsDlg::OnChangeSpectrometer(WPARAM wParam, LPARAM lParam)
 
     const auto spectrometers = m_Spectrometer->GetConnectedSpectrometers();
 
-    // build the list 
+    // build the list
     m_comboSpecs.ResetContent();
     for (const std::string& serial : spectrometers)
     {
@@ -246,18 +268,23 @@ LRESULT CSpectrumSettingsDlg::OnChangeSpectrometer(WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-void CSpectrumSettingsDlg::OnUserChangeSpectrometer() {
+void CSpectrumSettingsDlg::OnUserChangeSpectrometer()
+{
     UpdateData(TRUE);
 
     int curSel = m_comboSpecs.GetCurSel();
-    if (curSel == -1 || (curSel == m_Spectrometer->m_spectrometerIndex && m_channel == m_Spectrometer->m_spectrometerChannel))
+    if (curSel == -1 ||
+        (curSel == m_Spectrometer->m_spectrometerIndex && m_channel == m_Spectrometer->m_spectrometerChannel))
+    {
         return;
+    }
 
     // change the spectrometer to use...
-    if (m_channel == 1 && m_Spectrometer->m_NChannels < 2) {
+    if (m_channel == 1 && m_Spectrometer->m_NChannels < 2)
+    {
         MessageBox("Please set N Channels to 2 in configuration to view slave channel output.");
     }
 
-    std::vector<int> channelsToUse{ m_channel };
+    std::vector<int> channelsToUse{m_channel};
     m_Spectrometer->ChangeSpectrometer(curSel, channelsToUse);
 }

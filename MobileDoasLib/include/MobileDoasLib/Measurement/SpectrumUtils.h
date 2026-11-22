@@ -1,7 +1,7 @@
 #pragma once
 
 #include <MobileDoasLib/Definitions.h>
-#include<vector>
+#include <vector>
 
 // SpectrumUtils collects together some commonly used spectrum related functions
 
@@ -60,17 +60,20 @@ struct SpectrumSummation
 /// @param result Will be filled with the result of the calculation.
 /// @return Number of spectra to co-add in the computer. */
 /// </summary>
-int CountRound(long timeResolution, long integrationTimeMs, long readoutDelay, long maximumAveragesInSpectrometer, SpectrumSummation& result);
+int CountRound(long timeResolution, long integrationTimeMs, long readoutDelay, long maximumAveragesInSpectrometer,
+               SpectrumSummation& result);
 
 struct SpectrumIntensityMeasurement
 {
     SpectrumIntensityMeasurement(double saturationRatio, short integrationTime)
-        : saturationRatio(saturationRatio), integrationTime(integrationTime)
+        : saturationRatio(saturationRatio)
+        , integrationTime(integrationTime)
     {
     }
 
     SpectrumIntensityMeasurement(long absoluteIntensity, long dynamicRange, short integrationTime)
-        : saturationRatio(absoluteIntensity / (double)dynamicRange), integrationTime(integrationTime)
+        : saturationRatio(absoluteIntensity / (double)dynamicRange)
+        , integrationTime(integrationTime)
     {
     }
 
@@ -82,7 +85,7 @@ struct SpectrumIntensityMeasurement
 };
 
 /// <summary>
-/// AdjustIntegrationTimeToLastIntensity calculates a new integration time based on the given intensity and integration time 
+/// AdjustIntegrationTimeToLastIntensity calculates a new integration time based on the given intensity and integration time
 /// in the last measurement performed.
 /// </summary>
 /// <param name="spectrumIntensityMeasurement">The current saturation ratio and integration time in the last measured spectrum.</param>
@@ -92,12 +95,9 @@ struct SpectrumIntensityMeasurement
 /// <param name="minAllowedIntegrationTime">The smallest allowed integration time (in ms).</param>
 /// <param name="maxAllowedIntegrationTime">The largest allowed integration time (in ms).</param>
 /// <returns>The new recommended integration time to use.</returns>
-short AdjustIntegrationTimeToLastIntensity(
-    SpectrumIntensityMeasurement spectrumIntensityMeasurement,
-    double minTolerableRatio,
-    double maxTolerableRatio,
-    long minAllowedIntegrationTime,
-    long maxAllowedIntegrationTime);
+short AdjustIntegrationTimeToLastIntensity(SpectrumIntensityMeasurement spectrumIntensityMeasurement,
+                                           double minTolerableRatio, double maxTolerableRatio,
+                                           long minAllowedIntegrationTime, long maxAllowedIntegrationTime);
 
 /// <summary>
 /// EstimateNewIntegrationTime attempts to calculate a valid integration time given two meaurements performed,
@@ -109,10 +109,7 @@ short AdjustIntegrationTimeToLastIntensity(
 /// <param name="minAllowedIntegrationTime">The smallest allowed integration time (in ms).</param>
 /// <param name="maxAllowedIntegrationTime">The largest allowed integration time (in ms).</param>
 /// <returns></returns>
-short EstimateNewIntegrationTime(
-    SpectrumIntensityMeasurement shortMeasurement,
-    SpectrumIntensityMeasurement longMeasurement,
-    double desiredSaturationRatio,
-    long minAllowedIntegrationTime,
-    long maxAllowedIntegrationTime);
+short EstimateNewIntegrationTime(SpectrumIntensityMeasurement shortMeasurement,
+                                 SpectrumIntensityMeasurement longMeasurement, double desiredSaturationRatio,
+                                 long minAllowedIntegrationTime, long maxAllowedIntegrationTime);
 }

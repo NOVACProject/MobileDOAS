@@ -26,8 +26,10 @@ void CConfigure_Calibration::DoDataExchange(CDataExchange* pDX)
     DDX_Radio(pDX, IDC_RADIO_INSTRUMENT_LINE_SHAPE_FIT_NOTHING, m_conf->m_calibration.m_instrumentLineShapeFitOption);
     DDX_Text(pDX, IDC_EDIT_SOLAR_SPECTRUM_SETTING, m_conf->m_calibration.m_solarSpectrumFile);
     DDX_Text(pDX, IDC_EDIT_INITIAL_CALIBRATION_SETTING, m_conf->m_calibration.m_initialCalibrationFile);
-    DDX_Text(pDX, IDC_EDIT_INSTRUMENT_LINE_SHAPE_FIT_REGION_LOW, m_conf->m_calibration.m_instrumentLineShapeFitRegion.low);
-    DDX_Text(pDX, IDC_EDIT_INSTRUMENT_LINE_SHAPE_FIT_REGION_HIGH, m_conf->m_calibration.m_instrumentLineShapeFitRegion.high);
+    DDX_Text(pDX, IDC_EDIT_INSTRUMENT_LINE_SHAPE_FIT_REGION_LOW,
+             m_conf->m_calibration.m_instrumentLineShapeFitRegion.low);
+    DDX_Text(pDX, IDC_EDIT_INSTRUMENT_LINE_SHAPE_FIT_REGION_HIGH,
+             m_conf->m_calibration.m_instrumentLineShapeFitRegion.high);
 
     DDX_Check(pDX, IDC_CHECK_REPLACE_USER_DEFINED_REFERENCES, m_conf->m_calibration.m_generateReferences);
     DDX_Check(pDX, IDC_CHECK_FILTER_REFERENCES, m_conf->m_calibration.m_filterReferences);
@@ -43,10 +45,13 @@ BEGIN_MESSAGE_MAP(CConfigure_Calibration, CPropertyPage)
     ON_EN_KILLFOCUS(IDC_EDIT_INSTRUMENT_LINE_SHAPE_FIT_REGION_HIGH, SaveData)
 
     ON_BN_CLICKED(IDC_BUTTON_BROWSE_SOLAR_SPECTRUM_SETTING, &CConfigure_Calibration::OnClickedButtonBrowseSolarSpectrum)
-    ON_BN_CLICKED(IDC_BUTTON_SELECT_INITIAL_CALIBRATION_SETTING, &CConfigure_Calibration::OnButtonSelectInitialCalibration)
+    ON_BN_CLICKED(IDC_BUTTON_SELECT_INITIAL_CALIBRATION_SETTING,
+                  &CConfigure_Calibration::OnButtonSelectInitialCalibration)
 
-    ON_BN_CLICKED(IDC_RADIO_INSTRUMENT_LINE_SHAPE_FIT_NOTHING, &CConfigure_Calibration::OnBnClickedRadioInstrumentLineShapeFitOption)
-    ON_BN_CLICKED(IDC_RADIO_INSTRUMENT_LINE_SHAPE_FIT_SUPER_GAUSS, &CConfigure_Calibration::OnBnClickedRadioInstrumentLineShapeFitOption)
+    ON_BN_CLICKED(IDC_RADIO_INSTRUMENT_LINE_SHAPE_FIT_NOTHING,
+                  &CConfigure_Calibration::OnBnClickedRadioInstrumentLineShapeFitOption)
+    ON_BN_CLICKED(IDC_RADIO_INSTRUMENT_LINE_SHAPE_FIT_SUPER_GAUSS,
+                  &CConfigure_Calibration::OnBnClickedRadioInstrumentLineShapeFitOption)
 
 END_MESSAGE_MAP()
 
@@ -73,7 +78,7 @@ void CConfigure_Calibration::LoadDefaultSetup()
 
     // See if there a Fraunhofer reference in the standard cross section setup.
     std::string exePath = common.m_exePath;
-    m_standardCrossSections = new novac::StandardCrossSectionSetup{ exePath };
+    m_standardCrossSections = new novac::StandardCrossSectionSetup{exePath};
 
     if (m_conf->m_calibration.m_solarSpectrumFile.GetLength() < 3)
     {

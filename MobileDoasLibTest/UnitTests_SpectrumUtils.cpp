@@ -5,7 +5,9 @@ using namespace mobiledoas;
 
 #pragma region AdjustIntegrationTimeToLastIntensity
 
-TEST_CASE("AdjustIntegrationTimeToLastIntensity - Current intensity within tolerable rate returns current integration time", "[AdjustIntegrationTimeToLastIntensity]")
+TEST_CASE(
+    "AdjustIntegrationTimeToLastIntensity - Current intensity within tolerable rate returns current integration time",
+    "[AdjustIntegrationTimeToLastIntensity]")
 {
     double minTolerableRatio = 0.60;
     double maxTolerableRatio = 0.70;
@@ -19,11 +21,8 @@ TEST_CASE("AdjustIntegrationTimeToLastIntensity - Current intensity within toler
 
         // Act
         short result = AdjustIntegrationTimeToLastIntensity(
-            SpectrumIntensityMeasurement(minTolerableRatio, currentIntegrationTime),
-            minTolerableRatio,
-            maxTolerableRatio,
-            minAllowedExposureTime,
-            maxAllowedExposureTime);
+            SpectrumIntensityMeasurement(minTolerableRatio, currentIntegrationTime), minTolerableRatio,
+            maxTolerableRatio, minAllowedExposureTime, maxAllowedExposureTime);
 
         // Assert
         REQUIRE(currentIntegrationTime == result);
@@ -36,18 +35,16 @@ TEST_CASE("AdjustIntegrationTimeToLastIntensity - Current intensity within toler
 
         // Act
         short result = AdjustIntegrationTimeToLastIntensity(
-            SpectrumIntensityMeasurement(maxTolerableRatio, currentIntegrationTime),
-            minTolerableRatio,
-            maxTolerableRatio,
-            minAllowedExposureTime,
-            maxAllowedExposureTime);
+            SpectrumIntensityMeasurement(maxTolerableRatio, currentIntegrationTime), minTolerableRatio,
+            maxTolerableRatio, minAllowedExposureTime, maxAllowedExposureTime);
 
         // Assert
         REQUIRE(currentIntegrationTime == result);
     }
 }
 
-TEST_CASE("AdjustIntegrationTimeToLastIntensity - Current intensity too low, increases integration time", "[AdjustIntegrationTimeToLastIntensity]")
+TEST_CASE("AdjustIntegrationTimeToLastIntensity - Current intensity too low, increases integration time",
+          "[AdjustIntegrationTimeToLastIntensity]")
 {
     double minTolerableRatio = 0.60;
     double maxTolerableRatio = 0.70;
@@ -62,11 +59,8 @@ TEST_CASE("AdjustIntegrationTimeToLastIntensity - Current intensity too low, inc
 
         // Act
         short result = AdjustIntegrationTimeToLastIntensity(
-            SpectrumIntensityMeasurement(currentRatio, currentIntegrationTime),
-            minTolerableRatio,
-            maxTolerableRatio,
-            minAllowedExposureTime,
-            maxAllowedExposureTime);
+            SpectrumIntensityMeasurement(currentRatio, currentIntegrationTime), minTolerableRatio, maxTolerableRatio,
+            minAllowedExposureTime, maxAllowedExposureTime);
 
         // Assert
         REQUIRE(result > currentIntegrationTime);
@@ -80,11 +74,8 @@ TEST_CASE("AdjustIntegrationTimeToLastIntensity - Current intensity too low, inc
 
         // Act
         short result = AdjustIntegrationTimeToLastIntensity(
-            SpectrumIntensityMeasurement(currentRatio, currentIntegrationTime),
-            minTolerableRatio,
-            maxTolerableRatio,
-            minAllowedExposureTime,
-            maxAllowedExposureTime);
+            SpectrumIntensityMeasurement(currentRatio, currentIntegrationTime), minTolerableRatio, maxTolerableRatio,
+            minAllowedExposureTime, maxAllowedExposureTime);
 
         // Assert
         REQUIRE(result > currentIntegrationTime);
@@ -98,18 +89,16 @@ TEST_CASE("AdjustIntegrationTimeToLastIntensity - Current intensity too low, inc
 
         // Act
         short result = AdjustIntegrationTimeToLastIntensity(
-            SpectrumIntensityMeasurement(currentRatio, currentIntegrationTime),
-            minTolerableRatio,
-            maxTolerableRatio,
-            minAllowedExposureTime,
-            maxAllowedExposureTime);
+            SpectrumIntensityMeasurement(currentRatio, currentIntegrationTime), minTolerableRatio, maxTolerableRatio,
+            minAllowedExposureTime, maxAllowedExposureTime);
 
         // Assert
         REQUIRE(result == maxAllowedExposureTime);
     }
 }
 
-TEST_CASE("AdjustIntegrationTimeToLastIntensity - Current intensity too high, lowers integration time", "[AdjustIntegrationTimeToLastIntensity]")
+TEST_CASE("AdjustIntegrationTimeToLastIntensity - Current intensity too high, lowers integration time",
+          "[AdjustIntegrationTimeToLastIntensity]")
 {
     double minTolerableRatio = 0.60;
     double maxTolerableRatio = 0.70;
@@ -124,11 +113,8 @@ TEST_CASE("AdjustIntegrationTimeToLastIntensity - Current intensity too high, lo
 
         // Act
         short result = AdjustIntegrationTimeToLastIntensity(
-            SpectrumIntensityMeasurement(currentRatio, currentIntegrationTime),
-            minTolerableRatio,
-            maxTolerableRatio,
-            minAllowedExposureTime,
-            maxAllowedExposureTime);
+            SpectrumIntensityMeasurement(currentRatio, currentIntegrationTime), minTolerableRatio, maxTolerableRatio,
+            minAllowedExposureTime, maxAllowedExposureTime);
 
         // Assert
         REQUIRE(result < currentIntegrationTime);
@@ -142,11 +128,8 @@ TEST_CASE("AdjustIntegrationTimeToLastIntensity - Current intensity too high, lo
 
         // Act
         short result = AdjustIntegrationTimeToLastIntensity(
-            SpectrumIntensityMeasurement(currentRatio, currentIntegrationTime),
-            minTolerableRatio,
-            maxTolerableRatio,
-            minAllowedExposureTime,
-            maxAllowedExposureTime);
+            SpectrumIntensityMeasurement(currentRatio, currentIntegrationTime), minTolerableRatio, maxTolerableRatio,
+            minAllowedExposureTime, maxAllowedExposureTime);
 
         // Assert
         REQUIRE(result < currentIntegrationTime);
@@ -160,11 +143,8 @@ TEST_CASE("AdjustIntegrationTimeToLastIntensity - Current intensity too high, lo
 
         // Act
         short result = AdjustIntegrationTimeToLastIntensity(
-            SpectrumIntensityMeasurement(currentRatio, currentIntegrationTime),
-            minTolerableRatio,
-            maxTolerableRatio,
-            minAllowedExposureTime,
-            maxAllowedExposureTime);
+            SpectrumIntensityMeasurement(currentRatio, currentIntegrationTime), minTolerableRatio, maxTolerableRatio,
+            minAllowedExposureTime, maxAllowedExposureTime);
 
         // Assert
         REQUIRE(result == minAllowedExposureTime);
@@ -175,7 +155,8 @@ TEST_CASE("AdjustIntegrationTimeToLastIntensity - Current intensity too high, lo
 
 #pragma region EstimateNewIntegrationTime
 
-TEST_CASE("EstimateNewIntegrationTime - Measurement already has desired saturation ratio.", "[EstimateNewIntegrationTime]")
+TEST_CASE("EstimateNewIntegrationTime - Measurement already has desired saturation ratio.",
+          "[EstimateNewIntegrationTime]")
 {
     const short shortIntegrationTime = 10;
     const short longIntegrationTime = 50;
@@ -190,12 +171,10 @@ TEST_CASE("EstimateNewIntegrationTime - Measurement already has desired saturati
         double longSaturationRatio = desiredSaturationRatio;
 
         // Act
-        short result = EstimateNewIntegrationTime(
-            SpectrumIntensityMeasurement(shortSaturationRatio, shortIntegrationTime),
-            SpectrumIntensityMeasurement(longSaturationRatio, longIntegrationTime),
-            desiredSaturationRatio,
-            minAllowedExposureTime,
-            maxAllowedExposureTime);
+        short result =
+            EstimateNewIntegrationTime(SpectrumIntensityMeasurement(shortSaturationRatio, shortIntegrationTime),
+                                       SpectrumIntensityMeasurement(longSaturationRatio, longIntegrationTime),
+                                       desiredSaturationRatio, minAllowedExposureTime, maxAllowedExposureTime);
 
         // Assert
         REQUIRE(longIntegrationTime == result);
@@ -208,19 +187,18 @@ TEST_CASE("EstimateNewIntegrationTime - Measurement already has desired saturati
         double longSaturationRatio = desiredSaturationRatio + 0.3;
 
         // Act
-        short result = EstimateNewIntegrationTime(
-            SpectrumIntensityMeasurement(shortSaturationRatio, shortIntegrationTime),
-            SpectrumIntensityMeasurement(longSaturationRatio, longIntegrationTime),
-            desiredSaturationRatio,
-            minAllowedExposureTime,
-            maxAllowedExposureTime);
+        short result =
+            EstimateNewIntegrationTime(SpectrumIntensityMeasurement(shortSaturationRatio, shortIntegrationTime),
+                                       SpectrumIntensityMeasurement(longSaturationRatio, longIntegrationTime),
+                                       desiredSaturationRatio, minAllowedExposureTime, maxAllowedExposureTime);
 
         // Assert
         REQUIRE(shortIntegrationTime == result);
     }
 }
 
-TEST_CASE("EstimateNewIntegrationTime - Measurement gives higher saturation ratio than desired.", "[EstimateNewIntegrationTime]")
+TEST_CASE("EstimateNewIntegrationTime - Measurement gives higher saturation ratio than desired.",
+          "[EstimateNewIntegrationTime]")
 {
     const short shortIntegrationTime = 10;
     const short longIntegrationTime = 50;
@@ -233,18 +211,16 @@ TEST_CASE("EstimateNewIntegrationTime - Measurement gives higher saturation rati
     double longSaturationRatio = 0.9;
 
     // Act
-    short result = EstimateNewIntegrationTime(
-        SpectrumIntensityMeasurement(shortSaturationRatio, shortIntegrationTime),
-        SpectrumIntensityMeasurement(longSaturationRatio, longIntegrationTime),
-        desiredSaturationRatio,
-        minAllowedExposureTime,
-        maxAllowedExposureTime);
+    short result = EstimateNewIntegrationTime(SpectrumIntensityMeasurement(shortSaturationRatio, shortIntegrationTime),
+                                              SpectrumIntensityMeasurement(longSaturationRatio, longIntegrationTime),
+                                              desiredSaturationRatio, minAllowedExposureTime, maxAllowedExposureTime);
 
     // Assert
     REQUIRE(result < shortIntegrationTime);
 }
 
-TEST_CASE("EstimateNewIntegrationTime - Measurement gives lower saturation ratio than desired.", "[EstimateNewIntegrationTime]")
+TEST_CASE("EstimateNewIntegrationTime - Measurement gives lower saturation ratio than desired.",
+          "[EstimateNewIntegrationTime]")
 {
     const short shortIntegrationTime = 10;
     const short longIntegrationTime = 50;
@@ -259,12 +235,10 @@ TEST_CASE("EstimateNewIntegrationTime - Measurement gives lower saturation ratio
         double longSaturationRatio = 0.09;
 
         // Act
-        short result = EstimateNewIntegrationTime(
-            SpectrumIntensityMeasurement(shortSaturationRatio, shortIntegrationTime),
-            SpectrumIntensityMeasurement(longSaturationRatio, longIntegrationTime),
-            desiredSaturationRatio,
-            minAllowedExposureTime,
-            maxAllowedExposureTime);
+        short result =
+            EstimateNewIntegrationTime(SpectrumIntensityMeasurement(shortSaturationRatio, shortIntegrationTime),
+                                       SpectrumIntensityMeasurement(longSaturationRatio, longIntegrationTime),
+                                       desiredSaturationRatio, minAllowedExposureTime, maxAllowedExposureTime);
 
         // Assert
         REQUIRE(result > longIntegrationTime);

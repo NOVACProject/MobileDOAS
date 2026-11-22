@@ -20,17 +20,19 @@ public:
     virtual ~CRealTimeRoute();
 
     // Dialog Data
-    enum { IDD = IDD_REALTIME_ROUTE_DLG };
+    enum
+    {
+        IDD = IDD_REALTIME_ROUTE_DLG
+    };
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
     /* the plot */
-    ::Graph::CRouteGraph   m_gpsPlot;
+    ::Graph::CRouteGraph m_gpsPlot;
 
     DECLARE_MESSAGE_MAP()
 public:
-
     bool fVisible;
 
     double m_intensityLimit; // points with intensity below 'm_intensityLimit' will not be shown
@@ -50,10 +52,9 @@ public:
     afx_msg void OnClose();
 
 private:
-
-    long  m_pointNum;
-    std::vector<double>  m_lon;
-    std::vector<double>  m_lat;
+    long m_pointNum;
+    std::vector<double> m_lon;
+    std::vector<double> m_lat;
 
     std::vector<double> m_col;
     std::vector<double> m_int;
@@ -64,7 +65,6 @@ private:
 
     CStatic m_plotArea;
     int m_legendWidth;
-
 };
 }
 #endif

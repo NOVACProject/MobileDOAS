@@ -9,11 +9,9 @@
 class CMeasurement_Wind : public CSpectrometer
 {
 public:
-    CMeasurement_Wind(
-        CView& mainForm,
-        novac::ILogger& log,
-        std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface,
-        std::unique_ptr<Configuration::CMobileConfiguration> conf);
+    CMeasurement_Wind(CView& mainForm, novac::ILogger& log,
+                      std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface,
+                      std::unique_ptr<Configuration::CMobileConfiguration> conf);
 
     virtual ~CMeasurement_Wind(void);
 
@@ -21,5 +19,4 @@ public:
         same exposure-time
     */
     void Run();
-
 };

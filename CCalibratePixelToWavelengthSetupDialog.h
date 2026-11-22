@@ -16,15 +16,19 @@ class CCalibratePixelToWavelengthSetupDialog : public CDialog
     DECLARE_DYNAMIC(CCalibratePixelToWavelengthSetupDialog)
 
 public:
-    CCalibratePixelToWavelengthSetupDialog(CalibratePixelToWavelengthDialogSetup* setup, novac::StandardCrossSectionSetup* crossSections, CWnd* pParent = nullptr);
+    CCalibratePixelToWavelengthSetupDialog(CalibratePixelToWavelengthDialogSetup* setup,
+                                           novac::StandardCrossSectionSetup* crossSections, CWnd* pParent = nullptr);
     virtual ~CCalibratePixelToWavelengthSetupDialog();
 
     /** Initializes the controls and the dialog */
     virtual BOOL OnInitDialog();
 
-    // Dialog Data
+// Dialog Data
 #ifdef AFX_DESIGN_TIME
-    enum { IDD = IDD_CALIBRATE_WAVELENGTH_SETTINGS_DIALOG };
+    enum
+    {
+        IDD = IDD_CALIBRATE_WAVELENGTH_SETTINGS_DIALOG
+    };
 #endif
 
 protected:

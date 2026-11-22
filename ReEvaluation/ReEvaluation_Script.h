@@ -25,7 +25,7 @@ public:
     // ----------------------------------------------------
 
     /** The jobs that are to be done in this script */
-    CList <Job, Job&> m_jobs;
+    CList<Job, Job&> m_jobs;
 
     /** The maximum number of threads that we should spawn */
     long m_maxThreadNum;
@@ -48,6 +48,5 @@ public:
     /** Runs this script
         @return 0 on success */
     int Run(CWnd* wnd = nullptr);
-
 };
 }

@@ -38,7 +38,7 @@ std::vector<std::string> OceanOpticsSpectrometerSerialInterface::ScanForDevices(
         return m_spectrometersAttached;
     }
 
-    m_spectrometersAttached = std::vector<std::string>{ "Unknown" };
+    m_spectrometersAttached = std::vector<std::string>{"Unknown"};
     return m_spectrometersAttached;
 }
 
@@ -68,7 +68,8 @@ bool OceanOpticsSpectrometerSerialInterface::SetSpectrometer(int /*spectrometerI
     return false;
 }
 
-bool OceanOpticsSpectrometerSerialInterface::SetSpectrometer(int /*spectrometerIndex*/, const std::vector<int>& /*channelIndices*/)
+bool OceanOpticsSpectrometerSerialInterface::SetSpectrometer(int /*spectrometerIndex*/,
+                                                             const std::vector<int>& /*channelIndices*/)
 {
     return true;
 }
@@ -131,14 +132,14 @@ int OceanOpticsSpectrometerSerialInterface::GetScansToAverage()
 *   the LeastSignificantByte of the given number */
 unsigned short Swp(unsigned short in)
 {
-    unsigned char* p1, * p2;
+    unsigned char *p1, *p2;
     unsigned short ut;
 
     p1 = (unsigned char*)&ut;
     p2 = (unsigned char*)&in;
     p1[0] = p2[1];
     p1[1] = p2[0];
-    return(ut);
+    return (ut);
 }
 
 int OceanOpticsSpectrometerSerialInterface::GetNextSpectrum(std::vector<std::vector<double>>& data)
@@ -238,7 +239,8 @@ bool OceanOpticsSpectrometerSerialInterface::SupportsDetectorTemperatureControl(
     return false;
 }
 
-bool OceanOpticsSpectrometerSerialInterface::EnableDetectorTemperatureControl(bool /*enable*/, double /*temperatureInCelsius*/)
+bool OceanOpticsSpectrometerSerialInterface::EnableDetectorTemperatureControl(bool /*enable*/,
+                                                                              double /*temperatureInCelsius*/)
 {
     return false;
 }
@@ -276,7 +278,9 @@ int OceanOpticsSpectrometerSerialInterface::InitSpectrometer(short channel, shor
     serial.Write(txt, 3);
 
     while (serial.Check(30))
+    {
         serial.Read(&txt, 1);
+    }
 
     p = (unsigned char*)&inttime;
     txt[0] = 'I';
@@ -285,7 +289,9 @@ int OceanOpticsSpectrometerSerialInterface::InitSpectrometer(short channel, shor
     serial.Write(txt, 3);
 
     while (serial.Check(30))
+    {
         serial.Read(&txt, 1);
+    }
 
     p = (unsigned char*)&sumSpec;
     txt[0] = 'A';
@@ -294,7 +300,9 @@ int OceanOpticsSpectrometerSerialInterface::InitSpectrometer(short channel, shor
     serial.Write(txt, 3);
 
     while (serial.Check(30))
+    {
         serial.Read(&txt, 1);
+    }
 
     return 0;
 }

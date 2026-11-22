@@ -14,7 +14,7 @@ CReEvaluationDlg::CReEvaluationDlg(void)
 
     // Create the tabs
     // Initiate the reevaluator object that we need to
-    //	do the actual reevaluation
+    //  do the actual reevaluation
     m_reeval = new CReEvaluator();
 
     // -------------- Adding the tabs ------------------
@@ -72,7 +72,7 @@ BOOL ReEvaluation::CReEvaluationDlg::OnInitDialog()
     this->SetMenu(pMenu);
 
     // Make the window a little bit bigger, this is needed since
-    //	adding the menu will destry the layout...
+    //  adding the menu will destry the layout...
     GetWindowRect(rectWindow);
     rectWindow.bottom = rectWindow.bottom + 20;
     MoveWindow(rectWindow);
@@ -100,7 +100,7 @@ BOOL ReEvaluation::CReEvaluationDlg::OnInitDialog()
     }
 
     // Change the 'OK'-button to a 'Save'-button and move it to where
-    //	the 'apply'-button was
+    //  the 'apply'-button was
     if (pOk)
     {
         pOk->SetWindowText("Close");
@@ -148,7 +148,6 @@ void ReEvaluation::CReEvaluationDlg::OnClose()
         }
         else
         {
-
         }
     }
 
@@ -225,7 +224,6 @@ void ReEvaluation::CReEvaluationDlg::OnMenuLoadSettingsFromFile()
             }
         }
     }
-
 }
 
 void ReEvaluation::CReEvaluationDlg::OnMenuCreateScript()
@@ -252,7 +250,9 @@ void ReEvaluation::CReEvaluationDlg::OnMenuRunScript()
 
     // 1. Let the user open the script to run
     if (!Common::BrowseForFile(filter, fileName))
+    {
         return;
+    }
 
     // 2. Read the script file
     if (reader.ReadFromFile(fileName, *script))
@@ -279,7 +279,7 @@ UINT RunScript(LPVOID pParam)
     CReEval_DoEvaluationDlg* pView = g_wnd;
 
     // make a small pause between the starting of each thread, this to make sure
-    //	that the previously started one has some time to read in it's files
+    //  that the previously started one has some time to read in it's files
     Sleep(500);
 
     // run the analysis

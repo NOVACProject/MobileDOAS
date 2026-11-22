@@ -7,7 +7,8 @@
 
 using namespace mobiledoas;
 
-CSerialConnection::CSerialConnection() {
+CSerialConnection::CSerialConnection()
+{
     memset(serbuf, 0, sizeof(serbuf));
     sprintf_s(this->serialPort, "COM0");
 }
@@ -94,13 +95,8 @@ bool CSerialConnection::Init()
 
     DCB dcb;
 
-    hComm = CreateFileA(this->serialPort,
-        GENERIC_READ | GENERIC_WRITE,
-        0,
-        0,
-        OPEN_EXISTING,
-        FILE_FLAG_WRITE_THROUGH,
-        0);
+    hComm =
+        CreateFileA(this->serialPort, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_FLAG_WRITE_THROUGH, 0);
 
     if (hComm == INVALID_HANDLE_VALUE)
     {
@@ -197,21 +193,24 @@ long CSerialConnection::Read(void* ptBuf, long byteNum)
         bp[lreal] = serbuf[lreal];
         serbufpt--;
     }
-    if (byteNum == lreal) return(lreal);
+    if (byteNum == lreal)
+    {
+        return (lreal);
+    }
 
     timeouts.ReadIntervalTimeout = MAXDWORD;
     timeouts.ReadTotalTimeoutMultiplier = 0;
     timeouts.ReadTotalTimeoutConstant = 0;
     int ret = SetCommTimeouts(hComm, &timeouts);
-    if (0 == ret || (nullptr != isRunning && *isRunning == false)) {
-        //	  MessageBox(NULL,TEXT("Error setting time-outs in ReadSerial."),TEXT("ERROR"),MB_OK);
+    if (0 == ret || (nullptr != isRunning && *isRunning == false))
+    {
+        //    MessageBox(NULL,TEXT("Error setting time-outs in ReadSerial."),TEXT("ERROR"),MB_OK);
         return 0;
     }
 
     ReadFile(hComm, &bp[lreal], byteNum - lreal, &dwRead, NULL);
     lreal += dwRead;
-    return(lreal);
-
+    return (lreal);
 }
 //-----------------------------------------------------------------
 void CSerialConnection::FlushSerialPort(long timeOut)
@@ -275,14 +274,13 @@ int CSerialConnection::InitCommunication()
         MessageBox(NULL, TEXT("Invalid baudrate"), TEXT("Error"), MB_OK);
         return 1;
     }
-
     }
     if (ChangeBaudRate())
     {
         MessageBox(NULL, TEXT("can not change baudrate"), TEXT("Error"), MB_OK);
-        return(1);
+        return (1);
     }
-    return(0);
+    return (0);
 }
 
 //-----------------------------------------------------------------
@@ -296,34 +294,50 @@ int CSerialConnection::ChangeBaudRate()
     {
         stat = 1;
         if (ResetSpectrometer(115200))
+        {
             if (ResetSpectrometer(57600))
+            {
                 if (ResetSpectrometer(38400))
+                {
                     if (ResetSpectrometer(19200))
+                    {
                         if (ResetSpectrometer(9600))
+                        {
                             if (ResetSpectrometer(4800))
+                            {
                                 if (ResetSpectrometer(2400))
                                 {
                                     MessageBox(NULL, TEXT("Could not reset spectrometer"), NULL, MB_OK);
                                     stat = 0;
                                     return 1;
                                 }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         if (stat)
+        {
             MessageBox(NULL, TEXT("Got contact with spectrometer"), TEXT("Notice"), MB_OK);
+        }
 
-        txt[0] = 'b';		//Set binary mode
+        txt[0] = 'b';  //Set binary mode
         txt[1] = 'B';
         this->Write(txt, 2);
 
         if (this->Check(200))
+        {
             this->Read(&txt, 1);
+        }
         else
         {
             MessageBox(NULL, TEXT("TIMEOUT-bB"), NULL, MB_OK);
             return 1;
         }
 
-        txt[0] = 'K';		// Change Baud Rate to br1
+        txt[0] = 'K';  // Change Baud Rate to br1
         txt[1] = 0;
         txt[2] = (char)br1;
         this->Write(txt, 3);
@@ -347,7 +361,7 @@ int CSerialConnection::ChangeBaudRate()
 
         if (!this->Init(br2))
         {
-            this->CloseAll();	//Initialize serial communication with baudrate br2.     
+            this->CloseAll(); //Initialize serial communication with baudrate br2.
             return 1;
         }
         txt[0] = 'K';
@@ -366,7 +380,9 @@ int CSerialConnection::ChangeBaudRate()
                 return 1;
             }
             else
+            {
                 stat = 1;
+            }
         }
 
         if (stat == 0)
@@ -376,7 +392,7 @@ int CSerialConnection::ChangeBaudRate()
         }
     } while (stat == 0);
 
-    return(0);
+    return (0);
 }
 
 void CSerialConnection::CloseAll()
@@ -390,7 +406,7 @@ int CSerialConnection::ResetSpectrometer(long speed)
 {
     char txt[10], cmd[10];
 
-    cmd[0] = 'Q';	//set all operating parameters to their default values
+    cmd[0] = 'Q'; //set all operating parameters to their default values
 
     if (!this->Init(speed))
     {
@@ -399,20 +415,28 @@ int CSerialConnection::ResetSpectrometer(long speed)
     }
 
     while (this->Check(10))
+    {
         this->Read(txt, 1);
+    }
 
     this->Write(&cmd, 1);
 
     while (this->Check(100))
+    {
         this->Read(&txt[0], 1);
+    }
 
     if (txt[0] == 0x06)  // spectrometer replies 'ACK'
-        return(0);
+    {
+        return (0);
+    }
 
-    if (txt[0] == 21)	//spectrometer replies 'NAK'
-        return(0);
+    if (txt[0] == 21) //spectrometer replies 'NAK'
+    {
+        return (0);
+    }
 
     this->Close();
 
-    return(1);
+    return (1);
 }

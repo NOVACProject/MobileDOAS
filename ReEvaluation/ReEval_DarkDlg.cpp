@@ -78,7 +78,7 @@ BOOL CReEval_DarkDlg::OnInitDialog()
     m_offsetPlot.CleanPlot();
 
     return TRUE;  // return TRUE unless you set the focus to a control
-    // EXCEPTION: OCX Property Pages should return FALSE
+// EXCEPTION: OCX Property Pages should return FALSE
 }
 
 void CReEval_DarkDlg::OnBnClickedCheckOffsets()
@@ -126,17 +126,19 @@ void CReEval_DarkDlg::DrawOffsetPlot()
     double minOffset = MinValue(m_reeval->m_offset[0], m_reeval->m_recordNum[0]);
 
     if (left == right)
+    {
         return;
+    }
 
     m_offsetPlot.CleanPlot();
 
 
     /* Draw the offset */
-    m_offsetPlot.SetPlotColor(RGB(255, 0, 0));	// draw the offset-line in red
+    m_offsetPlot.SetPlotColor(RGB(255, 0, 0)); // draw the offset-line in red
     m_offsetPlot.Plot(m_reeval->m_offset[0] + left, (int)(right - left + 1));
 
     /* Draw the measured dark spectra */
-    m_offsetPlot.SetCircleColor(RGB(0, 0, 255));	// draw the dark-spectra in blue
+    m_offsetPlot.SetCircleColor(RGB(0, 0, 255)); // draw the dark-spectra in blue
     int length = 0;
     for (int i = 0; i < m_reeval->m_darkSpecListLength[0]; ++i)
     {
@@ -144,7 +146,6 @@ void CReEval_DarkDlg::DrawOffsetPlot()
         y[i] = m_reeval->m_offset[0][m_reeval->m_darkSpecList[0][i]] - minOffset;
     }
     m_offsetPlot.DrawCircles(x, y, m_reeval->m_darkSpecListLength[0], Graph::CGraphCtrl::PLOT_FIXED_AXIS);
-
 }
 
 LRESULT CReEval_DarkDlg::OnProgress(WPARAM wp, LPARAM lp)

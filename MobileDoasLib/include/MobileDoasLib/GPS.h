@@ -56,7 +56,6 @@ public:
     bool ReadGPS();
 
 private:
-
     /** The gps-logfile*/
     std::string m_logFile;
 

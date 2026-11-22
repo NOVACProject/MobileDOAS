@@ -1,6 +1,6 @@
 #include "pch.h"
 
-#ifdef MANUFACTURER_SUPPORT_AVANTES 
+#ifdef MANUFACTURER_SUPPORT_AVANTES
 
 #include "AvantesSpectrometerInterface.h"
 #include "avantes/avaspec.h"
@@ -18,7 +18,7 @@ using namespace std::chrono_literals;
 
 struct AvantesSpectrometerInterfaceState
 {
-    // The list of devices which returned from the last call to AVS_GetList 
+    // The list of devices which returned from the last call to AVS_GetList
     std::vector<AvsIdentityType> devices;
 
     // The current device, index into 'devices'.
@@ -114,7 +114,7 @@ const char* FormatAvsErrorCode(int avantesErrorCode)
     case ERR_ETHCONN_REUSE:
         return "Library could not be initialized due to an Ethernet connection reuse";
     case ERR_INVALID_DEVICE_TYPE:
-        return "The device-type information stored in the isn’t recognized as one of the known device types";
+        return "The device-type information stored in the isn\x92t recognized as one of the known device types";
     case ERR_SECURE_CFG_NOT_READ:
         return "The secure configuration has not yet been read, most likely due to device not correctly initialized";
     case ERR_UNEXPECTED_MEAS_RESPONSE:
@@ -160,7 +160,8 @@ const char* FormatAvsErrorCode(int avantesErrorCode)
     case ETH_CONN_STATUS_CONNECTED_NOMON:
         return "Eth connection ready, without connection recovery ";
     case ETH_CONN_STATUS_NOCONNECTION:
-        return "Unrecoverable connection failure or disconnect from user, AvaSpec library will stop trying to connect with the spectrometer";
+        return "Unrecoverable connection failure or disconnect from user, AvaSpec library will stop trying to connect "
+               "with the spectrometer";
     default:
         return "Unkown error code: ";
     }
@@ -169,7 +170,7 @@ const char* FormatAvsErrorCode(int avantesErrorCode)
 #pragma endregion
 
 AvantesSpectrometerInterface::AvantesSpectrometerInterface()
-    :m_lastErrorMessage("")
+    : m_lastErrorMessage("")
 {
     // initialize the library to work with USB devices.
     // Notice that it is possible to support Ethernet devices here as well by changing the port number here.
@@ -280,7 +281,8 @@ bool AvantesSpectrometerInterface::Start()
     if (returnCode != ERR_SUCCESS)
     {
         std::stringstream message;
-        message << "Start failed, AVS_MeasureCallback returned error code " << returnCode << " ('" << FormatAvsErrorCode(returnCode) << "')";
+        message << "Start failed, AVS_MeasureCallback returned error code " << returnCode << " ('"
+                << FormatAvsErrorCode(returnCode) << "')";
         m_lastErrorMessage = message.str();
         return false;
     }
@@ -302,7 +304,8 @@ bool AvantesSpectrometerInterface::Stop()
     if (returnCode != ERR_SUCCESS)
     {
         std::stringstream message;
-        message << "Stop failed, AVS_StopMeasure returned error code " << returnCode << " ('" << FormatAvsErrorCode(returnCode) << "')";
+        message << "Stop failed, AVS_StopMeasure returned error code " << returnCode << " ('"
+                << FormatAvsErrorCode(returnCode) << "')";
         m_lastErrorMessage = message.str();
         return false;
     }
@@ -323,7 +326,8 @@ bool AvantesSpectrometerInterface::SetSpectrometer(int spectrometerIndex, const 
     if (spectrometerIndex < 0 || spectrometerIndex >= state->devices.size())
     {
         std::stringstream message;
-        message << "Invalid spectrometer index " << spectrometerIndex << ". Number of spectrometers attached is: " << state->devices.size();
+        message << "Invalid spectrometer index " << spectrometerIndex
+                << ". Number of spectrometers attached is: " << state->devices.size();
         m_lastErrorMessage = message.str();
         return false;
     }
@@ -342,11 +346,13 @@ bool AvantesSpectrometerInterface::SetSpectrometer(int spectrometerIndex, const 
 
     // Get some properties of the device. Notice that this does in fact return quite a bit more data than what is used here...
     unsigned int configSize = sizeof(DeviceConfigType);
-    int returnCode = AVS_GetParameter(state->currentSpectrometerHandle, configSize, &configSize, &(state->currentDeviceConfiguration));
+    int returnCode = AVS_GetParameter(state->currentSpectrometerHandle, configSize, &configSize,
+                                      &(state->currentDeviceConfiguration));
     if (returnCode != ERR_SUCCESS)
     {
         std::stringstream msg;
-        msg << "SetSpectrometer failed, AVS_GetParameter returned error code " << returnCode << " ('" << FormatAvsErrorCode(returnCode) << "')";
+        msg << "SetSpectrometer failed, AVS_GetParameter returned error code " << returnCode << " ('"
+            << FormatAvsErrorCode(returnCode) << "')";
         m_lastErrorMessage = msg.str();
         return false;
     }
@@ -357,7 +363,8 @@ bool AvantesSpectrometerInterface::SetSpectrometer(int spectrometerIndex, const 
     if (returnCode != ERR_SUCCESS)
     {
         std::stringstream msg;
-        msg << "Error happened in SetSpectrometer, AVS_UseHighResAdc returned error code " << returnCode << " ('" << FormatAvsErrorCode(returnCode) << "')";
+        msg << "Error happened in SetSpectrometer, AVS_UseHighResAdc returned error code " << returnCode << " ('"
+            << FormatAvsErrorCode(returnCode) << "')";
         m_lastErrorMessage = msg.str();
 
         state->currentSpectrometerDynamicRange = 16383.75;
@@ -372,7 +379,8 @@ bool AvantesSpectrometerInterface::SetSpectrometer(int spectrometerIndex, const 
     if (ret != ERR_SUCCESS)
     {
         std::stringstream msg;
-        msg << "Error happened in SetSpectrometer, AVS_PrepareMeasure returned error code " << returnCode << " ('" << FormatAvsErrorCode(returnCode) << "')";
+        msg << "Error happened in SetSpectrometer, AVS_PrepareMeasure returned error code " << returnCode << " ('"
+            << FormatAvsErrorCode(returnCode) << "')";
         m_lastErrorMessage = msg.str();
         return false;
     }
@@ -394,7 +402,8 @@ std::string AvantesSpectrometerInterface::GetSerial()
     if (state->currentDeviceIdx < 0 || state->currentDeviceIdx >= state->devices.size())
     {
         std::stringstream msg;
-        msg << "GetSerial failed, currentDeviceIndex is invalid (" << state->currentDeviceIdx << ") out of " << state->devices.size() << " devices.";
+        msg << "GetSerial failed, currentDeviceIndex is invalid (" << state->currentDeviceIdx << ") out of "
+            << state->devices.size() << " devices.";
         return "";
     }
 
@@ -429,7 +438,8 @@ int AvantesSpectrometerInterface::GetWavelengths(std::vector<std::vector<double>
     if (returnCode != ERR_SUCCESS)
     {
         std::stringstream msg;
-        msg << "GetWavelengths failed, AVS_GetNumPixels returned error code " << returnCode << " ('" << FormatAvsErrorCode(returnCode) << "')";
+        msg << "GetWavelengths failed, AVS_GetNumPixels returned error code " << returnCode << " ('"
+            << FormatAvsErrorCode(returnCode) << "')";
         m_lastErrorMessage = msg.str();
         return 0;
     }
@@ -442,7 +452,8 @@ int AvantesSpectrometerInterface::GetWavelengths(std::vector<std::vector<double>
     if (returnCode != ERR_SUCCESS)
     {
         std::stringstream msg;
-        msg << "GetWavelengths failed, AVS_GetLambda returned error code " << returnCode << " ('" << FormatAvsErrorCode(returnCode) << "')";
+        msg << "GetWavelengths failed, AVS_GetLambda returned error code " << returnCode << " ('"
+            << FormatAvsErrorCode(returnCode) << "')";
         m_lastErrorMessage = msg.str();
         return 0;
     }
@@ -488,7 +499,8 @@ void AvantesSpectrometerInterface::SetIntegrationTime(int usec)
     if (ret != ERR_SUCCESS)
     {
         std::stringstream msg;
-        msg << "SetIntegrationTime failed, AVS_PrepareMeasure returned error code " << ret << " ('" << FormatAvsErrorCode(ret) << "')";
+        msg << "SetIntegrationTime failed, AVS_PrepareMeasure returned error code " << ret << " ('"
+            << FormatAvsErrorCode(ret) << "')";
         m_lastErrorMessage = msg.str();
         return;
     }
@@ -534,7 +546,8 @@ void AvantesSpectrometerInterface::SetScansToAverage(int numberOfScansToAverage)
     if (ret != ERR_SUCCESS)
     {
         std::stringstream msg;
-        msg << "SetScansToAverage failed, AVS_PrepareMeasure returned error code " << ret << " ('" << FormatAvsErrorCode(ret) << "')";
+        msg << "SetScansToAverage failed, AVS_PrepareMeasure returned error code " << ret << " ('"
+            << FormatAvsErrorCode(ret) << "')";
         m_lastErrorMessage = msg.str();
         return;
     }
@@ -577,7 +590,8 @@ int AvantesSpectrometerInterface::GetNextSpectrum(std::vector<std::vector<double
     state->measurementIsRunning = false;
 
     // Read out the data.
-    unsigned int timeLabel = 0; // Timestamp of the aquired spectrum. In tens of microseconds since the spectrometer was started. Can be used to identify spectra.
+    unsigned int timeLabel =
+        0; // Timestamp of the aquired spectrum. In tens of microseconds since the spectrometer was started. Can be used to identify spectra.
     // There is only one channel on the Avantes devices, so just set it
     data.resize(1);
     data[0].resize(state->measurementConfig.m_StopPixel - state->measurementConfig.m_StartPixel + 1);
@@ -585,14 +599,16 @@ int AvantesSpectrometerInterface::GetNextSpectrum(std::vector<std::vector<double
     if (returnCode != ERR_SUCCESS)
     {
         std::stringstream message;
-        message << "GetNextSpectrum failed, AVS_GetScopeData returned error code " << returnCode << " ('" << FormatAvsErrorCode(returnCode) << "')";
+        message << "GetNextSpectrum failed, AVS_GetScopeData returned error code " << returnCode << " ('"
+                << FormatAvsErrorCode(returnCode) << "')";
         m_lastErrorMessage = message.str();
         return 0;
     }
 
     auto stopTime = std::chrono::steady_clock::now();
     std::stringstream msg;
-    msg << "Spectrum acquisition took " << std::chrono::duration_cast<std::chrono::milliseconds>(stopTime - startTime).count() << " ms" << std::endl;
+    msg << "Spectrum acquisition took "
+        << std::chrono::duration_cast<std::chrono::milliseconds>(stopTime - startTime).count() << " ms" << std::endl;
     m_lastErrorMessage = msg.str(); // for debugging...
 
     return static_cast<int>(data[0].size());
@@ -628,4 +644,4 @@ std::string AvantesSpectrometerInterface::GetLastError()
     return m_lastErrorMessage;
 }
 
-#endif // MANUFACTURER_SUPPORT_AVANTES 
+#endif // MANUFACTURER_SUPPORT_AVANTES

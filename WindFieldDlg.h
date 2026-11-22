@@ -18,15 +18,18 @@ public:
     virtual ~CWindFieldDlg();
 
     // Dialog Data
-    enum { IDD = IDD_FLUX_WINDFIELD_DLG };
+    enum
+    {
+        IDD = IDD_FLUX_WINDFIELD_DLG
+    };
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
     DECLARE_MESSAGE_MAP()
 
-        /** Called when the dialog is first opened */
-        virtual BOOL OnInitDialog();
+    /** Called when the dialog is first opened */
+    virtual BOOL OnInitDialog();
 
     /** Called when the user presses the 'Use' button. This closes the dialog and
         creates a copy of the windfield for the currently selected altitude in 'm_flux'
@@ -39,7 +42,7 @@ public:
     mobiledoas::CFlux* m_flux;
 
     /** the path to the windfield file */
-    CString         m_windfile;
+    CString m_windfile;
 
     /** Called when the user pressed the 'browse' button and wants to browse
         for a file containing a wind field */
@@ -61,10 +64,10 @@ public:
 private:
     // ------------- PRIVATE DATA ----------------
     /** The altitude selection */
-    CComboBox   m_altitudeCombo;
+    CComboBox m_altitudeCombo;
 
     /** The hour selection combo box */
-    CComboBox   m_hourCombo;
+    CComboBox m_hourCombo;
 
     /** The combo box to select a wind field file */
     CComboBox m_windFileCombo;
@@ -89,6 +92,7 @@ private:
 
     void ReadMobileLog();
     void UpdateMobileLog();
+
 public:
     int m_useTimeShift;
     int m_timeShift;

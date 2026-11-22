@@ -36,7 +36,8 @@ CCalibrateReferencesDialog::~CCalibrateReferencesDialog()
     delete m_standardCrossSections;
 }
 
-BOOL CCalibrateReferencesDialog::OnInitDialog() {
+BOOL CCalibrateReferencesDialog::OnInitDialog()
+{
     CPropertyPage::OnInitDialog();
 
     CRect rect;
@@ -88,7 +89,8 @@ BEGIN_MESSAGE_MAP(CCalibrateReferencesDialog, CPropertyPage)
     ON_BN_CLICKED(IDC_BUTTON_RUN_CREATE_REFERENCE, &CCalibrateReferencesDialog::OnClickedButtonRunCreateReference)
     ON_BN_CLICKED(IDC_BUTTON_SAVE, &CCalibrateReferencesDialog::OnClickedButtonSave)
     ON_BN_CLICKED(IDC_BUTTON_SELECT_CALIBRATION, &CCalibrateReferencesDialog::OnClickedButtonSelectCalibration)
-    ON_BN_CLICKED(IDC_BUTTON_CREATE_STANDARD_REFERENCES, &CCalibrateReferencesDialog::OnClickedButtonCreateStandardReferences)
+    ON_BN_CLICKED(IDC_BUTTON_CREATE_STANDARD_REFERENCES,
+                  &CCalibrateReferencesDialog::OnClickedButtonCreateStandardReferences)
 END_MESSAGE_MAP()
 
 std::string CCalibrateReferencesDialog::SetupFilePath()
@@ -164,12 +166,12 @@ void CCalibrateReferencesDialog::LoadDefaultSetup()
     m_crossSectionsCombo.Clear();
 
     std::string exePath = common.m_exePath;
-    m_standardCrossSections = new novac::StandardCrossSectionSetup{ exePath };
+    m_standardCrossSections = new novac::StandardCrossSectionSetup{exePath};
 
     auto allCrossSections = m_standardCrossSections->ListReferences();
     for (const std::string& crossSectionFile : allCrossSections)
     {
-        CString fileName{ crossSectionFile.c_str() };
+        CString fileName{crossSectionFile.c_str()};
         fileName.Append(" [Standard]");
         m_crossSectionsCombo.AddString(fileName);
     }
@@ -230,8 +232,7 @@ void CCalibrateReferencesDialog::UpdateReference()
     {
         UpdateData(TRUE); // get the selections from the user interface
 
-        if (m_calibrationFile.IsEmpty() ||
-            m_crossSectionsCombo.GetCurSel() < 0)
+        if (m_calibrationFile.IsEmpty() || m_crossSectionsCombo.GetCurSel() < 0)
         {
             return;
         }
@@ -245,7 +246,8 @@ void CCalibrateReferencesDialog::UpdateReference()
 
         CString crossSectionFilePath;
         bool isPseudoAbsorber = false;
-        if (m_standardCrossSections != nullptr && selectedReferenceIdx < static_cast<int>(m_standardCrossSections->NumberOfReferences()))
+        if (m_standardCrossSections != nullptr &&
+            selectedReferenceIdx < static_cast<int>(m_standardCrossSections->NumberOfReferences()))
         {
             const std::string path = m_standardCrossSections->ReferenceFileName(selectedReferenceIdx);
             crossSectionFilePath.Format("%s", path.c_str());
@@ -265,7 +267,8 @@ void CCalibrateReferencesDialog::UpdateReference()
             return;
         }
 
-        const auto calibration = m_controller->ReadCalibration((LPCSTR)m_calibrationFile, (LPCSTR)m_instrumentLineshapeFile);
+        const auto calibration =
+            m_controller->ReadCalibration((LPCSTR)m_calibrationFile, (LPCSTR)m_instrumentLineshapeFile);
 
         m_controller->m_highPassFilter = m_highPassFilterReference;
         m_controller->m_convertToAir = m_inputInVacuum;
@@ -299,11 +302,10 @@ void CCalibrateReferencesDialog::UpdateGraph()
     if (m_controller->m_resultingCrossSection != nullptr && m_controller->m_resultingCrossSection->GetSize() > 0)
     {
         m_graph.SetPlotColor(RGB(255, 0, 0));
-        m_graph.XYPlot(
-            m_controller->m_resultingCrossSection->m_waveLength.data(),
-            m_controller->m_resultingCrossSection->m_crossSection.data(),
-            static_cast<int>(m_controller->m_resultingCrossSection->GetSize()),
-            Graph::CGraphCtrl::PLOT_CONNECTED);
+        m_graph.XYPlot(m_controller->m_resultingCrossSection->m_waveLength.data(),
+                       m_controller->m_resultingCrossSection->m_crossSection.data(),
+                       static_cast<int>(m_controller->m_resultingCrossSection->GetSize()),
+                       Graph::CGraphCtrl::PLOT_CONNECTED);
     }
 }
 
@@ -321,8 +323,7 @@ void CCalibrateReferencesDialog::OnClickedButtonSelectCalibration()
         UpdateData(FALSE);
         UpdateReference();
 
-        if (m_standardCrossSections != nullptr &&
-            m_standardCrossSections->NumberOfReferences() > 0)
+        if (m_standardCrossSections != nullptr && m_standardCrossSections->NumberOfReferences() > 0)
         {
             m_createStandardReferencesButton.EnableWindow(TRUE);
         }
@@ -353,7 +354,8 @@ void CCalibrateReferencesDialog::OnClickedButtonCreateStandardReferences()
 
     try
     {
-        const auto calibration = m_controller->ReadCalibration((LPCSTR)m_calibrationFile, (LPCSTR)m_instrumentLineshapeFile);
+        const auto calibration =
+            m_controller->ReadCalibration((LPCSTR)m_calibrationFile, (LPCSTR)m_instrumentLineshapeFile);
 
         m_controller->m_highPassFilter = m_highPassFilterReference;
         m_controller->m_unitSelection = m_unitCombo.GetCurSel();
@@ -368,7 +370,8 @@ void CCalibrateReferencesDialog::OnClickedButtonCreateStandardReferences()
             m_controller->ConvolveReference(calibration);
 
             // Save the result
-            std::string dstFileName = userInputDialog.ReferenceName(ii, !m_standardCrossSections->IsAdditionalAbsorber(ii));
+            std::string dstFileName =
+                userInputDialog.ReferenceName(ii, !m_standardCrossSections->IsAdditionalAbsorber(ii));
             novac::SaveCrossSectionFile(dstFileName, *(m_controller->m_resultingCrossSection));
         }
 

@@ -1,13 +1,9 @@
+#pragma once
+
 // Common.h: interface for the Common class.
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_COMMON_H__D37EDB58_63D7_4142_9CCB_67370BD06621__INCLUDED_)
-#define AFX_COMMON_H__D37EDB58_63D7_4142_9CCB_67370BD06621__INCLUDED_
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
 
 #include <math.h>
 #include <vector>
@@ -24,25 +20,23 @@
     */
 #define NOT_A_NUMBER -9999.0
 
-    // ----------------------------------------------------------------
-    // ---------------- MESSAGES USED IN THE PROGRAM ------------------
-    // ----------------------------------------------------------------
-#define WM_PROGRESS     WM_USER + 2
-#define WM_DONE         WM_USER + 3
-#define WM_STATUS       WM_USER + 4
-#define WM_CANCEL       WM_USER + 5
-#define WM_EVAL         WM_USER + 6
-#define WM_GOTO_SLEEP   WM_USER + 7
+// ----------------------------------------------------------------
+// ---------------- MESSAGES USED IN THE PROGRAM ------------------
+// ----------------------------------------------------------------
+#define WM_PROGRESS WM_USER + 2
+#define WM_DONE WM_USER + 3
+#define WM_STATUS WM_USER + 4
+#define WM_CANCEL WM_USER + 5
+#define WM_EVAL WM_USER + 6
+#define WM_GOTO_SLEEP WM_USER + 7
 
-struct plotRange {
+struct plotRange
+{
     double maxLat;
     double maxLon;
     double minLat;
     double minLon;
 };
-
-
-
 
 
 // ---------------------------------------------------------------
@@ -78,7 +72,7 @@ public:
     void GetExePath();
 
     /** Take out the file name from a long path
-        @param fileName path of the file	*/
+        @param fileName path of the file    */
     static void GetFileName(CString& fileName);
 
     /** Take out the directory from a long path name.
@@ -111,13 +105,11 @@ public:
     /** Guesses the name of the specie in the reference-file whos filename
             is given in 'fileName'. */
     static void GuessSpecieName(const CString& fileName, CString& specie);
-
 };
 
 /* this function returns a string describing the error code given in 'error'
   return value is true if the errorCode can be found, else false. */
 bool FormatErrorCode(DWORD error, CString& string);
-
 
 
 // --------------------------------------------------------------------
@@ -128,11 +120,16 @@ bool FormatErrorCode(DWORD error, CString& string);
     @param pBuffer - The array in which to search for an element.
     @param bufLen - The length of the array.
     @return - The maximum value in the array */
-template <class T> T MaxValue(T* pBuffer, long bufLen) {
+template<class T>
+T MaxValue(T* pBuffer, long bufLen)
+{
     T maxValue = pBuffer[0];
-    for (long i = 1; i < bufLen; ++i) {
+    for (long i = 1; i < bufLen; ++i)
+    {
         if (pBuffer[i] > maxValue)
+        {
             maxValue = pBuffer[i];
+        }
     }
     return maxValue;
 }
@@ -141,11 +138,16 @@ template <class T> T MaxValue(T* pBuffer, long bufLen) {
     @param pBuffer - The array in which to search for an element.
     @param bufLen - The length of the array.
     @return - The minimum value in the array */
-template <class T> T MinValue(T* pBuffer, long bufLen) {
+template<class T>
+T MinValue(T* pBuffer, long bufLen)
+{
     T minValue = pBuffer[0];
-    for (long i = 1; i < bufLen; i++) {
+    for (long i = 1; i < bufLen; i++)
+    {
         if (pBuffer[i] < minValue)
+        {
             minValue = pBuffer[i];
+        }
     }
     return minValue;
 }
@@ -156,9 +158,12 @@ template <class T> T MinValue(T* pBuffer, long bufLen) {
     @param pBuffer - The array of which to calculate the average.
     @param bufLen - The length of the array.
     @return - The average value of the elements in the array. */
-template <class T> T Average(T* pBuffer, long bufLen) {
+template<class T>
+T Average(T* pBuffer, long bufLen)
+{
     T sumValue = pBuffer[0];
-    for (long i = 1; i < bufLen; ++i) {
+    for (long i = 1; i < bufLen; ++i)
+    {
         sumValue = sumValue + pBuffer[i];
     }
     return sumValue / bufLen;
@@ -170,30 +175,41 @@ template <class T> T Average(T* pBuffer, long bufLen) {
         @param array - the array to look into
         @param nElements - the number of elements in the supplied array
         @param output - the output array, must be at least 'N'- elements long
-        @param N - the number of values to take out. 	*/
-template <class T> bool FindNLowest(const T array[], long nElements, T output[], int N, int* indices = NULL) {
+        @param N - the number of values to take out.    */
+template<class T>
+bool FindNLowest(const T array[], long nElements, T output[], int N, int* indices = NULL)
+{
     for (int i = 0; i < N; ++i)
+    {
         output[i] = 1e16; // to get some initial value
+    }
 
     // loop through all elements in the array
-    for (int i = 0; i < nElements; ++i) {
+    for (int i = 0; i < nElements; ++i)
+    {
 
         // compare this element with all elements in the output array.
-        for (int j = 0; j < N; ++j) {
-            if (array[i] < output[j]) {
+        for (int j = 0; j < N; ++j)
+        {
+            if (array[i] < output[j])
+            {
                 // If we found a higher value, shift all other values down one step...
-                for (int k = N - 1; k > j; --k) {
+                for (int k = N - 1; k > j; --k)
+                {
                     output[k] = output[k - 1];
-                    if (indices)							indices[k] = indices[k - 1];
+                    if (indices)
+                    {
+                        indices[k] = indices[k - 1];
+                    }
                 }
                 output[j] = array[i];
-                if (indices)								indices[j] = i;
+                if (indices)
+                {
+                    indices[j] = i;
+                }
                 break;
             }
         }
     }
     return true;
 }
-
-
-#endif // !defined(AFX_COMMON_H__D37EDB58_63D7_4142_9CCB_67370BD06621__INCLUDED_)

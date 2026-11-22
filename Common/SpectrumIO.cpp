@@ -13,31 +13,36 @@ CSpectrumIO::~CSpectrumIO()
 {
 }
 
-int CSpectrumIO::readSTDFile(CString filename, CSpectrum* curSpec) {
+int CSpectrumIO::readSTDFile(CString filename, CSpectrum* curSpec)
+{
     char tmpStr[1024];
     int tmpInt, tmpInt2, tmpInt3, i;
     double tmpDouble;
 
     FILE* f = fopen(filename, "r");
 
-    if (0 == f) {
+    if (0 == f)
+    {
         return 1;
     }
 
     fscanf(f, "%1022s\n", tmpStr);
-    if (0 != strncmp(tmpStr, "GDBGMNUP", 8)) {
+    if (0 != strncmp(tmpStr, "GDBGMNUP", 8))
+    {
         fclose(f);
         return 1;
     }
 
     fscanf(f, "%d\n", &tmpInt);
-    if (tmpInt != 1) {
+    if (tmpInt != 1)
+    {
         fclose(f);
         return 1;
     }
 
     fscanf(f, "%d\n", &tmpInt);
-    if (tmpInt > MAX_SPECTRUM_LENGTH || tmpInt < 1) {
+    if (tmpInt > MAX_SPECTRUM_LENGTH || tmpInt < 1)
+    {
         fclose(f);
         return 1;
     }
@@ -45,114 +50,136 @@ int CSpectrumIO::readSTDFile(CString filename, CSpectrum* curSpec) {
     curSpec->length = tmpInt;
 
     /* Read the actual data */
-    for (i = 0; i < curSpec->length; ++i) {
-        if (0 == fscanf(f, "%lf\n", &tmpDouble)) {
+    for (i = 0; i < curSpec->length; ++i)
+    {
+        if (0 == fscanf(f, "%lf\n", &tmpDouble))
+        {
             fclose(f);
             return 1;
         }
-        else {
+        else
+        {
             curSpec->I[i] = tmpDouble;
         }
     }
 
     // the name of the spectrum, this is ignored at the moment
-    if (0 == fgets(tmpStr, 1024, f)) {
+    if (0 == fgets(tmpStr, 1024, f))
+    {
         fclose(f);
         return 1;
     }
 
     // the name of the spectrometer
-    if (0 == fgets(tmpStr, 1024, f)) {
+    if (0 == fgets(tmpStr, 1024, f))
+    {
         fclose(f);
         return 1;
     }
-    else {
+    else
+    {
         curSpec->spectrometerSerial.Format(tmpStr);
         curSpec->spectrometerSerial.Trim(" \t\r\n");
     }
 
     // the name of the detector, this is ignored at the moment
-    if (0 == fgets(tmpStr, 1024, f)) {
+    if (0 == fgets(tmpStr, 1024, f))
+    {
         fclose(f);
         return 1;
     }
 
     /* Read the date */
-    if (3 != fscanf(f, "%d.%d.%d\n", &tmpInt, &tmpInt2, &tmpInt3)) {
-
+    if (3 != fscanf(f, "%d.%d.%d\n", &tmpInt, &tmpInt2, &tmpInt3))
+    {
     }
-    else {
+    else
+    {
         curSpec->date[0] = tmpInt;
         curSpec->date[1] = tmpInt2;
         curSpec->date[2] = tmpInt3;
     }
 
     /* Read the start time */
-    if (3 != fscanf(f, "%d:%d:%d\n", &tmpInt, &tmpInt2, &tmpInt3)) {
-
+    if (3 != fscanf(f, "%d:%d:%d\n", &tmpInt, &tmpInt2, &tmpInt3))
+    {
     }
-    else {
+    else
+    {
         curSpec->startTime[0] = tmpInt;
         curSpec->startTime[1] = tmpInt2;
         curSpec->startTime[2] = tmpInt3;
     }
 
     /* Read the stop time */
-    if (3 != fscanf(f, "%d:%d:%d\n", &tmpInt, &tmpInt2, &tmpInt3)) {
-
+    if (3 != fscanf(f, "%d:%d:%d\n", &tmpInt, &tmpInt2, &tmpInt3))
+    {
     }
-    else {
+    else
+    {
         curSpec->stopTime[0] = tmpInt;
         curSpec->stopTime[1] = tmpInt2;
         curSpec->stopTime[2] = tmpInt3;
     }
 
     /* some information that is ignored for the moment s*/
-    for (i = 0; i < 2; ++i) {
-        if (0 == fgets(tmpStr, 1024, f)) {
+    for (i = 0; i < 2; ++i)
+    {
+        if (0 == fgets(tmpStr, 1024, f))
+        {
             fclose(f);
             return 1;
         }
     }
 
-    if (0 == fscanf(f, "SCANS %d\n", &tmpInt)) {
+    if (0 == fscanf(f, "SCANS %d\n", &tmpInt))
+    {
         fclose(f);
         return 1;
     }
-    else {
+    else
+    {
         curSpec->scans = tmpInt;
     }
 
-    if (0 == fscanf(f, "INT_TIME %lf\n", &tmpDouble)) {
+    if (0 == fscanf(f, "INT_TIME %lf\n", &tmpDouble))
+    {
         fclose(f);
         return 1;
     }
-    else {
+    else
+    {
         curSpec->exposureTime = (int)tmpDouble;
     }
 
     /* The site is ignored */
-    if ((0 == fgets(tmpStr, 1024, f)) && (0 == strstr(tmpStr, "SITE"))) {
+    if ((0 == fgets(tmpStr, 1024, f)) && (0 == strstr(tmpStr, "SITE")))
+    {
         //  if(0 == fscanf(f, "SITE %s\n", tmpStr)){
         fclose(f);
         return 1;
     }
-    else {
+    else
+    {
     }
 
-    if (0 == fscanf(f, "LONGITUDE %lf\n", &tmpDouble)) {
+    if (0 == fscanf(f, "LONGITUDE %lf\n", &tmpDouble))
+    {
         fclose(f);
         return 1;
     }
-    else {
+    else
+    {
         curSpec->lon = tmpDouble;
     }
 
-    if (0 == fscanf(f, "LATITUDE %lf\n", &tmpDouble)) {
+    if (0 == fscanf(f, "LATITUDE %lf\n", &tmpDouble))
+    {
         fclose(f);
         return 1;
     }
-    else {
+    else
+    {
         curSpec->lat = tmpDouble;
     }
 
@@ -166,7 +193,8 @@ int CSpectrumIO::readSTDFile(CString filename, CSpectrum* curSpec) {
         if (pt = strstr(szLine, "Altitude ="))
         {
             pt = strstr(szLine, "=");
-            if (0 < sscanf(&pt[1], "%lf", &tmpDouble)) {
+            if (0 < sscanf(&pt[1], "%lf", &tmpDouble))
+            {
                 curSpec->altitude = tmpDouble;
             }
         }
@@ -175,7 +203,8 @@ int CSpectrumIO::readSTDFile(CString filename, CSpectrum* curSpec) {
         if (pt = strstr(szLine, "GPSStatus ="))
         {
             pt = strstr(szLine, "=");
-            if (0 < sscanf(&pt[1], "%s", &tmpStr)) {
+            if (0 < sscanf(&pt[1], "%s", &tmpStr))
+            {
                 curSpec->gpsStatus = tmpStr;
             }
         }
@@ -184,7 +213,8 @@ int CSpectrumIO::readSTDFile(CString filename, CSpectrum* curSpec) {
         if (pt = strstr(szLine, "Speed ="))
         {
             pt = strstr(szLine, "=");
-            if (0 < sscanf(&pt[1], "%lf", &tmpDouble)) {
+            if (0 < sscanf(&pt[1], "%lf", &tmpDouble))
+            {
                 curSpec->speed = tmpDouble;
             }
         }
@@ -194,7 +224,8 @@ int CSpectrumIO::readSTDFile(CString filename, CSpectrum* curSpec) {
         if (pt = strstr(szLine, "Course ="))
         {
             pt = strstr(szLine, "=");
-            if (0 < sscanf(&pt[1], "%lf", &tmpDouble)) {
+            if (0 < sscanf(&pt[1], "%lf", &tmpDouble))
+            {
                 curSpec->course = tmpDouble;
             }
         }
@@ -205,34 +236,40 @@ int CSpectrumIO::readSTDFile(CString filename, CSpectrum* curSpec) {
 }
 
 [[deprecated]]
-int CSpectrumIO::readTextFile(CString filename, CSpectrum* curSpec) {
+int CSpectrumIO::readTextFile(CString filename, CSpectrum* curSpec)
+{
     double tmpDouble1, tmpDouble2;
     int tmpInt = 0;
     int ret;
     CFileException exceFile;
     CStdioFile fileRef;
 
-    if (!fileRef.Open(filename, CFile::modeRead | CFile::typeText, &exceFile)) {
+    if (!fileRef.Open(filename, CFile::modeRead | CFile::typeText, &exceFile))
+    {
         MessageBox(NULL, TEXT("Can not read log file"), TEXT("Error"), MB_OK);
         return FALSE;
     }
 
     CString szLine2;
-    while (fileRef.ReadString(szLine2)) {
+    while (fileRef.ReadString(szLine2))
+    {
         char* szToken = (char*)(LPCSTR)szLine2;
 
-        while (szToken = strtok(szToken, "\n")) {
+        while (szToken = strtok(szToken, "\n"))
+        {
 
             ret = sscanf(szToken, "%lf\t%lf", &tmpDouble1, &tmpDouble2);
 
-            if (ret == 1) {
+            if (ret == 1)
+            {
                 curSpec->I[tmpInt] = tmpDouble1;
             }
-            else if (ret == 2) {
+            else if (ret == 2)
+            {
                 curSpec->I[tmpInt] = tmpDouble2;
             }
-            else {
-
+            else
+            {
             }
             curSpec->length = ++tmpInt;
 
@@ -244,14 +281,14 @@ int CSpectrumIO::readTextFile(CString filename, CSpectrum* curSpec) {
 
     //  fclose(f);
     return 0;
-
 }
 
 bool CSpectrumIO::WriteStdFile(const CString& fileName, const CSpectrum& spectrum)
 {
     int extendedFormat = 1;
     FILE* f = fopen(fileName, "w");
-    if (f < (FILE*)1) {
+    if (f < (FILE*)1)
+    {
         return FAIL;
     }
 
@@ -284,7 +321,8 @@ bool CSpectrumIO::WriteStdFile(const CString& fileName, const CSpectrum& spectru
     fprintf(f, "LONGITUDE %f\n", spectrum.lon);
     fprintf(f, "LATITUDE %f\n", spectrum.lat);
 
-    if (extendedFormat) {
+    if (extendedFormat)
+    {
         double minValue, maxValue;
         spectrum.GetMinMax(minValue, maxValue);
         double average = spectrum.GetAverage();
@@ -293,7 +331,8 @@ bool CSpectrumIO::WriteStdFile(const CString& fileName, const CSpectrum& spectru
         //fprintf(f, "Author = \"\"\n");
         fprintf(f, "Average = %.1f\n", average);
         //fprintf(f, "AzimuthAngle = 0\n");
-        if (!std::isnan(spectrum.course)) {
+        if (!std::isnan(spectrum.course))
+        {
             fprintf(f, "Course = %.1lf\n", spectrum.course);
         }
         //fprintf(f, "Delta = 0\n");
@@ -306,7 +345,8 @@ bool CSpectrumIO::WriteStdFile(const CString& fileName, const CSpectrum& spectru
         fprintf(f, "FitHigh = %d\n", spectrum.fitHigh);
         fprintf(f, "FitLow = %d\n", spectrum.fitLow);
         //fprintf(f, "Gain = 0\n");
-        if (spectrum.gpsStatus.c_str() != "") {
+        if (spectrum.gpsStatus.c_str() != "")
+        {
             fprintf(f, "GPSStatus = %s\n", spectrum.gpsStatus.c_str());
         }
         fprintf(f, "IntegrationMethod = Average\n");
@@ -331,14 +371,17 @@ bool CSpectrumIO::WriteStdFile(const CString& fileName, const CSpectrum& spectru
         //fprintf(f, "Pressure = 0\n");
         //fprintf(f, "Remark = \"\"\n");
         //fprintf(f, "ScanGeometry = 0\n"); //(DoasCore.Math.ScanGeometry)SAZ: 137.41237083135 SZA: 31.5085943481828 LAZ: 298.523110145623 LAZ: 129.285101310559 Date: 1/5/2007 10:35:07 Lat.: 0 Lon.: 0\n");
-        //fprintf(f, "ScanMax = 0\n");	
-        if (!std::isnan(spectrum.speed)) {
+        //fprintf(f, "ScanMax = 0\n");
+        if (!std::isnan(spectrum.speed))
+        {
             fprintf(f, "Speed = %.1lf\n", spectrum.speed);
         }
-        if (!std::isnan(spectrum.boardTemperature)) {
+        if (!std::isnan(spectrum.boardTemperature))
+        {
             fprintf(f, "BoardTemperature = %lf\n", spectrum.boardTemperature);
         }
-        if (!std::isnan(spectrum.boardTemperature)) {
+        if (!std::isnan(spectrum.boardTemperature))
+        {
             fprintf(f, "DetectorTemperature = %lf\n", spectrum.detectorTemperature);
         }
         //fprintf(f, "Variance = 0\n");
@@ -348,4 +391,3 @@ bool CSpectrumIO::WriteStdFile(const CString& fileName, const CSpectrum& spectru
 
     return SUCCESS;
 }
-

@@ -2,7 +2,7 @@
 
 #include <string>
 
-// --------------- This file collects data structures and routines related to GPS reading --------------- 
+// --------------- This file collects data structures and routines related to GPS reading ---------------
 
 namespace mobiledoas
 {

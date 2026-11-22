@@ -44,7 +44,9 @@ void CRouteGraph::OnMouseMove(UINT nFlags, CPoint point)
     if (nFlags & MK_LBUTTON)
     {
         if (!m_zooming)
+        {
             m_zooming = true;
+        }
 
         // in case we haven't established the memory dc's
         CBitmap memBitmap;
@@ -85,7 +87,6 @@ void CRouteGraph::OnLButtonUp(UINT nFlags, CPoint point)
     {
         parentWnd->PostMessage(WM_LBU_IN_GPSPLOT);
     }
-
 }
 
 void CRouteGraph::OnLButtonDown(UINT nFlags, CPoint point)
@@ -130,22 +131,20 @@ void CRouteGraph::OnRButtonDown(UINT nFlags, CPoint point)
     m_zoomRect.maxLat = 0.0;
 
     parentWnd->PostMessage(WM_ZOOM_IN_GPSPLOT);
-
 }
 
-BOOL CRouteGraph::Create(DWORD dwStyle, const RECT& rect,
-    CWnd* pParentWnd, UINT nID)
+BOOL CRouteGraph::Create(DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID)
 {
     BOOL result;
     static CString className = AfxRegisterWndClass(CS_HREDRAW | CS_VREDRAW);
 
-    result = CWnd::CreateEx(WS_EX_CLIENTEDGE | WS_EX_STATICEDGE,
-        className, NULL, dwStyle,
-        rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top,
-        pParentWnd->GetSafeHwnd(), (HMENU)nID);
+    result = CWnd::CreateEx(WS_EX_CLIENTEDGE | WS_EX_STATICEDGE, className, NULL, dwStyle, rect.left, rect.top,
+                            rect.right - rect.left, rect.bottom - rect.top, pParentWnd->GetSafeHwnd(), (HMENU)nID);
 
     if (result != 0)
+    {
         InvalidateCtrl();
+    }
 
     return result;
 
@@ -191,7 +190,9 @@ void CRouteGraph::DrawShadedRect(double lat1, double lon1, double lat2, double l
 
     // make sure there's a memory dc for the plot
     if (m_dcRoute.GetSafeHdc() == nullptr)
+    {
         return;
+    }
 
     GetDataRange(x, y, 5, maxX, minX, maxY, minY);
 
@@ -230,7 +231,6 @@ void CRouteGraph::DrawShadedRect(double lat1, double lon1, double lat2, double l
     // Invalidate the active region
     // TODO: Use InvalidateRect instead!!
     Invalidate();
-
 }
 
 /** Gets the coordinate values that the user wants to zoom into.

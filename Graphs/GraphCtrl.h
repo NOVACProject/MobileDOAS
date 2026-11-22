@@ -1,8 +1,8 @@
+#pragma once
+
 // OScopeCtrl.h : header file
 //
 
-#ifndef __GraphCtrl_H__
-#define __GraphCtrl_H__
 
 #include "../Common.h"
 
@@ -30,40 +30,46 @@ const enum NUMBER_FORMAT { FORMAT_GENERAL, FORMAT_TIME, FORMAT_DATE, FORMAT_BINA
 class CGraphCtrl : public CWnd
 {
 protected:
-    typedef struct Colors {
+    typedef struct Colors
+    {
         COLORREF plot;
-        COLORREF  background;
-        COLORREF  grid;
-        COLORREF  circles;
-    }Colors;
+        COLORREF background;
+        COLORREF grid;
+        COLORREF circles;
+    } Colors;
 
-    class CFontOption {
+    class CFontOption
+    {
     public:
         CFontOption();
         int height;
         int width;
     };
 
-    typedef struct GridOptions {
-        typedef struct GridLineOptions {
-            double  lowestGridLine;   // The X- (or Y-) value for the lowest grid line
-            double  gridSpacing;      // The distance between the grid lines
-            bool    active;           // true if the grid is active
-            bool    autoScale;        // If true then the scale will be set to match the grid-lines
+    typedef struct GridOptions
+    {
+        typedef struct GridLineOptions
+        {
+            double lowestGridLine;   // The X- (or Y-) value for the lowest grid line
+            double gridSpacing;      // The distance between the grid lines
+            bool active;           // true if the grid is active
+            bool autoScale;        // If true then the scale will be set to match the grid-lines
 
             inline double Start() { return lowestGridLine; }
             inline double Spacing() { return gridSpacing; }
-            inline bool  IsOn() { return active; }
-        }GridLineOptions;
+            inline bool IsOn() { return active; }
+        } GridLineOptions;
 
         GridLineOptions line[2];
         inline GridLineOptions& X() { return line[0]; }
         inline GridLineOptions& Y() { return line[1]; }
 
-    }GridOptions;
+    } GridOptions;
 
-    typedef struct AxisOptions {
-        typedef struct FloatRect {
+    typedef struct AxisOptions
+    {
+        typedef struct FloatRect
+        {
             double right;
             double left;
             double top;
@@ -72,7 +78,7 @@ protected:
             NUMBER_FORMAT formatX; // The number format for the x-axis
             NUMBER_FORMAT formatY; // The number format for the y-axis
             bool equal; // True if the X- and Y- axes should have equal scaling
-        }FloatRect;
+        } FloatRect;
 
         FloatRect first; // The range for the primary axis, shown to the left and down
         FloatRect second; // The range for the second axis, shown to the right and up
@@ -84,12 +90,13 @@ protected:
         double minimumRangeY;   // The minimum range for the Y-axis
         CFontOption axisFont;
         CFontOption unitFont;
-    }AxisOptions;
+    } AxisOptions;
 
-    typedef struct PlotOptions {
+    typedef struct PlotOptions
+    {
         int lineWidth;
         int circleRadius;
-    }PlotOptions;
+    } PlotOptions;
 
 public:
     /** Constants used for the options for plotting */
@@ -111,9 +118,7 @@ public:
     virtual BOOL Create(DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID = NULL);
 
     /** Sets the margin space around the graph */
-    void SetMarginSpace(double margin) {
-        m_axisOptions.first.margin = margin;
-    }
+    void SetMarginSpace(double margin) { m_axisOptions.first.margin = margin; }
 
     /** Sets the unit label of the X-axis */
     void SetXUnits(CString string);
@@ -131,23 +136,15 @@ public:
     void SetSecondYUnit(CString string);
 
     /** Returns the maximum value of the X-axis */
-    double GetXMax(int dim = 0) {
-        return (dim == 0) ? m_axisOptions.first.right : m_axisOptions.second.right;
-    }
+    double GetXMax(int dim = 0) { return (dim == 0) ? m_axisOptions.first.right : m_axisOptions.second.right; }
 
     /** Returns the minimum value of the X-axis */
-    double GetXMin(int dim = 0) {
-        return (dim == 0) ? m_axisOptions.first.left : m_axisOptions.second.left;
-    }
+    double GetXMin(int dim = 0) { return (dim == 0) ? m_axisOptions.first.left : m_axisOptions.second.left; }
     /** Returns the maximum value of the Y-axis */
-    double GetYMax(int dim = 0) {
-        return (dim == 0) ? m_axisOptions.first.top : m_axisOptions.second.top;
-    }
+    double GetYMax(int dim = 0) { return (dim == 0) ? m_axisOptions.first.top : m_axisOptions.second.top; }
 
     /** Returns the minimum value of the Y-axis */
-    double GetYMin(int dim = 0) {
-        return (dim == 0) ? m_axisOptions.first.bottom : m_axisOptions.second.bottom;
-    }
+    double GetYMin(int dim = 0) { return (dim == 0) ? m_axisOptions.first.bottom : m_axisOptions.second.bottom; }
 
     /** Sets the number format for the X-axis */
     void SetXAxisNumberFormat(NUMBER_FORMAT format);
@@ -181,9 +178,7 @@ public:
     void SetLineWidth(int width, bool clear = false);
 
     /** Sets the radius of the circles drawn */
-    void SetCircleRadius(int radius) {
-        m_plotOptions.circleRadius = radius;
-    }
+    void SetCircleRadius(int radius) { m_plotOptions.circleRadius = radius; }
 
     /** Marks the whole plot for redrawing */
     void InvalidateCtrl();
@@ -194,7 +189,8 @@ public:
         @param plotOption - Specifies the options for drawing the plot. Must be
             one of, or a combination of, the parameters 'PLOT_...' defined in the
             CGraphCtrl class. */
-    void Plot(double* yPositions, int pointSum, int plotOption = PLOT_CONNECTED) {
+    void Plot(double* yPositions, int pointSum, int plotOption = PLOT_CONNECTED)
+    {
         return XYPlot(NULL, yPositions, pointSum, plotOption | PLOT_CONNECTED);
     }
 
@@ -204,7 +200,8 @@ public:
             @param pointSum - the number of points that will be drawn.
             if xPositions is NULL then the yPositions will be drawn against their index in the array.
             */
-    void XYPlot(double* xPosition, double* yPosition, long pointSum, int plotOption = PLOT_CONNECTED) {
+    void XYPlot(double* xPosition, double* yPosition, long pointSum, int plotOption = PLOT_CONNECTED)
+    {
         XYPlot(xPosition, yPosition, NULL, pointSum, plotOption);
     }
 
@@ -216,7 +213,8 @@ public:
             @param pointSum - the number of points that will be drawn.
             if xPositions is NULL then the yPositions will be drawn against their index in the array.
             */
-    void XYPlot(double* xPosition, double* yPosition, double* color, long pointSum, int plotOption = PLOT_CONNECTED) {
+    void XYPlot(double* xPosition, double* yPosition, double* color, long pointSum, int plotOption = PLOT_CONNECTED)
+    {
         return XYPlot(xPosition, yPosition, color, NULL, NULL, pointSum, plotOption);
     }
 
@@ -230,14 +228,13 @@ public:
             @param pointSum - the number of points that will be drawn.
             if xPositions is NULL then the yPositions will be drawn against their index in the array.
             */
-    void XYPlot(double* xPosition, double* yPosition, double* color, double* xError, double* yError, long pointSum, int plotOption = PLOT_CONNECTED);
+    void XYPlot(double* xPosition, double* yPosition, double* color, double* xError, double* yError, long pointSum,
+                int plotOption = PLOT_CONNECTED);
 
     /** Draws a horizontal or vertical solid line across the whole plot area.
             @param direction - the orientation of the line. 0 means horizontal line, 1 means vertical line
             @param value - the logical value at which the line will be drawn. */
-    void DrawLine(DIRECTION direction, double value) {
-        return DrawLine(direction, value, m_colors.plot, STYLE_SOLID);
-    }
+    void DrawLine(DIRECTION direction, double value) { return DrawLine(direction, value, m_colors.plot, STYLE_SOLID); }
 
     /** Draws a horizontal or vertical line across the whole plot area.
             @param direction - the orientation of the line. 0 means horizontal line, 1 means vertical line
@@ -245,22 +242,26 @@ public:
             @param pColor -  the color of the line
             @param lineType - the style of the line. 0 means dashed line, 1 means solid line.
             @param plotOption - the options for how to plot the line */
-    void DrawLine(DIRECTION direction, double value, COLORREF pColor, LINE_STYLE lineStyle = STYLE_SOLID, int plotOption = PLOT_FIXED_AXIS);
+    void DrawLine(DIRECTION direction, double value, COLORREF pColor, LINE_STYLE lineStyle = STYLE_SOLID,
+                  int plotOption = PLOT_FIXED_AXIS);
 
     /** Draws a line segment between the two provided points */
-    void DrawLine(double x1, double x2, double y1, double y2, COLORREF pColor, LINE_STYLE lineStyle = STYLE_SOLID, int plotOption = PLOT_FIXED_AXIS);
+    void DrawLine(double x1, double x2, double y1, double y2, COLORREF pColor, LINE_STYLE lineStyle = STYLE_SOLID,
+                  int plotOption = PLOT_FIXED_AXIS);
 
     /** Draws the data set as a set of small circles. The plotOptions decides the
             look of the final plot. plotOptions must be one of, or a combination of,
             the parameters 'PLOT_...' defined in the CGraphCtrl class.*/
-    void DrawCircles(double* x, double* y, int nSum, int plotOption = PLOT_CIRCLES) {
+    void DrawCircles(double* x, double* y, int nSum, int plotOption = PLOT_CIRCLES)
+    {
         return XYPlot(x, y, nSum, plotOption | PLOT_CIRCLES);
     }
 
     /** Draws the data set as a set of small circles. The plotOptions decides the
             look of the final plot. plotOptions must be one of, or a combination of,
             the parameters 'PLOT_...' defined in the CGraphCtrl class.*/
-    void DrawCircles(double* x, double* y, double* color, int nSum, int plotOption = PLOT_CIRCLES) {
+    void DrawCircles(double* x, double* y, double* color, int nSum, int plotOption = PLOT_CIRCLES)
+    {
         return XYPlot(x, y, color, nSum, plotOption | PLOT_CIRCLES);
     }
 
@@ -303,7 +304,8 @@ public:
             @param pointSum - the total number of points to draw.
             @param plotOptions - the options for the plot. Must be PLOT_SECOND_AXIS or PLOT_FIXED_AXIS.
             If xPositions is NULL then the bars will be drawn on 0, 1, 2, ...*/
-    void BarChart2(double* xPositions, double* yValues1, double* yValues2, double* yError1, double* yError2, COLORREF color, int pointSum, int plotOption = 0);
+    void BarChart2(double* xPositions, double* yValues1, double* yValues2, double* yError1, double* yError2,
+                   COLORREF color, int pointSum, int plotOption = 0);
 
     /** Creates a dual-bar chart, i.e. a chart with two data-series
             @param xPositions - the x-positions for each bar.
@@ -312,7 +314,8 @@ public:
             @param pointSum - the total number of points to draw.
             @param plotOptions - the options for the plot. Must be PLOT_SECOND_AXIS or PLOT_FIXED_AXIS.
             If xPositions is NULL then the bars will be drawn on 0, 1, 2, ...*/
-    void BarChart2(double* xPositions, double* yValues1, double* yValues2, COLORREF color, int pointSum, int plotOption = 0);
+    void BarChart2(double* xPositions, double* yValues1, double* yValues2, COLORREF color, int pointSum,
+                   int plotOption = 0);
 
     /** Draws a vectorfield. The vector field is defined at the points
         'x' and 'y'. The x-, and y-component of each vector is defined
@@ -330,19 +333,13 @@ public:
     void CleanPlot();
 
     /** Enables/disables the grid lines on the X-axis */
-    void EnableGridLinesX(bool enable = true) {
-        this->m_gridOptions.X().active = enable;
-    }
+    void EnableGridLinesX(bool enable = true) { this->m_gridOptions.X().active = enable; }
 
     /** Enables/disables the grid lines on the Y-axis */
-    void EnableGridLinesY(bool enable = true) {
-        this->m_gridOptions.Y().active = enable;
-    }
+    void EnableGridLinesY(bool enable = true) { this->m_gridOptions.Y().active = enable; }
 
     /** Sets the scaling of the x- and y-axes so that the range covered by both axes is the same */
-    inline void SetAxisEqual() {
-        m_axisOptions.first.equal = true;
-    }
+    inline void SetAxisEqual() { m_axisOptions.first.equal = true; }
 
     /** Sets the range of both the X and Y-axes*/
     void SetRange(double dLeft, double dRight, int nXDecimal, double dLower, double dUpper, int nYDecimal);
@@ -351,14 +348,10 @@ public:
     void SetSecondRange(double dLeft, double dRight, int nXDecimal, double dLower, double dUpper, int nYDecimal);
 
     /** Sets the minimum range of the X-axis */
-    void SetMinimumRangeX(double width) {
-        this->m_axisOptions.minimumRangeX = width;
-    }
+    void SetMinimumRangeX(double width) { this->m_axisOptions.minimumRangeX = width; }
 
     /** Sets the minimum range of the Y-axis */
-    void SetMinimumRangeY(double height) {
-        this->m_axisOptions.minimumRangeY = height;
-    }
+    void SetMinimumRangeY(double height) { this->m_axisOptions.minimumRangeY = height; }
 
     /** Sets the range of the X-axis */
     void SetRangeX(double left, double right, int decimals, bool invalidate = true);
@@ -424,7 +417,7 @@ protected:
     CString m_strRightYUnit;
 
     /** The bounding box for the client area (the total plot) */
-    CRect  m_rectClient;
+    CRect m_rectClient;
 
     /** The height of the client area (the total plot) */
     int m_nClientHeight;
@@ -433,7 +426,7 @@ protected:
     int m_nClientWidth;
 
     /** The bounding box for the plot area (the area inside the axes) */
-    CRect  m_rectPlot;
+    CRect m_rectPlot;
 
     /** The height of the plot area (the area inside the axes) */
     int m_nPlotHeight;
@@ -447,13 +440,13 @@ protected:
 
 
     /** The pen for drawing the plot */
-    CPen   m_penPlot;
+    CPen m_penPlot;
 
     /** The brush for drawing the background */
     CBrush m_brushBack;
 
-    CDC     m_dcGrid;
-    CDC     m_dcPlot;
+    CDC m_dcGrid;
+    CDC m_dcPlot;
     CBitmap* m_pbitmapOldGrid;
     CBitmap* m_pbitmapOldPlot;
     CBitmap m_bitmapGrid;
@@ -468,28 +461,21 @@ protected:
     void SetGridSpacing(double& left, double& right, int dim, NUMBER_FORMAT format);
 
     /** Sets the grid spacing for the X-Axis using the given limits */
-    void SetGridSpacingX(float& left, float& right) {
-        SetGridSpacing(left, right, 0, m_axisOptions.first.formatX);
-    }
+    void SetGridSpacingX(float& left, float& right) { SetGridSpacing(left, right, 0, m_axisOptions.first.formatX); }
 
     /** Sets the grid spacing for the X-Axis using the given limits */
-    void SetGridSpacingX(double& left, double& right) {
-        SetGridSpacing(left, right, 0, m_axisOptions.first.formatX);
-    }
+    void SetGridSpacingX(double& left, double& right) { SetGridSpacing(left, right, 0, m_axisOptions.first.formatX); }
 
     /** Sets the grid spacing for the Y-Axis using the given limits */
-    void SetGridSpacingY(float& lower, float& upper) {
-        SetGridSpacing(lower, upper, 1, m_axisOptions.first.formatY);
-    }
+    void SetGridSpacingY(float& lower, float& upper) { SetGridSpacing(lower, upper, 1, m_axisOptions.first.formatY); }
 
     /** Sets the grid spacing for the Y-Axis using the given limits */
-    void SetGridSpacingY(double& lower, double& upper) {
-        SetGridSpacing(lower, upper, 1, m_axisOptions.first.formatY);
-    }
+    void SetGridSpacingY(double& lower, double& upper) { SetGridSpacing(lower, upper, 1, m_axisOptions.first.formatY); }
 
     /** Prepares for plotting */
-    template <class T> void PreparePlot(T* xValues, T* yValues, int pointSum,
-        T& maxX, T& minX, T& maxY, T& minY) {
+    template<class T>
+    void PreparePlot(T* xValues, T* yValues, int pointSum, T& maxX, T& minX, T& maxY, T& minY)
+    {
         GetDataRange(xValues, yValues, pointSum, maxX, minX, maxY, minY);
 
         // Set the range for the plot
@@ -497,14 +483,17 @@ protected:
     }
 
     /** Prepares for plotting on the secondary axis */
-    template <class T> void GetDataRange(T* xValues, T* yValues, int pointSum,
-        T& maxX, T& minX, T& maxY, T& minY) {
+    template<class T>
+    void GetDataRange(T* xValues, T* yValues, int pointSum, T& maxX, T& minX, T& maxY, T& minY)
+    {
         Common common;
-        if (xValues == nullptr) {
+        if (xValues == nullptr)
+        {
             maxX = pointSum;
             minX = 0;
         }
-        else {
+        else
+        {
             maxX = MaxValue(xValues, pointSum);
             minX = MinValue(xValues, pointSum);
         }
@@ -513,16 +502,21 @@ protected:
     }
 
     /** Finishes the plotting */
-    inline void FinishPlot() {
+    inline void FinishPlot()
+    {
         // Changed 2006-06-05
         m_dcPlot.BitBlt(0, 0, m_nClientWidth, m_rectPlot.top + 1, &m_dcGrid, 0, 0, SRCCOPY);
         m_dcPlot.BitBlt(0, 0, m_rectPlot.left + 1, m_nClientHeight, &m_dcGrid, 0, 0, SRCCOPY);
-        m_dcPlot.BitBlt(m_rectPlot.right, m_rectPlot.top, (m_nClientWidth - m_rectPlot.right), m_nPlotHeight, &m_dcGrid, m_rectPlot.right, m_rectPlot.top, SRCCOPY);
-        m_dcPlot.BitBlt(0, m_rectPlot.bottom, m_nClientWidth, (m_nClientHeight - m_rectPlot.bottom), &m_dcGrid, 0, m_rectPlot.bottom, SRCCOPY);
+        m_dcPlot.BitBlt(m_rectPlot.right, m_rectPlot.top, (m_nClientWidth - m_rectPlot.right), m_nPlotHeight, &m_dcGrid,
+                        m_rectPlot.right, m_rectPlot.top, SRCCOPY);
+        m_dcPlot.BitBlt(0, m_rectPlot.bottom, m_nClientWidth, (m_nClientHeight - m_rectPlot.bottom), &m_dcGrid, 0,
+                        m_rectPlot.bottom, SRCCOPY);
     }
 
     /** Creates the transform which converts from data point to screen - coordinates */
-    template <class T> void GetTransform(T& leftOffset, T& bottomOffset, T& xScaling, T& yScaling, AxisOptions::FloatRect& coordinate) {
+    template<class T>
+    void GetTransform(T& leftOffset, T& bottomOffset, T& xScaling, T& yScaling, AxisOptions::FloatRect& coordinate)
+    {
         leftOffset = coordinate.left;
         bottomOffset = coordinate.bottom;
         xScaling = m_nPlotWidth / (coordinate.right - coordinate.left);
@@ -535,4 +529,3 @@ protected:
 }
 
 /////////////////////////////////////////////////////////////////////////////
-#endif

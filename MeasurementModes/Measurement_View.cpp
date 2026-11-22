@@ -2,13 +2,12 @@
 #include "measurement_view.h"
 #include <MobileDoasLib/Measurement/SpectrumUtils.h>
 
-extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
+extern CString
+    g_exePath; // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
 
-CMeasurement_View::CMeasurement_View(
-    CView& mainForm,
-    novac::ILogger& log,
-    std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface,
-    std::unique_ptr<Configuration::CMobileConfiguration> conf)
+CMeasurement_View::CMeasurement_View(CView& mainForm, novac::ILogger& log,
+                                     std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface,
+                                     std::unique_ptr<Configuration::CMobileConfiguration> conf)
     : CSpectrometer(mainForm, log, std::move(spectrometerInterface), std::move(conf))
 {
     m_spectrometerMode = MODE_VIEW;

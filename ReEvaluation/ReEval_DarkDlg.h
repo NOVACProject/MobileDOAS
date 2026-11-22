@@ -19,11 +19,14 @@ public:
     virtual ~CReEval_DarkDlg();
 
     // Dialog Data
-    enum { IDD = IDD_REEVAL_DARK };
+    enum
+    {
+        IDD = IDD_REEVAL_DARK
+    };
 
     CReEvaluator* m_reeval;
 
-    void    DrawOffsetPlot();
+    void DrawOffsetPlot();
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
@@ -31,13 +34,12 @@ protected:
     DECLARE_MESSAGE_MAP()
 
 private:
-    int   m_numDarkSpectra;
+    int m_numDarkSpectra;
 
     CStatic m_graphBoundary;
     Graph::CGraphCtrl m_offsetPlot;
 
 public:
-
     CWinThread* pReEvalThread;  // used when running some lengthy function in ReEvaluator as a separate thread
     afx_msg void OnBnClickedSeveralDarkspectra();
     afx_msg void OnBnClickedSingleDarkspectrum();

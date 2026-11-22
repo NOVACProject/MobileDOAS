@@ -2,15 +2,12 @@
 
 #include "../Spectrometer.h"
 
-class CMeasurement_Directory :
-    public CSpectrometer
+class CMeasurement_Directory : public CSpectrometer
 {
 public:
-    CMeasurement_Directory(
-        CView& mainForm,
-        novac::ILogger& log,
-        std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface,
-        std::unique_ptr<Configuration::CMobileConfiguration> conf);
+    CMeasurement_Directory(CView& mainForm, novac::ILogger& log,
+                           std::unique_ptr<mobiledoas::SpectrometerInterface> spectrometerInterface,
+                           std::unique_ptr<Configuration::CMobileConfiguration> conf);
 
     virtual ~CMeasurement_Directory();
 
@@ -21,11 +18,9 @@ public:
     void Run();
 
 private:
-
     bool ProcessSpectrum(CString latestSpectrum);
     bool ReadSky();
     bool ReadDark();
     bool ReadDarkcur();
     bool ReadOffset();
 };
-

@@ -17,7 +17,10 @@ public:
     void SetMainForm(CView* mainForm) { this->m_mainForm = mainForm; }
 
     // Dialog Data
-    enum { IDD = IDD_SPECTRUM_SCALE_DLG };
+    enum
+    {
+        IDD = IDD_SPECTRUM_SCALE_DLG
+    };
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
@@ -28,7 +31,6 @@ private:
     CView* m_mainForm = nullptr;
 
 public:
-
     /** The minimum value of the saturation scale */
     int m_minValue;
 
@@ -53,7 +55,5 @@ public:
 
     /** Initializes the dialog and its controls */
     virtual BOOL OnInitDialog();
-
-
 };
 }

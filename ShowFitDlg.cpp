@@ -79,7 +79,7 @@ BOOL CShowFitDlg::OnInitDialog()
     DrawFit();
 
     return TRUE;  // return TRUE unless you set the focus to a control
-    // EXCEPTION: OCX Property Pages should return FALSE
+// EXCEPTION: OCX Property Pages should return FALSE
 }
 
 void CShowFitDlg::OnSize(UINT nType, int cx, int cy)
@@ -172,14 +172,22 @@ void CShowFitDlg::DrawFit1()
     else
     {
         if (minV < oldMinV)
+        {
             oldMinV = minV;
+        }
         else
+        {
             minV = oldMinV;
+        }
 
         if (maxV > oldMaxV)
+        {
             oldMaxV = maxV;
+        }
         else
+        {
             maxV = oldMaxV;
+        }
     }
 
     // set the range for the fit
@@ -191,7 +199,8 @@ void CShowFitDlg::DrawFit1()
 
     // draw the fitted result
     m_fitPlot.SetPlotColor(cyan);
-    m_fitPlot.XYPlot(pixel + fitLow, fitResult + fitLow, fitWidth, Graph::CGraphCtrl::PLOT_CONNECTED | Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+    m_fitPlot.XYPlot(pixel + fitLow, fitResult + fitLow, fitWidth,
+                     Graph::CGraphCtrl::PLOT_CONNECTED | Graph::CGraphCtrl::PLOT_FIXED_AXIS);
 }
 
 void CShowFitDlg::DrawFit2()
@@ -236,14 +245,22 @@ void CShowFitDlg::DrawFit2()
     else
     {
         if (minV < oldMinV)
+        {
             oldMinV = minV;
+        }
         else
+        {
             minV = oldMinV;
+        }
 
         if (maxV > oldMaxV)
+        {
             oldMaxV = maxV;
+        }
         else
+        {
             maxV = oldMaxV;
+        }
     }
 
     // set the range for the fit
@@ -255,5 +272,6 @@ void CShowFitDlg::DrawFit2()
 
     // draw the fitted result
     m_fitPlot2.SetPlotColor(cyan);
-    m_fitPlot2.XYPlot(pixel + fitLow, fitResult + fitLow, (int)fitWidth, Graph::CGraphCtrl::PLOT_CONNECTED | Graph::CGraphCtrl::PLOT_FIXED_AXIS);
+    m_fitPlot2.XYPlot(pixel + fitLow, fitResult + fitLow, (int)fitWidth,
+                      Graph::CGraphCtrl::PLOT_CONNECTED | Graph::CGraphCtrl::PLOT_FIXED_AXIS);
 }

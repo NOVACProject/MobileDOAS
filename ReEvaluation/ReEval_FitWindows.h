@@ -19,7 +19,10 @@ public:
     virtual ~CReEval_FitWindowsDlg();
 
     // Dialog Data
-    enum { IDD = IDD_REEVAL_FITWINDOW };
+    enum
+    {
+        IDD = IDD_REEVAL_FITWINDOW
+    };
 
     CReEvaluator* m_reeval;
 
@@ -28,6 +31,7 @@ public:
 
     /** Fill the reference grid with values */
     void PopulateReferenceFileControl();
+
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
@@ -36,6 +40,7 @@ protected:
     CStatic m_referenceFrame;
 
     CListBox m_windowList;
+
 private:
     /** The grid, controlling which references to use */
     DlgControls::CReferenceFileControl m_referenceGrid;

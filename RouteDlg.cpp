@@ -33,7 +33,9 @@ CRouteDlg::CRouteDlg(CWnd* pParent /*=NULL*/)
     m_showSource = 0;
     m_showColumnOption = 0;
     for (int i = 0; i < MAX_FLUX_LOGFILES; ++i)
+    {
         m_useWindField[i] = false;
+    }
 
     m_pointSize = 3;
 
@@ -67,7 +69,7 @@ void CRouteDlg::DoDataExchange(CDataExchange* pDX)
 
     DDX_Control(pDX, IDC_CHECK_SHOW_INTERPOLATED_WINDFIELD, m_showInterpolatedWindField);
 
-    //}}AFX_DATA_MAP
+//}}AFX_DATA_MAP
 }
 
 
@@ -124,17 +126,18 @@ BEGIN_MESSAGE_MAP(CRouteDlg, CDialog)
     ON_BN_CLICKED(IDC_BTN_SOURCE_LON, OnBnClickedSourceLon)
 
     // Updating the interface, notice that this has to be here due to a bug in Microsoft MFC
-    //	http://support.microsoft.com/kb/242577
+    //  http://support.microsoft.com/kb/242577
     ON_WM_INITMENUPOPUP()
 
-    //}}AFX_MSG_MAP
+//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CRouteDlg message handlers
 
 
-BOOL CRouteDlg::OnInitDialog() {
+BOOL CRouteDlg::OnInitDialog()
+{
     CString str, errorMessage;
 
     CDialog::OnInitDialog();
@@ -144,8 +147,8 @@ BOOL CRouteDlg::OnInitDialog() {
     m_gpsPlot.Create(WS_VISIBLE | WS_CHILD, rect, this);
     memcpy(&m_gpsPlot.rect, &rect, sizeof(CRect));
     m_gpsPlot.parentWnd = this;
-    //	m_gpsPlot.SetBackgroundColor(RGB(0, 0, 0)) ;
-    //	m_gpsPlot.SetGridColor(RGB(255,255,255));
+    //  m_gpsPlot.SetBackgroundColor(RGB(0, 0, 0)) ;
+    //  m_gpsPlot.SetGridColor(RGB(255,255,255));
     m_gpsPlot.EnableGridLinesX(true);
     m_gpsPlot.SetMarginSpace(0.05f);
 
@@ -162,13 +165,17 @@ BOOL CRouteDlg::OnInitDialog() {
     m_gridLandMarks.Create(rect, &m_frameLandmarks, 0);
     m_gridLandMarks.parent = this;
     while (m_gridLandMarks.GetColumnCount() > 0)
+    {
         m_gridLandMarks.DeleteColumn(0);
+    }
     m_gridLandMarks.InsertColumn("Lat (dd.dd)");
     m_gridLandMarks.InsertColumn("Long (dd.dd)");
     m_gridLandMarks.SetFixedRowCount(1);
     m_gridLandMarks.SetFixedColumnCount(0);
     for (int i = 0; i < 2; ++i)
+    {
         m_gridLandMarks.SetColumnWidth(i, (int)(rect.right / 2.5));
+    }
 
     m_gridLandMarks.SetEditable(TRUE); /* make sure the user can edit the positions */
     m_gridLandMarks.SetRowCount(10);
@@ -188,17 +195,22 @@ BOOL CRouteDlg::OnInitDialog() {
     m_pointSizeSpin.SetBuddy(&m_pointSizeEdit);
 
     // check so that there are not too many traveses...
-    if (m_flux->m_traverseNum >= MAX_FLUX_LOGFILES) {
-        errorMessage.Format("Maximum number of traverses that can be plotted simultaneously is %d. Will only show the first %d measurements.", MAX_FLUX_LOGFILES, MAX_FLUX_LOGFILES);
+    if (m_flux->m_traverseNum >= MAX_FLUX_LOGFILES)
+    {
+        errorMessage.Format("Maximum number of traverses that can be plotted simultaneously is %d. Will only show the "
+                            "first %d measurements.",
+                            MAX_FLUX_LOGFILES, MAX_FLUX_LOGFILES);
         MessageBox(errorMessage);
         m_traversesToShow = MAX_FLUX_LOGFILES;
     }
-    else {
+    else
+    {
         m_traversesToShow = m_flux->m_traverseNum;
     }
 
     /* the list of evaluation logs */
-    for (int i = 0; i < m_traversesToShow; ++i) {
+    for (int i = 0; i < m_traversesToShow; ++i)
+    {
         this->m_evalLogList.AddString(m_flux->m_traverse[i]->m_fileName.c_str());
     }
     m_evalLogList.SetSel(m_initalSelection, TRUE);
@@ -210,10 +222,11 @@ BOOL CRouteDlg::OnInitDialog() {
     DrawRouteGraph();
 
     return TRUE;  // return TRUE unless you set the focus to a control
-    // EXCEPTION: OCX Property Pages should return FALSE
+// EXCEPTION: OCX Property Pages should return FALSE
 }
 
-void CRouteDlg::DrawRouteGraph() {
+void CRouteDlg::DrawRouteGraph()
+{
     double marginSpace;
     struct plotRange range;
     CString scaleStr, tmpStr;
@@ -233,12 +246,16 @@ void CRouteDlg::DrawRouteGraph() {
     m_gpsPlot.SetRange(range.minLon, range.maxLon, 3, range.minLat, range.maxLat, 3);
 
     /* draw the traverse */
-    for (i = 0; i < m_traversesToShow; ++i) {
+    for (i = 0; i < m_traversesToShow; ++i)
+    {
         if (!m_evalLogList.GetSel(i))
+        {
             continue;
+        }
 
         /** Draw the wind field, if wanted */
-        if (m_showInterpolatedWindField.GetCheck() && m_useWindField[i]) {
+        if (m_showInterpolatedWindField.GetCheck() && m_useWindField[i])
+        {
             Common common;
 
             m_gpsPlot.SetPlotColor(m_windFieldColor);
@@ -246,7 +263,8 @@ void CRouteDlg::DrawRouteGraph() {
             double avgWind = Average(m_ws[i], m_recordLen[i]);
             double scaling = 0.05 * (range.maxLat - range.minLat) / avgWind;
 
-            for (int k = 0; k < m_recordLen[i]; ++k) {
+            for (int k = 0; k < m_recordLen[i]; ++k)
+            {
                 u[k] = scaling * m_ws[i][k] * sin(DEGREETORAD * m_wd[i][k]);
                 v[k] = scaling * m_ws[i][k] * cos(DEGREETORAD * m_wd[i][k]);
             }
@@ -259,9 +277,12 @@ void CRouteDlg::DrawRouteGraph() {
         // The options for the plot
         int plotOption = Graph::CGraphCtrl::PLOT_FIXED_AXIS;
         if (m_showColumnOption == 1)
+        {
             plotOption |= Graph::CGraphCtrl::PLOT_SCALE_CIRCLE;
+        }
 
-        switch (m_selectedDisplay) {
+        switch (m_selectedDisplay)
+        {
         case SHOW_INTENSITY:
             m_gpsPlot.DrawCircles(m_lon[i], m_lat[i], m_int[i], m_recordLen[i], plotOption);
             break;
@@ -283,7 +304,8 @@ void CRouteDlg::DrawRouteGraph() {
     }
 
     /* draw the source */
-    if (1 == m_showSourceCheck.GetCheck()) {
+    if (1 == m_showSourceCheck.GetCheck())
+    {
         m_gpsPlot.SetCircleColor(RGB(255, 0, 0));
         m_gpsPlot.SetCircleRadius(7);
         m_gpsPlot.DrawCircles(&m_srcLon, &m_srcLat, 1, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
@@ -291,24 +313,31 @@ void CRouteDlg::DrawRouteGraph() {
     }
 
     /* Draw the landmarks */
-    for (i = 0; i < m_gridLandMarks.GetRowCount() - 1; ++i) {
+    for (i = 0; i < m_gridLandMarks.GetRowCount() - 1; ++i)
+    {
         double lat, lon;
         tmpStr = m_gridLandMarks.GetCell(i + 1, 0)->GetText();
         if (0 >= sscanf(tmpStr, "%lf", &lat))
+        {
             continue;
+        }
 
         tmpStr = m_gridLandMarks.GetCell(i + 1, 1)->GetText();
         if (0 >= sscanf(tmpStr, "%lf", &lon))
+        {
             continue;
+        }
 
         m_gpsPlot.SetCircleColor(RGB(0, 0, 255));
         m_gpsPlot.DrawCircles(&lon, &lat, 1, Graph::CGraphCtrl::PLOT_FIXED_AXIS);
     }
 
     /* Draw the scale of the plot */
-    if (1 == m_showScale) {
-        double	sLat[2], sLong[2]; // the latitudes and longitudes for the 'scale'
-        double plotwidth = 1e-3 * mobiledoas::GPSDistance(m_gpsPlot.GetYMin(), m_gpsPlot.GetXMin(), m_gpsPlot.GetYMin(), m_gpsPlot.GetXMax());
+    if (1 == m_showScale)
+    {
+        double sLat[2], sLong[2]; // the latitudes and longitudes for the 'scale'
+        double plotwidth = 1e-3 * mobiledoas::GPSDistance(m_gpsPlot.GetYMin(), m_gpsPlot.GetXMin(), m_gpsPlot.GetYMin(),
+                                                          m_gpsPlot.GetXMax());
         double scaleWidth = 1e3 * round(plotwidth / 4); // the length of the scale
         sLat[0] = sLat[1] = m_gpsPlot.GetYMin() + 0.1 * (m_gpsPlot.GetYMax() - m_gpsPlot.GetYMin());
         sLong[0] = m_gpsPlot.GetXMin() + 0.1 * (m_gpsPlot.GetXMax() - m_gpsPlot.GetXMin());
@@ -319,12 +348,13 @@ void CRouteDlg::DrawRouteGraph() {
 
         // Print the number...
         scaleStr.Format("%.0lf km", scaleWidth * 1e-3);
-        m_gpsPlot.DrawTextBox(sLong[0], sLong[1], sLat[0], sLat[0] + 0.03 * (m_gpsPlot.GetYMax() - m_gpsPlot.GetYMin()), scaleStr);
+        m_gpsPlot.DrawTextBox(sLong[0], sLong[1], sLat[0], sLat[0] + 0.03 * (m_gpsPlot.GetYMax() - m_gpsPlot.GetYMin()),
+                              scaleStr);
     }
-
 }
 
-LRESULT CRouteDlg::OnShowLatLong(WPARAM wParam, LPARAM lParam) {
+LRESULT CRouteDlg::OnShowLatLong(WPARAM wParam, LPARAM lParam)
+{
     CString tmpStrLat, tmpStrLon;
 
     tmpStrLat.Format("Lat: %lf", m_gpsPlot.curLat);
@@ -351,16 +381,18 @@ void CRouteDlg::OnBnClickedCheckShowSource()
     m_showSource = m_showSourceCheck.GetCheck();
 
     DrawRouteGraph();
-
 }
 void CRouteDlg::OnEnChangeSrcLatEdit()
 {
     char txt[256];
     this->GetDlgItemText(IDC_SRC_LAT_EDIT, txt, 256);
-    if (strlen(txt) != 0) {
+    if (strlen(txt) != 0)
+    {
         UpdateData(TRUE);
         if (1 == m_showSourceCheck.GetCheck())
+        {
             DrawRouteGraph();
+        }
     }
 }
 
@@ -368,51 +400,64 @@ void CRouteDlg::OnEnChangeSrcLonEdit()
 {
     char txt[256];
     this->GetDlgItemText(IDC_SRC_LON_EDIT, txt, 256);
-    if (strlen(txt) != 0) {
+    if (strlen(txt) != 0)
+    {
         UpdateData(TRUE);
         if (1 == m_showSourceCheck.GetCheck())
+        {
             DrawRouteGraph();
+        }
     }
 }
 
-void CRouteDlg::OnBnClickedCheckCalcDistance() {
-    if (1 == m_calcDistance.GetCheck()) {
+void CRouteDlg::OnBnClickedCheckCalcDistance()
+{
+    if (1 == m_calcDistance.GetCheck())
+    {
         /* start calculating distance */
         this->SetDlgItemText(IDC_DISTANCE_LABEL, "Click on position 1");
         this->SetDlgItemText(IDC_BEARING_LABEL, "");
     }
-    else {
+    else
+    {
         /* clear the distance calculations */
-
     }
     nClicks = 0;
     lat1 = lat2 = lon1 = lon2 = 0;
 }
 
-LRESULT CRouteDlg::OnLBUInGPSGraph(WPARAM wParam, LPARAM lParam) {
+LRESULT CRouteDlg::OnLBUInGPSGraph(WPARAM wParam, LPARAM lParam)
+{
     CString tmpStr1, tmpStr2;
     double bearing, distance;
 
-    if (1 == m_calcDistance.GetCheck()) {
+    if (1 == m_calcDistance.GetCheck())
+    {
         /* If we should calculate distance */
 
-        if (nClicks == 0) {
+        if (nClicks == 0)
+        {
             lat1 = m_gpsPlot.curLat;
             lon1 = m_gpsPlot.curLong;
             this->SetDlgItemText(IDC_DISTANCE_LABEL, "Click on position 2");
             this->SetDlgItemText(IDC_BEARING_LABEL, "");
         }
 
-        if (nClicks == 1) {
+        if (nClicks == 1)
+        {
             lat2 = m_gpsPlot.curLat;
             lon2 = m_gpsPlot.curLong;
 
             bearing = mobiledoas::GPSBearing(lat1, lon1, lat2, lon2);
             distance = mobiledoas::GPSDistance(lat1, lon1, lat2, lon2);
             if (distance < 1000)
+            {
                 tmpStr1.Format("Dist.: %.0lf [m]", distance);
+            }
             else
+            {
                 tmpStr1.Format("Dist.: %.2lf [km]", distance / 1000);
+            }
 
             tmpStr2.Format("Bearing: %.3lf [deg]", bearing);
 
@@ -427,7 +472,8 @@ LRESULT CRouteDlg::OnLBUInGPSGraph(WPARAM wParam, LPARAM lParam) {
     return 0;
 }
 
-LRESULT CRouteDlg::OnZoomGPSGraph(WPARAM wparam, LPARAM lparam) {
+LRESULT CRouteDlg::OnZoomGPSGraph(WPARAM wparam, LPARAM lparam)
+{
 
     // Redraw the graph
     DrawRouteGraph();
@@ -436,22 +482,26 @@ LRESULT CRouteDlg::OnZoomGPSGraph(WPARAM wparam, LPARAM lparam) {
     return 0;
 }
 
-void CRouteDlg::OnBnClickedShowColumn() {
+void CRouteDlg::OnBnClickedShowColumn()
+{
     UpdateData(TRUE);
     DrawRouteGraph();
 }
 
-void CRouteDlg::OnBnClickedShowAltitude() {
+void CRouteDlg::OnBnClickedShowAltitude()
+{
     UpdateData(TRUE);
     DrawRouteGraph();
 }
 
-void CRouteDlg::OnBnClickedShowIntensity() {
+void CRouteDlg::OnBnClickedShowIntensity()
+{
     UpdateData(TRUE);
     DrawRouteGraph();
 }
 
-void CRouteDlg::GetPlotRange(struct plotRange& range) {
+void CRouteDlg::GetPlotRange(struct plotRange& range)
+{
     CString tmpStr;
     double latRange, lonRange;
     Common common;
@@ -460,25 +510,31 @@ void CRouteDlg::GetPlotRange(struct plotRange& range) {
 
     // See if the user has determined any range...
     m_gpsPlot.GetZoomRect(rect);
-    if (fabs(rect.maxLat) > 0.1) {
+    if (fabs(rect.maxLat) > 0.1)
+    {
         range = rect;
         return;
     }
 
     range.maxLat = range.maxLon = -1e10;
     range.minLat = range.minLon = -1e10;
-    for (i = 0; i < m_traversesToShow; ++i) {
+    for (i = 0; i < m_traversesToShow; ++i)
+    {
         if (!m_evalLogList.GetSel(i))
+        {
             continue;
+        }
 
-        if (range.maxLat < -180) {
+        if (range.maxLat < -180)
+        {
             range.maxLat = m_lat[i][0];
             range.minLat = m_lat[i][0];
             range.maxLon = m_lon[i][0];
             range.minLon = m_lon[i][0];
         }
 
-        if (m_flux->hasValidGPS()) {
+        if (m_flux->hasValidGPS())
+        {
             range.maxLat = std::max(MaxValue(m_lat[i], m_recordLen[i]), range.maxLat);
             range.maxLon = std::max(MaxValue(m_lon[i], m_recordLen[i]), range.maxLon);
             range.minLat = std::min(MinValue(m_lat[i], m_recordLen[i]), range.minLat);
@@ -486,10 +542,12 @@ void CRouteDlg::GetPlotRange(struct plotRange& range) {
         }
     }
 
-    if (1 == this->m_showSourceCheck.GetCheck()) {
+    if (1 == this->m_showSourceCheck.GetCheck())
+    {
         /* show the source */
 
-        if (range.maxLat < -180) {
+        if (range.maxLat < -180)
+        {
             range.maxLat = m_srcLat;
             range.minLat = m_srcLat;
             range.maxLon = m_srcLon;
@@ -500,8 +558,10 @@ void CRouteDlg::GetPlotRange(struct plotRange& range) {
         range.minLon = std::min(range.minLon, m_srcLon);
         range.maxLon = std::max(range.maxLon, m_srcLon);
     }
-    else {
-        if (range.maxLat < -180) {
+    else
+    {
+        if (range.maxLat < -180)
+        {
             range.maxLat = 1;
             range.minLat = -1;
             range.maxLon = 1;
@@ -510,15 +570,20 @@ void CRouteDlg::GetPlotRange(struct plotRange& range) {
     }
 
     // The landmarks...
-    for (i = 0; i < m_gridLandMarks.GetRowCount() - 1; ++i) {
+    for (i = 0; i < m_gridLandMarks.GetRowCount() - 1; ++i)
+    {
         double lat, lon;
         tmpStr = m_gridLandMarks.GetCell(i + 1, 0)->GetText();
         if (0 >= sscanf(tmpStr, "%lf", &lat))
+        {
             continue;
+        }
 
         tmpStr = m_gridLandMarks.GetCell(i + 1, 1)->GetText();
         if (0 >= sscanf(tmpStr, "%lf", &lon))
+        {
             continue;
+        }
 
         range.minLat = std::min(range.minLat, lat);
         range.maxLat = std::max(range.maxLat, lat);
@@ -529,12 +594,14 @@ void CRouteDlg::GetPlotRange(struct plotRange& range) {
     /* make sure that the plot is square */
     latRange = range.maxLat - range.minLat;
     lonRange = range.maxLon - range.minLon;
-    if (latRange > lonRange) {
+    if (latRange > lonRange)
+    {
         double half = (range.maxLon + range.minLon) / 2;
         range.minLon = half - latRange / 2;
         range.maxLon = half + latRange / 2;
     }
-    else {
+    else
+    {
         double half = (range.maxLat + range.minLat) / 2;
         range.minLat = half - lonRange / 2;
         range.maxLat = half + lonRange / 2;
@@ -543,10 +610,12 @@ void CRouteDlg::GetPlotRange(struct plotRange& range) {
     return;
 }
 
-void CRouteDlg::InitBuffers() {
+void CRouteDlg::InitBuffers()
+{
     int i, j, k, sum;
 
-    for (i = 0; i < m_traversesToShow; ++i) {
+    for (i = 0; i < m_traversesToShow; ++i)
+    {
         mobiledoas::CTraverse* tr = m_flux->m_traverse[i];
         memcpy(m_lon[i], tr->longitude, tr->m_recordNum * sizeof(double));
         memcpy(m_lat[i], tr->latitude, tr->m_recordNum * sizeof(double));
@@ -560,9 +629,12 @@ void CRouteDlg::InitBuffers() {
 
         /* delete bad points */
         sum = tr->m_recordNum;
-        for (j = 0; j < sum; ++j) {
-            if (m_lat[i][j] == 0 && m_lon[i][j] == 0) {
-                for (k = j; k < sum; ++k) {
+        for (j = 0; j < sum; ++j)
+        {
+            if (m_lat[i][j] == 0 && m_lon[i][j] == 0)
+            {
+                for (k = j; k < sum; ++k)
+                {
                     m_lat[i][k] = m_lat[i][k + 1];
                     m_lon[i][k] = m_lon[i][k + 1];
                     m_ws[i][k] = m_ws[i][k + 1];
@@ -576,29 +648,37 @@ void CRouteDlg::InitBuffers() {
     }
 }
 
-void CRouteDlg::OnLbnSelchangeEvallogList() {
+void CRouteDlg::OnLbnSelchangeEvallogList()
+{
     DrawRouteGraph();
 }
 
 
-void CRouteDlg::OnBnClickedCheckShowInterpolatedWindfield() {
+void CRouteDlg::OnBnClickedCheckShowInterpolatedWindfield()
+{
     DrawRouteGraph();
 }
 
 void CRouteDlg::OnBnClickedBtnImportWindfield()
 {
     int nSelected = 0, curSel = -1;
-    for (int i = 0; i < m_traversesToShow; ++i) {
+    for (int i = 0; i < m_traversesToShow; ++i)
+    {
         if (!m_evalLogList.GetSel(i))
+        {
             continue;
+        }
         ++nSelected;
         curSel = i;
     }
-    if (nSelected > 1) {
-        MessageBox("Can only import windfield for one traverse. Please select only one traverse and try again", "Error", MB_OK);
+    if (nSelected > 1)
+    {
+        MessageBox("Can only import windfield for one traverse. Please select only one traverse and try again", "Error",
+                   MB_OK);
         return;
     }
-    if (nSelected == 0) {
+    if (nSelected == 0)
+    {
         MessageBox("Please select one traverse and try again", "Error", MB_OK);
         return;
     }
@@ -624,9 +704,13 @@ void CRouteDlg::OnDeltaposRoutedlgPointsizespin(NMHDR* pNMHDR, LRESULT* pResult)
     // Check which direction the user has pressed the spinbutton (which is upside down)
     //  and change the circle radius accordingly
     if (pNMUpDown->iDelta > 0)
+    {
         --m_pointSize;
+    }
     if (pNMUpDown->iDelta < 0)
+    {
         ++m_pointSize;
+    }
 
     // Enforce the limits
     m_pointSize = std::max(1, m_pointSize);
@@ -649,7 +733,8 @@ void CRouteDlg::OnChangeBackgroundColor()
     CColorDialog dlg;
     COLORREF bkColor;
 
-    if (dlg.DoModal() == IDOK) {
+    if (dlg.DoModal() == IDOK)
+    {
         bkColor = dlg.m_cc.rgbResult;
         m_gpsPlot.SetBackgroundColor(bkColor);
     }
@@ -661,7 +746,8 @@ void CRouteDlg::OnChangeGridColor()
     CColorDialog dlg;
     COLORREF gColor;
 
-    if (dlg.DoModal() == IDOK) {
+    if (dlg.DoModal() == IDOK)
+    {
         gColor = dlg.m_cc.rgbResult;
         m_gpsPlot.SetGridColor(gColor);
     }
@@ -672,7 +758,8 @@ void CRouteDlg::OnChangeWindFieldColor()
 {
     CColorDialog dlg;
 
-    if (dlg.DoModal() == IDOK) {
+    if (dlg.DoModal() == IDOK)
+    {
         m_windFieldColor = dlg.m_cc.rgbResult;
     }
     DrawRouteGraph();
@@ -682,13 +769,15 @@ void CRouteDlg::OnChangeCirclesColor()
 {
     CColorDialog dlg;
 
-    if (dlg.DoModal() == IDOK) {
+    if (dlg.DoModal() == IDOK)
+    {
         m_circlesColor = dlg.m_cc.rgbResult;
     }
     DrawRouteGraph();
 }
 
-void CRouteDlg::OnChangeColorScale_BW() {
+void CRouteDlg::OnChangeColorScale_BW()
+{
     m_circlesColor = RGB(0, 0, 0);
     m_windFieldColor = RGB(10, 10, 10);
 
@@ -697,7 +786,8 @@ void CRouteDlg::OnChangeColorScale_BW() {
 
     DrawRouteGraph();
 }
-void CRouteDlg::OnChangeColorScale_Default() {
+void CRouteDlg::OnChangeColorScale_Default()
+{
     m_circlesColor = RGB(0, 255, 0);
     m_windFieldColor = RGB(255, 255, 255);
 
@@ -720,25 +810,31 @@ void CRouteDlg::OnGridDecrease()
     DrawRouteGraph();
 }
 
-void CRouteDlg::OnFileSaveGraphAsImage() {
+void CRouteDlg::OnFileSaveGraphAsImage()
+{
     CString fileName;
 
     // Get the fileName
-    if (Common::BrowseForFile_SaveAs("*.png;*.bmp;*.gif;*.jpg", fileName)) {
-        if (!Equals(fileName.Right(4), ".png") && !Equals(fileName.Right(4), ".bmp") && !Equals(fileName.Right(4), ".gif") && !Equals(fileName.Right(4), ".jpg"))
+    if (Common::BrowseForFile_SaveAs("*.png;*.bmp;*.gif;*.jpg", fileName))
+    {
+        if (!Equals(fileName.Right(4), ".png") && !Equals(fileName.Right(4), ".bmp") &&
+            !Equals(fileName.Right(4), ".gif") && !Equals(fileName.Right(4), ".jpg"))
+        {
             fileName.AppendFormat(".png");
+        }
 
         m_gpsPlot.SaveGraph(fileName);
     }
 }
 
-void CRouteDlg::SetWidthOfLogList() {
+void CRouteDlg::SetWidthOfLogList()
+{
 
     // Find the longest string in the list box.
-    CString      str;
-    CSize      sz;
-    int					dx = 0;
-    TEXTMETRIC   tm;
+    CString str;
+    CSize sz;
+    int dx = 0;
+    TEXTMETRIC tm;
     CDC* pDC = m_evalLogList.GetDC();
     CFont* pFont = m_evalLogList.GetFont();
 
@@ -756,19 +852,22 @@ void CRouteDlg::SetWidthOfLogList() {
         sz.cx += tm.tmAveCharWidth;
 
         if (sz.cx > dx)
+        {
             dx = sz.cx;
+        }
     }
     // Select the old font back into the DC
     pDC->SelectObject(pOldFont);
     m_evalLogList.ReleaseDC(pDC);
 
-    // Set the horizontal extent so every character of all strings 
+    // Set the horizontal extent so every character of all strings
     // can be scrolled to.
     m_evalLogList.SetHorizontalExtent(dx);
 }
 
 /** Turns on or off the showing of the scale */
-void CRouteDlg::OnChangeShowScale() {
+void CRouteDlg::OnChangeShowScale()
+{
 
     // change the current status of the showing of the scale
     m_showScale = !m_showScale;
@@ -777,7 +876,8 @@ void CRouteDlg::OnChangeShowScale() {
     DrawRouteGraph();
 }
 
-LRESULT CRouteDlg::OnEndEditLandMarkPosition(WPARAM wParam, LPARAM lParam) {
+LRESULT CRouteDlg::OnEndEditLandMarkPosition(WPARAM wParam, LPARAM lParam)
+{
     DrawRouteGraph();
 
     return 0;
@@ -786,7 +886,8 @@ void CRouteDlg::OnBnClickedSourceLat()
 {
     Dialogs::CSourceSelectionDlg sourceDlg;
     INT_PTR modal = sourceDlg.DoModal();
-    if (IDOK == modal) {
+    if (IDOK == modal)
+    {
         m_srcLat = sourceDlg.m_selectedLat;
         m_srcLon = sourceDlg.m_selectedLon;
 
@@ -806,29 +907,37 @@ void CRouteDlg::OnBnClickedSourceLon()
 }
 
 
-void CRouteDlg::OnMenuViewShowColumnByColor() {
+void CRouteDlg::OnMenuViewShowColumnByColor()
+{
     m_showColumnOption = 0;
     DrawRouteGraph(); // <-- update the graph
 }
-void CRouteDlg::OnMenuViewShowColumnBySize() {
+void CRouteDlg::OnMenuViewShowColumnBySize()
+{
     m_showColumnOption = 1;
     DrawRouteGraph(); // <-- update the graph
 }
-void CRouteDlg::OnUpdateMenuShowColumnByColor(CCmdUI* pCmdUI) {
+void CRouteDlg::OnUpdateMenuShowColumnByColor(CCmdUI* pCmdUI)
+{
     // set the check status of this item to the same as the check status of the 'intensity' check box
-    if (m_showColumnOption == 0) {
+    if (m_showColumnOption == 0)
+    {
         pCmdUI->SetCheck(1);
     }
-    else {
+    else
+    {
         pCmdUI->SetCheck(0);
     }
 }
-void CRouteDlg::OnUpdateMenuShowColumnBySize(CCmdUI* pCmdUI) {
+void CRouteDlg::OnUpdateMenuShowColumnBySize(CCmdUI* pCmdUI)
+{
     // set the check status of this item to the same as the check status of the 'intensity' check box
-    if (m_showColumnOption == 1) {
+    if (m_showColumnOption == 1)
+    {
         pCmdUI->SetCheck(1);
     }
-    else {
+    else
+    {
         pCmdUI->SetCheck(0);
     }
 }
@@ -847,13 +956,14 @@ void CRouteDlg::OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
     // it if so (m_pParentMenu == NULL indicates that it is secondary popup).
     HMENU hParentMenu;
     if (AfxGetThreadState()->m_hTrackingMenu == pPopupMenu->m_hMenu)
+    {
         state.m_pParentMenu = pPopupMenu;    // Parent == child for tracking popup.
+    }
     else if ((hParentMenu = ::GetMenu(m_hWnd)) != nullptr)
     {
         CWnd* pParent = this;
         // Child windows don't have menus--need to go to the top!
-        if (pParent != nullptr &&
-            (hParentMenu = ::GetMenu(pParent->m_hWnd)) != nullptr)
+        if (pParent != nullptr && (hParentMenu = ::GetMenu(pParent->m_hWnd)) != nullptr)
         {
             int nIndexMax = ::GetMenuItemCount(hParentMenu);
             for (int nIndex = 0; nIndex < nIndexMax; nIndex++)
@@ -869,12 +979,13 @@ void CRouteDlg::OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
     }
 
     state.m_nIndexMax = pPopupMenu->GetMenuItemCount();
-    for (state.m_nIndex = 0; state.m_nIndex < state.m_nIndexMax;
-        state.m_nIndex++)
+    for (state.m_nIndex = 0; state.m_nIndex < state.m_nIndexMax; state.m_nIndex++)
     {
         state.m_nID = pPopupMenu->GetMenuItemID(state.m_nIndex);
         if (state.m_nID == 0)
+        {
             continue; // Menu separator or invalid cmd - ignore it.
+        }
 
         ASSERT(state.m_pOther == nullptr);
         ASSERT(state.m_pMenu != nullptr);
@@ -882,8 +993,7 @@ void CRouteDlg::OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
         {
             // Possibly a popup menu, route to first item of that popup.
             state.m_pSubMenu = pPopupMenu->GetSubMenu(state.m_nIndex);
-            if (state.m_pSubMenu == nullptr ||
-                (state.m_nID = state.m_pSubMenu->GetMenuItemID(0)) == 0 ||
+            if (state.m_pSubMenu == nullptr || (state.m_nID = state.m_pSubMenu->GetMenuItemID(0)) == 0 ||
                 state.m_nID == (UINT)-1)
             {
                 continue;       // First item of popup can't be routed to.
@@ -904,7 +1014,8 @@ void CRouteDlg::OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu)
         if (nCount < state.m_nIndexMax)
         {
             state.m_nIndex -= (state.m_nIndexMax - nCount);
-            while (state.m_nIndex < nCount && pPopupMenu->GetMenuItemID(state.m_nIndex) == state.m_nID) {
+            while (state.m_nIndex < nCount && pPopupMenu->GetMenuItemID(state.m_nIndex) == state.m_nID)
+            {
                 state.m_nIndex++;
             }
         }

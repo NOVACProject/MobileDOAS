@@ -16,7 +16,10 @@ public:
     virtual ~CPostPlumeHeightDlg();
 
     // Dialog Data
-    enum { IDD = IDD_POST_PLUMEHEIGHTDLG };
+    enum
+    {
+        IDD = IDD_POST_PLUMEHEIGHTDLG
+    };
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
@@ -29,7 +32,7 @@ public:
     CStatic m_frameColumn;
 
     /** The column graph */
-    Graph::CGraphCtrl	m_columnGraph;
+    Graph::CGraphCtrl m_columnGraph;
 
     // ---------------------- EVENT HANDLERS ----------------------
     /** Called when the user browses for a new evaluation-log for series 1 */
@@ -50,17 +53,16 @@ public:
 
 
 private:
-
     // ------------------ PRIVATE DATA ---------------------
     /** The colors for the time-series */
-    COLORREF	m_colorSeries[MAX_N_SERIES];
+    COLORREF m_colorSeries[MAX_N_SERIES];
 
     /** Used to separate when the user changes an interface item or when
             the program does */
     bool m_automatic;
 
     /** The currently opened evaluation - logs, one per series*/
-    CString	m_evalLog[MAX_N_SERIES];
+    CString m_evalLog[MAX_N_SERIES];
 
     /** Original measurement series, as they are in the file */
     mobiledoas::CDualBeamCalculator::CMeasurementSeries* m_OriginalSeries[MAX_N_SERIES];
@@ -92,7 +94,6 @@ private:
     /** Performes a low pass filtering procedure on series number 'seriesNo'.
     The number of iterations is taken from 'm_settings.lowPassFilterAverage'
     The treated series is m_OriginalSeries[seriesNo]
-    The result is saved as m_PreparedSeries[seriesNo]	*/
-    int	LowPassFilter(int seriesNo);
-
+    The result is saved as m_PreparedSeries[seriesNo]   */
+    int LowPassFilter(int seriesNo);
 };

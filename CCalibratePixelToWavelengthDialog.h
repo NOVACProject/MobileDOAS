@@ -9,8 +9,8 @@ class MobileDoasWavelengthCalibrationController;
 
 namespace novac
 {
-    class StandardCrossSectionSetup;
-    class ILogger;
+class StandardCrossSectionSetup;
+class ILogger;
 }
 
 /// <summary>
@@ -20,26 +20,28 @@ namespace novac
 struct CalibratePixelToWavelengthDialogSetup
 {
 public:
-    CalibratePixelToWavelengthDialogSetup() :
-        m_calibrationOption(0),
-        m_initialCalibrationFile(""),
-        m_instrumentLineshapeFile(""),
-        m_solarSpectrumFile(""),
-        m_fitInstrumentLineShapeOption(0),
-        m_fitInstrumentLineShapeRegionStart("320"),
-        m_fitInstrumentLineShapeRegionStop("350"),
-        m_fitInstrumentLineShapeOzoneReference("")
+    CalibratePixelToWavelengthDialogSetup()
+        : m_calibrationOption(0)
+        , m_initialCalibrationFile("")
+        , m_instrumentLineshapeFile("")
+        , m_solarSpectrumFile("")
+        , m_fitInstrumentLineShapeOption(0)
+        , m_fitInstrumentLineShapeRegionStart("320")
+        , m_fitInstrumentLineShapeRegionStop("350")
+        , m_fitInstrumentLineShapeOzoneReference("")
     {
     }
 
     int m_calibrationOption;            //< the type of instrument calibration file to use (.std or .clb + .slf)
     CString m_initialCalibrationFile;   //< path to the intial calibration file (either .std or .clb)
-    CString m_instrumentLineshapeFile;  //< path to the initial instrument line shape file (.slf). Ususally not set if m_initialCalibrationFile is .std.
-    CString m_solarSpectrumFile;        //< path to the high-res solar spectrum file
+    CString
+        m_instrumentLineshapeFile; //< path to the initial instrument line shape file (.slf). Ususally not set if m_initialCalibrationFile is .std.
+    CString m_solarSpectrumFile; //< path to the high-res solar spectrum file
     int m_fitInstrumentLineShapeOption; //< the option for what type of instrument line shape to fit.
     CString m_fitInstrumentLineShapeRegionStart;
     CString m_fitInstrumentLineShapeRegionStop;
-    CString m_fitInstrumentLineShapeOzoneReference; //< an optional ozone reference file which can be included into the instrument line shape fit routine.
+    CString
+        m_fitInstrumentLineShapeOzoneReference; //< an optional ozone reference file which can be included into the instrument line shape fit routine.
 };
 
 class CCalibratePixelToWavelengthDialog : public CPropertyPage
@@ -47,23 +49,25 @@ class CCalibratePixelToWavelengthDialog : public CPropertyPage
     DECLARE_DYNAMIC(CCalibratePixelToWavelengthDialog)
 
 public:
-    CCalibratePixelToWavelengthDialog(novac::ILogger& log, CWnd* pParent = nullptr);   // standard constructor
+    CCalibratePixelToWavelengthDialog(novac::ILogger& log, CWnd* pParent = nullptr); // standard constructor
     virtual ~CCalibratePixelToWavelengthDialog();
 
     /** Initializes the controls and the dialog */
     virtual BOOL OnInitDialog();
 
-    // Dialog Data
+// Dialog Data
 #ifdef AFX_DESIGN_TIME
-    enum { IDD = IDD_CALIBRATE_WAVELENGTH_DIALOG };
+    enum
+    {
+        IDD = IDD_CALIBRATE_WAVELENGTH_DIALOG
+    };
 #endif
 
 protected:
-    virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+    virtual void DoDataExchange(CDataExchange* pDX); // DDX/DDV support
 
     DECLARE_MESSAGE_MAP()
 public:
-
     CString m_inputSpectrumFile;
     CString m_darkSpectrumFile;
 
@@ -141,5 +145,4 @@ private:
     novac::StandardCrossSectionSetup* m_standardCrossSections;
 
     char* m_initialCalibrationFileTypeFilter = nullptr;
-
 };

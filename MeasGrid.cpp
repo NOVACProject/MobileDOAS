@@ -4,20 +4,21 @@
 
 CMeasGrid::CMeasGrid(void)
 {
-	parent = nullptr;
+    parent = nullptr;
 }
 
 CMeasGrid::~CMeasGrid(void)
 {
-	parent = nullptr;
+    parent = nullptr;
 }
 
 BEGIN_MESSAGE_MAP(CMeasGrid, CGridCtrl)
-  ON_WM_CONTEXTMENU()
+    ON_WM_CONTEXTMENU()
 END_MESSAGE_MAP()
 
-void CMeasGrid::OnContextMenu(CWnd* pWnd, CPoint point){
-   CMenu menu;
+void CMeasGrid::OnContextMenu(CWnd* pWnd, CPoint point)
+{
+    CMenu menu;
 /*   VERIFY(menu.LoadMenu(IDR_MENU1));
    CMenu* pPopup = menu.GetSubMenu(0);
    ASSERT(pPopup != nullptr);
@@ -31,7 +32,7 @@ void CMeasGrid::OnContextMenu(CWnd* pWnd, CPoint point){
     pPopup->EnableMenuItem(ID__DELETEROW, MF_DISABLED | MF_GRAYED);
   }
 
-  if(GetColumnCount() != cellRange.GetColSpan()+1){ // not a full row selected 
+  if(GetColumnCount() != cellRange.GetColSpan()+1){ // not a full row selected
     pPopup->EnableMenuItem(ID__INSERTROW, MF_DISABLED | MF_GRAYED);
     pPopup->EnableMenuItem(ID__DELETEROW, MF_DISABLED | MF_GRAYED);
   }
@@ -41,13 +42,15 @@ void CMeasGrid::OnContextMenu(CWnd* pWnd, CPoint point){
 }
 
 /* Called when the user has edited one cell */
-void CMeasGrid::OnEndEditCell(int nRow, int nCol, CString str){
-  CGridCtrl::OnEndEditCell(nRow, nCol, str);  
+void CMeasGrid::OnEndEditCell(int nRow, int nCol, CString str)
+{
+    CGridCtrl::OnEndEditCell(nRow, nCol, str);
 
-	// tell the parent that we've done editing one box
-	if(parent != nullptr)
-		parent->PostMessage(WM_END_EDIT, 0, 0);
+    // tell the parent that we've done editing one box
+    if (parent != nullptr)
+    {
+        parent->PostMessage(WM_END_EDIT, 0, 0);
+    }
 
-  return;
+    return;
 }
-

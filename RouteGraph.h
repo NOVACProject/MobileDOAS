@@ -6,10 +6,10 @@
 namespace Graph
 {
 
-#define WM_SHOW_LATLONG           WM_USER +18
-#define WM_LBU_IN_GPSPLOT         WM_USER +19
-#define WM_LBD_IN_GPSPLOT         WM_USER +20
-#define WM_ZOOM_IN_GPSPLOT        WM_USER +21
+#define WM_SHOW_LATLONG WM_USER + 18
+#define WM_LBU_IN_GPSPLOT WM_USER + 19
+#define WM_LBD_IN_GPSPLOT WM_USER + 20
+#define WM_ZOOM_IN_GPSPLOT WM_USER + 21
 
 class CRouteGraph : public CGraphCtrl
 {
@@ -38,14 +38,14 @@ public:
     struct plotRange m_zoomRect;
 
     /** A DC to draw something on... */
-    CDC     m_dcRoute;
+    CDC m_dcRoute;
     CBitmap* m_pbitmapOldRoute;
     CBitmap m_bitmapRoute;
 
     DECLARE_MESSAGE_MAP()
 
     /** Redraws the graph */
-    afx_msg	void OnPaint();
+    afx_msg void OnPaint();
 
     /** Draws a shaded rectangle between with the two given points
             as corners */

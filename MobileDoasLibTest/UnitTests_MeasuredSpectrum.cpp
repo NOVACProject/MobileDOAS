@@ -98,7 +98,7 @@ TEST_CASE("MeasuredSpectrum - CopyTo resizes destination to this and copies data
 TEST_CASE("MeasuredSpectrum - CopyFrom copies all data from source", "[MeasuredSpectrum]")
 {
     // Arrange
-    double sourceData[] { 11, 22, 33, 44, 55, 66, 77, 88, 99, 101 };
+    double sourceData[]{11, 22, 33, 44, 55, 66, 77, 88, 99, 101};
 
     SECTION("desination is too short when copying to channel zero")
     {

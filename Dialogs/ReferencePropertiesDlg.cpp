@@ -33,7 +33,8 @@ void CReferencePropertiesDlg::DoDataExchange(CDataExchange* pDX)
 {
     CDialog::DoDataExchange(pDX);
 
-    if (m_ref != nullptr) {
+    if (m_ref != nullptr)
+    {
         DDX_Text(pDX, IDC_EDIT_SPECIE, m_referenceName);
         DDX_Text(pDX, IDC_EDIT_PATH, m_referencePath);
 
@@ -64,18 +65,22 @@ END_MESSAGE_MAP()
 
 
 /** Saves the contents of the dialog */
-void CReferencePropertiesDlg::SaveData() {
+void CReferencePropertiesDlg::SaveData()
+{
     UpdateData(TRUE); // <-- Save the data in the dialog
 
     if (m_ref == nullptr)
+    {
         return;
+    }
 
     m_ref->m_specieName = std::string((LPCSTR)m_referenceName);
     m_ref->m_path = std::string((LPCSTR)m_referencePath);
 
     // save the shift option
-    switch (m_shiftOption) {
-    case 0: 
+    switch (m_shiftOption)
+    {
+    case 0:
         m_ref->m_shiftOption = novac::SHIFT_TYPE::SHIFT_FREE;
         m_ref->m_shiftValue = 0.0;
         break;
@@ -93,7 +98,8 @@ void CReferencePropertiesDlg::SaveData() {
     }
 
     // save the squeeze option
-    switch (m_squeezeOption) {
+    switch (m_squeezeOption)
+    {
     case 0:
         m_ref->m_squeezeOption = novac::SHIFT_TYPE::SHIFT_FREE;
         m_ref->m_squeezeValue = 0.0;
@@ -112,9 +118,12 @@ void CReferencePropertiesDlg::SaveData() {
     }
 }
 
-void CReferencePropertiesDlg::UpdateDlg() {
+void CReferencePropertiesDlg::UpdateDlg()
+{
     if (m_ref == nullptr)
+    {
         return;
+    }
 
     m_referenceName = m_ref->m_specieName.c_str();
     m_referencePath = m_ref->m_path.c_str();
@@ -122,7 +131,8 @@ void CReferencePropertiesDlg::UpdateDlg() {
     // TODO: There are multiple statements below which doesn't do anything. Figure out what they are intended to do and resolve.
 
     // save the shift option
-    switch (m_ref->m_shiftOption) {
+    switch (m_ref->m_shiftOption)
+    {
     case 0:
         novac::SHIFT_TYPE::SHIFT_FREE;
         m_shiftOption = 0;
@@ -144,7 +154,8 @@ void CReferencePropertiesDlg::UpdateDlg() {
     }
 
     // save the squeeze option
-    switch (m_ref->m_squeezeOption) {
+    switch (m_ref->m_squeezeOption)
+    {
     case 0:
         novac::SHIFT_TYPE::SHIFT_FREE;
         m_squeezeOption = 0;
@@ -167,7 +178,7 @@ void CReferencePropertiesDlg::UpdateDlg() {
         break;
     }
 
-    UpdateData(FALSE); // <-- Update the data in the dialog	
+    UpdateData(FALSE); // <-- Update the data in the dialog
 }
 
 void Dialogs::CReferencePropertiesDlg::OnOK()
@@ -178,7 +189,8 @@ void Dialogs::CReferencePropertiesDlg::OnOK()
     CDialog::OnOK();
 }
 
-void CReferencePropertiesDlg::BrowseForReference() {
+void CReferencePropertiesDlg::BrowseForReference()
+{
     CString fileName;
     Common common;
     TCHAR filter[512];
@@ -188,11 +200,15 @@ void CReferencePropertiesDlg::BrowseForReference() {
     fileName.Format("");
 
     if (m_ref == nullptr)
+    {
         return;
+    }
 
     // 1. Let the user browse for the reference file
     if (!common.BrowseForFile(filter, fileName))
+    {
         return;
+    }
 
     // 2. Set the path
     m_ref->m_path = std::string((LPCTSTR)fileName);
@@ -200,7 +216,8 @@ void CReferencePropertiesDlg::BrowseForReference() {
     // 3. make a guess of the specie name
     CString specie;
     Common::GuessSpecieName(fileName, specie);
-    if (strlen(specie) != 0) {
+    if (strlen(specie) != 0)
+    {
         m_ref->m_specieName = std::string((LPCTSTR)specie);
     }
 
@@ -216,22 +233,28 @@ BOOL Dialogs::CReferencePropertiesDlg::OnInitDialog()
     // update the controls in the dialog
     UpdateDlg();
 
-    return TRUE;  // return TRUE unless you set the focus to a control
+    return TRUE; // return TRUE unless you set the focus to a control
     // EXCEPTION: OCX Property Pages should return FALSE
 }
 
-void Dialogs::CReferencePropertiesDlg::InitToolTips() {
+void Dialogs::CReferencePropertiesDlg::InitToolTips()
+{
     // Don't initialize the tool tips twice
     if (m_toolTip.m_hWnd != nullptr)
+    {
         return;
+    }
 
     // Enable the tool tips
-    if (!m_toolTip.Create(this)) {
+    if (!m_toolTip.Create(this))
+    {
         TRACE0("Failed to create tooltip control\n");
     }
 
-    m_toolTip.AddTool(&m_editShiftLink, "Which reference-file to link to\r\n0<=>Reference-file #1\r\n1<=>Reference-file #2\r\n...");
-    m_toolTip.AddTool(&m_editSqueezeLink, "Which reference-file to link to\r\n0<=>Reference-file #1\r\n1<=>Reference-file #2\r\n...");
+    m_toolTip.AddTool(&m_editShiftLink,
+                      "Which reference-file to link to\r\n0<=>Reference-file #1\r\n1<=>Reference-file #2\r\n...");
+    m_toolTip.AddTool(&m_editSqueezeLink,
+                      "Which reference-file to link to\r\n0<=>Reference-file #1\r\n1<=>Reference-file #2\r\n...");
     m_toolTip.AddTool(&m_editShiftFix, "Number of pixels to shift this reference file");
     m_toolTip.AddTool(&m_editSqueezeFix, "Number of pixels to squeeze this reference file");
 

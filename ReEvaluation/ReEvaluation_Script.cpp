@@ -65,9 +65,13 @@ int CReEvaluation_Script::Run(CWnd* wnd)
         // Extract the directory
         int p = j.evaluationLog.ReverseFind('\\');
         if (p != -1)
+        {
             reeval->m_specFileDir.Format(j.evaluationLog.Left(p));
+        }
         else
+        {
             reeval->m_specFileDir.Format(j.evaluationLog);
+        }
 
         // run the evaluation
         if (wnd != nullptr)

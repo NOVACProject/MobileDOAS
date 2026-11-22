@@ -22,7 +22,9 @@ CReEval_EvalLogDlg::CReEval_EvalLogDlg()
 CReEval_EvalLogDlg::~CReEval_EvalLogDlg()
 {
     if (number != nullptr)
+    {
         free(number);
+    }
 }
 
 void CReEval_EvalLogDlg::DoDataExchange(CDataExchange* pDX)
@@ -46,16 +48,24 @@ void CReEval_EvalLogDlg::DoDataExchange(CDataExchange* pDX)
 
     CString avgSpecString;
     if (m_reeval->m_nspec[0] > 0)
+    {
         avgSpecString.Format("Averaged Spectra: %d", m_reeval->m_nspec[0]);
+    }
     else
+    {
         avgSpecString.Format("Averaged Spectra:");
+    }
     DDX_Text(pDX, IDC_INFORMATION_AVERAGED_SPECTRA, avgSpecString);
 
     CString expTimeString;
     if (m_reeval->m_exptime[0] > 0)
+    {
         expTimeString.Format("Exposure Time: %d ms", m_reeval->m_exptime[0]);
+    }
     else
+    {
         expTimeString.Format("Exposure Time:");
+    }
     DDX_Text(pDX, IDC_INFORMATION_EXPOSURE_TIME, expTimeString);
 
     DDX_Radio(pDX, IDC_RADIO_UV, m_wavelengthRegion);
@@ -96,7 +106,9 @@ void CReEval_EvalLogDlg::OnBnClickedButtonBrowseEvlog()
     filter[n + 2] = 0;
 
     if (!common.BrowseForFile(filter, fileName))
+    {
         return;
+    }
 
     /** Save the filename */
     m_reeval->m_evalLogFileName.Format(fileName);
@@ -114,14 +126,18 @@ void CReEval_EvalLogDlg::OnBnClickedButtonBrowseEvlog()
 bool CReEval_EvalLogDlg::InitializeNumber()
 {
     if (number != nullptr)
+    {
         return true;
+    }
 
     number = (double*)calloc(MAX_TRAVERSE_LENGTH, sizeof(double));
 
     if (number[1] == 0)
     {
         for (int i = 1; i < MAX_TRAVERSE_LENGTH; ++i)
+        {
             number[i] = i;
+        }
     }
     return true;
 }
@@ -198,10 +214,12 @@ BOOL CReEval_EvalLogDlg::OnInitDialog()
     //  m_ignoreDarkCheck.SetCheck(m_reeval->m_fIgnoreDark);
 
     if (strlen(m_reeval->m_evalLogFileName) != 0)
+    {
         DrawColumn();
+    }
 
     return TRUE;  // return TRUE unless you set the focus to a control
-    // EXCEPTION: OCX Property Pages should return FALSE
+// EXCEPTION: OCX Property Pages should return FALSE
 }
 
 // if the user changes the number of spectra that are to be averaged together
@@ -228,9 +246,9 @@ void CReEval_EvalLogDlg::OnEnChangeNmergeEdit()
 
 void CReEval_EvalLogDlg::OnEnChangeEditIgnoreSpectra()
 {
-    char  buffer[4096];
-    int   noAssigned = 0;
-    bool  sequence = false;
+    char buffer[4096];
+    int noAssigned = 0;
+    bool sequence = false;
 
     m_reeval->m_settings.m_ignoreDark.selection = IGNORE_LIST;
 
@@ -309,9 +327,13 @@ void CReEval_EvalLogDlg::ReadEvaluationLog()
     // Extract the directory
     int pos = fileName.ReverseFind('\\');
     if (pos != -1)
+    {
         m_reeval->m_specFileDir.Format(fileName.Left(pos));
+    }
     else
+    {
         m_reeval->m_specFileDir.Format(fileName);
+    }
 
     // read the chosen evaluation log
     m_reeval->ReadEvaluationLog();

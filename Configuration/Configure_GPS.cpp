@@ -49,7 +49,8 @@ END_MESSAGE_MAP()
 
 
 // CConfigure_GPS message handlers
-BOOL CConfigure_GPS::OnInitDialog() {
+BOOL CConfigure_GPS::OnInitDialog()
+{
 
     CPropertyPage::OnInitDialog();
 
@@ -58,21 +59,27 @@ BOOL CConfigure_GPS::OnInitDialog() {
 
     // Initialize the serial-port combo-box
     int toSelect = -1;
-    for (k = 1; k < 22; ++k) {
+    for (k = 1; k < 22; ++k)
+    {
         str.Format("COM%d", k);
         m_gpsPort.AddString(str);
         if (EqualsIgnoringCase(std::string((LPCSTR)str), m_conf->m_gpsPort))
+        {
             toSelect = k - 1;
+        }
     }
     m_gpsPort.SetCurSel(toSelect);
 
     // Initialize the baudrate-combo-box
     toSelect = -1;
-    for (k = 0; k < 6; ++k) {
+    for (k = 0; k < 6; ++k)
+    {
         str.Format("%d", m_availableBaudrates[k]);
         m_gpsBaudrate.AddString(str);
         if (m_availableBaudrates[k] == m_conf->m_gpsBaudrate)
+        {
             toSelect = k;
+        }
     }
     m_gpsBaudrate.SetCurSel(toSelect);
 
@@ -81,7 +88,8 @@ BOOL CConfigure_GPS::OnInitDialog() {
     return TRUE;
 }
 
-void CConfigure_GPS::SaveSettings() {
+void CConfigure_GPS::SaveSettings()
+{
     UpdateData(TRUE); // <-- save the data in the dialog
     int curPort = m_gpsPort.GetCurSel();
     int curBaud = m_gpsBaudrate.GetCurSel();
@@ -92,11 +100,13 @@ void CConfigure_GPS::SaveSettings() {
     m_conf->m_gpsPort = portNumber.str();
 
     // The baudrate
-    if (curBaud == -1) {
+    if (curBaud == -1)
+    {
         m_conf->m_gpsBaudrate = 9600;
         m_gpsBaudrate.SetCurSel(1);
     }
-    else {
+    else
+    {
         m_conf->m_gpsBaudrate = m_availableBaudrates[curBaud];
     }
 
@@ -105,16 +115,18 @@ void CConfigure_GPS::SaveSettings() {
 
 /** Enables the controls that should be enabled, and disables
         the ones which should be disabled */
-void	CConfigure_GPS::EnableControls() {
+void CConfigure_GPS::EnableControls()
+{
     UpdateData(TRUE); // <-- save the data in the dialog
 
-    if (m_conf->m_useGPS) {
+    if (m_conf->m_useGPS)
+    {
         m_gpsPort.EnableWindow(TRUE);
         m_gpsBaudrate.EnableWindow(TRUE);
     }
-    else {
+    else
+    {
         m_gpsPort.EnableWindow(FALSE);
         m_gpsBaudrate.EnableWindow(FALSE);
     }
-
 }

@@ -17,9 +17,12 @@ public:
     /** Initializes the controls and the dialog */
     virtual BOOL OnInitDialog();
 
-    // Dialog Data
+// Dialog Data
 #ifdef AFX_DESIGN_TIME
-    enum { IDD = IDD_VIEW_LOG_DIALOG };
+    enum
+    {
+        IDD = IDD_VIEW_LOG_DIALOG
+    };
 #endif
 
 protected:

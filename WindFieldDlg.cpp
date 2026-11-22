@@ -6,7 +6,8 @@
 #include "WindFieldDlg.h"
 #include "Common.h"
 
-extern CString g_exePath;  // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
+extern CString
+    g_exePath; // <-- This is the path to the executable. This is a global variable and should only be changed in DMSpecView.cpp
 
 // CWindFieldDlg dialog
 
@@ -24,8 +25,9 @@ CWindFieldDlg::CWindFieldDlg(CWnd* pParent /*=NULL*/)
 CWindFieldDlg::~CWindFieldDlg()
 {
     m_flux = nullptr;
-    if (m_windField != nullptr) {
-        delete(m_windField);
+    if (m_windField != nullptr)
+    {
+        delete (m_windField);
         m_windField = nullptr;
     }
 }
@@ -59,13 +61,16 @@ void CWindFieldDlg::OnBrowseWindFieldFile()
     int index;
 
     CString fileName;
-    if (SUCCESS == Common::BrowseForFile("*.txt", fileName)) {
+    if (SUCCESS == Common::BrowseForFile("*.txt", fileName))
+    {
         // look if this filename is already in the combo-box
         index = m_windFileCombo.FindString(-1, fileName);
-        if (index > 0) {
+        if (index > 0)
+        {
             m_windFileCombo.SetCurSel(index);
         }
-        else {
+        else
+        {
             m_windFileCombo.InsertString(0, fileName);
             m_windFileCombo.SetCurSel(0);
         }
@@ -77,7 +82,8 @@ void CWindFieldDlg::OnBrowseWindFieldFile()
     }
 }
 
-BOOL CWindFieldDlg::OnInitDialog() {
+BOOL CWindFieldDlg::OnInitDialog()
+{
     CDialog::OnInitDialog();
 
     // initialize the graph
@@ -103,31 +109,39 @@ BOOL CWindFieldDlg::OnInitDialog() {
     return TRUE;
 }
 
-void CWindFieldDlg::FillCombos() {
+void CWindFieldDlg::FillCombos()
+{
     FillCombo_Altitude();
     FillCombo_Hour();
 }
 
-void CWindFieldDlg::FillCombo_Altitude() {
+void CWindFieldDlg::FillCombo_Altitude()
+{
     int nAlt = m_windField->GetLayerNum();
     CString str;
 
     // clear the combo box if necessary
     if (m_altitudeCombo.GetCount() > 0)
+    {
         m_altitudeCombo.ResetContent();
+    }
 
     // insert the layers as strings
-    for (int i = 0; i < nAlt; ++i) {
+    for (int i = 0; i < nAlt; ++i)
+    {
         str.Format("%.2lf", m_windField->GetLayerAltitude(i));
         m_altitudeCombo.AddString(str);
     }
 
     // select the first layer
     if (nAlt > 0)
+    {
         m_altitudeCombo.SetCurSel(0);
+    }
 }
 
-void CWindFieldDlg::FillCombo_Hour() {
+void CWindFieldDlg::FillCombo_Hour()
+{
     CString str;
 
     // get the currently selected hour
@@ -135,25 +149,32 @@ void CWindFieldDlg::FillCombo_Hour() {
 
     // clear the combo box if necessary
     if (m_hourCombo.GetCount() > 0)
+    {
         m_hourCombo.ResetContent();
+    }
 
     int nHours = m_windField->GetHours(0, m_hours);
 
     // insert the layers as strings
-    for (int i = 0; i < nHours; ++i) {
+    for (int i = 0; i < nHours; ++i)
+    {
         str.Format("%d", m_hours[i]);
         m_hourCombo.AddString(str);
     }
 
     // select the same hour as before
     if (curSel > 0)
+    {
         m_hourCombo.SetCurSel(curSel);
+    }
     else
+    {
         m_hourCombo.SetCurSel(0);
-
+    }
 }
 
-void CWindFieldDlg::DrawField() {
+void CWindFieldDlg::DrawField()
+{
     static const int BUFSIZE = 2048;
     static double lat[BUFSIZE], lon[BUFSIZE], u[BUFSIZE], v[BUFSIZE], r[BUFSIZE], t[BUFSIZE];
     static int nDataPoints = 0;
@@ -181,14 +202,14 @@ void CWindFieldDlg::DrawField() {
     double scaling = 0.05 * (maxLat - minLat) / avgWind;
 
     // change the field from (radius, angle) to (x-component, y-component)
-    for (int i = 0; i < nPoints; ++i) {
+    for (int i = 0; i < nPoints; ++i)
+    {
         u[i] = scaling * r[i] * sin(DEGREETORAD * t[i]);
         v[i] = scaling * r[i] * cos(DEGREETORAD * t[i]);
     }
 
     // draw the wind field
     m_graph.DrawVectorField(lon, lat, u, v, nPoints);
-
 }
 
 void CWindFieldDlg::OnChangeAltitude()
@@ -207,14 +228,18 @@ void CWindFieldDlg::OnOK()
 {
     UpdateData(TRUE); // <-- Save the data in the dialog
 
-    if (m_flux != nullptr) {
+    if (m_flux != nullptr)
+    {
         int layer = m_altitudeCombo.GetCurSel();
         if (m_flux->m_windField != nullptr)
-            delete(m_flux->m_windField);
+        {
+            delete (m_flux->m_windField);
+        }
 
         m_flux->m_useWindField = true;
         m_flux->m_windField = new mobiledoas::CWindField(*m_windField);
-        if (m_useTimeShift) {
+        if (m_useTimeShift)
+        {
             m_flux->m_windField->UseTimeShift(true);
             m_flux->m_windField->SetTimeShift(m_timeShift);
         }
@@ -226,67 +251,84 @@ void CWindFieldDlg::OnOK()
     CDialog::OnOK();
 }
 
-void CWindFieldDlg::ReadMobileLog() {
+void CWindFieldDlg::ReadMobileLog()
+{
     char windfieldfile[512];
     char txt[256];
     char* pt = 0;
 
     FILE* f = fopen(g_exePath + "MobileLog.txt", "r");
-    if (0 != f) {
-        while (fgets(txt, sizeof(txt) - 1, f)) {
+    if (0 != f)
+    {
+        while (fgets(txt, sizeof(txt) - 1, f))
+        {
 
-            if (pt = strstr(txt, "WINDFIELDFILE=")) {
+            if (pt = strstr(txt, "WINDFIELDFILE="))
+            {
                 /* Find the last windfieldfile used */
                 pt = strstr(txt, "=");
                 sprintf(windfieldfile, "%s", &pt[1]);
                 if (pt = strstr(windfieldfile, "\n"))
+                {
                     pt[0] = 0; // remove new-line characters
+                }
                 m_windfile.Format("%s", windfieldfile);
                 m_windFileCombo.AddString(m_windfile);
             }
         }
     }
-    else {
+    else
+    {
         return;
     }
 
     fclose(f);
 }
 
-void CWindFieldDlg::UpdateMobileLog() {
+void CWindFieldDlg::UpdateMobileLog()
+{
     char txt[256];
 
     if (strlen(m_windfile) <= 0)
+    {
         return;
+    }
 
     /* Open the mobile log file */
     FILE* f = fopen(g_exePath + "MobileLog.txt", "r");
 
-    if (0 == f) {
+    if (0 == f)
+    {
         /* File might not exist */
         f = fopen(g_exePath + "MobileLog.txt", "w");
-        if (0 == f) {
+        if (0 == f)
+        {
             /* File cannot be opened */
             return;
         }
-        else {
+        else
+        {
             fprintf(f, "WINDFIELDFILE=%s", (LPCTSTR)m_windfile);
             fclose(f);
             return;
         }
     }
-    else {
+    else
+    {
         CString tmpStr;
         /* read in all the funny strings we dont understand */
-        while (fgets(txt, sizeof(txt) - 1, f)) {
-            if ((0 == strstr(txt, "WINDFIELDFILE="))) {
+        while (fgets(txt, sizeof(txt) - 1, f))
+        {
+            if ((0 == strstr(txt, "WINDFIELDFILE=")))
+            {
                 tmpStr.AppendFormat("%s", txt);
             }
         }
         fclose(f);
         f = fopen(g_exePath + "MobileLog.txt", "w");
         fprintf(f, "%s", (LPCTSTR)tmpStr);
-        for (int i = 0; i < min(4, m_windFileCombo.GetCount()); ++i) {
+        for (int i = 0; i < min(4, m_windFileCombo.GetCount()); ++i)
+        {
             m_windFileCombo.GetLBText(i, tmpStr);
             fprintf(f, "WINDFIELDFILE=%s\n", (LPCTSTR)tmpStr);
         }
@@ -295,17 +337,21 @@ void CWindFieldDlg::UpdateMobileLog() {
     }
 }
 
-void CWindFieldDlg::OnChangeWindFieldFile() {
+void CWindFieldDlg::OnChangeWindFieldFile()
+{
     CString str;
     int curSel = m_windFileCombo.GetCurSel();
     if (curSel < 0)
+    {
         return;
+    }
     // get the string...
     m_windFileCombo.GetLBText(curSel, str);
 
     // test if the file can be read
     FILE* f = fopen(str, "r");
-    if (0 != f) {
+    if (0 != f)
+    {
         // Set the wind file
         m_windfile.Format("%s", (LPCTSTR)str);
 

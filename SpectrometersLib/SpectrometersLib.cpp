@@ -13,7 +13,8 @@
 namespace mobiledoas
 {
 
-std::vector<std::unique_ptr<mobiledoas::SpectrometerInterface>> ListSpectrometerInterfaces(mobiledoas::SpectrometerConnectionType connectionType)
+std::vector<std::unique_ptr<mobiledoas::SpectrometerInterface>>
+ListSpectrometerInterfaces(mobiledoas::SpectrometerConnectionType connectionType)
 {
 
     std::vector<std::unique_ptr<mobiledoas::SpectrometerInterface>> result;

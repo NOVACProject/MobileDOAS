@@ -5,7 +5,8 @@
 
 // CConfigure_GPS dialog
 
-namespace Configuration {
+namespace Configuration
+{
 
 class CConfigure_GPS : public CPropertyPage
 {
@@ -16,7 +17,10 @@ public:
     virtual ~CConfigure_GPS();
 
     // Dialog Data
-    enum { IDD = IDD_CONFIGURE_GPS };
+    enum
+    {
+        IDD = IDD_CONFIGURE_GPS
+    };
 
     /** The local handle to the configuration that we're changing */
     std::shared_ptr<CMobileConfiguration> m_conf;
@@ -35,19 +39,18 @@ protected:
 
     /** Enables the controls that should be enabled, and disables
             the ones which should be disabled */
-    afx_msg void	EnableControls();
+    afx_msg void EnableControls();
 
     // -------------- DIALOG COMPONENTS -----------------
     /** The GPS's serial-port */
-    CComboBox	m_gpsPort;
+    CComboBox m_gpsPort;
 
     /** The GPS's baudrate */
-    CComboBox	m_gpsBaudrate;
+    CComboBox m_gpsBaudrate;
 
     // -------------------- PROTECTED DATA --------------------------
 
     /** The baudrates that the user can choose from */
-    long	m_availableBaudrates[6];
-
+    long m_availableBaudrates[6];
 };
 }
